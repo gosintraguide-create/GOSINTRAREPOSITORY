@@ -16,6 +16,8 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
   const [groupSize, setGroupSize] = useState<string>("1");
   const [location, setLocation] = useState<string>("");
   const [destination, setDestination] = useState<string>("");
+  const [customerName, setCustomerName] = useState<string>("");
+  const [customerPhone, setCustomerPhone] = useState<string>("");
 
   const locations = [
     { id: "sintra-station", name: "Sintra Train Station" },
@@ -57,14 +59,14 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
   };
 
   const handleRequestPickup = async () => {
-    if (!location || !groupSize) return;
+    if (!location || !groupSize || !customerName || !customerPhone) return;
     
     setStep("searching");
     
     try {
       // Send pickup request to backend
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/pickup/request`,
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/pickup-requests`,
         {
           method: 'POST',
           headers: {
@@ -72,9 +74,11 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            groupSize,
-            location,
-            destination,
+            customerName,
+            customerPhone,
+            pickupLocation: locations.find(l => l.id === location)?.name || location,
+            destination: locations.find(l => l.id === destination)?.name || destination,
+            groupSize: parseInt(groupSize),
           }),
         }
       );
@@ -259,6 +263,32 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
         <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
           <Card className="overflow-hidden border-border p-6 shadow-lg sm:p-8">
             <div className="space-y-6">
+              {/* Customer Name */}
+              <div className="space-y-2">
+                <Label htmlFor="customer-name">Your Name</Label>
+                <Input
+                  id="customer-name"
+                  type="text"
+                  placeholder="Enter your name"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  className="border-border"
+                />
+              </div>
+
+              {/* Customer Phone */}
+              <div className="space-y-2">
+                <Label htmlFor="customer-phone">Phone Number</Label>
+                <Input
+                  id="customer-phone"
+                  type="tel"
+                  placeholder="+351 XXX XXX XXX"
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(e.target.value)}
+                  className="border-border"
+                />
+              </div>
+
               {/* Group Size */}
               <div className="space-y-2">
                 <Label htmlFor="group-size" className="flex items-center gap-2">
@@ -385,7 +415,7 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
                 size="lg"
                 className="w-full bg-accent hover:bg-accent/90"
                 onClick={handleRequestPickup}
-                disabled={!location || !groupSize}
+                disabled={!location || !groupSize || !customerName || !customerPhone}
               >
                 <Car className="mr-2 h-5 w-5" />
                 Request Pickup

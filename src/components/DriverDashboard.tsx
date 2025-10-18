@@ -10,7 +10,12 @@ import {
   QrCode, 
   DollarSign, 
   Calendar,
-  Activity
+  Activity,
+  Navigation,
+  AlertCircle,
+  Users,
+  MapPin,
+  CheckCircle
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
@@ -25,10 +30,16 @@ export function DriverDashboard({ driver, token, onLogout }: DriverDashboardProp
   const [metrics, setMetrics] = useState<any[]>([]);
   const [activity, setActivity] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [pendingRequests, setPendingRequests] = useState<any[]>([]);
 
   useEffect(() => {
     loadMetrics();
     loadActivity();
+    loadPendingRequests();
+    
+    // Refresh pending requests every 30 seconds
+    const interval = setInterval(loadPendingRequests, 30000);
+    return () => clearInterval(interval);
   }, [driver.id]);
 
   const loadMetrics = async () => {
@@ -74,6 +85,67 @@ export function DriverDashboard({ driver, token, onLogout }: DriverDashboardProp
       console.error('Error loading activity:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadPendingRequests = async () => {
+    try {
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/pickup-requests/pending`,
+        {
+          headers: {
+            'Authorization': `Bearer ${publicAnonKey}`
+          }
+        }
+      );
+
+      if (!response.ok) {
+        console.error('Server returned error:', response.status, response.statusText);
+        return;
+      }
+
+      const text = await response.text();
+      if (!text) {
+        console.error('Empty response from server');
+        return;
+      }
+
+      try {
+        const data = JSON.parse(text);
+        if (data.success) {
+          setPendingRequests(data.requests);
+        }
+      } catch (parseError) {
+        console.error('Failed to parse response as JSON:', text.substring(0, 200));
+      }
+    } catch (error) {
+      console.error('Error loading pending requests:', error);
+    }
+  };
+
+  const claimPickupRequest = async (requestId: string) => {
+    try {
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/pickup-requests/${requestId}/assign`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${publicAnonKey}`
+          },
+          body: JSON.stringify({
+            driverId: driver.id,
+            driverName: driver.name
+          })
+        }
+      );
+
+      const data = await response.json();
+      if (data.success) {
+        loadPendingRequests();
+      }
+    } catch (error) {
+      console.error('Error claiming pickup request:', error);
     }
   };
 
@@ -198,6 +270,67 @@ export function DriverDashboard({ driver, token, onLogout }: DriverDashboardProp
             </CardContent>
           </Card>
         </div>
+
+        {/* Pickup Requests Alert */}
+        {pendingRequests.length > 0 && (
+          <Card className="mb-8 border-yellow-500 border-2 bg-yellow-50">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-5 w-5 text-yellow-600" />
+                <CardTitle className="text-yellow-900">
+                  {pendingRequests.length} Pending Pickup Request{pendingRequests.length > 1 ? 's' : ''}
+                </CardTitle>
+              </div>
+              <CardDescription className="text-yellow-800">
+                Customers are waiting for pickup. Claim a ride to let other drivers know you're taking it.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {pendingRequests.slice(0, 3).map((request: any) => (
+                <Card key={request.id} className="bg-white">
+                  <CardContent className="pt-4">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 space-y-2">
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium">{request.customerName}</p>
+                          <Badge variant="outline" className="text-xs">
+                            {request.groupSize} pax
+                          </Badge>
+                        </div>
+                        <div className="text-sm text-gray-600 space-y-1">
+                          <div className="flex items-center gap-2">
+                            <MapPin className="h-3 w-3 flex-shrink-0" />
+                            <span>{request.pickupLocation}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Navigation className="h-3 w-3 flex-shrink-0" />
+                            <span>{request.destination}</span>
+                          </div>
+                        </div>
+                        <p className="text-xs text-gray-500">
+                          Requested {new Date(request.requestTime).toLocaleTimeString()}
+                        </p>
+                      </div>
+                      <Button
+                        onClick={() => claimPickupRequest(request.id)}
+                        size="sm"
+                        className="bg-[#0A4D5C] hover:bg-[#0A4D5C]/90"
+                      >
+                        <CheckCircle className="h-4 w-4 mr-2" />
+                        Claim Ride
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+              {pendingRequests.length > 3 && (
+                <p className="text-sm text-yellow-800 text-center pt-2">
+                  + {pendingRequests.length - 3} more request{pendingRequests.length - 3 > 1 ? 's' : ''}
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Charts and Activity */}
         <Tabs defaultValue="charts" className="space-y-4">
