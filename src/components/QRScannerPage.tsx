@@ -1,0 +1,456 @@
+import { useState, useEffect, useRef } from "react";
+import { Button } from "./ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import { Badge } from "./ui/badge";
+import { Alert, AlertDescription } from "./ui/alert";
+import { ArrowLeft, Camera, CameraOff, CheckCircle2, XCircle, Clock, Users, Calendar, Ticket } from "lucide-react";
+import { toast } from "sonner@2.0.3";
+import { projectId, publicAnonKey } from '../utils/supabase/info';
+
+interface ScanResult {
+  success: boolean;
+  booking?: {
+    bookingId: string;
+    customerName: string;
+    customerEmail: string;
+    passType: string;
+    numPasses: number;
+    passDate: string;
+    totalPrice: number;
+    guidedTour: boolean;
+    checkIns?: {
+      timestamp: string;
+      location?: string;
+    }[];
+    alreadyCheckedIn: boolean;
+    isExpired: boolean;
+  };
+  message: string;
+}
+
+interface QRScannerPageProps {
+  onNavigate: (page: string) => void;
+}
+
+export function QRScannerPage({ onNavigate }: QRScannerPageProps) {
+  const [scanning, setScanning] = useState(false);
+  const [scanResult, setScanResult] = useState<ScanResult | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const scanIntervalRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      stopScanning();
+    };
+  }, []);
+
+  const startScanning = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment" }
+      });
+      
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        streamRef.current = stream;
+        setScanning(true);
+        setScanResult(null);
+        
+        // Start scanning loop
+        scanIntervalRef.current = window.setInterval(() => {
+          captureAndDecodeQR();
+        }, 500);
+      }
+    } catch (error) {
+      console.error("Camera access error:", error);
+      toast.error("Unable to access camera. Please grant camera permissions.");
+    }
+  };
+
+  const stopScanning = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    if (scanIntervalRef.current) {
+      clearInterval(scanIntervalRef.current);
+      scanIntervalRef.current = null;
+    }
+    setScanning(false);
+  };
+
+  const captureAndDecodeQR = async () => {
+    if (!videoRef.current || !canvasRef.current || isProcessing) return;
+
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    const context = canvas.getContext('2d');
+
+    if (!context || video.readyState !== video.HAVE_ENOUGH_DATA) return;
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    try {
+      // Use jsQR library via dynamic import
+      const { default: jsQR } = await import('jsqr');
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+      const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+      if (code && code.data) {
+        setIsProcessing(true);
+        stopScanning();
+        await verifyQRCode(code.data);
+      }
+    } catch (error) {
+      // jsQR not available or decode error - continue scanning
+    }
+  };
+
+  const verifyQRCode = async (qrData: string) => {
+    try {
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/verify-qr`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${publicAnonKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ qrData }),
+        }
+      );
+
+      const result = await response.json();
+      
+      if (result.success) {
+        setScanResult(result);
+        if (!result.booking.alreadyCheckedIn && !result.booking.isExpired) {
+          toast.success("Valid pass scanned!");
+        } else if (result.booking.alreadyCheckedIn) {
+          toast.warning("Pass already checked in today");
+        } else if (result.booking.isExpired) {
+          toast.error("Pass is expired");
+        }
+      } else {
+        setScanResult(result);
+        toast.error(result.message || "Invalid QR code");
+      }
+    } catch (error) {
+      console.error("QR verification error:", error);
+      toast.error("Failed to verify QR code");
+      setScanResult({
+        success: false,
+        message: "Network error - please try again"
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const checkInPassenger = async () => {
+    if (!scanResult?.booking) return;
+
+    setIsProcessing(true);
+    try {
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/checkin`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${publicAnonKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            bookingId: scanResult.booking.bookingId,
+            location: "Vehicle Pickup" // You can customize this
+          }),
+        }
+      );
+
+      const result = await response.json();
+      
+      if (result.success) {
+        toast.success("Passenger checked in successfully!");
+        setScanResult({
+          ...scanResult,
+          booking: {
+            ...scanResult.booking,
+            alreadyCheckedIn: true,
+            checkIns: [...(scanResult.booking.checkIns || []), {
+              timestamp: new Date().toISOString(),
+              location: "Vehicle Pickup"
+            }]
+          }
+        });
+      } else {
+        toast.error(result.message || "Check-in failed");
+      }
+    } catch (error) {
+      console.error("Check-in error:", error);
+      toast.error("Failed to check in passenger");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const resetScanner = () => {
+    setScanResult(null);
+    setIsProcessing(false);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-primary/5 to-background p-4 pb-20">
+      <div className="mx-auto max-w-2xl">
+        {/* Header */}
+        <div className="mb-6 flex items-center justify-between">
+          <Button
+            variant="ghost"
+            onClick={() => onNavigate("admin")}
+            className="gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Admin
+          </Button>
+        </div>
+
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Camera className="h-6 w-6 text-primary" />
+              QR Code Scanner
+            </CardTitle>
+            <CardDescription>
+              Scan passenger QR codes to verify passes and check in
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Camera View */}
+            <div className="relative overflow-hidden rounded-lg bg-black">
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className={`w-full ${scanning ? 'block' : 'hidden'}`}
+                style={{ maxHeight: '400px' }}
+              />
+              <canvas
+                ref={canvasRef}
+                className="hidden"
+              />
+              
+              {!scanning && !scanResult && (
+                <div className="flex min-h-[300px] flex-col items-center justify-center gap-4 p-8 text-center">
+                  <CameraOff className="h-16 w-16 text-muted-foreground" />
+                  <p className="text-muted-foreground">
+                    Camera is off. Click the button below to start scanning.
+                  </p>
+                </div>
+              )}
+
+              {scanning && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="h-48 w-48 rounded-lg border-4 border-accent shadow-lg" 
+                       style={{ 
+                         boxShadow: '0 0 0 9999px rgba(0,0,0,0.5)',
+                       }}
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Scan Controls */}
+            {!scanResult && (
+              <div className="flex gap-2">
+                {!scanning ? (
+                  <Button
+                    onClick={startScanning}
+                    className="w-full gap-2"
+                    size="lg"
+                  >
+                    <Camera className="h-5 w-5" />
+                    Start Scanning
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={stopScanning}
+                    variant="outline"
+                    className="w-full gap-2"
+                    size="lg"
+                  >
+                    <CameraOff className="h-5 w-5" />
+                    Stop Scanning
+                  </Button>
+                )}
+              </div>
+            )}
+
+            {/* Scan Result */}
+            {scanResult && (
+              <div className="space-y-4">
+                {scanResult.success && scanResult.booking ? (
+                  <>
+                    {/* Status Badge */}
+                    <Alert className={
+                      scanResult.booking.isExpired 
+                        ? "border-destructive bg-destructive/10" 
+                        : scanResult.booking.alreadyCheckedIn
+                          ? "border-accent bg-accent/10"
+                          : "border-green-500 bg-green-50"
+                    }>
+                      <div className="flex items-center gap-2">
+                        {scanResult.booking.isExpired ? (
+                          <XCircle className="h-5 w-5 text-destructive" />
+                        ) : scanResult.booking.alreadyCheckedIn ? (
+                          <CheckCircle2 className="h-5 w-5 text-accent" />
+                        ) : (
+                          <CheckCircle2 className="h-5 w-5 text-green-600" />
+                        )}
+                        <AlertDescription className="flex-1">
+                          {scanResult.booking.isExpired 
+                            ? "This pass has expired"
+                            : scanResult.booking.alreadyCheckedIn
+                              ? "Already checked in today"
+                              : "Valid pass - ready to check in"
+                          }
+                        </AlertDescription>
+                      </div>
+                    </Alert>
+
+                    {/* Booking Details */}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Passenger Details</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div className="flex items-start gap-3">
+                          <Users className="mt-0.5 h-5 w-5 text-muted-foreground" />
+                          <div className="flex-1">
+                            <p className="font-medium">{scanResult.booking.customerName}</p>
+                            <p className="text-muted-foreground">{scanResult.booking.customerEmail}</p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          <Ticket className="h-5 w-5 text-muted-foreground" />
+                          <div className="flex-1">
+                            <p className="font-medium">{scanResult.booking.passType}</p>
+                            <p className="text-muted-foreground">
+                              {scanResult.booking.numPasses} {scanResult.booking.numPasses === 1 ? 'pass' : 'passes'}
+                              {scanResult.booking.guidedTour && " • Guided Tour"}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          <Calendar className="h-5 w-5 text-muted-foreground" />
+                          <div className="flex-1">
+                            <p className="font-medium">
+                              {new Date(scanResult.booking.passDate).toLocaleDateString('en-US', {
+                                weekday: 'long',
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                              })}
+                            </p>
+                          </div>
+                        </div>
+
+                        {scanResult.booking.checkIns && scanResult.booking.checkIns.length > 0 && (
+                          <div className="border-t pt-3">
+                            <p className="mb-2 flex items-center gap-2 font-medium">
+                              <Clock className="h-4 w-4" />
+                              Check-in History
+                            </p>
+                            <div className="space-y-1">
+                              {scanResult.booking.checkIns.map((checkin, index) => (
+                                <p key={index} className="text-muted-foreground">
+                                  {new Date(checkin.timestamp).toLocaleTimeString('en-US', {
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                  {checkin.location && ` - ${checkin.location}`}
+                                </p>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-2">
+                      {!scanResult.booking.isExpired && !scanResult.booking.alreadyCheckedIn && (
+                        <Button
+                          onClick={checkInPassenger}
+                          disabled={isProcessing}
+                          className="flex-1 gap-2"
+                          size="lg"
+                        >
+                          <CheckCircle2 className="h-5 w-5" />
+                          Check In Passenger
+                        </Button>
+                      )}
+                      <Button
+                        onClick={resetScanner}
+                        variant="outline"
+                        className="flex-1"
+                        size="lg"
+                      >
+                        Scan Another
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* Error State */}
+                    <Alert className="border-destructive bg-destructive/10">
+                      <XCircle className="h-5 w-5 text-destructive" />
+                      <AlertDescription>
+                        {scanResult.message || "Invalid QR code"}
+                      </AlertDescription>
+                    </Alert>
+                    <Button
+                      onClick={resetScanner}
+                      variant="outline"
+                      className="w-full"
+                      size="lg"
+                    >
+                      Try Again
+                    </Button>
+                  </>
+                )}
+              </div>
+            )}
+
+            {isProcessing && (
+              <div className="flex items-center justify-center gap-2 py-4">
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                <span className="text-muted-foreground">Processing...</span>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Instructions */}
+        <Card>
+          <CardHeader>
+            <CardTitle>How to Use</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-muted-foreground">
+            <p>1. Click "Start Scanning" to activate the camera</p>
+            <p>2. Point the camera at the customer's QR code</p>
+            <p>3. Wait for automatic detection and verification</p>
+            <p>4. Review passenger details and check them in</p>
+            <p>5. Click "Scan Another" to continue with next passenger</p>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}

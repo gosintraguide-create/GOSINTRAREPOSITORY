@@ -1,0 +1,183 @@
+import { WebsiteContent } from '../contentManager';
+
+export const de: WebsiteContent = {
+  company: {
+    name: "Go Sintra",
+    email: "info@gosintra.com",
+    phone: "+351 932 967 279",
+    location: "Sintra, Portugal",
+    operatingHours: "9:00 - 20:00 Täglich",
+    whatsappNumber: "+351932967279",
+  },
+  homepage: {
+    heroTitle: "Entdecken Sie Sintra Auf Ihre Weise",
+    heroSubtitle: "Hop-on, Hop-off Tagespass mit garantierten Sitzplätzen. Unbegrenzte Fahrten in kleinen Tuk Tuks und Vintage-Jeeps. Neue Abfahrt alle 10-15 Minuten.",
+    heroCallToAction: "Buchen Sie Ihren Pass",
+    benefitPills: [
+      { icon: "Users", text: "Kleine Gruppen (2-6)" },
+      { icon: "Clock", text: "Alle 10-15 Min" },
+      { icon: "MapPin", text: "Alle Sehenswürdigkeiten" },
+    ],
+    sectionOneTitle: "Warum Go Sintra Wählen?",
+    sectionOneDescription: "Vermeiden Sie überfüllte Reisebusse und erleben Sie Sintra, wie es entdeckt werden soll",
+  },
+  about: {
+    title: "Über Go Sintra",
+    subtitle: "Ihr Premium Hop-on/Hop-off Abenteuer durch Sintras magische Landschaften",
+    story: [
+      "Go Sintra entstand aus einer einfachen Beobachtung: Besucher dieser UNESCO-Welterbestätte verdienten Besseres als überfüllte Busse und starre Zeitpläne.",
+      "Wir haben eine flexible Premium-Alternative geschaffen, die die Intimität kleiner Fahrzeuge mit der Freiheit der Hop-on/Hop-off Bequemlichkeit kombiniert.",
+      "Heute wählen Tausende von Besuchern Go Sintra für garantierte Sitzplätze, regelmäßige Abfahrten alle 10-15 Minuten und eine authentische, intime Art, dieses magische Reiseziel zu erkunden.",
+    ],
+    mission: "Unsere Mission ist es, die bequemste, komfortabelste und authentischste Art zu bieten, Sintras Paläste, Burgen und Gärten zu erkunden.",
+    values: [
+      {
+        title: "Garantierter Komfort",
+        description: "Jeder Gast hat einen garantierten Sitzplatz in einem kleinen, intimen Fahrzeug. Kein Stehen, keine Überfüllung.",
+      },
+      {
+        title: "Totale Flexibilität",
+        description: "Steigen Sie an jeder Sehenswürdigkeit aus, bleiben Sie so lange wie Sie möchten, und steigen Sie wieder ein. Ihr Tag, Ihr Tempo.",
+      },
+      {
+        title: "Lokales Fachwissen",
+        description: "Unsere Fahrer kennen Sintra in- und auswendig und bieten Einblicke, die Sie in Reiseführern nicht finden werden.",
+      },
+    ],
+  },
+  attractions: {
+    "pena-palace": {
+      name: "Pena Palast",
+      description: "Das Kronjuwel von Sintra, dieser romantische Palast thront auf einem Hügel mit atemberaubenden Aussichten. Im 19. Jahrhundert erbaut, zeigt er lebendige Farben und eklektische Architektur.",
+      longDescription: "Auf den Ruinen eines alten Klosters erbaut, wurde der Pena Palast von König Ferdinand II. in Auftrag gegeben und repräsentiert den Höhepunkt der romantischen Architektur in Portugal. Der Palast kombiniert gotische, maurische, Renaissance- und manuelinische Stile in einer fantasievollen Darstellung von Farbe und Kreativität. Der umliegende Park zeigt exotische Bäume und Pflanzen aus der ganzen Welt, gewundene Pfade und atemberaubende Aussichtspunkte.",
+      highlights: [
+        "Panoramablick auf Sintra und den Atlantischen Ozean",
+        "Ornamentierte Innenräume mit originalen Möbeln aus dem 19. Jahrhundert",
+        "Exotische botanische Gärten mit über 500 Baumarten",
+        "UNESCO-Welterbestätte",
+        "Instagram-würdige bunte Fassade",
+      ],
+      hours: "9:30 - 19:00 Uhr (Letzter Einlass 18:00 Uhr)",
+      duration: "2-3 Stunden empfohlen",
+      tips: [
+        "Kommen Sie früh, um Menschenmassen zu vermeiden, besonders im Sommer",
+        "Tragen Sie bequeme Schuhe - viel Laufen und Hügel",
+        "Verpassen Sie nicht die Palastterrasse für die besten Aussichten",
+        "Besuchen Sie den Park vor oder nach der Palastbesichtigung",
+      ],
+      price: 14,
+      parkOnlyPrice: 8,
+    },
+    "quinta-regaleira": {
+      name: "Quinta da Regaleira",
+      description: "Ein mystisches Anwesen mit rätselhaften Gärten, unterirdischen Tunneln und dem berühmten Initiationsbrunnen. Diese UNESCO-Welterbestätte ist ein Meisterwerk symbolischer und philosophischer Architektur.",
+      longDescription: "Geschaffen vom italienischen Architekten Luigi Manini für den Millionär António Augusto Carvalho Monteiro, ist die Quinta da Regaleira voller alchemistischer und freimaurerischer Symbolik. Das Anwesen zeigt kunstvolle Gärten, mysteriöse Grotten, bezaubernde Seen und den ikonischen Initiationsbrunnen - eine 27 Meter lange Wendeltreppe, die in die Erde hinabführt und für zeremonielle Zwecke genutzt wurde.",
+      highlights: [
+        "Der berühmte Initiationsbrunnen mit Wendeltreppe",
+        "Mysteriöses unterirdisches Tunnelsystem",
+        "Gotisch-manuelinischer Palast mit komplizierten Details",
+        "Verzauberte Gärten mit versteckten Symbolen",
+        "Kapelle der Heiligen Dreifaltigkeit",
+      ],
+      hours: "9:30 - 18:00 Uhr (Letzter Einlass 17:00 Uhr)",
+      duration: "2-3 Stunden empfohlen",
+      tips: [
+        "Bringen Sie eine Taschenlampe mit, um die Tunnel zu erkunden",
+        "Tragen Sie robuste Schuhe - Wege können rutschig sein",
+        "Planen Sie Zeit ein, um alle versteckten Ecken zu erkunden",
+        "Der Initiationsbrunnen ist ein Muss für Fotos",
+      ],
+      price: 12,
+    },
+    "moorish-castle": {
+      name: "Maurische Burg",
+      description: "Alte Festungsmauern schlängeln sich entlang der Bergkämme und bieten spektakuläre Panoramablicke. Von den Mauren im 8.-9. Jahrhundert erbaut, ist diese Burg ein Zeugnis mittelalterlicher Militärarchitektur.",
+      longDescription: "Die Maurische Burg wurde während der muslimischen Besetzung der Iberischen Halbinsel erbaut, strategisch positioniert, um die Stadt Sintra und die umliegenden Handelsrouten zu bewachen. Nach der christlichen Eroberung verfiel die Burg, wurde aber später im 19. Jahrhundert restauriert. Heute können Besucher entlang der alten Befestigungsanlagen spazieren und einige der spektakulärsten Aussichten der Region genießen.",
+      highlights: [
+        "360-Grad-Aussicht von den Burgmauern",
+        "Altes mittelalterliches Befestigungssystem",
+        "Archäologische Stätte mit maurischen Artefakten",
+        "Malerische Wanderwege durch den Wald",
+        "Atemberaubende Fotomöglichkeiten an jeder Ecke",
+      ],
+      hours: "9:30 - 18:00 Uhr (Letzter Einlass 17:00 Uhr)",
+      duration: "1,5-2 Stunden empfohlen",
+      tips: [
+        "Ausgezeichnetes Training - viele Treppen und Anstiege",
+        "Am besten morgens für klarere Aussichten besuchen",
+        "Kombinieren Sie mit dem Pena Palast für einen ganzen Tag",
+        "Bringen Sie Wasser und Sonnenschutz mit",
+      ],
+      price: 10,
+    },
+    "monserrate-palace": {
+      name: "Monserrate Palast",
+      description: "Ein exotischer Palast, der gotische, indische und maurische Einflüsse vereint, eingebettet in einen der schönsten botanischen Gärten Portugals mit seltenen und exotischen Pflanzenarten aus der ganzen Welt.",
+      longDescription: "Der Monserrate Palast wurde 1858 für Sir Francis Cook, einen englischen Textilmagnaten und Kunstsammler, erbaut. Der Palast zeigt eine außergewöhnliche Verschmelzung architektonischer Stile, während seine Gärten zu den besten Beispielen der Landschaftsgestaltung in Portugal zählen. Das Anwesen zeigt Pflanzen von fünf Kontinenten und schafft Mikroklimata, die Arten aus Mexiko, Australien, Japan und darüber hinaus unterstützen.",
+      highlights: [
+        "Atemberaubende Mischung architektonischer Stile",
+        "Weltklasse botanische Gärten",
+        "Ornamentiertes Interieur mit kompliziertem Stuck",
+        "Friedliche Atmosphäre, weniger überlaufen",
+        "Wunderschöne Seen und Wasserfälle",
+      ],
+      hours: "9:30 - 18:00 Uhr (Letzter Einlass 17:00 Uhr)",
+      duration: "2-2,5 Stunden empfohlen",
+      tips: [
+        "Oft weniger überlaufen als andere Paläste",
+        "Beeilen Sie sich nicht - die Gärten verdienen Zeit",
+        "Perfekt für Fotografie-Enthusiasten",
+        "Bringen Sie ein Picknick mit, um es in den Gärten zu genießen",
+      ],
+      price: 10,
+    },
+    "sintra-palace": {
+      name: "Nationalpalast Sintra",
+      description: "Im Herzen der historischen Altstadt von Sintra gelegen, ist dies der am besten erhaltene mittelalterliche Königspalast Portugals, berühmt für seine markanten Zwillingsschornsteine und prächtige Fliesenarbeit.",
+      longDescription: "Der Nationalpalast Sintra war seit dem frühen 15. Jahrhundert eine königliche Residenz und wurde bis 1910 kontinuierlich von der portugiesischen Königsfamilie bewohnt. Der Palast zeigt verschiedene architektonische Stile, die über die Jahrhunderte akkumuliert wurden, vom mittelalterlichen bis zum Renaissance-Stil. Sein Inneres zeigt einige der besten Beispiele mudéjarischer Fliesenarbeit in Portugal, zusammen mit bemalten Decken, die Armillarsphären, Elstern und Schwäne darstellen.",
+      highlights: [
+        "Ikonische kegelförmige Zwillingsschornsteine",
+        "Prächtige Azulejo-Sammlung",
+        "Historischer Wappensaal (Sala dos Brasões)",
+        "Königliche Küchen mit massiven Kaminen",
+        "Zentrale Lage im Dorf Sintra",
+      ],
+      hours: "9:30 - 18:00 Uhr (Letzter Einlass 17:30 Uhr)",
+      duration: "1,5-2 Stunden empfohlen",
+      tips: [
+        "Beginnen oder beenden Sie Ihren Tag hier - es liegt im Dorfzentrum",
+        "Audioguide für vollständigen historischen Kontext empfohlen",
+        "Großartig für einen Regentag - hauptsächlich drinnen",
+        "Kombinieren Sie mit der Erkundung von Sintras Cafés und Geschäften",
+      ],
+      price: 10,
+    },
+  },
+  seo: {
+    home: {
+      title: "Go Sintra - Premium Hop-On/Hop-Off Tagespass | Kleinfahrzeug-Touren",
+      description: "Erkunden Sie Sintras UNESCO-Welterbestätten mit garantierten Sitzplätzen in kleinen Fahrzeugen. Unbegrenzte Fahrten alle 10-15 Minuten. Buchen Sie jetzt Ihren flexiblen Tagespass online.",
+      keywords: "Sintra Touren, hop on hop off Sintra, Sintra Transport, Kleingruppen-Touren Sintra, Pena Palast Touren, Sintra Tagespass",
+    },
+    attractions: {
+      title: "Sintra Sehenswürdigkeiten - Paläste & Burgen | Go Sintra Tagespass",
+      description: "Entdecken Sie den Pena Palast, Quinta da Regaleira, Maurische Burg und mehr. Unser Tagespass beinhaltet unbegrenzten Transport zu allen wichtigen Sintra Sehenswürdigkeiten.",
+      keywords: "Sintra Sehenswürdigkeiten, Pena Palast, Quinta da Regaleira, Maurische Burg, Monserrate Palast, Nationalpalast Sintra",
+    },
+    howItWorks: {
+      title: "So Funktioniert's - Go Sintra Hop-On/Hop-Off Service",
+      description: "Erfahren Sie, wie unser flexibler Tagespass funktioniert. Online buchen, QR-Codes erhalten und während der Betriebszeiten in jedes Fahrzeug einsteigen. Einfach und bequem.",
+      keywords: "Sintra besuchen, Sintra Transport-Führer, wie hop on hop off funktioniert, Sintra Tagespass Führer",
+    },
+    buyTicket: {
+      title: "Buchen Sie Ihren Tagespass - Go Sintra | Sofortbestätigung",
+      description: "Buchen Sie Ihren Sintra Tagespass online. Wählen Sie Ihr Datum, erhalten Sie sofortige QR-Codes für jeden Passagier und genießen Sie unbegrenzte Fahrten bis 20:00 Uhr. Fügen Sie auch Sehenswürdigkeiten-Tickets hinzu.",
+      keywords: "Sintra Touren buchen, Sintra Tagespass kaufen, Sintra Tickets online, Sintra Sehenswürdigkeiten Tickets",
+    },
+    about: {
+      title: "Über Go Sintra - Premium Kleinfahrzeug-Tour-Service",
+      description: "Go Sintra bietet Premium Hop-on/Hop-off Service mit garantierten Sitzplätzen in kleinen Fahrzeugen. Regelmäßige Abfahrten alle 10-15 Minuten in ganz Sintra.",
+      keywords: "über Go Sintra, Sintra Tourunternehmen, Premium Sintra Touren, Kleingruppen Sintra",
+    },
+  },
+};

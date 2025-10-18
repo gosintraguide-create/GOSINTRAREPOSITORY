@@ -1,0 +1,183 @@
+import { WebsiteContent } from '../contentManager';
+
+export const pt: WebsiteContent = {
+  company: {
+    name: "Go Sintra",
+    email: "info@gosintra.com",
+    phone: "+351 932 967 279",
+    location: "Sintra, Portugal",
+    operatingHours: "9h00 - 20h00 Diariamente",
+    whatsappNumber: "+351932967279",
+  },
+  homepage: {
+    heroTitle: "Descubra Sintra à Sua Maneira",
+    heroSubtitle: "Passe de dia hop-on, hop-off com lugares garantidos. Viagens ilimitadas em pequenos tuk tuks e jipes vintage. Nova partida a cada 10-15 minutos.",
+    heroCallToAction: "Reserve o Seu Passe",
+    benefitPills: [
+      { icon: "Users", text: "Grupos Pequenos (2-6)" },
+      { icon: "Clock", text: "A Cada 10-15 Min" },
+      { icon: "MapPin", text: "Todas as Atrações" },
+    ],
+    sectionOneTitle: "Porquê Escolher Go Sintra?",
+    sectionOneDescription: "Evite os autocarros lotados e experimente Sintra da forma como deve ser descoberta",
+  },
+  about: {
+    title: "Sobre Go Sintra",
+    subtitle: "A sua aventura premium hop-on/hop-off pelas paisagens mágicas de Sintra",
+    story: [
+      "Go Sintra nasceu de uma observação simples: os visitantes deste local Património Mundial da UNESCO mereciam melhor do que autocarros lotados e horários rígidos.",
+      "Criámos uma alternativa flexível e premium que combina a intimidade de veículos pequenos com a liberdade da conveniência hop-on/hop-off.",
+      "Hoje, milhares de visitantes escolhem Go Sintra pelos lugares garantidos, partidas regulares a cada 10-15 minutos, e uma forma autêntica e íntima de explorar este destino mágico.",
+    ],
+    mission: "A nossa missão é fornecer a forma mais conveniente, confortável e autêntica de explorar os palácios, castelos e jardins de Sintra.",
+    values: [
+      {
+        title: "Conforto Garantido",
+        description: "Cada hóspede tem um lugar garantido num veículo pequeno e íntimo. Sem ficar de pé, sem lotação.",
+      },
+      {
+        title: "Flexibilidade Total",
+        description: "Desça em qualquer atração, fique o tempo que quiser, e volte a subir. O seu dia, ao seu ritmo.",
+      },
+      {
+        title: "Experiência Local",
+        description: "Os nossos motoristas conhecem Sintra de ponta a ponta, oferecendo insights que não encontrará em guias.",
+      },
+    ],
+  },
+  attractions: {
+    "pena-palace": {
+      name: "Palácio da Pena",
+      description: "A joia da coroa de Sintra, este palácio romântico situa-se no topo de uma colina com vistas deslumbrantes. Construído no século XIX, apresenta cores vibrantes e arquitetura eclética.",
+      longDescription: "Construído sobre as ruínas de um antigo mosteiro, o Palácio da Pena foi encomendado pelo Rei Fernando II e representa o auge da arquitetura romântica em Portugal. O palácio combina estilos gótico, mourisco, renascentista e manuelino numa exibição caprichosa de cor e criatividade. O parque circundante apresenta árvores e plantas exóticas de todo o mundo, caminhos sinuosos e miradouros de tirar o fôlego.",
+      highlights: [
+        "Vistas panorâmicas de Sintra e do Oceano Atlântico",
+        "Salas interiores ornamentadas com mobília original do século XIX",
+        "Jardins botânicos exóticos com mais de 500 espécies de árvores",
+        "Local Património Mundial da UNESCO",
+        "Fachada colorida digna de Instagram",
+      ],
+      hours: "9h30 - 19h00 (Última entrada às 18h00)",
+      duration: "2-3 horas recomendadas",
+      tips: [
+        "Chegue cedo para evitar multidões, especialmente no verão",
+        "Use calçado confortável - muita caminhada e colinas",
+        "Não perca o terraço do palácio para as melhores vistas",
+        "Visite o parque antes ou depois de visitar o palácio",
+      ],
+      price: 14,
+      parkOnlyPrice: 8,
+    },
+    "quinta-regaleira": {
+      name: "Quinta da Regaleira",
+      description: "Uma propriedade mística com jardins enigmáticos, túneis subterrâneos e o famoso Poço Iniciático. Este local Património Mundial da UNESCO é uma obra-prima de arquitetura simbólica e filosófica.",
+      longDescription: "Criada pelo arquiteto italiano Luigi Manini para o milionário António Augusto Carvalho Monteiro, a Quinta da Regaleira está repleta de simbolismo alquímico e maçónico. A propriedade apresenta jardins elaborados, grutas misteriosas, lagos encantadores e o icónico Poço Iniciático - uma escadaria em espiral de 27 metros que desce para a terra, usada para fins cerimoniais.",
+      highlights: [
+        "O famoso Poço Iniciático com escadaria em espiral",
+        "Sistema misterioso de túneis subterrâneos",
+        "Palácio gótico-manuelino com detalhes intrincados",
+        "Jardins encantados com símbolos escondidos",
+        "Capela da Santíssima Trindade",
+      ],
+      hours: "9h30 - 18h00 (Última entrada às 17h00)",
+      duration: "2-3 horas recomendadas",
+      tips: [
+        "Traga uma lanterna para explorar os túneis",
+        "Use calçado resistente - os caminhos podem ser escorregadios",
+        "Reserve tempo para explorar todos os cantos escondidos",
+        "O Poço Iniciático é um local obrigatório para fotos",
+      ],
+      price: 12,
+    },
+    "moorish-castle": {
+      name: "Castelo dos Mouros",
+      description: "Antigas muralhas de fortaleza serpenteiam ao longo de cristas montanhosas, oferecendo vistas panorâmicas espetaculares. Construído pelos mouros nos séculos VIII-IX, este castelo é um testemunho da arquitetura militar medieval.",
+      longDescription: "O Castelo dos Mouros foi construído durante a ocupação muçulmana da Península Ibérica, estrategicamente posicionado para proteger a vila de Sintra e as rotas comerciais circundantes. Após a conquista cristã, o castelo caiu em desuso, mas foi posteriormente restaurado no século XIX. Hoje, os visitantes podem caminhar ao longo das antigas muralhas e desfrutar de algumas das vistas mais espetaculares da região.",
+      highlights: [
+        "Vistas de 360 graus das muralhas do castelo",
+        "Sistema de fortificação medieval antigo",
+        "Sítio arqueológico com artefactos mouriscos",
+        "Trilhos para caminhadas cénicas pela floresta",
+        "Oportunidades fotográficas deslumbrantes a cada esquina",
+      ],
+      hours: "9h30 - 18h00 (Última entrada às 17h00)",
+      duration: "1,5-2 horas recomendadas",
+      tips: [
+        "Excelente exercício - muitas escadas e subidas",
+        "Melhor visitado de manhã para vistas mais claras",
+        "Combine com o Palácio da Pena para um dia completo",
+        "Traga água e proteção solar",
+      ],
+      price: 10,
+    },
+    "monserrate-palace": {
+      name: "Palácio de Monserrate",
+      description: "Um palácio exótico que combina influências góticas, indianas e mouriscas, situado num dos mais belos jardins botânicos de Portugal com espécies de plantas raras e exóticas de todo o mundo.",
+      longDescription: "O Palácio de Monserrate foi construído em 1858 para Sir Francis Cook, um magnata têxtil e colecionador de arte inglês. O palácio apresenta uma fusão extraordinária de estilos arquitetónicos, enquanto os seus jardins são considerados entre os melhores exemplos de jardinagem paisagística em Portugal. A propriedade apresenta plantas de cinco continentes, criando microclimas que suportam espécies do México, Austrália, Japão e além.",
+      highlights: [
+        "Mistura deslumbrante de estilos arquitetónicos",
+        "Jardins botânicos de classe mundial",
+        "Interior ornamentado com estuque intrincado",
+        "Atmosfera tranquila, menos lotado",
+        "Lagos e cascatas bonitos",
+      ],
+      hours: "9h30 - 18h00 (Última entrada às 17h00)",
+      duration: "2-2,5 horas recomendadas",
+      tips: [
+        "Frequentemente menos lotado que outros palácios",
+        "Não se apresse - os jardins merecem tempo",
+        "Perfeito para entusiastas de fotografia",
+        "Traga um piquenique para desfrutar nos jardins",
+      ],
+      price: 10,
+    },
+    "sintra-palace": {
+      name: "Palácio Nacional de Sintra",
+      description: "Localizado no coração do centro histórico de Sintra, este é o palácio real medieval mais bem preservado de Portugal, famoso pelas suas distintas chaminés gémeas e magnifico trabalho de azulejos.",
+      longDescription: "O Palácio Nacional de Sintra tem sido uma residência real desde o início do século XV e foi continuamente habitado pela realeza portuguesa até 1910. O palácio apresenta vários estilos arquitetónicos acumulados ao longo dos séculos, do medieval ao renascentista. O seu interior apresenta alguns dos melhores exemplos de azulejaria mudéjar em Portugal, juntamente com tetos pintados representando esferas armilares, pegas e cisnes.",
+      highlights: [
+        "Chaminés cónicas gémeas icónicas",
+        "Magnífica coleção de azulejos",
+        "Histórica Sala dos Brasões",
+        "Cozinhas reais com lareiras maciças",
+        "Localização central na vila de Sintra",
+      ],
+      hours: "9h30 - 18h00 (Última entrada às 17h30)",
+      duration: "1,5-2 horas recomendadas",
+      tips: [
+        "Comece ou termine o seu dia aqui - fica no centro da vila",
+        "Audioguia recomendado para contexto histórico completo",
+        "Ótimo para um dia chuvoso - maioritariamente interior",
+        "Combine com a exploração dos cafés e lojas de Sintra",
+      ],
+      price: 10,
+    },
+  },
+  seo: {
+    home: {
+      title: "Go Sintra - Passe Premium Hop-On/Hop-Off | Tours em Veículos Pequenos",
+      description: "Explore os locais Património Mundial da UNESCO em Sintra com lugares garantidos em veículos pequenos. Viagens ilimitadas a cada 10-15 minutos. Reserve o seu passe flexível online agora.",
+      keywords: "tours Sintra, hop on hop off Sintra, transporte Sintra, tours grupo pequeno Sintra, tours Palácio Pena, passe dia Sintra",
+    },
+    attractions: {
+      title: "Atrações de Sintra - Palácios e Castelos | Passe Go Sintra",
+      description: "Descubra o Palácio da Pena, Quinta da Regaleira, Castelo dos Mouros e muito mais. O nosso passe inclui transporte ilimitado para todas as principais atrações de Sintra.",
+      keywords: "atrações Sintra, Palácio da Pena, Quinta da Regaleira, Castelo dos Mouros, Palácio de Monserrate, Palácio Nacional de Sintra",
+    },
+    howItWorks: {
+      title: "Como Funciona - Serviço Hop-On/Hop-Off Go Sintra",
+      description: "Saiba como funciona o nosso passe de dia flexível. Reserve online, receba os seus códigos QR e suba em qualquer veículo durante o horário de funcionamento. Simples e conveniente.",
+      keywords: "como visitar Sintra, guia transporte Sintra, como funciona hop on hop off, guia passe Sintra",
+    },
+    buyTicket: {
+      title: "Reserve o Seu Passe - Go Sintra | Confirmação Instantânea",
+      description: "Reserve o seu passe de dia de Sintra online. Escolha a sua data, receba códigos QR instantâneos para cada passageiro e desfrute de viagens ilimitadas até às 20h00. Adicione também bilhetes de atrações.",
+      keywords: "reservar tours Sintra, comprar passe Sintra, bilhetes Sintra online, bilhetes atrações Sintra",
+    },
+    about: {
+      title: "Sobre Go Sintra - Serviço Premium de Tours em Veículos Pequenos",
+      description: "Go Sintra oferece serviço premium hop-on/hop-off com lugares garantidos em veículos pequenos. Partidas regulares a cada 10-15 minutos por toda Sintra.",
+      keywords: "sobre Go Sintra, empresa tours Sintra, tours premium Sintra, grupo pequeno Sintra",
+    },
+  },
+};

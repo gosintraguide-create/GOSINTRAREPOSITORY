@@ -1,0 +1,17 @@
+# robots.txt for Go Sintra
+User-agent: *
+Allow: /
+
+# Disallow admin and internal pages
+Disallow: /*?page=admin
+Disallow: /*?page=analytics
+Disallow: /*?page=operations
+Disallow: /*?page=manual-booking
+Disallow: /*?page=qr-scanner
+Disallow: /*?page=diagnostics
+Disallow: /*?page=pwa-icons
+Disallow: /*?page=pwa-installer
+Disallow: /*?page=debug-icons
+
+# Sitemap
+Sitemap: https://gosintra.pt/sitemap.xml

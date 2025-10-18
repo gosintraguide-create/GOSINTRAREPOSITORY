@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0A4D5C" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Go Sintra" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192x192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512x512.png" />
+    <link rel="apple-touch-icon" href="/icon-192x192.png" />
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://images.unsplash.com" />
+    <link rel="preconnect" href="https://esm.sh" />
+    <link rel="dns-prefetch" href="https://images.unsplash.com" />
+    
+    <!-- Initial meta tags (will be updated by SEOHead component) -->
+    <title>Go Sintra - Premium Hop-On/Hop-Off Day Pass | Explore Sintra Attractions</title>
+    <meta name="description" content="Explore Sintra's UNESCO World Heritage palaces with Go Sintra's premium hop-on/hop-off service. Guaranteed seating in small vehicles. Unlimited rides every 10-15 minutes. Book online!" />
+    <meta name="keywords" content="Sintra tours, Sintra transport, hop on hop off Sintra, Pena Palace, Quinta da Regaleira, Sintra day pass, Portugal tours, Sintra attractions, Moorish Castle, Monserrate Palace" />
+    <meta name="author" content="Go Sintra" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://gosintra.pt/" />
+    <meta property="og:title" content="Go Sintra - Premium Hop-On/Hop-Off Day Pass" />
+    <meta property="og:description" content="Explore Sintra's palaces and attractions with guaranteed seating in small vehicles. Unlimited rides, every 10-15 minutes." />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content="Go Sintra" />
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://gosintra.pt/" />
+    <meta name="twitter:title" content="Go Sintra - Premium Hop-On/Hop-Off Day Pass" />
+    <meta name="twitter:description" content="Explore Sintra's palaces and attractions with guaranteed seating in small vehicles. Unlimited rides, every 10-15 minutes." />
+    <meta name="twitter:image" content="https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop" />
+    
+    <!-- Geo tags -->
+    <meta name="geo.region" content="PT-11" />
+    <meta name="geo.placename" content="Sintra" />
+    <meta name="geo.position" content="38.7967;-9.3842" />
+    <meta name="ICBM" content="38.7967, -9.3842" />
+    
+    <!-- Structured Data - Enhanced for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "TouristAttraction",
+          "@id": "https://gosintra.pt/#touristattraction",
+          "name": "Go Sintra",
+          "description": "Premium hop-on/hop-off day pass service in Sintra, Portugal with guaranteed seating in small vehicles. Visit Pena Palace, Quinta da Regaleira, Moorish Castle, and more.",
+          "url": "https://gosintra.pt",
+          "image": "https://images.unsplash.com/photo-1585208798174-6cedd86e019a",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Sintra",
+            "addressRegion": "Lisboa",
+            "addressCountry": "PT"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 38.7967,
+            "longitude": -9.3842
+          },
+          "openingHoursSpecification": {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+            "opens": "09:00",
+            "closes": "20:00"
+          },
+          "priceRange": "€€",
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.8",
+            "reviewCount": "250",
+            "bestRating": "5"
+          }
+        },
+        {
+          "@type": "Service",
+          "@id": "https://gosintra.pt/#service",
+          "serviceType": "Hop-on Hop-off Tour",
+          "provider": {
+            "@type": "Organization",
+            "name": "Go Sintra"
+          },
+          "areaServed": {
+            "@type": "City",
+            "name": "Sintra"
+          },
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Day Pass Options",
+            "itemListElement": [
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Product",
+                  "name": "Full Day Pass",
+                  "description": "Unlimited rides between all Sintra attractions"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://gosintra.pt/#website",
+          "url": "https://gosintra.pt",
+          "name": "Go Sintra",
+          "description": "Premium hop-on/hop-off day pass service in Sintra, Portugal",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://gosintra.pt/?search={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        }
+      ]
+    }
+    </script>
+    
+    <!-- Performance: Preload critical resources -->
+    <link rel="preload" href="/manifest.json" as="fetch" crossorigin="anonymous" />
+    
+    <!-- Google tag (gtag.js) - Replace YOUR_GA_ID with your actual Google Analytics ID -->
+    <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=YOUR_GA_ID"></script> -->
+    <!-- <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'YOUR_GA_ID');
+    </script> -->
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
