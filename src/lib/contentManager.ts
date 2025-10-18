@@ -46,6 +46,9 @@ export interface WebsiteContent {
     buyTicket: { title: string; description: string; keywords: string };
     about: { title: string; description: string; keywords: string };
   };
+  featureFlags?: {
+    enableAttractionTickets?: boolean;
+  };
 }
 
 export const DEFAULT_CONTENT: WebsiteContent = {
@@ -59,11 +62,11 @@ export const DEFAULT_CONTENT: WebsiteContent = {
   },
   homepage: {
     heroTitle: "Discover Sintra Your Way",
-    heroSubtitle: "Hop-on, hop-off day pass with guaranteed seats. Unlimited rides in small tuk tuks and vintage jeeps. New departure every 10-15 minutes.",
+    heroSubtitle: "Hop-on, hop-off day pass with guaranteed seats and professional driver-guides. Unlimited rides in small tuk tuks and vintage jeeps. New departure every 10-15 minutes.",
     heroCallToAction: "Book Your Day Pass",
     benefitPills: [
       { icon: "Users", text: "Small Groups (2-6)" },
-      { icon: "Clock", text: "Every 10-15 Min" },
+      { icon: "Shield", text: "Professional Guides" },
       { icon: "MapPin", text: "All Attractions" },
     ],
     sectionOneTitle: "Why Choose Go Sintra?",
@@ -88,8 +91,8 @@ export const DEFAULT_CONTENT: WebsiteContent = {
         description: "Hop off at any attraction, spend as long as you want, then hop back on. Your day, your pace.",
       },
       {
-        title: "Local Expertise",
-        description: "Our drivers know Sintra inside and out, offering insights you won't find in guidebooks.",
+        title: "Professional Driver-Guides",
+        description: "Every vehicle is driven by a certified professional guide with deep local knowledge and years of experience showing visitors the best of Sintra.",
       },
     ],
   },
@@ -228,6 +231,9 @@ export const DEFAULT_CONTENT: WebsiteContent = {
       keywords: "about Go Sintra, Sintra tour company, premium Sintra tours, small group Sintra",
     },
   },
+  featureFlags: {
+    enableAttractionTickets: false,
+  },
 };
 
 export function saveContent(content: WebsiteContent): void {
@@ -277,6 +283,7 @@ export function loadContent(): WebsiteContent {
         about: { ...DEFAULT_CONTENT.about, ...parsed.about },
         attractions: { ...DEFAULT_CONTENT.attractions, ...parsed.attractions },
         seo: { ...DEFAULT_CONTENT.seo, ...parsed.seo },
+        featureFlags: { ...DEFAULT_CONTENT.featureFlags, ...parsed.featureFlags },
       };
     } catch {
       return DEFAULT_CONTENT;
@@ -304,6 +311,7 @@ export function loadContentWithLanguage(languageCode: string = 'en'): WebsiteCon
         about: { ...translation.about, ...parsed.about },
         attractions: { ...translation.attractions, ...parsed.attractions },
         seo: { ...translation.seo, ...parsed.seo },
+        featureFlags: { ...translation.featureFlags, ...parsed.featureFlags },
       };
     } catch {
       return translation;
@@ -332,6 +340,7 @@ export async function syncContentFromDatabase(): Promise<WebsiteContent> {
           about: { ...DEFAULT_CONTENT.about, ...content.about },
           attractions: { ...DEFAULT_CONTENT.attractions, ...content.attractions },
           seo: { ...DEFAULT_CONTENT.seo, ...content.seo },
+          featureFlags: { ...DEFAULT_CONTENT.featureFlags, ...content.featureFlags },
         };
       } else {
         console.log('⚠️ Database content is empty, using defaults');
@@ -368,6 +377,7 @@ export async function syncContentFromDatabaseWithLanguage(languageCode: string =
           about: { ...translation.about, ...content.about },
           attractions: { ...translation.attractions, ...content.attractions },
           seo: { ...translation.seo, ...content.seo },
+          featureFlags: { ...translation.featureFlags, ...content.featureFlags },
         };
       }
     }

@@ -17,10 +17,12 @@
     <link rel="icon" type="image/png" sizes="512x512" href="/icon-512x512.png" />
     <link rel="apple-touch-icon" href="/icon-192x192.png" />
     
-    <!-- Preconnect to external domains -->
-    <link rel="preconnect" href="https://images.unsplash.com" />
-    <link rel="preconnect" href="https://esm.sh" />
+    <!-- Preconnect to external domains for better performance -->
+    <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
+    <link rel="preconnect" href="https://esm.sh" crossorigin />
     <link rel="dns-prefetch" href="https://images.unsplash.com" />
+    <link rel="dns-prefetch" href="https://js.stripe.com" />
+    <link rel="preconnect" href="https://js.stripe.com" crossorigin />
     
     <!-- Initial meta tags (will be updated by SEOHead component) -->
     <title>Go Sintra - Premium Hop-On/Hop-Off Day Pass | Explore Sintra Attractions</title>

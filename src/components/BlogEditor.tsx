@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Save, Plus, Trash2, Edit, Eye, EyeOff, Calendar, Tag as TagIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -18,6 +18,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogFooter,
@@ -32,6 +33,8 @@ import {
   type BlogArticle,
   DEFAULT_ARTICLES,
 } from "../lib/blogManager";
+import { InternalLinkHelper } from "./InternalLinkHelper";
+import { loadBlogTags } from "../lib/blogTags";
 
 export function BlogEditor() {
   const [articles, setArticles] = useState<BlogArticle[]>([]);
@@ -40,11 +43,14 @@ export function BlogEditor() {
   const [editingArticle, setEditingArticle] = useState<BlogArticle | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [articleToDelete, setArticleToDelete] = useState<string | null>(null);
-  const [tagInput, setTagInput] = useState("");
+  const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const [tagSearchQuery, setTagSearchQuery] = useState("");
+  const contentTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     setArticles(loadArticles());
     setCategories(loadCategories());
+    setAvailableTags(loadBlogTags());
   }, []);
 
   const createNewArticle = (): BlogArticle => {
@@ -149,17 +155,21 @@ export function BlogEditor() {
     toast.success("Article deleted");
   };
 
-  const handleAddTag = () => {
-    if (!editingArticle || !tagInput.trim()) return;
+  const handleAddTag = (tag: string) => {
+    if (!editingArticle) return;
 
-    const tag = tagInput.trim().toLowerCase();
-    if (!editingArticle.tags.includes(tag)) {
+    const normalizedTag = tag.trim().toLowerCase();
+    if (!normalizedTag) return;
+    
+    if (!editingArticle.tags.includes(normalizedTag)) {
       setEditingArticle({
         ...editingArticle,
-        tags: [...editingArticle.tags, tag],
+        tags: [...editingArticle.tags, normalizedTag],
       });
+      setTagSearchQuery("");
+    } else {
+      toast.error("Tag already added to this article");
     }
-    setTagInput("");
   };
 
   const handleRemoveTag = (tag: string) => {
@@ -170,12 +180,47 @@ export function BlogEditor() {
     });
   };
 
+  const getFilteredTags = () => {
+    if (!editingArticle) return [];
+    
+    const query = tagSearchQuery.toLowerCase();
+    const selectedTags = editingArticle.tags || [];
+    
+    return availableTags
+      .filter(tag => !selectedTags.includes(tag))
+      .filter(tag => !query || tag.includes(query))
+      .slice(0, 20); // Limit to 20 suggestions
+  };
+
   const handleResetToDefaults = () => {
     if (confirm("This will reset all articles to the default set. Are you sure?")) {
       setArticles(DEFAULT_ARTICLES);
       saveArticles(DEFAULT_ARTICLES);
       toast.success("Articles reset to defaults");
     }
+  };
+
+  const handleInsertLink = (markdown: string) => {
+    if (!editingArticle || !contentTextareaRef.current) return;
+
+    const textarea = contentTextareaRef.current;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = editingArticle.content;
+    const before = text.substring(0, start);
+    const after = text.substring(end);
+
+    const newContent = before + markdown + after;
+    setEditingArticle({ ...editingArticle, content: newContent });
+
+    // Set cursor position after inserted link
+    setTimeout(() => {
+      textarea.focus();
+      const newPosition = start + markdown.length;
+      textarea.setSelectionRange(newPosition, newPosition);
+    }, 0);
+
+    toast.success("Link inserted!");
   };
 
   return (
@@ -268,6 +313,11 @@ export function BlogEditor() {
             <DialogTitle>
               {editingArticle?.id.startsWith('article-') ? 'Create New Article' : 'Edit Article'}
             </DialogTitle>
+            <DialogDescription>
+              {editingArticle?.id.startsWith('article-') 
+                ? 'Create and publish a new blog article for your travel guide' 
+                : 'Edit your blog article content, SEO settings, and publishing options'}
+            </DialogDescription>
           </DialogHeader>
 
           {editingArticle && (
@@ -390,46 +440,110 @@ export function BlogEditor() {
               {/* Tags */}
               <div>
                 <Label>Tags</Label>
-                <div className="mb-2 flex gap-2">
+                <p className="mb-2 text-sm text-muted-foreground">
+                  Select tags from the predefined list for better SEO consistency
+                </p>
+                
+                {/* Search/Filter Tags */}
+                <div className="mb-3">
                   <Input
-                    value={tagInput}
-                    onChange={(e) => setTagInput(e.target.value)}
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        handleAddTag();
-                      }
-                    }}
-                    placeholder="Add a tag and press Enter"
+                    value={tagSearchQuery}
+                    onChange={(e) => setTagSearchQuery(e.target.value)}
+                    placeholder="Search available tags..."
+                    className="mb-2"
                   />
-                  <Button type="button" onClick={handleAddTag}>
-                    Add
-                  </Button>
+                  
+                  {/* Available Tags to Add */}
+                  {tagSearchQuery && (
+                    <div className="max-h-40 overflow-y-auto rounded-md border border-border bg-background p-2">
+                      {getFilteredTags().length > 0 ? (
+                        <div className="flex flex-wrap gap-1">
+                          {getFilteredTags().map((tag) => (
+                            <Badge
+                              key={tag}
+                              variant="outline"
+                              className="cursor-pointer hover:bg-primary hover:text-primary-foreground"
+                              onClick={() => handleAddTag(tag)}
+                            >
+                              + {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="py-2 text-center text-sm text-muted-foreground">
+                          No matching tags found
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {editingArticle.tags.map((tag) => (
-                    <Badge key={tag} variant="outline" className="gap-2">
-                      {tag}
-                      <button
-                        onClick={() => handleRemoveTag(tag)}
-                        className="ml-1 hover:text-destructive"
-                      >
-                        ×
-                      </button>
-                    </Badge>
-                  ))}
+
+                {/* Selected Tags */}
+                <div>
+                  <div className="mb-2 text-sm text-muted-foreground">
+                    Selected Tags ({editingArticle.tags.length})
+                  </div>
+                  <div className="flex min-h-[60px] flex-wrap gap-2 rounded-md border border-border p-3">
+                    {editingArticle.tags.length === 0 ? (
+                      <p className="w-full text-center text-sm text-muted-foreground">
+                        No tags selected. Search above to add tags.
+                      </p>
+                    ) : (
+                      editingArticle.tags.map((tag) => (
+                        <Badge key={tag} variant="default" className="gap-2">
+                          {tag}
+                          <button
+                            onClick={() => handleRemoveTag(tag)}
+                            className="ml-1 hover:text-destructive"
+                          >
+                            ×
+                          </button>
+                        </Badge>
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                {/* Quick Add Popular Tags */}
+                <div className="mt-2">
+                  <p className="mb-2 text-sm text-muted-foreground">Quick add:</p>
+                  <div className="flex flex-wrap gap-1">
+                    {["sintra", "travel-tips", "planning", "attractions", "guide", "lisbon"]
+                      .filter(tag => !editingArticle.tags.includes(tag))
+                      .map((tag) => (
+                        <Badge
+                          key={tag}
+                          variant="outline"
+                          className="cursor-pointer text-xs hover:bg-primary/10"
+                          onClick={() => handleAddTag(tag)}
+                        >
+                          + {tag}
+                        </Badge>
+                      ))}
+                  </div>
                 </div>
               </div>
 
               {/* Content */}
               <div>
-                <Label>Article Content * (Markdown supported)</Label>
+                <div className="mb-2 flex items-center justify-between">
+                  <Label>Article Content * (Markdown supported)</Label>
+                  <InternalLinkHelper onInsertLink={handleInsertLink} />
+                </div>
+                
+                <Alert className="mb-3 border-primary/30 bg-primary/5">
+                  <AlertDescription className="text-sm">
+                    💡 <strong>Tip:</strong> Use the "Insert Internal Link" button to easily link to other blog articles, attractions, or pages. Click it to browse all available content!
+                  </AlertDescription>
+                </Alert>
+
                 <Textarea
+                  ref={contentTextareaRef}
                   value={editingArticle.content}
                   onChange={(e) =>
                     setEditingArticle({ ...editingArticle, content: e.target.value })
                   }
-                  placeholder="Write your article content here using Markdown formatting..."
+                  placeholder="Write your article content here using Markdown formatting...&#10;&#10;# Your Article Title&#10;&#10;Start writing your content here. Use the 'Insert Internal Link' button above to easily add links to other articles and attractions.&#10;&#10;## Section Heading&#10;&#10;Write more content..."
                   rows={15}
                   className="font-mono"
                 />
@@ -502,10 +616,10 @@ export function BlogEditor() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Delete Article?</DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. The article will be permanently deleted.
+            </DialogDescription>
           </DialogHeader>
-          <p className="text-muted-foreground">
-            This action cannot be undone. The article will be permanently deleted.
-          </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowDeleteConfirm(false)}>
               Cancel

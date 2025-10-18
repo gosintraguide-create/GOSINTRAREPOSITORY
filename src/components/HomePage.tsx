@@ -102,10 +102,31 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
             {/* Tilted Price Card */}
             <div className="mb-8 flex justify-center sm:mb-10">
               <div className="relative">
-                <div className="rotate-[-2deg] transform rounded-2xl bg-white px-6 py-4 shadow-2xl transition-transform hover:rotate-0 hover:scale-105 sm:px-8 sm:py-6">
-                  <p className="mb-1 text-xs uppercase tracking-wide text-muted-foreground sm:text-sm">Starting at</p>
-                  <p className="text-4xl font-extrabold text-accent sm:text-5xl">€{basePrice}</p>
-                  <p className="mt-1 text-xs text-muted-foreground sm:text-sm">per person / full day</p>
+                <div className="relative mx-auto flex h-36 items-center justify-center sm:h-40 md:h-44">
+                  {/* Left Photo Card - Almost fully visible */}
+                  <div className="absolute -left-24 top-1/2 z-0 w-32 -translate-y-1/2 scale-[0.85] rotate-[-2deg] transform overflow-hidden rounded-xl shadow-xl transition-all hover:z-20 hover:-left-20 hover:rotate-0 hover:scale-95 sm:-left-32 sm:w-40 md:-left-40 md:w-48">
+                    <ImageWithFallback 
+                      src="https://images.unsplash.com/photo-1715616130000-375a7e5fac95?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoYXBweSUyMHRvdXJpc3RzJTIwc2lnaHRzZWVpbmclMjBncm91cHxlbnwxfHx8fDE3NjA4MTcwODJ8MA&ixlib=rb-4.1.0&q=80&w=1080"
+                      alt="Happy travelers in Sintra"
+                      className="h-32 w-full object-cover sm:h-36 md:h-40"
+                    />
+                  </div>
+                  
+                  {/* Right Photo Card - Almost fully visible */}
+                  <div className="absolute -right-24 top-1/2 z-0 w-32 -translate-y-1/2 scale-[0.85] rotate-[-2deg] transform overflow-hidden rounded-xl shadow-xl transition-all hover:z-20 hover:-right-20 hover:rotate-0 hover:scale-95 sm:-right-32 sm:w-40 md:-right-40 md:w-48">
+                    <ImageWithFallback 
+                      src="https://images.unsplash.com/photo-1759668558962-23ae91b34bfc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0cmF2ZWxlcnMlMjBmcmllbmRzJTIwdmFjYXRpb24lMjB8ZW58MXx8fHwxNzYwODE3MDgyfDA&ixlib=rb-4.1.0&q=80&w=1080"
+                      alt="Friends enjoying their trip"
+                      className="h-32 w-full object-cover sm:h-36 md:h-40"
+                    />
+                  </div>
+                  
+                  {/* Center Price Card - Front and center */}
+                  <div className="relative z-10 flex h-32 w-32 flex-col items-center justify-center rotate-[-2deg] transform rounded-2xl bg-white shadow-2xl transition-transform hover:rotate-0 hover:scale-105 sm:h-36 sm:w-40 md:h-40 md:w-48">
+                    <p className="mb-1 text-xs uppercase tracking-wide text-muted-foreground sm:text-sm">Starting at</p>
+                    <p className="text-4xl font-extrabold text-accent sm:text-5xl">€{basePrice}</p>
+                    <p className="mt-1 text-xs text-muted-foreground sm:text-sm">per person / full day</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -128,23 +149,6 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
               >
                 {t.howItWorks}
               </Button>
-            </div>
-            
-            {/* Social Proof */}
-            <div className="mt-6 flex items-center justify-center gap-2 sm:mt-8 sm:gap-3">
-              <div className="flex -space-x-2">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <div key={i} className="h-8 w-8 rounded-full border-2 border-primary bg-gradient-to-br from-accent to-white sm:h-10 sm:w-10 sm:border-4" />
-                ))}
-              </div>
-              <div className="text-left">
-                <div className="flex gap-0.5 sm:gap-1">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <Star key={i} className="h-3 w-3 fill-accent text-accent sm:h-4 sm:w-4" />
-                  ))}
-                </div>
-                <p className="text-xs text-white/80 sm:text-sm">10,000+ happy travelers</p>
-              </div>
             </div>
           </div>
         </div>
@@ -266,7 +270,7 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
               </div>
               <h3 className="mb-2">Hop On & Off</h3>
               <p className="text-muted-foreground">
-                Show your pass at any stop. Explore attractions, then catch the next ride.
+                Show your pass to our professional guide-driver. Explore attractions, then catch the next ride.
               </p>
             </div>
             
@@ -332,9 +336,9 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="mt-1 h-6 w-6 flex-shrink-0 text-primary" />
                   <div>
-                    <h4 className="mb-1">Local Knowledge</h4>
+                    <h4 className="mb-1">Professional Driver-Guides</h4>
                     <p className="text-muted-foreground">
-                      Optional guided commentary from drivers who know Sintra best
+                      Every vehicle is driven by a certified local guide with deep knowledge of Sintra
                     </p>
                   </div>
                 </div>

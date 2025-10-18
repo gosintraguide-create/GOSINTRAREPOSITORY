@@ -18,12 +18,6 @@ npm install && git add . && git commit -m "Add Vercel Analytics" && git push ori
 
 ---
 
-> **🎯 START HERE:** [`START_HERE_ANALYTICS.md`](./START_HERE_ANALYTICS.md) - Complete deploy guide  
-> **⚡ 30 SECONDS:** [`TL;DR.md`](./TL;DR.md) - Ultra-quick summary  
-> **📊 ANALYTICS:** [`ANALYTICS_SUMMARY.md`](./ANALYTICS_SUMMARY.md) - What you get  
-> **✅ CHECKLIST:** [`FINAL_DEPLOYMENT_CHECKLIST.md`](./FINAL_DEPLOYMENT_CHECKLIST.md) - Step by step  
-> **📚 ALL DOCS:** [`DOCUMENTATION_INDEX.md`](./DOCUMENTATION_INDEX.md) - Complete index
-
 ## 🎯 Overview
 
 Go Sintra is a mobile-first PWA that enables tourists to purchase day passes for hop-on/hop-off service between Sintra's major attractions using tuk-tuks and UMM jeeps.
@@ -212,15 +206,43 @@ Built-in translations for:
 
 ---
 
-## 📱 PWA Features
+## 📱 PWA Features & Installation
 
-- **Installable:** Add to home screen on mobile
-- **Offline Support:** Service worker with caching
+This is a **Progressive Web App (PWA)** that can be installed on any device like a native app!
+
+### How Users Install the App
+
+#### On Android (Chrome/Edge)
+1. Visit the website
+2. After 10 seconds, an install prompt appears automatically
+3. Click "Install App" button
+4. Or tap the menu (⋮) → "Install app" or "Add to Home screen"
+5. The app icon appears on your home screen
+
+#### On iOS (Safari)
+1. Visit the website in Safari
+2. Tap the Share button (□↑)
+3. Scroll and tap "Add to Home Screen"
+4. Tap "Add"
+5. The app icon appears on your home screen
+
+#### On Desktop (Chrome/Edge)
+1. Visit the website
+2. Look for the install icon (⊕) in the address bar
+3. Click "Install"
+4. The app opens in its own window
+
+### PWA Capabilities
+
+- **Installable:** Add to home screen on any device
+- **Offline Support:** Service worker caches pages and assets
+- **Auto-Update:** Updates automatically when online
 - **Push Notifications:** Ready for implementation
 - **Background Sync:** Queue actions when offline
-- **Responsive:** Mobile-first design
+- **Responsive:** Works perfectly on mobile, tablet, and desktop
 - **Fast:** Optimized assets and code splitting
-- **App-like:** Full-screen mode on mobile
+- **App-like:** Full-screen mode, no browser UI
+- **Works Offline:** Continue browsing even without internet
 
 ---
 
@@ -360,6 +382,17 @@ Track key metrics:
 
 ---
 
+## 📚 Documentation
+
+### User Guides
+- **[Installation Guide](./INSTALLATION.md)** - How users install the PWA on any device (iOS, Android, Desktop)
+- **[PWA Complete Guide](./PWA_GUIDE.md)** - Everything about the Progressive Web App features
+
+### Developer Guides
+- **[Performance Guide](./PERFORMANCE.md)** - All performance optimizations, metrics, and best practices
+
+---
+
 ## 📜 License
 
 Private project for Go Sintra.
@@ -384,10 +417,7 @@ Private project for Go Sintra.
 
 ## 🚀 Ready to Deploy?
 
-**Start here:** [`START_HERE.md`](START_HERE.md) - Complete beginner's guide  
-**Quick deploy:** [`VERCEL_QUICK_START.md`](VERCEL_QUICK_START.md) - 15-minute setup  
-**Deployment status:** [`DEPLOYMENT_STATUS.md`](DEPLOYMENT_STATUS.md) - Current readiness  
-**Need help?** Check the comprehensive guides in the root directory.
+Follow the Quick Start section above for deployment instructions.
 
 ---
 

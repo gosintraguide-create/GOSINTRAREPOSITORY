@@ -21,6 +21,7 @@ interface BlogArticlePageProps {
 export function BlogArticlePage({ onNavigate, slug }: BlogArticlePageProps) {
   const [article, setArticle] = useState<BlogArticle | null>(null);
   const [relatedArticles, setRelatedArticles] = useState<BlogArticle[]>([]);
+  const [otherArticles, setOtherArticles] = useState<BlogArticle[]>([]);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [categoryName, setCategoryName] = useState("");
 
@@ -40,6 +41,12 @@ export function BlogArticlePage({ onNavigate, slug }: BlogArticlePageProps) {
         .filter(a => a.category === foundArticle.category && a.id !== foundArticle.id)
         .slice(0, 3);
       setRelatedArticles(related);
+
+      // Get other articles for sidebar (excluding current article)
+      const otherArts = allArticles
+        .filter(a => a.id !== foundArticle.id)
+        .slice(0, 5);
+      setOtherArticles(otherArts);
 
       // Scroll to top when article loads
       window.scrollTo(0, 0);
@@ -131,8 +138,8 @@ export function BlogArticlePage({ onNavigate, slug }: BlogArticlePageProps) {
         </div>
       </div>
 
-      {/* Article Header */}
-      <section className="bg-gradient-to-br from-secondary/30 to-white py-12 sm:py-16">
+      {/* Article Header - Clean & Simple */}
+      <section className="border-b border-border bg-white py-6 sm:py-8">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           {/* Breadcrumbs */}
           <Breadcrumbs
@@ -145,95 +152,32 @@ export function BlogArticlePage({ onNavigate, slug }: BlogArticlePageProps) {
           />
 
           {/* Category Badge */}
-          <Badge className="mb-4 bg-primary text-white">
+          <Badge className="mb-3 bg-primary text-white">
             {categoryName}
           </Badge>
 
-          {/* Title */}
-          <h1 className="mb-6 text-foreground">
-            {article.title}
-          </h1>
-
-          {/* Meta Info */}
-          <div className="mb-6 flex flex-wrap items-center gap-6 text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
+          {/* Meta Info - Above Image */}
+          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+            <div className="flex items-center gap-1.5">
+              <Calendar className="h-3.5 w-3.5" />
               <time dateTime={article.publishDate}>
                 {formatDateForDisplay(article.publishDate)}
               </time>
             </div>
             {isArticleUpdated() && (
-              <div className="flex items-center gap-2">
-                <RefreshCw className="h-4 w-4" />
-                <span>Updated: <time dateTime={article.lastModified}>{formatDateForDisplay(article.lastModified)}</time></span>
+              <div className="flex items-center gap-1.5">
+                <RefreshCw className="h-3.5 w-3.5" />
+                <time dateTime={article.lastModified}>{formatDateForDisplay(article.lastModified)}</time>
               </div>
             )}
-            <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4" />
+            <div className="flex items-center gap-1.5">
+              <Clock className="h-3.5 w-3.5" />
               {article.readTimeMinutes} min read
             </div>
             {article.author && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 By {article.author}
               </div>
-            )}
-          </div>
-
-          {/* Tags */}
-          {article.tags.length > 0 && (
-            <div className="mb-6 flex flex-wrap gap-2">
-              {article.tags.map((tag) => (
-                <Badge key={tag} variant="outline" className="gap-1">
-                  <Tag className="h-3 w-3" />
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-          )}
-
-          {/* Share Button */}
-          <div className="relative">
-            <Button
-              variant="outline"
-              onClick={() => setShowShareMenu(!showShareMenu)}
-              className="gap-2"
-            >
-              <Share2 className="h-4 w-4" />
-              Share Article
-            </Button>
-
-            {showShareMenu && (
-              <Card className="absolute left-0 top-12 z-10 p-2 shadow-lg">
-                <div className="flex flex-col gap-1">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleShare('facebook')}
-                    className="justify-start gap-2"
-                  >
-                    <Facebook className="h-4 w-4" />
-                    Facebook
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleShare('twitter')}
-                    className="justify-start gap-2"
-                  >
-                    <Twitter className="h-4 w-4" />
-                    Twitter
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleShare('email')}
-                    className="justify-start gap-2"
-                  >
-                    <Mail className="h-4 w-4" />
-                    Email
-                  </Button>
-                </div>
-              </Card>
             )}
           </div>
         </div>
@@ -241,16 +185,80 @@ export function BlogArticlePage({ onNavigate, slug }: BlogArticlePageProps) {
 
       {/* Featured Image */}
       {article.featuredImage && (
-        <section className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-          <div className="overflow-hidden rounded-lg shadow-xl">
+        <section className="mx-auto max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
+          <div className="overflow-hidden rounded-lg shadow-lg">
             <ImageWithFallback
               src={article.featuredImage}
               alt={article.title}
-              className="aspect-video w-full object-cover"
+              className="aspect-[21/9] w-full object-cover sm:aspect-video"
             />
           </div>
         </section>
       )}
+
+      {/* Tags and Share - Below Image */}
+      <div className="mx-auto max-w-4xl px-4 pb-6 sm:px-6 lg:px-8">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          {/* Tags */}
+          {article.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {article.tags.map((tag) => (
+                <Badge key={tag} variant="outline" className="gap-1 text-xs">
+                  <Tag className="h-3 w-3" />
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          )}
+
+          {/* Share Button - Small & Subtle */}
+          <div className="relative">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowShareMenu(!showShareMenu)}
+              className="gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+            >
+              <Share2 className="h-3.5 w-3.5" />
+              Share
+            </Button>
+
+            {showShareMenu && (
+              <Card className="absolute right-0 top-10 z-10 p-2 shadow-lg">
+                <div className="flex flex-col gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleShare('facebook')}
+                    className="justify-start gap-2 text-xs"
+                  >
+                    <Facebook className="h-3.5 w-3.5" />
+                    Facebook
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleShare('twitter')}
+                    className="justify-start gap-2 text-xs"
+                  >
+                    <Twitter className="h-3.5 w-3.5" />
+                    Twitter
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleShare('email')}
+                    className="justify-start gap-2 text-xs"
+                  >
+                    <Mail className="h-3.5 w-3.5" />
+                    Email
+                  </Button>
+                </div>
+              </Card>
+            )}
+          </div>
+        </div>
+      </div>
 
       {/* Article Content with TOC */}
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
@@ -260,7 +268,7 @@ export function BlogArticlePage({ onNavigate, slug }: BlogArticlePageProps) {
             <div className="prose prose-lg max-w-none">
               <ReactMarkdown
                 components={{
-                  h1: ({node, ...props}) => <h1 className="mb-6 text-foreground" {...props} />,
+                  h1: ({node, ...props}) => <h1 className="mb-8 mt-2 text-foreground" {...props} />,
                   h2: ({node, ...props}) => <h2 className="mb-4 mt-8 text-foreground" {...props} />,
                   h3: ({node, ...props}) => <h3 className="mb-3 mt-6 text-foreground" {...props} />,
                   p: ({node, ...props}) => <p className="mb-4 text-muted-foreground leading-relaxed" {...props} />,
@@ -279,14 +287,125 @@ export function BlogArticlePage({ onNavigate, slug }: BlogArticlePageProps) {
             </div>
           </article>
 
-          {/* Sidebar - Table of Contents */}
-          <aside className="hidden lg:block">
-            <TableOfContents content={article.content} />
+          {/* Sidebar - Desktop Only */}
+          <aside className="hidden space-y-6 lg:block">
+            <div className="sticky top-24 space-y-6">
+              <TableOfContents content={article.content} />
+              
+              {/* Other Articles Card - Desktop */}
+              {otherArticles.length > 0 && (
+                <Card className="overflow-hidden border-border">
+                  <div className="border-b border-border bg-gradient-to-br from-primary/5 to-accent/5 p-4">
+                    <h3 className="text-foreground">More from Travel Guide</h3>
+                  </div>
+                  <div className="divide-y divide-border">
+                    {otherArticles.slice(0, 3).map((otherArticle) => (
+                      <div
+                        key={otherArticle.id}
+                        className="group cursor-pointer transition-all hover:bg-secondary/30"
+                        onClick={() => onNavigate("blog-article", { slug: otherArticle.slug })}
+                      >
+                        {otherArticle.featuredImage ? (
+                          <div className="relative">
+                            <div className="relative aspect-video overflow-hidden">
+                              <ImageWithFallback
+                                src={otherArticle.featuredImage}
+                                alt={otherArticle.title}
+                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                              />
+                            </div>
+                            <div className="p-4">
+                              <h4 className="mb-2 line-clamp-2 transition-colors group-hover:text-primary">
+                                {otherArticle.title}
+                              </h4>
+                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <Clock className="h-3 w-3" />
+                                {otherArticle.readTimeMinutes} min read
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="p-4">
+                            <h4 className="mb-2 line-clamp-2 transition-colors group-hover:text-primary">
+                              {otherArticle.title}
+                            </h4>
+                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                              <Clock className="h-3 w-3" />
+                              {otherArticle.readTimeMinutes} min read
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="border-t border-border p-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onNavigate("blog")}
+                      className="w-full"
+                    >
+                      View All Articles
+                    </Button>
+                  </div>
+                </Card>
+              )}
+            </div>
           </aside>
         </div>
       </div>
 
+      {/* Mobile Table of Contents */}
+      <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:hidden">
+        <TableOfContents content={article.content} />
+      </div>
+
       <Separator className="mx-auto max-w-6xl" />
+
+      {/* Mobile - More from Travel Guide */}
+      {otherArticles.length > 0 && (
+        <section className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:hidden">
+          <h2 className="mb-6 text-foreground">More from Travel Guide</h2>
+          <div className="grid gap-6 sm:grid-cols-2">
+            {otherArticles.slice(0, 4).map((otherArticle) => (
+              <Card
+                key={otherArticle.id}
+                className="group cursor-pointer overflow-hidden border-border transition-all hover:shadow-lg"
+                onClick={() => onNavigate("blog-article", { slug: otherArticle.slug })}
+              >
+                {otherArticle.featuredImage && (
+                  <div className="relative aspect-video overflow-hidden">
+                    <ImageWithFallback
+                      src={otherArticle.featuredImage}
+                      alt={otherArticle.title}
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </div>
+                )}
+                <div className="p-4">
+                  <h3 className="mb-2 line-clamp-2 transition-colors group-hover:text-primary">
+                    {otherArticle.title}
+                  </h3>
+                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                    <Clock className="h-4 w-4" />
+                    {otherArticle.readTimeMinutes} min read
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+          <div className="mt-6 text-center">
+            <Button
+              variant="outline"
+              onClick={() => onNavigate("blog")}
+            >
+              View All Articles
+            </Button>
+          </div>
+        </section>
+      )}
+
+      <Separator className="mx-auto max-w-6xl lg:hidden" />
 
       {/* FAQ Section */}
       {article.faqs && article.faqs.length > 0 && (

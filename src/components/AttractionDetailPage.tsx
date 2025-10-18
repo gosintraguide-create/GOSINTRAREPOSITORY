@@ -1,11 +1,13 @@
-import { Clock, MapPin, ArrowLeft, Star, Check, Info, Lightbulb, ChevronRight, Calendar, Users } from "lucide-react";
+import { Clock, MapPin, ArrowLeft, Star, Check, Lightbulb, ChevronRight, Calendar, Ticket, ShoppingCart, Camera } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
+import { Badge } from "./ui/badge";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useState, useEffect } from "react";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { loadContent, type WebsiteContent, DEFAULT_CONTENT } from "../lib/contentManager";
+import { motion } from "motion/react";
 
 interface AttractionDetailPageProps {
   onNavigate: (page: string) => void;
@@ -36,7 +38,6 @@ export function AttractionDetailPage({ onNavigate, attractionId }: AttractionDet
     );
   }
 
-  // Set default selected option
   useEffect(() => {
     if (attraction.parkOnlyPrice && !selectedOption) {
       setSelectedOption("full");
@@ -56,31 +57,69 @@ export function AttractionDetailPage({ onNavigate, attractionId }: AttractionDet
 
   return (
     <div className="flex-1">
-      {/* Hero Section with Image */}
+      {/* Back Button */}
+      <div className="border-b border-border bg-white">
+        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+          <Button
+            variant="ghost"
+            onClick={() => onNavigate("attractions")}
+            className="gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to All Attractions
+          </Button>
+        </div>
+      </div>
+
+      {/* Hero Section */}
       <section className="relative h-[60vh] min-h-[500px] overflow-hidden">
         <ImageWithFallback
           src={attraction.image}
           alt={attraction.name}
           className="h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/20" />
+
         <div className="absolute inset-0 flex items-end">
           <div className="w-full pb-12 sm:pb-16">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <div className="mb-4 flex flex-wrap gap-3">
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-2 backdrop-blur-sm">
-                  <MapPin className="h-4 w-4 text-white" />
-                  <span className="text-white">{attraction.ticketPrice}</span>
+              <motion.div
+                className="mb-4 flex flex-wrap gap-3"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <div className="flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 backdrop-blur-sm">
+                  <Ticket className="h-4 w-4 text-white" />
+                  <span className="text-white">€{getCurrentPrice()}</span>
                 </div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-2 backdrop-blur-sm">
+                <div className="flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 backdrop-blur-sm">
                   <Clock className="h-4 w-4 text-white" />
                   <span className="text-white">{attraction.duration}</span>
                 </div>
-              </div>
-              <h1 className="mb-4 text-white drop-shadow-lg">{attraction.name}</h1>
-              <p className="max-w-3xl text-white/90 drop-shadow-md">
+                <div className="flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 backdrop-blur-sm">
+                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  <span className="text-white">Must-See!</span>
+                </div>
+              </motion.div>
+
+              <motion.h1
+                className="mb-4 text-white"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                {attraction.name}
+              </motion.h1>
+
+              <motion.p
+                className="max-w-3xl text-xl text-white/90"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
                 {attraction.fullDescription}
-              </p>
+              </motion.p>
             </div>
           </div>
         </div>
@@ -91,181 +130,155 @@ export function AttractionDetailPage({ onNavigate, attractionId }: AttractionDet
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-3">
             {/* Left Column - Information */}
-            <div className="lg:col-span-2 space-y-8">
+            <div className="space-y-8 lg:col-span-2">
               {/* Description */}
-              <div>
-                <h2 className="mb-4 text-foreground">About This Attraction</h2>
-                <p className="mb-6 text-muted-foreground">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+              >
+                <Badge className="mb-4">About This Gem</Badge>
+                <h2 className="mb-4 text-foreground">What Makes It Special</h2>
+                <p className="text-lg text-muted-foreground">
                   {attraction.longDescription}
                 </p>
-              </div>
+              </motion.div>
 
               {/* Highlights */}
-              <div>
-                <h3 className="mb-4 text-foreground">Highlights</h3>
-                <ul className="space-y-3">
-                  {attraction.highlights.map((highlight, index) => (
-                    <li key={index} className="flex items-start gap-3">
-                      <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
-                      <span className="text-foreground">{highlight}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Visitor Tips */}
-              <div>
-                <h3 className="mb-4 text-foreground">Visitor Tips</h3>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1 }}
+              >
+                <Badge className="mb-4">Highlights</Badge>
+                <h3 className="mb-4 text-foreground">Don't Miss These!</h3>
                 <div className="grid gap-3">
-                  {attraction.tips.map((tip, index) => (
-                    <div key={index} className="rounded-lg border border-border bg-secondary/30 p-4">
-                      <p className="text-foreground">{tip}</p>
-                    </div>
+                  {attraction.highlights.map((highlight, index) => (
+                    <motion.div
+                      key={index}
+                      className="flex items-start gap-3 rounded-xl border bg-white p-4 transition-all hover:shadow-lg"
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.05 }}
+                    >
+                      <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary">
+                        <Check className="h-4 w-4 text-white" />
+                      </div>
+                      <span className="text-foreground">{highlight}</span>
+                    </motion.div>
                   ))}
                 </div>
-              </div>
+              </motion.div>
+
+              {/* Visitor Tips */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 }}
+              >
+                <Badge className="mb-4">Pro Tips</Badge>
+                <h3 className="mb-4 text-foreground">Insider Advice</h3>
+                <div className="grid gap-3">
+                  {attraction.tips.map((tip, index) => (
+                    <motion.div
+                      key={index}
+                      className="rounded-xl border bg-secondary/30 p-4 transition-all hover:shadow-lg"
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.05 }}
+                    >
+                      <div className="flex items-start gap-3">
+                        <Lightbulb className="mt-0.5 h-5 w-5 flex-shrink-0 text-accent" />
+                        <p className="text-foreground">{tip}</p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
 
               {/* Practical Information */}
-              <div className="grid gap-6 sm:grid-cols-2">
-                <Card className="border-border p-6">
-                  <div className="mb-2 flex items-center gap-2 text-primary">
-                    <Clock className="h-5 w-5" />
+              <motion.div
+                className="grid gap-6 sm:grid-cols-2"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 }}
+              >
+                <Card className="p-6 transition-all hover:shadow-lg">
+                  <div className="mb-3 flex items-center gap-2">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                      <Clock className="h-5 w-5 text-primary" />
+                    </div>
                     <h4 className="text-foreground">Opening Hours</h4>
                   </div>
                   <p className="text-muted-foreground">{attraction.hours}</p>
                 </Card>
 
-                <Card className="border-border p-6">
-                  <div className="mb-2 flex items-center gap-2 text-primary">
-                    <MapPin className="h-5 w-5" />
-                    <h4 className="text-foreground">Recommended Time</h4>
+                <Card className="p-6 transition-all hover:shadow-lg">
+                  <div className="mb-3 flex items-center gap-2">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10">
+                      <Camera className="h-5 w-5 text-accent" />
+                    </div>
+                    <h4 className="text-foreground">Time Needed</h4>
                   </div>
                   <p className="text-muted-foreground">{attraction.duration}</p>
                 </Card>
-              </div>
+              </motion.div>
             </div>
 
-            {/* Right Column - Booking */}
-            <div className="lg:col-span-1">
-              <Card className="sticky top-24 border-border p-6">
-                <h3 className="mb-6 text-foreground">Book Your Visit</h3>
-
-                <div className="mb-6 space-y-4">
-                  <div>
-                    <Label htmlFor="date" className="text-foreground">Select Date</Label>
-                    <div className="relative mt-2">
-                      <Calendar className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-                      <Input
-                        id="date"
-                        type="date"
-                        className="border-border pl-10"
-                        min={new Date().toISOString().split('T')[0]}
-                      />
-                    </div>
+            {/* Right Column - Ticket Info Card */}
+            <motion.div
+              className="lg:col-span-1"
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <Card className="sticky top-24 p-6 shadow-xl">
+                <div className="mb-6 flex items-center gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                    <Ticket className="h-6 w-6 text-primary" />
                   </div>
-
-                  <div>
-                    <Label htmlFor="quantity" className="text-foreground">Number of Tickets</Label>
-                    <div className="mt-2 flex items-center gap-3">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="h-10 w-10 border-border"
-                        onClick={() => setTicketQuantity(Math.max(1, ticketQuantity - 1))}
-                      >
-                        -
-                      </Button>
-                      <Input
-                        id="quantity"
-                        type="number"
-                        min="1"
-                        max="10"
-                        value={ticketQuantity}
-                        onChange={(e) => setTicketQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                        className="border-border text-center"
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="h-10 w-10 border-border"
-                        onClick={() => setTicketQuantity(Math.min(10, ticketQuantity + 1))}
-                      >
-                        +
-                      </Button>
-                    </div>
-                  </div>
-
-                  {attraction.parkOnlyPrice && (
-                    <div>
-                      <Label htmlFor="ticketOption" className="text-foreground">Ticket Option</Label>
-                      <div className="mt-2">
-                        <select
-                          id="ticketOption"
-                          className="border-border px-4 py-2 w-full"
-                          value={selectedOption}
-                          onChange={(e) => setSelectedOption(e.target.value)}
-                        >
-                          <option value="full">
-                            {attraction.name} & Park - €{attraction.price}.00
-                          </option>
-                          <option value="parkOnly">
-                            {attraction.name} Park Only - €{attraction.parkOnlyPrice}.00
-                          </option>
-                        </select>
-                      </div>
-                    </div>
-                  )}
+                  <h3 className="text-foreground">Ticket Information</h3>
                 </div>
 
-                <div className="mb-6 rounded-lg bg-secondary/50 p-6">
-                  <div className="mb-3 flex items-center justify-between text-muted-foreground">
-                    <span>
-                      {attraction.parkOnlyPrice 
-                        ? (selectedOption === "full" ? attraction.name + " & Park" : attraction.name + " Park Only")
-                        : attraction.name} (×{ticketQuantity})
-                    </span>
-                    <span>€{getCurrentPrice() * ticketQuantity}</span>
+                <div className="mb-6 rounded-xl bg-secondary/30 p-6 text-center">
+                  <div className="mb-2 text-sm text-muted-foreground">Entrance Ticket</div>
+                  <div className="mb-4 text-3xl text-foreground">
+                    €{attraction.parkOnlyPrice ? attraction.parkOnlyPrice : attraction.price}
                   </div>
-                  <div className="flex items-center justify-between border-t border-border pt-3">
-                    <span className="text-foreground">Total</span>
-                    <span className="text-2xl text-primary">€{getCurrentPrice() * ticketQuantity}</span>
-                  </div>
+                  <Badge variant="outline" className="text-muted-foreground">
+                    Online Booking Coming Soon
+                  </Badge>
                 </div>
 
-                <Button
-                  size="lg"
-                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-                  onClick={handlePurchase}
-                >
-                  <Star className="mr-2 h-5 w-5" />
-                  Buy Tickets
-                </Button>
-
-                <div className="mt-6 space-y-2 rounded-lg bg-primary/5 p-4">
-                  <p className="text-foreground">✓ Skip-the-line entrance</p>
-                  <p className="text-foreground">✓ Instant digital ticket</p>
-                  <p className="text-foreground">✓ Valid for selected date</p>
-                  <p className="text-foreground">✓ Easy mobile access</p>
+                <div className="mb-6 space-y-2 rounded-xl bg-primary/5 p-4">
+                  <p className="text-sm text-muted-foreground">
+                    Attraction tickets are not yet available for online purchase. You can buy tickets at the entrance.
+                  </p>
                 </div>
 
-                <div className="mt-6 rounded-lg border border-accent/20 bg-accent/5 p-4">
-                  <h4 className="mb-2 text-foreground">💡 Pro Tip</h4>
-                  <p className="text-muted-foreground">
-                    Combine with a Go Sintra day pass for unlimited transport between all attractions!
+                <div className="rounded-xl border border-accent/30 bg-accent/5 p-4">
+                  <h4 className="mb-2 flex items-center gap-2 text-foreground">
+                    💡 Get There Easily!
+                  </h4>
+                  <p className="mb-3 text-sm text-muted-foreground">
+                    Book a Go Sintra day pass for unlimited transport between all attractions with professional driver-guides!
                   </p>
                   <Button
-                    variant="outline"
-                    size="sm"
-                    className="mt-3 w-full border-accent text-accent hover:bg-accent/10"
+                    size="lg"
+                    className="w-full"
                     onClick={() => onNavigate("buy-ticket")}
                   >
                     Get Day Pass
+                    <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
               </Card>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>

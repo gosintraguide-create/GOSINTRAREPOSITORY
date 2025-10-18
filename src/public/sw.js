@@ -1,7 +1,7 @@
 // Service Worker for Go Sintra PWA
-// Version 1.1.0 - Fixed undefined icon parameter issue
+// Version 1.2.0 - Performance optimized
 
-const CACHE_NAME = 'go-sintra-v2'; // Bumped to clear old cache
+const CACHE_NAME = 'go-sintra-v3'; // Bumped for performance improvements
 const OFFLINE_URL = '/offline.html';
 
 // Core assets to cache for offline functionality
@@ -9,8 +9,8 @@ const CORE_ASSETS = [
   '/',
   '/index.html',
   '/offline.html',
-  '/icon-192x192.png',
-  '/icon-512x512.png',
+  '/manifest.json',
+  '/icon-72x72.png',
 ];
 
 // Install event - cache core assets

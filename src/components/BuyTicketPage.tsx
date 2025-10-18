@@ -19,6 +19,10 @@ import { Calendar as CalendarIcon, Calendar, Users, MapPin, Phone, Mail, CheckCi
 import { format } from "date-fns";
 import { StripePaymentForm } from "./StripePaymentForm";
 
+// FEATURE FLAG: Set to false to disable attraction ticket sales
+// To re-enable in the future, simply change this to true
+const ENABLE_ATTRACTION_TICKETS = false;
+
 interface BuyTicketPageProps {
   onNavigate: (page: string) => void;
   onBookingComplete: (booking: any) => void;
@@ -649,70 +653,111 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                     <h2 className="text-foreground">Add Attraction Tickets?</h2>
                   </div>
                   <div className="h-1 w-16 rounded-full bg-accent" />
-                  <p className="mt-4 text-muted-foreground">
-                    Skip the ticket lines! Add entrance tickets to popular attractions. {formData.quantity > 1 ? `Prices shown for ${formData.quantity} guests.` : ''}
-                  </p>
-                </div>
-
-                <div className="space-y-3">
-                  {attractions.map((attraction) => (
-                    <div
-                      key={attraction.id}
-                      className={`flex items-center gap-3 rounded-lg border-2 p-5 transition-all cursor-pointer ${
-                        formData.selectedAttractions.includes(attraction.id)
-                          ? 'border-primary bg-primary/5'
-                          : 'border-border bg-white hover:border-primary/30'
-                      }`}
-                      onClick={() => toggleAttraction(attraction.id)}
-                    >
-                      <input
-                        type="checkbox"
-                        id={attraction.id}
-                        checked={formData.selectedAttractions.includes(attraction.id)}
-                        onChange={() => toggleAttraction(attraction.id)}
-                        className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
-                      />
-                      <label
-                        htmlFor={attraction.id}
-                        className="flex flex-1 cursor-pointer items-center justify-between"
-                      >
-                        <span className="text-foreground">{attraction.name}</span>
-                        <span className="text-primary">
-                          +€{attraction.price * formData.quantity}
-                          {formData.quantity > 1 && <span className="ml-1 text-muted-foreground">(€{attraction.price} each)</span>}
-                        </span>
-                      </label>
-                    </div>
-                  ))}
-                </div>
-
-                {formData.selectedAttractions.length > 0 && (
-                  <div className="mt-6 rounded-lg bg-accent/5 p-4">
-                    <p className="text-muted-foreground">
-                      💡 <strong>Tip:</strong> You'll receive digital tickets via email along with your {formData.quantity === 1 ? 'day pass QR code' : `${formData.quantity} day pass QR codes`}.
+                  {ENABLE_ATTRACTION_TICKETS ? (
+                    <p className="mt-4 text-muted-foreground">
+                      Skip the ticket lines! Add entrance tickets to popular attractions. {formData.quantity > 1 ? `Prices shown for ${formData.quantity} guests.` : ''}
                     </p>
-                  </div>
-                )}
+                  ) : (
+                    <p className="mt-4 text-muted-foreground">
+                      Attraction tickets are not yet available for online purchase. You can buy tickets at each attraction entrance.
+                    </p>
+                  )}
+                </div>
 
-                {/* Price Summary for Step 2 */}
-                <div className="mt-6 rounded-lg bg-secondary/50 p-6">
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-muted-foreground">
-                      <span>Day Pass{isGuidedTourTime ? ' (includes guided commentary)' : ''}</span>
-                      <span>€{passTotal + guidedTourTotal}</span>
+                {ENABLE_ATTRACTION_TICKETS ? (
+                  <>
+                    <div className="space-y-3">
+                      {attractions.map((attraction) => (
+                        <div
+                          key={attraction.id}
+                          className={`flex items-center gap-3 rounded-lg border-2 p-5 transition-all cursor-pointer ${
+                            formData.selectedAttractions.includes(attraction.id)
+                              ? 'border-primary bg-primary/5'
+                              : 'border-border bg-white hover:border-primary/30'
+                          }`}
+                          onClick={() => toggleAttraction(attraction.id)}
+                        >
+                          <input
+                            type="checkbox"
+                            id={attraction.id}
+                            checked={formData.selectedAttractions.includes(attraction.id)}
+                            onChange={() => toggleAttraction(attraction.id)}
+                            className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
+                          />
+                          <label
+                            htmlFor={attraction.id}
+                            className="flex flex-1 cursor-pointer items-center justify-between"
+                          >
+                            <span className="text-foreground">{attraction.name}</span>
+                            <span className="text-primary">
+                              +€{attraction.price * formData.quantity}
+                              {formData.quantity > 1 && <span className="ml-1 text-muted-foreground">(€{attraction.price} each)</span>}
+                            </span>
+                          </label>
+                        </div>
+                      ))}
                     </div>
-                    {attractionsTotal > 0 && (
-                      <div className="flex justify-between text-muted-foreground">
-                        <span>Attraction Tickets</span>
-                        <span>€{attractionsTotal}</span>
+
+                    {formData.selectedAttractions.length > 0 && (
+                      <div className="mt-6 rounded-lg bg-accent/5 p-4">
+                        <p className="text-muted-foreground">
+                          💡 <strong>Tip:</strong> You'll receive digital tickets via email along with your {formData.quantity === 1 ? 'day pass QR code' : `${formData.quantity} day pass QR codes`}.
+                        </p>
                       </div>
                     )}
-                    <div className="border-t border-border pt-2 flex justify-between items-center">
-                      <p className="text-foreground">Total</p>
-                      <p className="text-2xl text-primary">€{totalPrice}</p>
+
+                    {/* Price Summary for Step 2 */}
+                    <div className="mt-6 rounded-lg bg-secondary/50 p-6">
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-muted-foreground">
+                          <span>Day Pass{isGuidedTourTime ? ' (includes guided commentary)' : ''}</span>
+                          <span>€{passTotal + guidedTourTotal}</span>
+                        </div>
+                        {attractionsTotal > 0 && (
+                          <div className="flex justify-between text-muted-foreground">
+                            <span>Attraction Tickets</span>
+                            <span>€{attractionsTotal}</span>
+                          </div>
+                        )}
+                        <div className="border-t border-border pt-2 flex justify-between items-center">
+                          <p className="text-foreground">Total</p>
+                          <p className="text-2xl text-primary">€{totalPrice}</p>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
+                  </>
+                ) : (
+                  <>
+                    {/* Coming Soon Message */}
+                    <div className="rounded-lg border bg-secondary/30 p-8 text-center">
+                      <Badge variant="outline" className="mb-4 text-muted-foreground">
+                        Online Booking Coming Soon
+                      </Badge>
+                      <p className="mb-6 text-muted-foreground">
+                        We're working on adding the ability to purchase attraction tickets online. For now, tickets can be purchased at each attraction entrance.
+                      </p>
+                      <div className="rounded-lg bg-primary/5 p-4">
+                        <p className="text-sm text-muted-foreground">
+                          💡 Your Go Sintra day pass gets you unlimited transport to all attractions. Tickets are available for purchase when you arrive!
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Price Summary for Step 2 - Day Pass Only */}
+                    <div className="mt-6 rounded-lg bg-secondary/50 p-6">
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-muted-foreground">
+                          <span>Day Pass{isGuidedTourTime ? ' (includes guided commentary)' : ''}</span>
+                          <span>€{passTotal + guidedTourTotal}</span>
+                        </div>
+                        <div className="border-t border-border pt-2 flex justify-between items-center">
+                          <p className="text-foreground">Total</p>
+                          <p className="text-2xl text-primary">€{totalPrice}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
 
                 <div className="mt-8 flex justify-between">
                   <Button

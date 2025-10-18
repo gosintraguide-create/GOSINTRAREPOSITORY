@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Save, RefreshCw, Eye, FileText, Home, Info, MapPin, ShoppingCart, User, Phone, Settings, Trash2, Plus } from "lucide-react";
+import { Save, RefreshCw, Eye, FileText, Home, Info, MapPin, ShoppingCart, User, Phone, Settings, Trash2, Plus, ToggleLeft, ToggleRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
@@ -8,6 +8,7 @@ import { Card } from "./ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Alert, AlertDescription } from "./ui/alert";
 import { Badge } from "./ui/badge";
+import { Switch } from "./ui/switch";
 import { toast } from "sonner@2.0.3";
 import {
   loadComprehensiveContent,
@@ -17,6 +18,11 @@ import {
   type ComprehensiveContent,
 } from "../lib/comprehensiveContent";
 import {
+  loadContent as loadMainContent,
+  saveContentAsync as saveMainContentAsync,
+  type WebsiteContent,
+} from "../lib/contentManager";
+import {
   Accordion,
   AccordionContent,
   AccordionItem,
@@ -25,26 +31,55 @@ import {
 
 export function ContentEditor() {
   const [content, setContent] = useState<ComprehensiveContent>(DEFAULT_COMPREHENSIVE_CONTENT);
+  const [mainContent, setMainContent] = useState<WebsiteContent>(loadMainContent());
   const [hasChanges, setHasChanges] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     setContent(loadComprehensiveContent());
+    setMainContent(loadMainContent());
   }, []);
 
   const handleSave = async () => {
     try {
       const result = await saveComprehensiveContentAsync(content);
+      const mainResult = await saveMainContentAsync(mainContent);
       
-      if (result.success) {
+      if (result.success && mainResult.success) {
         setHasChanges(false);
         toast.success("All content saved successfully to database!");
       } else {
-        toast.error(`Failed to save to database: ${result.error}. Saved locally only.`);
+        const errors = [];
+        if (!result.success) errors.push(result.error);
+        if (!mainResult.success) errors.push(mainResult.error);
+        toast.error(`Failed to save to database: ${errors.join(', ')}. Saved locally only.`);
       }
     } catch (error) {
       console.error('Error saving content:', error);
       toast.error("Failed to save content. Please try again.");
+    }
+  };
+
+  const toggleFeatureFlag = async (flag: keyof NonNullable<WebsiteContent['featureFlags']>) => {
+    const newMainContent = {
+      ...mainContent,
+      featureFlags: {
+        ...mainContent.featureFlags,
+        [flag]: !mainContent.featureFlags?.[flag],
+      },
+    };
+    setMainContent(newMainContent);
+    
+    try {
+      const result = await saveMainContentAsync(newMainContent);
+      if (result.success) {
+        toast.success(`Feature ${flag === 'enableAttractionTickets' ? 'Attraction Tickets' : flag} ${newMainContent.featureFlags?.[flag] ? 'enabled' : 'disabled'}!`);
+      } else {
+        toast.error(`Failed to save: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('Error saving feature flag:', error);
+      toast.error("Failed to save feature flag.");
     }
   };
 
@@ -167,6 +202,42 @@ export function ContentEditor() {
           className="max-w-md"
         />
       </div>
+
+      {/* Feature Flags */}
+      <Card className="border-border p-6">
+        <div className="mb-4">
+          <h3 className="mb-2 flex items-center gap-2 text-foreground">
+            <Settings className="h-5 w-5 text-primary" />
+            Feature Flags
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            Enable or disable features on the website
+          </p>
+        </div>
+        
+        <div className="space-y-4">
+          <div className="flex items-center justify-between rounded-lg border border-border bg-secondary/30 p-4">
+            <div className="flex-1">
+              <Label htmlFor="attraction-tickets" className="cursor-pointer text-base text-foreground">
+                Attraction Ticket Sales
+              </Label>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Allow customers to purchase attraction tickets during day pass booking
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <Badge variant={mainContent.featureFlags?.enableAttractionTickets ? "default" : "outline"}>
+                {mainContent.featureFlags?.enableAttractionTickets ? "Enabled" : "Disabled"}
+              </Badge>
+              <Switch
+                id="attraction-tickets"
+                checked={mainContent.featureFlags?.enableAttractionTickets || false}
+                onCheckedChange={() => toggleFeatureFlag('enableAttractionTickets')}
+              />
+            </div>
+          </div>
+        </div>
+      </Card>
 
       {/* Content Sections */}
       <Tabs defaultValue="company" className="w-full">

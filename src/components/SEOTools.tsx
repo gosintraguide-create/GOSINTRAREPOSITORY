@@ -1,9 +1,11 @@
 import { Download, FileText, Globe, Search } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { toast } from "sonner@2.0.3";
 import { downloadSitemap, downloadRobotsTxt, generateSitemap } from "../lib/sitemapGenerator";
 import { getPublishedArticles } from "../lib/blogManager";
+import { SEOAnalyzer } from "./SEOAnalyzer";
 
 export function SEOTools() {
   const handleDownloadSitemap = () => {
@@ -25,13 +27,31 @@ export function SEOTools() {
   const publishedArticles = getPublishedArticles();
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="mb-2 text-foreground">SEO Tools</h2>
-        <p className="text-muted-foreground">
-          Manage SEO assets for your website including sitemaps and robots.txt
-        </p>
-      </div>
+    <Tabs defaultValue="analyzer" className="space-y-6">
+      <TabsList className="grid w-full max-w-md grid-cols-2">
+        <TabsTrigger value="analyzer" className="flex items-center gap-2">
+          <Search className="h-4 w-4" />
+          SEO Analysis
+        </TabsTrigger>
+        <TabsTrigger value="tools" className="flex items-center gap-2">
+          <FileText className="h-4 w-4" />
+          SEO Tools
+        </TabsTrigger>
+      </TabsList>
+
+      {/* SEO Analyzer Tab */}
+      <TabsContent value="analyzer" className="space-y-6">
+        <SEOAnalyzer />
+      </TabsContent>
+
+      {/* SEO Tools Tab */}
+      <TabsContent value="tools" className="space-y-6">
+        <div>
+          <h2 className="mb-2 text-foreground">SEO Tools</h2>
+          <p className="text-muted-foreground">
+            Manage SEO assets for your website including sitemaps and robots.txt
+          </p>
+        </div>
 
       {/* Statistics */}
       <div className="grid gap-4 md:grid-cols-3">
@@ -175,56 +195,57 @@ export function SEOTools() {
         </ul>
       </Card>
 
-      {/* Next Steps */}
-      <Card className="bg-secondary/30 p-6">
-        <h3 className="mb-4 text-foreground">Deployment Steps</h3>
-        <ol className="space-y-3 text-sm">
-          <li className="flex gap-3">
-            <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary text-white">
-              1
-            </span>
-            <div>
-              <strong className="block">Download sitemap.xml and robots.txt</strong>
-              <span className="text-muted-foreground">
-                Use the buttons above to download both files
+        {/* Next Steps */}
+        <Card className="bg-secondary/30 p-6">
+          <h3 className="mb-4 text-foreground">Deployment Steps</h3>
+          <ol className="space-y-3 text-sm">
+            <li className="flex gap-3">
+              <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary text-white">
+                1
               </span>
-            </div>
-          </li>
-          <li className="flex gap-3">
-            <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary text-white">
-              2
-            </span>
-            <div>
-              <strong className="block">Upload to your website root</strong>
-              <span className="text-muted-foreground">
-                Place both files in the /public directory of your website
+              <div>
+                <strong className="block">Download sitemap.xml and robots.txt</strong>
+                <span className="text-muted-foreground">
+                  Use the buttons above to download both files
+                </span>
+              </div>
+            </li>
+            <li className="flex gap-3">
+              <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary text-white">
+                2
               </span>
-            </div>
-          </li>
-          <li className="flex gap-3">
-            <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary text-white">
-              3
-            </span>
-            <div>
-              <strong className="block">Submit to Google Search Console</strong>
-              <span className="text-muted-foreground">
-                Visit search.google.com/search-console and submit your sitemap URL
+              <div>
+                <strong className="block">Upload to your website root</strong>
+                <span className="text-muted-foreground">
+                  Place both files in the /public directory of your website
+                </span>
+              </div>
+            </li>
+            <li className="flex gap-3">
+              <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary text-white">
+                3
               </span>
-            </div>
-          </li>
-          <li className="flex gap-3">
-            <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary text-white">
-              4
-            </span>
-            <div>
-              <strong className="block">Update sitemap when adding articles</strong>
-              <span className="text-muted-foreground">
-                Regenerate and reupload your sitemap after publishing new blog posts
+              <div>
+                <strong className="block">Submit to Google Search Console</strong>
+                <span className="text-muted-foreground">
+                  Visit search.google.com/search-console and submit your sitemap URL
+                </span>
+              </div>
+            </li>
+            <li className="flex gap-3">
+              <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary text-white">
+                4
               </span>
-            </div>
-          </li>
-        </ol>
-      </Card>
-    </div>
+              <div>
+                <strong className="block">Update sitemap when adding articles</strong>
+                <span className="text-muted-foreground">
+                  Regenerate and reupload your sitemap after publishing new blog posts
+                </span>
+              </div>
+            </li>
+          </ol>
+        </Card>
+      </TabsContent>
+    </Tabs>
   );
 }

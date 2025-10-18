@@ -12,7 +12,10 @@ interface RequestPickupPageProps {
 }
 
 export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
-  const [step, setStep] = useState<"request" | "searching" | "confirmed">("request");
+  const [step, setStep] = useState<"verify" | "request" | "searching" | "confirmed">("verify");
+  const [bookingCode, setBookingCode] = useState<string>("");
+  const [verificationError, setVerificationError] = useState<string>("");
+  const [isVerified, setIsVerified] = useState<boolean>(false);
   const [groupSize, setGroupSize] = useState<string>("1");
   const [location, setLocation] = useState<string>("");
   const [destination, setDestination] = useState<string>("");
@@ -58,6 +61,51 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
     return description;
   };
 
+  const handleVerifyBooking = async () => {
+    if (!bookingCode.trim()) {
+      setVerificationError("Please enter your booking code");
+      return;
+    }
+
+    setVerificationError("");
+
+    try {
+      // Verify booking code with backend
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/verify-booking`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${publicAnonKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            bookingCode: bookingCode.trim().toUpperCase(),
+          }),
+        }
+      );
+
+      if (response.ok) {
+        const result = await response.json();
+        
+        if (result.success && result.booking) {
+          setIsVerified(true);
+          setCustomerName(result.booking.customerName || "");
+          setCustomerPhone(result.booking.customerPhone || "");
+          setGroupSize(String(result.booking.passes || 1));
+          setStep("request");
+        } else {
+          setVerificationError("Invalid booking code. Please check and try again.");
+        }
+      } else {
+        setVerificationError("Unable to verify booking. Please try again.");
+      }
+    } catch (error) {
+      console.error('Booking verification error:', error);
+      setVerificationError("Connection error. Please check your internet and try again.");
+    }
+  };
+
   const handleRequestPickup = async () => {
     if (!location || !groupSize || !customerName || !customerPhone) return;
     
@@ -101,6 +149,100 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
       setStep("confirmed");
     }, 2000);
   };
+
+  if (step === "verify") {
+    return (
+      <div className="flex-1 bg-secondary/30">
+        {/* Hero Section */}
+        <section className="relative overflow-hidden border-b border-border bg-gradient-to-br from-primary/5 via-white to-accent/5 py-20 sm:py-28">
+          <div className="absolute -top-24 right-0 h-96 w-96 rounded-full bg-gradient-to-br from-accent/10 to-primary/10 blur-3xl" />
+          <div className="absolute -bottom-24 left-0 h-96 w-96 rounded-full bg-gradient-to-tr from-primary/10 to-accent/10 blur-3xl" />
+          
+          <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
+            <div className="mb-6 flex justify-center">
+              <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-accent to-accent/80 shadow-lg shadow-accent/20">
+                <Car className="h-10 w-10 text-white" />
+              </div>
+            </div>
+            <h1 className="mb-4 bg-gradient-to-r from-primary via-primary/90 to-accent bg-clip-text text-transparent">
+              Verify Your Booking
+            </h1>
+            <p className="mx-auto max-w-2xl text-muted-foreground">
+              Enter your booking code to request a pickup. This service is only available to customers with active day passes.
+            </p>
+          </div>
+        </section>
+
+        {/* Verification Form */}
+        <section className="py-12 sm:py-16">
+          <div className="mx-auto max-w-md px-4 sm:px-6 lg:px-8">
+            <Card className="overflow-hidden border-border p-6 shadow-lg sm:p-8">
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="booking-code">Booking Code</Label>
+                  <Input
+                    id="booking-code"
+                    type="text"
+                    placeholder="e.g., GST-ABC123"
+                    value={bookingCode}
+                    onChange={(e) => {
+                      setBookingCode(e.target.value.toUpperCase());
+                      setVerificationError("");
+                    }}
+                    className="border-border text-center text-lg tracking-wider"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleVerifyBooking();
+                      }
+                    }}
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    You received this code in your booking confirmation email
+                  </p>
+                </div>
+
+                {verificationError && (
+                  <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+                    <div className="flex items-start gap-2">
+                      <AlertCircle className="h-5 w-5 flex-shrink-0 text-red-600" />
+                      <p className="text-sm text-red-600">{verificationError}</p>
+                    </div>
+                  </div>
+                )}
+
+                <Button
+                  size="lg"
+                  className="w-full bg-accent hover:bg-accent/90"
+                  onClick={handleVerifyBooking}
+                  disabled={!bookingCode.trim()}
+                >
+                  <CheckCircle className="mr-2 h-5 w-5" />
+                  Verify Booking
+                </Button>
+
+                <div className="rounded-lg border border-border bg-white p-4">
+                  <div className="mb-2 flex items-center gap-2 text-primary">
+                    <AlertCircle className="h-5 w-5" />
+                    <span className="font-medium">Don't have a booking?</span>
+                  </div>
+                  <p className="mb-3 text-sm text-muted-foreground">
+                    Pickup requests are only available to customers with purchased day passes.
+                  </p>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => onNavigate("buy-ticket")}
+                  >
+                    Purchase Day Pass
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   if (step === "searching") {
     return (

@@ -2740,6 +2740,72 @@ app.get("/make-server-3bd0ade8/test-pdf", async (c) => {
   }
 });
 
+// Verify booking code for pickup requests
+app.post("/make-server-3bd0ade8/verify-booking", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { bookingCode } = body;
+
+    if (!bookingCode) {
+      return c.json(
+        {
+          success: false,
+          message: "Booking code is required",
+        },
+        400,
+      );
+    }
+
+    console.log(`🔍 Verifying booking code: ${bookingCode}`);
+
+    // Try to find the booking with this code
+    // The booking code is typically stored as the short ID (e.g., "AA-1234")
+    // Bookings are stored with key format: "booking_AA-1234"
+    let booking = await kv.get(`booking_${bookingCode}`);
+
+    // If not found, try without the "booking_" prefix
+    if (!booking) {
+      booking = await kv.get(bookingCode);
+    }
+
+    if (!booking) {
+      console.log(`❌ Booking not found for code: ${bookingCode}`);
+      return c.json(
+        {
+          success: false,
+          message: "Invalid booking code",
+        },
+        404,
+      );
+    }
+
+    console.log(`✅ Booking verified: ${booking.id}`);
+
+    // Return booking info for prefilling the form
+    return c.json({
+      success: true,
+      booking: {
+        id: booking.id,
+        customerName: booking.contactInfo?.name || "",
+        customerPhone: booking.contactInfo?.phone || "",
+        customerEmail: booking.contactInfo?.email || "",
+        passes: booking.passengers?.length || 1,
+        selectedDate: booking.selectedDate,
+      },
+    });
+  } catch (error) {
+    console.error("❌ Error verifying booking:", error);
+    return c.json(
+      {
+        success: false,
+        message: "Failed to verify booking",
+        error: error instanceof Error ? error.message : String(error),
+      },
+      500,
+    );
+  }
+});
+
 // ========== CHAT ENDPOINTS ==========
 
 // Create new chat conversation
@@ -4984,6 +5050,219 @@ app.post("/make-server-3bd0ade8/drivers/verify-token", async (c) => {
       {
         success: false,
         error: "Token verification failed",
+      },
+      500,
+    );
+  }
+});
+
+// ===== IMAGE MANAGEMENT ROUTES =====
+
+// Ensure storage bucket exists on startup
+const IMAGES_BUCKET = "make-3bd0ade8-images";
+
+async function ensureImagesBucket() {
+  try {
+    const { data: buckets } = await supabase.storage.listBuckets();
+    const bucketExists = buckets?.some(
+      (bucket) => bucket.name === IMAGES_BUCKET,
+    );
+
+    if (!bucketExists) {
+      console.log(`📦 Creating storage bucket: ${IMAGES_BUCKET}`);
+      const { error } = await supabase.storage.createBucket(
+        IMAGES_BUCKET,
+        {
+          public: false,
+          fileSizeLimit: 5242880, // 5MB
+        },
+      );
+
+      if (error) {
+        console.error("❌ Failed to create images bucket:", error);
+      } else {
+        console.log(`✅ Images bucket created: ${IMAGES_BUCKET}`);
+      }
+    } else {
+      console.log(`✅ Images bucket already exists: ${IMAGES_BUCKET}`);
+    }
+  } catch (error) {
+    console.error("❌ Error ensuring images bucket:", error);
+  }
+}
+
+// Initialize bucket on startup
+ensureImagesBucket();
+
+// Upload image
+app.post("/make-server-3bd0ade8/images/upload", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { fileName, fileData, fileType } = body;
+
+    if (!fileName || !fileData || !fileType) {
+      return c.json(
+        {
+          success: false,
+          error: "Missing required fields",
+        },
+        400,
+      );
+    }
+
+    console.log(`📤 Uploading image: ${fileName}`);
+
+    // Convert base64 to buffer
+    const base64Data = fileData.split(",")[1] || fileData;
+    const imageBytes = Uint8Array.from(
+      atob(base64Data),
+      (c) => c.charCodeAt(0),
+    );
+
+    // Generate unique filename to avoid collisions
+    const timestamp = Date.now();
+    const sanitizedName = fileName.replace(/[^a-zA-Z0-9.-]/g, "_");
+    const uniqueFileName = `${timestamp}_${sanitizedName}`;
+
+    // Upload to Supabase Storage
+    const { error: uploadError } = await supabase.storage
+      .from(IMAGES_BUCKET)
+      .upload(uniqueFileName, imageBytes, {
+        contentType: fileType,
+        upsert: false,
+      });
+
+    if (uploadError) {
+      console.error("❌ Upload error:", uploadError);
+      return c.json(
+        {
+          success: false,
+          error: `Upload failed: ${uploadError.message}`,
+        },
+        500,
+      );
+    }
+
+    // Create signed URL (valid for 10 years)
+    const { data: signedUrlData, error: urlError } =
+      await supabase.storage
+        .from(IMAGES_BUCKET)
+        .createSignedUrl(uniqueFileName, 315360000); // 10 years in seconds
+
+    if (urlError || !signedUrlData) {
+      console.error("❌ Error creating signed URL:", urlError);
+      return c.json(
+        {
+          success: false,
+          error: "Failed to create image URL",
+        },
+        500,
+      );
+    }
+
+    console.log(`✅ Image uploaded: ${uniqueFileName}`);
+
+    // Store image metadata
+    const imageMetadata = {
+      name: uniqueFileName,
+      originalName: fileName,
+      url: signedUrlData.signedUrl,
+      uploadedAt: new Date().toISOString(),
+      size: imageBytes.length,
+      type: fileType,
+    };
+
+    // Save metadata to KV store
+    const existingImages = (await kv.get("uploaded_images")) || [];
+    existingImages.push(imageMetadata);
+    await kv.set("uploaded_images", existingImages);
+
+    return c.json({
+      success: true,
+      image: imageMetadata,
+    });
+  } catch (error) {
+    console.error("❌ Error uploading image:", error);
+    return c.json(
+      {
+        success: false,
+        error: "Failed to upload image",
+      },
+      500,
+    );
+  }
+});
+
+// Get all uploaded images
+app.get("/make-server-3bd0ade8/images", async (c) => {
+  try {
+    const images = (await kv.get("uploaded_images")) || [];
+
+    // Refresh signed URLs if needed (check if any are close to expiring)
+    const refreshedImages = [];
+    for (const image of images) {
+      // For simplicity, just return existing URLs
+      // In production, you'd check expiration and regenerate if needed
+      refreshedImages.push(image);
+    }
+
+    return c.json({
+      success: true,
+      images: refreshedImages,
+    });
+  } catch (error) {
+    console.error("❌ Error fetching images:", error);
+    return c.json(
+      {
+        success: false,
+        error: "Failed to fetch images",
+      },
+      500,
+    );
+  }
+});
+
+// Delete image
+app.delete("/make-server-3bd0ade8/images/:fileName", async (c) => {
+  try {
+    const fileName = decodeURIComponent(c.req.param("fileName"));
+
+    console.log(`🗑️ Deleting image: ${fileName}`);
+
+    // Delete from storage
+    const { error: deleteError } = await supabase.storage
+      .from(IMAGES_BUCKET)
+      .remove([fileName]);
+
+    if (deleteError) {
+      console.error("❌ Delete error:", deleteError);
+      return c.json(
+        {
+          success: false,
+          error: `Delete failed: ${deleteError.message}`,
+        },
+        500,
+      );
+    }
+
+    // Remove from metadata
+    const existingImages = (await kv.get("uploaded_images")) || [];
+    const updatedImages = existingImages.filter(
+      (img: any) => img.name !== fileName,
+    );
+    await kv.set("uploaded_images", updatedImages);
+
+    console.log(`✅ Image deleted: ${fileName}`);
+
+    return c.json({
+      success: true,
+    });
+  } catch (error) {
+    console.error("❌ Error deleting image:", error);
+    return c.json(
+      {
+        success: false,
+        error: "Failed to delete image",
       },
       500,
     );

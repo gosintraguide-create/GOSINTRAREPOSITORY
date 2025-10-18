@@ -82,7 +82,7 @@ export function TableOfContents({ content }: TableOfContentsProps) {
   }
 
   return (
-    <Card className="sticky top-24 mb-8 overflow-hidden">
+    <Card className="overflow-hidden">
       <div className="border-b border-border bg-secondary/30 p-4">
         <button
           onClick={() => setIsOpen(!isOpen)}

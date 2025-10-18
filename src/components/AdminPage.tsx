@@ -22,6 +22,10 @@ import {
   UserCog,
   Navigation,
   RefreshCw,
+  Tag,
+  MoreHorizontal,
+  FileText,
+  Image,
 } from "lucide-react";
 import { DestinationTracker } from './DestinationTracker';
 import { Button } from "./ui/button";
@@ -41,6 +45,14 @@ import {
   PopoverTrigger,
 } from "./ui/popover";
 import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "./ui/sheet";
+import {
   loadContent,
   saveContent,
   saveContentAsync,
@@ -58,6 +70,8 @@ import { BlogEditor } from "./BlogEditor";
 import { SEOTools } from "./SEOTools";
 import { DriverManagement } from "./DriverManagementMobile";
 import { PickupRequestsManagement } from "./PickupRequestsManagement";
+import { TagManagement } from "./TagManagement";
+import { ImageManager } from "./ImageManager";
 import {
   LineChart,
   Line,
@@ -184,6 +198,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
   const [loadingConversations, setLoadingConversations] =
     useState(false);
   const [activeTab, setActiveTab] = useState("pickups");
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
 
   // Load settings from database and localStorage
   useEffect(() => {
@@ -1007,14 +1022,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
               >
                 Back to Website
               </Button>
-              <Button
-                variant="outline"
-                onClick={() => onNavigate("analytics")}
-                className="gap-2 bg-primary/5 border-primary/20 hover:bg-primary/10"
-              >
-                <BarChart3 className="h-4 w-4" />
-                Advanced Analytics
-              </Button>
+
               <Button
                 variant="outline"
                 onClick={() => onNavigate("diagnostics")}
@@ -1041,154 +1049,215 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
           onValueChange={setActiveTab}
           className="w-full"
         >
-          <div className="overflow-x-auto mb-8 -mx-4 px-4 sm:mx-0 sm:px-0">
-            <TabsList className="inline-flex w-auto min-w-full sm:grid sm:w-full sm:grid-cols-10">
-              <TabsTrigger
-                value="pickups"
-                className="flex items-center gap-2"
-              >
-                <Navigation className="h-4 w-4" />
-                <span
-                  className={
-                    activeTab === "pickups"
-                      ? ""
-                      : "hidden sm:inline"
-                  }
+          <div className="mb-8">
+            <div className="flex items-center justify-between gap-4">
+              <TabsList className="w-auto">
+                <TabsTrigger
+                  value="pickups"
+                  className="flex items-center gap-2"
                 >
-                  Pickups
-                </span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="messages"
-                className="flex items-center gap-2"
-              >
-                <MessageCircle className="h-4 w-4" />
-                <span
-                  className={
-                    activeTab === "messages"
-                      ? ""
-                      : "hidden sm:inline"
-                  }
+                  <Navigation className="h-4 w-4" />
+                  <span>Pickups</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="messages"
+                  className="flex items-center gap-2"
                 >
-                  Messages
-                </span>
-                {conversations.filter(
-                  (c) => c.unreadByAdmin > 0,
-                ).length > 0 && (
-                  <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                    {
-                      conversations.filter(
-                        (c) => c.unreadByAdmin > 0,
-                      ).length
-                    }
-                  </span>
-                )}
-              </TabsTrigger>
-              <TabsTrigger
-                value="metrics"
-                className="flex items-center gap-2"
-              >
-                <BarChart3 className="h-4 w-4" />
-                <span
-                  className={
-                    activeTab === "metrics"
-                      ? ""
-                      : "hidden sm:inline"
-                  }
+                  <MessageCircle className="h-4 w-4" />
+                  <span>Messages</span>
+                  {conversations.filter(
+                    (c) => c.unreadByAdmin > 0,
+                  ).length > 0 && (
+                    <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+                      {
+                        conversations.filter(
+                          (c) => c.unreadByAdmin > 0,
+                        ).length
+                      }
+                    </span>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger
+                  value="metrics"
+                  className="flex items-center gap-2"
                 >
-                  Analytics
-                </span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="bookings"
-                className="flex items-center gap-2"
-              >
-                <Package className="h-4 w-4" />
-                <span
-                  className={
-                    activeTab === "bookings"
-                      ? ""
-                      : "hidden sm:inline"
-                  }
-                >
-                  Bookings
-                </span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="drivers"
-                className="flex items-center gap-2"
-              >
-                <UserCog className="h-4 w-4" />
-                <span
-                  className={
-                    activeTab === "drivers"
-                      ? ""
-                      : "hidden sm:inline"
-                  }
-                >
-                  Drivers
-                </span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="pricing"
-                className="flex items-center gap-2"
-              >
-                <DollarSign className="h-4 w-4" />
-                <span
-                  className={
-                    activeTab === "pricing"
-                      ? ""
-                      : "hidden sm:inline"
-                  }
-                >
-                  Pricing
-                </span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="availability"
-                className="flex items-center gap-2"
-              >
-                <Users className="h-4 w-4" />
-                <span
-                  className={
-                    activeTab === "availability"
-                      ? ""
-                      : "hidden sm:inline"
-                  }
-                >
-                  Availability
-                </span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="content"
-                className="flex items-center gap-2"
-              >
-                <Settings className="h-4 w-4" />
-                <span
-                  className={
-                    activeTab === "content"
-                      ? ""
-                      : "hidden sm:inline"
-                  }
-                >
-                  Content
-                </span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="blog"
-                className="flex items-center gap-2"
-              >
-                <Package className="h-4 w-4" />
-                Blog
-              </TabsTrigger>
-              <TabsTrigger
-                value="seo"
-                className="flex items-center gap-2"
-              >
-                <Settings className="h-4 w-4" />
-                SEO
-              </TabsTrigger>
-            </TabsList>
+                  <BarChart3 className="h-4 w-4" />
+                  <span>Analytics</span>
+                </TabsTrigger>
+              </TabsList>
+
+              <Sheet open={moreMenuOpen} onOpenChange={setMoreMenuOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="outline" className="gap-2">
+                    <MoreHorizontal className="h-4 w-4" />
+                    More
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto">
+                  <SheetHeader>
+                    <SheetTitle>More Options</SheetTitle>
+                    <SheetDescription>
+                      Access additional admin tools and settings
+                    </SheetDescription>
+                  </SheetHeader>
+                  <div className="mt-6 space-y-2">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-3"
+                      onClick={() => {
+                        setActiveTab("bookings");
+                        setMoreMenuOpen(false);
+                      }}
+                    >
+                      <Package className="h-5 w-5" />
+                      <div className="flex flex-col items-start">
+                        <span>Bookings</span>
+                        <span className="text-xs text-muted-foreground">View and manage all bookings</span>
+                      </div>
+                    </Button>
+
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-3"
+                      onClick={() => {
+                        setActiveTab("drivers");
+                        setMoreMenuOpen(false);
+                      }}
+                    >
+                      <UserCog className="h-5 w-5" />
+                      <div className="flex flex-col items-start">
+                        <span>Drivers</span>
+                        <span className="text-xs text-muted-foreground">Manage driver accounts</span>
+                      </div>
+                    </Button>
+
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-3"
+                      onClick={() => {
+                        setActiveTab("pricing");
+                        setMoreMenuOpen(false);
+                      }}
+                    >
+                      <DollarSign className="h-5 w-5" />
+                      <div className="flex flex-col items-start">
+                        <span>Pricing</span>
+                        <span className="text-xs text-muted-foreground">Update pass and ticket prices</span>
+                      </div>
+                    </Button>
+
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-3"
+                      onClick={() => {
+                        setActiveTab("availability");
+                        setMoreMenuOpen(false);
+                      }}
+                    >
+                      <Users className="h-5 w-5" />
+                      <div className="flex flex-col items-start">
+                        <span>Availability</span>
+                        <span className="text-xs text-muted-foreground">Manage seat capacity</span>
+                      </div>
+                    </Button>
+
+                    <div className="my-4 h-px bg-border" />
+
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-3"
+                      onClick={() => {
+                        setActiveTab("images");
+                        setMoreMenuOpen(false);
+                      }}
+                    >
+                      <Image className="h-5 w-5" />
+                      <div className="flex flex-col items-start">
+                        <span>Images</span>
+                        <span className="text-xs text-muted-foreground">Upload and manage images</span>
+                      </div>
+                    </Button>
+
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-3"
+                      onClick={() => {
+                        setActiveTab("content");
+                        setMoreMenuOpen(false);
+                      }}
+                    >
+                      <Settings className="h-5 w-5" />
+                      <div className="flex flex-col items-start">
+                        <span>Content</span>
+                        <span className="text-xs text-muted-foreground">Edit website content</span>
+                      </div>
+                    </Button>
+
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-3"
+                      onClick={() => {
+                        setActiveTab("blog");
+                        setMoreMenuOpen(false);
+                      }}
+                    >
+                      <FileText className="h-5 w-5" />
+                      <div className="flex flex-col items-start">
+                        <span>Blog</span>
+                        <span className="text-xs text-muted-foreground">Create and edit articles</span>
+                      </div>
+                    </Button>
+
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-3"
+                      onClick={() => {
+                        setActiveTab("tags");
+                        setMoreMenuOpen(false);
+                      }}
+                    >
+                      <Tag className="h-5 w-5" />
+                      <div className="flex flex-col items-start">
+                        <span>Tags</span>
+                        <span className="text-xs text-muted-foreground">Manage blog tags</span>
+                      </div>
+                    </Button>
+
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-3"
+                      onClick={() => {
+                        setActiveTab("seo");
+                        setMoreMenuOpen(false);
+                      }}
+                    >
+                      <TrendingUp className="h-5 w-5" />
+                      <div className="flex flex-col items-start">
+                        <span>SEO Tools</span>
+                        <span className="text-xs text-muted-foreground">Analyze and optimize SEO</span>
+                      </div>
+                    </Button>
+
+                    <div className="my-4 h-px bg-border" />
+
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-3"
+                      onClick={() => {
+                        onNavigate("analytics");
+                        setMoreMenuOpen(false);
+                      }}
+                    >
+                      <BarChart3 className="h-5 w-5" />
+                      <div className="flex flex-col items-start">
+                        <span>Advanced Analytics</span>
+                        <span className="text-xs text-muted-foreground">Detailed performance reports</span>
+                      </div>
+                    </Button>
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
           </div>
 
           {/* ====== PICKUP REQUESTS TAB ====== */}
@@ -2532,6 +2601,11 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
             </Card>
           </TabsContent>
 
+          {/* ====== IMAGES TAB ====== */}
+          <TabsContent value="images" className="space-y-6">
+            <ImageManager />
+          </TabsContent>
+
           {/* ====== CONTENT TAB ====== */}
           <TabsContent value="content" className="space-y-6">
             <ContentEditor />
@@ -2545,6 +2619,11 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
           {/* ====== SEO TAB ====== */}
           <TabsContent value="seo" className="space-y-6">
             <SEOTools />
+          </TabsContent>
+
+          {/* ====== TAGS TAB ====== */}
+          <TabsContent value="tags" className="space-y-6">
+            <TagManagement />
           </TabsContent>
         </Tabs>
       </div>

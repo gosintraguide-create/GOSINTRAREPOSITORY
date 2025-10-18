@@ -1,22 +1,51 @@
-import { useState, useEffect } from "react";
-import { Star, Clock, MapPin, ChevronRight, ArrowRight } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Star, Clock, MapPin, Search, BookOpen, TrendingUp, ChevronRight, ArrowRight } from "lucide-react";
 import { Button } from "./ui/button";
+import { Card } from "./ui/card";
 import { Badge } from "./ui/badge";
+import { Input } from "./ui/input";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { loadContent, type WebsiteContent, DEFAULT_CONTENT } from "../lib/contentManager";
+import { searchArticles, type BlogArticle } from "../lib/blogManager";
+import { motion } from "motion/react";
 
 interface AttractionsPageProps {
-  onNavigate: (page: string) => void;
+  onNavigate: (page: string, data?: any) => void;
 }
 
 export function AttractionsPage({ onNavigate }: AttractionsPageProps) {
   const [content, setContent] = useState<WebsiteContent>(DEFAULT_CONTENT);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<BlogArticle[]>([]);
+  const [showResults, setShowResults] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setContent(loadContent());
   }, []);
 
-  // Create attractions array from CMS content
+  useEffect(() => {
+    if (searchQuery.trim().length > 1) {
+      const results = searchArticles(searchQuery);
+      setSearchResults(results.slice(0, 5));
+      setShowResults(true);
+    } else {
+      setSearchResults([]);
+      setShowResults(false);
+    }
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowResults(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const attractions = Object.entries(content.attractions).map(([id, attr]) => ({
     id,
     name: attr.name,
@@ -24,10 +53,9 @@ export function AttractionsPage({ onNavigate }: AttractionsPageProps) {
     duration: attr.duration,
     price: attr.price,
     parkOnlyPrice: attr.parkOnlyPrice,
-    image: "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=800&h=600&fit=crop", // Default image
+    image: "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=800&h=600&fit=crop",
   }));
 
-  // Set specific images for known attractions
   const attractionImages: { [key: string]: string } = {
     "pena-palace": "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwZW5hJTIwcGFsYWNlJTIwc2ludHJhfGVufDF8fHx8MTc2MDE0MDYwMnww&ixlib=rb-4.1.0&q=80&w=1080",
     "quinta-regaleira": "https://images.unsplash.com/photo-1643208143695-3c79c2f36cce?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxxdWludGElMjByZWdhbGVpcmElMjBzaW50cmF8ZW58MXx8fHwxNzYwMTQwNjAyfDA&ixlib=rb-4.1.0&q=80&w=1080",
@@ -38,91 +66,147 @@ export function AttractionsPage({ onNavigate }: AttractionsPageProps) {
 
   return (
     <div className="flex-1">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-white to-accent/5 py-20 sm:py-28">
-        <div className="absolute -top-32 right-1/4 h-[500px] w-[500px] rounded-full bg-gradient-to-br from-accent/20 to-primary/20 blur-3xl" />
-        <div className="absolute -bottom-32 left-1/4 h-[500px] w-[500px] rounded-full bg-gradient-to-tr from-primary/20 to-accent/20 blur-3xl" />
-        
-        <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-          <div className="mb-6 flex justify-center">
-            <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/80 shadow-lg shadow-primary/20">
-              <MapPin className="h-10 w-10 text-white" />
-            </div>
+      {/* Header Section */}
+      <section className="border-b border-border bg-white py-12">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-6 text-center">
+            <h1 className="mb-3 text-foreground">Sintra's UNESCO Attractions</h1>
+            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+              World Heritage palaces, castles, and gardens
+            </p>
           </div>
-          <h1 className="mb-4 bg-gradient-to-r from-primary via-primary/90 to-accent bg-clip-text text-transparent">
-            Sintra's Top Attractions
-          </h1>
-          <p className="mx-auto max-w-2xl text-muted-foreground">
-            Discover UNESCO World Heritage palaces, castles, and gardens with convenient hop-on/hop-off access. 
-            Add attraction tickets during booking to skip the lines!
-          </p>
+
+          {/* Search Bar with Live Recommendations */}
+          <div ref={searchRef} className="relative mx-auto max-w-2xl">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Search travel guides... (e.g. 'planning', 'pena palace', 'tips')"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => searchQuery.trim().length > 1 && setShowResults(true)}
+                className="h-12 rounded-xl bg-secondary/30 pl-12 pr-4"
+              />
+            </div>
+
+            {/* Live Search Results Dropdown */}
+            {showResults && searchResults.length > 0 && (
+              <motion.div
+                className="absolute top-full z-50 mt-2 w-full rounded-xl border border-border bg-white shadow-xl"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <div className="p-2">
+                  <div className="mb-2 flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground">
+                    <TrendingUp className="h-4 w-4" />
+                    Travel Guide Recommendations
+                  </div>
+                  {searchResults.map((article) => (
+                    <button
+                      key={article.id}
+                      onClick={() => {
+                        onNavigate("blog-article", { slug: article.slug });
+                        setShowResults(false);
+                        setSearchQuery("");
+                      }}
+                      className="flex w-full items-start gap-3 rounded-lg p-3 text-left transition-colors hover:bg-secondary"
+                    >
+                      <BookOpen className="mt-1 h-5 w-5 flex-shrink-0 text-primary" />
+                      <div className="flex-1 overflow-hidden">
+                        <div className="truncate">{article.title}</div>
+                        <div className="truncate text-sm text-muted-foreground">
+                          {article.excerpt}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {showResults && searchResults.length === 0 && searchQuery.trim().length > 1 && (
+              <motion.div
+                className="absolute top-full z-50 mt-2 w-full rounded-xl border border-border bg-white p-4 text-center shadow-xl"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <p className="text-muted-foreground">No articles found. Try different keywords!</p>
+              </motion.div>
+            )}
+          </div>
         </div>
       </section>
 
       {/* Attractions Grid */}
-      <section className="py-16 sm:py-20">
+      <section className="py-12 sm:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {attractions.map((attraction, index) => (
-              <div
+              <motion.div
                 key={attraction.id}
-                className="group relative overflow-hidden rounded-2xl border border-border bg-white shadow-lg transition-all hover:scale-[1.02] hover:shadow-2xl"
-                style={{ animationDelay: `${index * 100}ms` }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
               >
-                <div className="aspect-[4/3] overflow-hidden">
-                  <ImageWithFallback
-                    src={attractionImages[attraction.id] || attraction.image}
-                    alt={attraction.name}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-                </div>
-                <div className="absolute inset-x-0 bottom-0 p-6">
-                  <div className="mb-2 flex items-center gap-2">
-                    {attraction.parkOnlyPrice ? (
-                      <div className="rounded-full bg-white/20 px-3 py-1 backdrop-blur-sm">
-                        <span className="text-white">From €{attraction.parkOnlyPrice}</span>
-                      </div>
-                    ) : (
-                      <div className="rounded-full bg-white/20 px-3 py-1 backdrop-blur-sm">
-                        <span className="text-white">€{attraction.price}</span>
-                      </div>
-                    )}
-                    <div className="flex items-center gap-1 rounded-full bg-white/20 px-3 py-1 backdrop-blur-sm">
-                      <Clock className="h-3 w-3 text-white" />
-                      <span className="text-white">{attraction.duration}</span>
+                <Card
+                  className="group h-full cursor-pointer overflow-hidden border bg-white shadow-md transition-all hover:shadow-xl"
+                  onClick={() => onNavigate(attraction.id)}
+                >
+                  {/* Image - Larger, more prominent */}
+                  <div className="relative aspect-[16/10] overflow-hidden">
+                    <ImageWithFallback
+                      src={attractionImages[attraction.id] || attraction.image}
+                      alt={attraction.name}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    
+                    {/* Title on image */}
+                    <div className="absolute bottom-0 left-0 right-0 p-6">
+                      <h3 className="text-white">{attraction.name}</h3>
                     </div>
                   </div>
-                  <h3 className="mb-2 text-white drop-shadow-lg">{attraction.name}</h3>
-                  <p className="mb-4 text-white/90 drop-shadow-md line-clamp-2">{attraction.description}</p>
-                  <Button
-                    className="w-full bg-white text-primary hover:bg-white/90"
-                    onClick={() => onNavigate(attraction.id)}
-                  >
-                    View Details
-                    <ChevronRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
+
+                  {/* Minimal Content */}
+                  <div className="p-5">
+                    <p className="mb-4 line-clamp-2 text-sm text-muted-foreground">
+                      {attraction.description}
+                    </p>
+
+                    <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-1 text-muted-foreground">
+                        <Clock className="h-4 w-4" />
+                        {attraction.duration}
+                      </div>
+                      <div className="flex items-center gap-2 text-primary">
+                        <span>Learn More</span>
+                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-2" />
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 sm:py-28">
+      {/* Bottom Info Section */}
+      <section className="border-t border-border bg-secondary/20 py-12">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-          <h2 className="mb-6 text-foreground">Ready to Explore?</h2>
-          <p className="mb-8 text-muted-foreground">
-            Get unlimited access to all these destinations with a single day pass
+          <h2 className="mb-4 text-foreground">Planning Your Visit?</h2>
+          <p className="mb-6 text-muted-foreground">
+            Browse our travel guides for tips, itineraries, and insider advice
           </p>
           <Button
+            variant="outline"
             size="lg"
-            className="bg-primary text-primary-foreground hover:bg-primary/90"
-            onClick={() => onNavigate("buy-ticket")}
+            onClick={() => onNavigate("blog")}
           >
-            Book Your Pass
-            <ArrowRight className="ml-2 h-5 w-5" />
+            <BookOpen className="mr-2 h-5 w-5" />
+            Read Travel Guides
           </Button>
         </div>
       </section>
