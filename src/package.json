@@ -4,9 +4,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf Build dist node_modules package-lock.json",
+    "fresh-install": "npm run clean && npm install",
+    "test-build": "npm run build && npm run preview"
   },
   "dependencies": {
     "react": "^18.2.0",
@@ -55,7 +58,8 @@
     "react-resizable-panels": "^1.0.9",
     "input-otp": "^1.2.2",
     "@stripe/stripe-js": "^2.4.0",
-    "@supabase/supabase-js": "^2.39.3"
+    "@supabase/supabase-js": "^2.39.3",
+    "@vercel/analytics": "^1.1.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.45",
@@ -67,5 +71,9 @@
     "@tailwindcss/vite": "^4.0.0-alpha.25",
     "autoprefixer": "^10.4.16",
     "postcss": "^8.4.32"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
   }
 }

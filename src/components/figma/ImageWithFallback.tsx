@@ -1,12 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
-interface ImageWithFallbackProps extends React.ImgHTMLAttributes<HTMLImageElement> {
+interface ImageWithFallbackProps
+  extends React.ImgHTMLAttributes<HTMLImageElement> {
   src: string;
   alt: string;
   unsplashQuery?: string;
 }
 
-export function ImageWithFallback({ src, alt, unsplashQuery, ...props }: ImageWithFallbackProps) {
+export function ImageWithFallback({
+  src,
+  alt,
+  unsplashQuery,
+  ...props
+}: ImageWithFallbackProps) {
   const [imgSrc, setImgSrc] = useState(src);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
@@ -14,7 +20,9 @@ export function ImageWithFallback({ src, alt, unsplashQuery, ...props }: ImageWi
   useEffect(() => {
     if (!src && unsplashQuery) {
       // Fetch from Unsplash API
-      fetch(`https://source.unsplash.com/1600x900/?${encodeURIComponent(unsplashQuery)}`)
+      fetch(
+        `https://source.unsplash.com/1600x900/?${encodeURIComponent(unsplashQuery)}`,
+      )
         .then((response) => {
           setImgSrc(response.url);
           setIsLoading(false);
@@ -30,11 +38,21 @@ export function ImageWithFallback({ src, alt, unsplashQuery, ...props }: ImageWi
   }, [src, unsplashQuery]);
 
   if (isLoading) {
-    return <div className={props.className} style={{ backgroundColor: '#f0f0f0' }} />;
+    return (
+      <div
+        className={props.className}
+        style={{ backgroundColor: "#f0f0f0" }}
+      />
+    );
   }
 
   if (hasError) {
-    return <div className={props.className} style={{ backgroundColor: '#e0e0e0' }} />;
+    return (
+      <div
+        className={props.className}
+        style={{ backgroundColor: "#e0e0e0" }}
+      />
+    );
   }
 
   return (

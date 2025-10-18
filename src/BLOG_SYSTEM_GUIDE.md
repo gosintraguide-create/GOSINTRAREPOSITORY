@@ -7,6 +7,7 @@ Your Go Sintra website now has a complete blog/articles system where you can pub
 ## Features
 
 ### For Visitors
+
 - **Blog Listing Page**: Beautiful grid layout of all published articles
 - **Category Filtering**: Filter articles by category (Planning, Getting There, Attractions, Tips, History)
 - **Search**: Full-text search across articles, titles, and tags
@@ -16,6 +17,7 @@ Your Go Sintra website now has a complete blog/articles system where you can pub
 - **Responsive Design**: Looks great on all devices
 
 ### For Admins
+
 - **Full CRUD**: Create, Read, Update, and Delete articles
 - **Rich Text Editor**: Write articles using Markdown (supports headings, lists, links, bold, italic, etc.)
 - **SEO Controls**: Set custom SEO title, description, and keywords per article
@@ -75,11 +77,13 @@ Articles support full Markdown formatting:
 
 ```markdown
 # Main Heading
+
 ## Subheading
+
 ### Smaller Heading
 
 **Bold text**
-*Italic text*
+_Italic text_
 
 - Bullet point 1
 - Bullet point 2
@@ -95,29 +99,36 @@ Articles support full Markdown formatting:
 ## Categories
 
 ### Planning Your Visit
+
 Everything you need to know to plan the perfect Sintra day trip
 
 ### Getting There
+
 Transportation guides and tips for reaching Sintra
 
 ### Attractions & Sights
+
 In-depth guides to Sintra's palaces, castles, and gardens
 
 ### Travel Tips
+
 Insider tips and local advice for exploring Sintra
 
 ### History & Culture
+
 Learn about Sintra's rich history and cultural heritage
 
 ## Technical Details
 
 ### File Locations
+
 - **Blog Manager**: `/lib/blogManager.ts` - Core blog data structure and functions
 - **Blog Listing Page**: `/components/BlogPage.tsx` - Main blog index
 - **Article Page**: `/components/BlogArticlePage.tsx` - Individual article view
 - **Blog Editor**: `/components/BlogEditor.tsx` - Admin interface for managing articles
 
 ### Storage
+
 - Articles are stored in browser localStorage
 - Key: `blog-articles`
 - Categories are stored separately as: `blog-categories`
@@ -125,11 +136,14 @@ Learn about Sintra's rich history and cultural heritage
 - Can be exported/imported via JSON
 
 ### Routing
+
 - Blog listing: `/blog` or `?page=blog`
 - Individual articles: `/blog/{slug}` or `?page=blog-article&slug={slug}`
 
 ### SEO
+
 Each article has customizable SEO fields:
+
 - **SEO Title**: Shown in browser tab and search results
 - **SEO Description**: Meta description for search engines
 - **SEO Keywords**: Comma-separated keywords
@@ -160,6 +174,7 @@ Each article has customizable SEO fields:
 ### Image URLs
 
 Use Unsplash for free, high-quality images:
+
 1. Go to unsplash.com
 2. Search for "Sintra" or related terms
 3. Click an image
@@ -169,6 +184,7 @@ Use Unsplash for free, high-quality images:
 ## Article Ideas
 
 Consider writing about:
+
 - Best time to visit Sintra
 - What to pack for Sintra
 - Budget travel tips
@@ -188,22 +204,26 @@ Consider writing about:
 ## Advanced Features
 
 ### URL Slugs
+
 - Auto-generated from titles
 - Can be manually edited
 - Should be lowercase and hyphenated
 - Permanent once article is published
 
 ### Read Time
+
 - Automatically calculated based on word count
 - Assumes 200 words per minute reading speed
 - Displayed on both listing and article pages
 
 ### Related Articles
+
 - Automatically shows 3 articles from the same category
 - Excludes the current article
 - Appears at the bottom of each article
 
 ### Search
+
 - Searches article titles, excerpts, and tags
 - Case-insensitive
 - Results update in real-time
@@ -211,17 +231,22 @@ Consider writing about:
 ## Maintenance
 
 ### Resetting Articles
+
 Click "Reset to Defaults" in the Blog Editor to restore the original 3 articles. This will delete any custom articles you've created.
 
 ### Exporting Articles
+
 Articles are stored in localStorage and can be exported:
+
 ```javascript
 const articles = localStorage.getItem('blog-articles');
 console.log(articles); // Copy and save this JSON
 ```
 
 ### Importing Articles
+
 To import articles:
+
 ```javascript
 localStorage.setItem('blog-articles', 'paste-json-here');
 location.reload();
@@ -239,6 +264,7 @@ location.reload();
 ## Future Enhancements
 
 Possible improvements for the future:
+
 - Multi-language support for articles
 - Author profiles
 - Comments section

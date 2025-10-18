@@ -4,17 +4,32 @@
 ![Vercel](https://img.shields.io/badge/deploy-vercel-black)
 ![Build](https://img.shields.io/badge/build-passing-success)
 ![PWA](https://img.shields.io/badge/PWA-enabled-blue)
+![Analytics](https://img.shields.io/badge/analytics-ready-blueviolet)
 
 A complete, production-ready Progressive Web App for selling unlimited day passes to explore Sintra's UNESCO World Heritage sites.
 
-> **🚀 New here?** Start with [`START_HERE.md`](./START_HERE.md) for a guided deployment in 15 minutes!  
-> **🔧 Just fixed:** Vercel deployment is now fully configured! See [`WHATS_NEW.md`](./WHATS_NEW.md)
+## 🚀 Deploy in One Command
+
+```bash
+npm install && git add . && git commit -m "Add Vercel Analytics" && git push origin main
+```
+
+**That's it!** Your site with analytics tracking goes live in ~5 minutes. 📊
+
+---
+
+> **🎯 START HERE:** [`START_HERE_ANALYTICS.md`](./START_HERE_ANALYTICS.md) - Complete deploy guide  
+> **⚡ 30 SECONDS:** [`TL;DR.md`](./TL;DR.md) - Ultra-quick summary  
+> **📊 ANALYTICS:** [`ANALYTICS_SUMMARY.md`](./ANALYTICS_SUMMARY.md) - What you get  
+> **✅ CHECKLIST:** [`FINAL_DEPLOYMENT_CHECKLIST.md`](./FINAL_DEPLOYMENT_CHECKLIST.md) - Step by step  
+> **📚 ALL DOCS:** [`DOCUMENTATION_INDEX.md`](./DOCUMENTATION_INDEX.md) - Complete index
 
 ## 🎯 Overview
 
 Go Sintra is a mobile-first PWA that enables tourists to purchase day passes for hop-on/hop-off service between Sintra's major attractions using tuk-tuks and UMM jeeps.
 
 ### Key Features
+
 - 🎫 Online booking with Stripe payments
 - 📧 Instant PDF tickets with QR codes
 - 🌍 5 languages (EN, ES, FR, DE, PT) with auto-detection
@@ -25,11 +40,10 @@ Go Sintra is a mobile-first PWA that enables tourists to purchase day passes for
 
 ---
 
-
-
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js 18+ installed
 - GitHub account
 - Vercel account (free)
@@ -37,6 +51,7 @@ Go Sintra is a mobile-first PWA that enables tourists to purchase day passes for
 - Stripe account (live mode)
 
 ### Local Development
+
 ```bash
 # Install dependencies
 npm install
@@ -54,6 +69,7 @@ npm run preview
 ### Deploy to Vercel
 
 #### Option 1: Vercel CLI (Fastest)
+
 ```bash
 # Install Vercel CLI
 npm i -g vercel
@@ -63,12 +79,14 @@ vercel
 ```
 
 #### Option 2: GitHub Integration
+
 1. Push code to GitHub
 2. Import project in Vercel
 3. Add environment variables (see below)
 4. Deploy!
 
 #### Option 3: Direct Deploy
+
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
 
 ---
@@ -76,6 +94,7 @@ vercel
 ## 🏗️ Tech Stack
 
 ### Frontend
+
 - **Framework:** React 18 with TypeScript
 - **Build Tool:** Vite 6
 - **Styling:** Tailwind CSS v4
@@ -86,6 +105,7 @@ vercel
 - **Routing:** URL-based navigation
 
 ### Backend
+
 - **Runtime:** Deno (Supabase Edge Functions)
 - **Framework:** Hono
 - **Database:** Supabase Postgres
@@ -94,6 +114,7 @@ vercel
 - **KV Store:** Custom key-value table
 
 ### Third-Party Services
+
 - **Payments:** Stripe Checkout + Webhooks
 - **Email:** Resend with custom templates
 - **Hosting:** Vercel (frontend)
@@ -137,17 +158,20 @@ vercel
 ## 🎨 Design System
 
 ### Colors
+
 - **Primary (Deep Teal):** `#0A4D5C`
 - **Accent (Terracotta):** `#D97843`
 - **Background:** `#FFFBF7` (warm white)
 - **Foreground:** `#2D3436` (dark gray)
 
 ### Typography
+
 - Clean, friendly hierarchy
 - Mobile-optimized font sizes
 - Accessible contrast ratios
 
 ### Components
+
 - Rounded corners (20px default)
 - Soft shadows
 - Smooth animations
@@ -158,6 +182,7 @@ vercel
 ## 🌍 Multilingual Support
 
 Built-in translations for:
+
 - 🇬🇧 English (EN)
 - 🇪🇸 Spanish (ES)
 - 🇫🇷 French (FR)
@@ -165,6 +190,7 @@ Built-in translations for:
 - 🇵🇹 Portuguese (PT)
 
 **Features:**
+
 - Auto-detection of browser language
 - Persistent language selection
 - Complete translations for all pages
@@ -209,6 +235,7 @@ This is configurable in the content management system.
 ## 🔑 Environment Variables
 
 ### Frontend (Vercel)
+
 ```
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your_anon_key
@@ -216,6 +243,7 @@ VITE_STRIPE_PUBLISHABLE_KEY=pk_live_...
 ```
 
 ### Backend (Supabase)
+
 ```
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_ANON_KEY=your_anon_key
@@ -234,6 +262,7 @@ RESEND_FROM_EMAIL=bookings@yourdomain.com
 Access admin at: `https://your-site.com?page=admin`
 
 ### Features:
+
 - View all bookings
 - Filter by date, status, type
 - Search by booking ID, name, email
@@ -250,6 +279,7 @@ Access admin at: `https://your-site.com?page=admin`
 Access at: `https://your-site.com?page=operations`
 
 ### Features:
+
 - Today's bookings at a glance
 - Upcoming pickups timeline
 - Checked-in customers list
@@ -263,6 +293,7 @@ Access at: `https://your-site.com?page=operations`
 ## 🧪 Testing
 
 ### Test Payment
+
 ```
 Card: 4242 4242 4242 4242
 Expiry: 12/25 (any future date)
@@ -271,6 +302,7 @@ ZIP: 12345 (any 5 digits)
 ```
 
 ### Test URLs
+
 - Homepage: `/?page=home`
 - Buy Ticket: `/?page=buy-ticket`
 - Admin: `/?page=admin`
@@ -285,6 +317,7 @@ ZIP: 12345 (any 5 digits)
 ## 📈 Analytics
 
 Track key metrics:
+
 - Total bookings
 - Total revenue
 - Conversion rate
@@ -299,6 +332,7 @@ Track key metrics:
 ## 🐛 Debugging
 
 ### Diagnostic Tools
+
 - **Diagnostics Page:** `?page=diagnostics`
 - **Debug Icons:** `?page=debug-icons`
 - **Browser Console:** Check for errors
@@ -311,12 +345,14 @@ Track key metrics:
 ## 🤝 Support
 
 ### User Support
+
 - WhatsApp integration for live chat
 - Email support system
 - FAQ section (can be added)
 - Booking management portal
 
 ### Developer Support
+
 - Comprehensive documentation
 - Inline code comments
 - Error messages with context
@@ -333,6 +369,7 @@ Private project for Go Sintra.
 ## 🎉 Credits
 
 **Built with:**
+
 - React + Vite
 - Tailwind CSS
 - shadcn/ui
@@ -365,4 +402,4 @@ Private project for Go Sintra.
 
 **Good luck with your launch! 🇵🇹🚀**
 
-*For questions or issues, refer to the deployment guides or check the diagnostics page.*
+_For questions or issues, refer to the deployment guides or check the diagnostics page._

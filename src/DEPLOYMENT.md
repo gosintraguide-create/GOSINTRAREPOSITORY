@@ -5,6 +5,7 @@
 ## Quick Deploy Checklist
 
 ### 1. Push to GitHub (2 minutes)
+
 ```bash
 git init
 git add .
@@ -31,17 +32,21 @@ git push -u origin main
 Edit `/supabase/functions/server/index.tsx`:
 
 ```typescript
-app.use("*", cors({
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:4173',
-    'https://YOUR-VERCEL-URL.vercel.app',  // ← ADD YOUR URL
-  ],
-  credentials: true,
-}));
+app.use(
+  "*",
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:4173",
+      "https://YOUR-VERCEL-URL.vercel.app", // ← ADD YOUR URL
+    ],
+    credentials: true,
+  }),
+);
 ```
 
 Deploy backend:
+
 ```bash
 npx supabase functions deploy make-server-3bd0ade8
 ```
@@ -61,6 +66,7 @@ npx supabase functions deploy make-server-3bd0ade8
 ## Environment Variables
 
 ### Vercel (Frontend)
+
 ```bash
 VITE_SUPABASE_URL=https://dwiznaefeqnduglmcivr.supabase.co
 VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
@@ -68,6 +74,7 @@ VITE_STRIPE_PUBLISHABLE_KEY=pk_live_...
 ```
 
 ### Supabase Edge Functions (Backend)
+
 ```bash
 STRIPE_SECRET_KEY=sk_live_...
 STRIPE_WEBHOOK_SECRET=whsec_...
@@ -80,6 +87,7 @@ RESEND_FROM_EMAIL=bookings@gosintra.pt
 ## Post-Deployment Testing
 
 ### Test Checklist
+
 - [ ] Homepage loads correctly
 - [ ] All navigation links work
 - [ ] Language selector works
@@ -97,6 +105,7 @@ RESEND_FROM_EMAIL=bookings@gosintra.pt
 ## SEO & Performance
 
 ### Included Optimizations
+
 - ✅ Structured data (JSON-LD)
 - ✅ Open Graph tags
 - ✅ Twitter Card tags
@@ -111,6 +120,7 @@ RESEND_FROM_EMAIL=bookings@gosintra.pt
 - ✅ Compression headers
 
 ### Performance Scores (Expected)
+
 - **Performance:** 90+
 - **Accessibility:** 95+
 - **Best Practices:** 95+
@@ -121,17 +131,21 @@ RESEND_FROM_EMAIL=bookings@gosintra.pt
 ## Monitoring
 
 ### Check Logs
+
 **Vercel:**
+
 ```bash
 vercel logs
 ```
 
 **Supabase:**
+
 ```bash
 npx supabase functions logs make-server-3bd0ade8 --tail
 ```
 
 ### Analytics
+
 - Access: `https://your-url.vercel.app?page=analytics`
 - Monitor: Bookings, Revenue, Conversions
 
@@ -150,12 +164,15 @@ npx supabase functions logs make-server-3bd0ade8 --tail
 ## Troubleshooting
 
 ### CORS Error
+
 Update backend CORS configuration with your Vercel URL and redeploy.
 
 ### Payment Not Working
+
 Check Stripe webhook is configured and webhook secret is set in Supabase.
 
 ### Email Not Sending
+
 Verify RESEND_API_KEY and RESEND_FROM_EMAIL are set in Supabase environment variables.
 
 ---

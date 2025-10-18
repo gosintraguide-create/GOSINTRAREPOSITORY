@@ -34,6 +34,7 @@
           "@stripe/react-stripe-js": "*",
           "@stripe/stripe-js": "*",
           "@tailwindcss/vite": "*",
+          "@vercel/analytics": "*",
           "@vitejs/plugin-react": "*",
           "class-variance-authority": "^0.7.1",
           "clsx": "*",
@@ -59,6 +60,7 @@
           "sonner": "^2.0.3",
           "stripe": "^17.3.1",
           "tailwind-merge": "*",
+          "url": "*",
           "vaul": "^1.1.2",
           "vite": "*"
       },
