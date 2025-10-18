@@ -3,7 +3,9 @@ import { Button } from "./ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Alert, AlertDescription } from "./ui/alert";
-import { ArrowLeft, Camera, CameraOff, CheckCircle2, XCircle, Clock, Users, Calendar, Ticket } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { Label } from "./ui/label";
+import { ArrowLeft, Camera, CameraOff, CheckCircle2, XCircle, Clock, Users, Calendar, Ticket, MapPin } from "lucide-react";
 import { toast } from "sonner@2.0.3";
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 
@@ -32,14 +34,41 @@ interface QRScannerPageProps {
   onNavigate: (page: string) => void;
 }
 
+// List of destinations in Sintra
+const DESTINATIONS = [
+  "Palácio da Pena",
+  "Castelo dos Mouros",
+  "Palácio Nacional de Sintra",
+  "Quinta da Regaleira",
+  "Palácio de Monserrate",
+  "Cabo da Roca",
+  "Centro Histórico",
+  "Other"
+];
+
 export function QRScannerPage({ onNavigate }: QRScannerPageProps) {
   const [scanning, setScanning] = useState(false);
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [selectedDestination, setSelectedDestination] = useState<string>("");
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const scanIntervalRef = useRef<number | null>(null);
+
+  // Block search engines from indexing this page
+  useEffect(() => {
+    const metaRobots = document.querySelector('meta[name="robots"]');
+    if (metaRobots) {
+      metaRobots.setAttribute('content', 'noindex, nofollow');
+    } else {
+      const meta = document.createElement('meta');
+      meta.name = 'robots';
+      meta.content = 'noindex, nofollow';
+      document.head.appendChild(meta);
+    }
+    document.title = 'QR Scanner - Access Restricted';
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -185,7 +214,10 @@ export function QRScannerPage({ onNavigate }: QRScannerPageProps) {
   };
 
   const checkInPassenger = async () => {
-    if (!scanResult?.booking) return;
+    if (!scanResult?.booking || !selectedDestination) {
+      toast.error("Please select a destination");
+      return;
+    }
 
     setIsProcessing(true);
     try {
@@ -199,7 +231,8 @@ export function QRScannerPage({ onNavigate }: QRScannerPageProps) {
           },
           body: JSON.stringify({ 
             bookingId: scanResult.booking.bookingId,
-            location: "Vehicle Pickup" // You can customize this
+            location: "Vehicle Pickup",
+            destination: selectedDestination
           }),
         }
       );
@@ -207,7 +240,7 @@ export function QRScannerPage({ onNavigate }: QRScannerPageProps) {
       const result = await response.json();
       
       if (result.success) {
-        toast.success("Passenger checked in successfully!");
+        toast.success(`Passenger checked in to ${selectedDestination}!`);
         setScanResult({
           ...scanResult,
           booking: {
@@ -219,6 +252,7 @@ export function QRScannerPage({ onNavigate }: QRScannerPageProps) {
             }]
           }
         });
+        setSelectedDestination("");
       } else {
         toast.error(result.message || "Check-in failed");
       }
@@ -233,6 +267,7 @@ export function QRScannerPage({ onNavigate }: QRScannerPageProps) {
   const resetScanner = () => {
     setScanResult(null);
     setIsProcessing(false);
+    setSelectedDestination("");
   };
 
   return (
@@ -415,17 +450,43 @@ export function QRScannerPage({ onNavigate }: QRScannerPageProps) {
                       </CardContent>
                     </Card>
 
+                    {/* Destination Selector */}
+                    {!scanResult.booking.isExpired && !scanResult.booking.alreadyCheckedIn && (
+                      <Card className="border-accent/50 bg-accent/5">
+                        <CardContent className="pt-6">
+                          <div className="space-y-3">
+                            <Label htmlFor="destination" className="flex items-center gap-2">
+                              <MapPin className="h-4 w-4 text-accent" />
+                              Select Destination
+                            </Label>
+                            <Select value={selectedDestination} onValueChange={setSelectedDestination}>
+                              <SelectTrigger id="destination" className="w-full">
+                                <SelectValue placeholder="Where is the passenger going?" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {DESTINATIONS.map((dest) => (
+                                  <SelectItem key={dest} value={dest}>
+                                    {dest}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+
                     {/* Action Buttons */}
                     <div className="flex gap-2">
                       {!scanResult.booking.isExpired && !scanResult.booking.alreadyCheckedIn && (
                         <Button
                           onClick={checkInPassenger}
-                          disabled={isProcessing}
+                          disabled={isProcessing || !selectedDestination}
                           className="flex-1 gap-2"
                           size="lg"
                         >
                           <CheckCircle2 className="h-5 w-5" />
-                          Check In Passenger
+                          Check In to {selectedDestination || "Destination"}
                         </Button>
                       )}
                       <Button

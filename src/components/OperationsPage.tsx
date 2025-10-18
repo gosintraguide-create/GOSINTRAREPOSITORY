@@ -1,47 +1,59 @@
 import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
-import { Label } from "./ui/label";
-import { Input } from "./ui/input";
-import { Eye, EyeOff, QrCode, Ticket, Home, Users, Clock, CheckCircle2, MapPin, Car, AlertCircle, RefreshCw } from "lucide-react";
+import { QrCode, Ticket, Home, Users, Clock, CheckCircle2, MapPin, Car, AlertCircle, RefreshCw } from "lucide-react";
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { toast } from "sonner@2.0.3";
 import { safeJsonFetch } from '../lib/apiErrorHandler';
+import { DestinationTracker } from './DestinationTracker';
 
 interface OperationsPageProps {
   onNavigate: (page: string) => void;
 }
 
 export function OperationsPage({ onNavigate }: OperationsPageProps) {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    // Check for existing session in localStorage (persistent)
-    const session = localStorage.getItem("operations-session");
-    return session === "authenticated";
+  // Block search engines from indexing this page
+  useEffect(() => {
+    const metaRobots = document.querySelector('meta[name="robots"]');
+    if (metaRobots) {
+      metaRobots.setAttribute('content', 'noindex, nofollow');
+    } else {
+      const meta = document.createElement('meta');
+      meta.name = 'robots';
+      meta.content = 'noindex, nofollow';
+      document.head.appendChild(meta);
+    }
+    document.title = 'Operations Portal - Access Restricted';
+  }, []);
+
+  const [driverSession, setDriverSession] = useState<any>(() => {
+    // Check for existing driver session in localStorage
+    const sessionStr = localStorage.getItem("driver_session");
+    if (sessionStr) {
+      try {
+        return JSON.parse(sessionStr);
+      } catch {
+        return null;
+      }
+    }
+    return null;
   });
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    // Check if driver is logged in
+    const sessionStr = localStorage.getItem("driver_session");
+    return !!sessionStr;
+  });
   const [pickupRequests, setPickupRequests] = useState<any[]>([]);
   const [loadingRequests, setLoadingRequests] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(() => {
     return localStorage.getItem("operations-sound") !== "false";
   });
 
-  const handleLogin = () => {
-    // Operations password - different from admin
-    if (password === "driver2025") {
-      setIsAuthenticated(true);
-      localStorage.setItem("operations-session", "authenticated");
-      setError("");
-    } else {
-      setError("Incorrect password");
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleLogin();
-    }
+  const handleLogout = () => {
+    localStorage.removeItem("driver_session");
+    setDriverSession(null);
+    setIsAuthenticated(false);
+    onNavigate("driver-login");
   };
 
   // Load active pickup requests
@@ -185,8 +197,15 @@ export function OperationsPage({ onNavigate }: OperationsPageProps) {
     }
   }, [pickupRequests, soundEnabled]);
 
+  // Redirect to driver login if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated || !driverSession) {
+      onNavigate("driver-login");
+    }
+  }, [isAuthenticated, driverSession]);
+
   // Login screen
-  if (!isAuthenticated) {
+  if (!isAuthenticated || !driverSession) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-secondary/30 px-4 py-8">
         <Card className="w-full max-w-md border-border p-8">
@@ -197,50 +216,16 @@ export function OperationsPage({ onNavigate }: OperationsPageProps) {
               </div>
             </div>
             <h1 className="mb-2 text-foreground">Operations Portal</h1>
-            <p className="text-muted-foreground">For drivers and field staff</p>
+            <p className="text-muted-foreground">Redirecting to driver login...</p>
           </div>
 
           <div className="space-y-4">
-            <div>
-              <Label htmlFor="password" className="text-foreground">
-                Password
-              </Label>
-              <div className="relative mt-2">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    setError("");
-                  }}
-                  onKeyPress={handleKeyPress}
-                  placeholder="Enter operations password"
-                  className={error ? "border-destructive" : ""}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </button>
-              </div>
-              {error && (
-                <p className="mt-2 text-sm text-destructive">{error}</p>
-              )}
-            </div>
-
             <Button
-              onClick={handleLogin}
+              onClick={() => onNavigate("driver-login")}
               className="w-full"
               size="lg"
             >
-              Sign In
+              Go to Driver Login
             </Button>
 
             <div className="mt-6 rounded-lg bg-secondary/50 p-4">
@@ -250,17 +235,6 @@ export function OperationsPage({ onNavigate }: OperationsPageProps) {
                 Contact admin if you need access.
               </p>
             </div>
-          </div>
-
-          <div className="mt-6 text-center">
-            <Button
-              variant="ghost"
-              onClick={() => onNavigate("home")}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <Home className="mr-2 h-4 w-4" />
-              Back to Website
-            </Button>
           </div>
         </Card>
       </div>
@@ -288,23 +262,39 @@ export function OperationsPage({ onNavigate }: OperationsPageProps) {
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                   <Users className="h-6 w-6 text-primary" />
                 </div>
-                <h1 className="text-foreground">Operations Portal</h1>
+                <div>
+                  <h1 className="text-foreground">Operations Portal</h1>
+                  {driverSession?.driver && (
+                    <p className="text-sm text-muted-foreground">
+                      Driver: {driverSession.driver.name}
+                    </p>
+                  )}
+                </div>
               </div>
               <div className="h-1 w-20 rounded-full bg-accent" />
             </div>
             
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                const newValue = !soundEnabled;
-                setSoundEnabled(newValue);
-                localStorage.setItem("operations-sound", newValue.toString());
-                toast.success(newValue ? 'Sound alerts enabled' : 'Sound alerts disabled');
-              }}
-            >
-              {soundEnabled ? '🔔 Sound On' : '🔕 Sound Off'}
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const newValue = !soundEnabled;
+                  setSoundEnabled(newValue);
+                  localStorage.setItem("operations-sound", newValue.toString());
+                  toast.success(newValue ? 'Sound alerts enabled' : 'Sound alerts disabled');
+                }}
+              >
+                {soundEnabled ? '🔔 Sound On' : '🔕 Sound Off'}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleLogout}
+              >
+                Logout
+              </Button>
+            </div>
           </div>
           <div className="mt-4 flex items-start gap-2 rounded-lg border border-blue-200 bg-blue-50 p-3">
             <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0 text-blue-600" />
@@ -312,45 +302,6 @@ export function OperationsPage({ onNavigate }: OperationsPageProps) {
               <strong>Auto-refresh enabled:</strong> Pickup requests update every 10 seconds. Sound and browser notifications will alert you of new requests.
             </p>
           </div>
-        </div>
-
-        {/* Quick Stats */}
-        <div className="mb-8 grid gap-4 md:grid-cols-3">
-          <Card className="border-border p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100">
-                <Clock className="h-5 w-5 text-green-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Operating Hours</p>
-                <p className="text-foreground">9:00 AM - 8:00 PM</p>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="border-border p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
-                <Ticket className="h-5 w-5 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Service Frequency</p>
-                <p className="text-foreground">Every 10-15 min</p>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="border-border p-4">
-            <div className="flex items-center gap-3">
-              <div className={`flex h-10 w-10 items-center justify-center rounded-full ${pickupRequests.length > 0 ? 'bg-accent/10' : 'bg-primary/10'}`}>
-                <Car className={`h-5 w-5 ${pickupRequests.length > 0 ? 'text-accent' : 'text-primary'}`} />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Active Requests</p>
-                <p className="text-foreground">{pickupRequests.length} pickup{pickupRequests.length !== 1 ? 's' : ''}</p>
-              </div>
-            </div>
-          </Card>
         </div>
 
         {/* Active Pickup Requests */}
@@ -466,94 +417,31 @@ export function OperationsPage({ onNavigate }: OperationsPageProps) {
         {/* Main Actions */}
         <div className="grid gap-6 md:grid-cols-2">
           {/* QR Scanner */}
-          <Card className="group border-border p-6 transition-all hover:border-primary/50 hover:shadow-lg cursor-pointer" onClick={() => onNavigate("qr-scanner")}>
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-              <QrCode className="h-8 w-8 text-primary" />
+          <Card 
+            className="group border-2 border-primary/30 p-8 transition-all hover:border-primary hover:shadow-lg cursor-pointer active:scale-95 min-h-[200px] flex flex-col items-center justify-center text-center" 
+            onClick={() => onNavigate("qr-scanner")}
+          >
+            <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-2xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
+              <QrCode className="h-14 w-14 text-primary" />
             </div>
-            <h3 className="mb-2 text-foreground">QR Code Scanner</h3>
-            <p className="mb-4 text-muted-foreground">
-              Scan customer tickets to check them in. Quick and easy validation.
-            </p>
-            <Button className="w-full" onClick={(e) => {
-              e.stopPropagation();
-              onNavigate("qr-scanner");
-            }}>
-              Open Scanner
-            </Button>
+            <h2 className="text-foreground">QR Scanner</h2>
           </Card>
 
           {/* Manual Booking */}
-          <Card className="group border-border p-6 transition-all hover:border-accent/50 hover:shadow-lg cursor-pointer" onClick={() => onNavigate("manual-booking")}>
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-lg bg-accent/10 group-hover:bg-accent/20 transition-colors">
-              <Ticket className="h-8 w-8 text-accent" />
+          <Card 
+            className="group border-2 border-accent/30 p-8 transition-all hover:border-accent hover:shadow-lg cursor-pointer active:scale-95 min-h-[200px] flex flex-col items-center justify-center text-center" 
+            onClick={() => onNavigate("manual-booking")}
+          >
+            <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-2xl bg-accent/10 group-hover:bg-accent/20 transition-colors">
+              <Ticket className="h-14 w-14 text-accent" />
             </div>
-            <h3 className="mb-2 text-foreground">Manual Booking</h3>
-            <p className="mb-4 text-muted-foreground">
-              Create tickets for walk-in customers. Accept cash or card payments in person.
-            </p>
-            <Button 
-              variant="outline" 
-              className="w-full border-accent text-accent hover:bg-accent hover:text-white" 
-              onClick={(e) => {
-                e.stopPropagation();
-                onNavigate("manual-booking");
-              }}
-            >
-              Create Booking
-            </Button>
+            <h2 className="text-foreground">Manual Booking</h2>
           </Card>
         </div>
 
-        {/* Instructions */}
-        <Card className="mt-8 border-border p-6 bg-secondary/50">
-          <h3 className="mb-4 text-foreground">Quick Guide</h3>
-          <div className="space-y-3">
-            <div className="flex gap-3">
-              <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary text-white text-sm">
-                1
-              </div>
-              <div>
-                <p className="text-foreground">QR Code Scanner</p>
-                <p className="text-sm text-muted-foreground">
-                  Use this to check in customers who already have tickets. Scan their QR code from email or phone.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-3">
-              <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-accent text-white text-sm">
-                2
-              </div>
-              <div>
-                <p className="text-foreground">Manual Booking</p>
-                <p className="text-sm text-muted-foreground">
-                  Create new bookings for walk-in customers. Collect payment and issue tickets immediately.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-3">
-              <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-green-600 text-white text-sm">
-                3
-              </div>
-              <div>
-                <p className="text-foreground">Stay Logged In</p>
-                <p className="text-sm text-muted-foreground">
-                  Your login stays active even after closing the browser. No need to re-enter password.
-                </p>
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        {/* Support */}
-        <div className="mt-6 text-center">
-          <p className="text-sm text-muted-foreground">
-            Need help? Contact operations manager or admin support.
-          </p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            WhatsApp: <a href="https://wa.me/351932967279" className="text-primary hover:underline">+351 932 967 279</a>
-          </p>
+        {/* Destination Tracker */}
+        <div className="mt-8">
+          <DestinationTracker autoRefresh={true} />
         </div>
       </div>
     </div>

@@ -84,6 +84,7 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
   const [paymentClientSecret, setPaymentClientSecret] = useState<string | null>(null);
   const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
   const [isCreatingPayment, setIsCreatingPayment] = useState(false);
+  const [paymentInitError, setPaymentInitError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -229,6 +230,7 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
 
   const createStripePaymentIntent = async () => {
     setIsCreatingPayment(true);
+    setPaymentInitError(null);
     try {
       const response = await createPaymentIntent(totalPrice, {
         customerName: formData.fullName,
@@ -238,16 +240,18 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
         quantity: formData.quantity,
       });
 
-      if (response.success && response.clientSecret) {
-        setPaymentClientSecret(response.clientSecret);
-        setPaymentIntentId(response.paymentIntentId);
+      if (response.success && response.data) {
+        setPaymentClientSecret(response.data.clientSecret);
+        setPaymentIntentId(response.data.paymentIntentId);
+        setPaymentInitError(null);
       } else {
         throw new Error(response.error || "Failed to create payment intent");
       }
     } catch (error) {
       console.error("Error creating payment intent:", error);
+      const errorMsg = error instanceof Error ? error.message : "Failed to initialize payment";
+      setPaymentInitError(errorMsg);
       toast.error("Failed to initialize payment. Please try again.");
-      setCurrentStep(3); // Go back to previous step
     } finally {
       setIsCreatingPayment(false);
     }
@@ -896,7 +900,35 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                       <div className="h-1 w-16 rounded-full bg-accent" />
                     </div>
 
-                    {isCreatingPayment || !paymentClientSecret ? (
+                    {paymentInitError ? (
+                      <div className="flex flex-col items-center justify-center py-12 space-y-4">
+                        <AlertCircle className="h-12 w-12 text-destructive" />
+                        <div className="text-center space-y-2">
+                          <p className="text-foreground">Payment initialization failed</p>
+                          <p className="text-sm text-muted-foreground">{paymentInitError}</p>
+                        </div>
+                        <div className="flex gap-3">
+                          <Button
+                            type="button"
+                            onClick={createStripePaymentIntent}
+                            size="lg"
+                            className="bg-primary hover:bg-primary/90"
+                          >
+                            <RefreshCw className="mr-2 h-5 w-5" />
+                            Retry
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="lg"
+                            onClick={handleBack}
+                          >
+                            <ChevronLeft className="mr-2 h-5 w-5" />
+                            Go Back
+                          </Button>
+                        </div>
+                      </div>
+                    ) : isCreatingPayment || !paymentClientSecret ? (
                       <div className="flex flex-col items-center justify-center py-12 space-y-4">
                         <Loader2 className="h-12 w-12 animate-spin text-primary" />
                         <p className="text-muted-foreground">Preparing secure payment...</p>

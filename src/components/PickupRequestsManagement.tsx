@@ -24,9 +24,10 @@ interface PickupRequest {
   destination: string;
   groupSize: number;
   requestTime: string;
-  status: 'pending' | 'assigned' | 'completed' | 'cancelled';
-  assignedDriver?: string;
-  assignedDriverName?: string;
+  status: 'pending' | 'accepted' | 'completed' | 'cancelled';
+  acceptedBy?: string;
+  acceptedByName?: string;
+  acceptedAt?: string;
   completedTime?: string;
   estimatedWait?: number;
 }
@@ -34,7 +35,7 @@ interface PickupRequest {
 export function PickupRequestsManagement() {
   const [requests, setRequests] = useState<PickupRequest[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<'all' | 'pending' | 'assigned' | 'completed'>('pending');
+  const [filter, setFilter] = useState<'all' | 'pending' | 'accepted' | 'completed'>('pending');
 
   useEffect(() => {
     loadRequests();
@@ -109,12 +110,12 @@ export function PickupRequestsManagement() {
   });
 
   const pendingCount = requests.filter(r => r.status === 'pending').length;
-  const assignedCount = requests.filter(r => r.status === 'assigned').length;
+  const acceptedCount = requests.filter(r => r.status === 'accepted').length;
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending': return 'bg-yellow-500';
-      case 'assigned': return 'bg-blue-500';
+      case 'accepted': return 'bg-blue-500';
       case 'completed': return 'bg-green-500';
       case 'cancelled': return 'bg-gray-500';
       default: return 'bg-gray-500';
@@ -157,12 +158,12 @@ export function PickupRequestsManagement() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm">Assigned</CardTitle>
+            <CardTitle className="text-sm">Accepted (En Route)</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
               <Car className="h-8 w-8 text-blue-500" />
-              <span className="text-3xl font-bold">{assignedCount}</span>
+              <span className="text-3xl font-bold">{acceptedCount}</span>
             </div>
           </CardContent>
         </Card>
@@ -209,11 +210,11 @@ export function PickupRequestsManagement() {
           Pending {pendingCount > 0 && `(${pendingCount})`}
         </Button>
         <Button
-          variant={filter === 'assigned' ? 'default' : 'outline'}
+          variant={filter === 'accepted' ? 'default' : 'outline'}
           size="sm"
-          onClick={() => setFilter('assigned')}
+          onClick={() => setFilter('accepted')}
         >
-          Assigned {assignedCount > 0 && `(${assignedCount})`}
+          Accepted {acceptedCount > 0 && `(${acceptedCount})`}
         </Button>
         <Button
           variant={filter === 'completed' ? 'default' : 'outline'}
@@ -236,7 +237,17 @@ export function PickupRequestsManagement() {
         <Alert className="border-yellow-500 bg-yellow-50">
           <AlertCircle className="h-4 w-4 text-yellow-600" />
           <AlertDescription className="text-yellow-800">
-            You have {pendingCount} pending pickup request{pendingCount > 1 ? 's' : ''} waiting for driver assignment.
+            You have {pendingCount} pending pickup request{pendingCount > 1 ? 's' : ''} waiting for a driver to accept.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Alert for accepted requests */}
+      {acceptedCount > 0 && filter === 'accepted' && (
+        <Alert className="border-blue-500 bg-blue-50">
+          <Car className="h-4 w-4 text-blue-600" />
+          <AlertDescription className="text-blue-800">
+            {acceptedCount} driver{acceptedCount > 1 ? 's are' : ' is'} currently en route to pick up customers.
           </AlertDescription>
         </Alert>
       )}
@@ -256,14 +267,17 @@ export function PickupRequestsManagement() {
           </Card>
         ) : (
           filteredRequests.map((request) => (
-            <Card key={request.id} className={request.status === 'pending' ? 'border-l-4 border-l-yellow-500' : ''}>
+            <Card key={request.id} className={
+              request.status === 'pending' ? 'border-l-4 border-l-yellow-500' : 
+              request.status === 'accepted' ? 'border-l-4 border-l-blue-500' : ''
+            }>
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
                     <CardTitle className="flex items-center gap-2">
                       {request.customerName}
                       <Badge className={getStatusColor(request.status)}>
-                        {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+                        {request.status === 'accepted' ? 'En Route' : request.status.charAt(0).toUpperCase() + request.status.slice(1)}
                       </Badge>
                     </CardTitle>
                     <CardDescription className="flex items-center gap-2">
@@ -323,12 +337,17 @@ export function PickupRequestsManagement() {
                         <p className="text-sm text-muted-foreground">{request.customerPhone}</p>
                       </div>
                     </div>
-                    {request.assignedDriverName && (
+                    {request.acceptedByName && (
                       <div className="flex items-start gap-2">
                         <Car className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
                         <div>
-                          <p className="text-sm font-medium">Assigned Driver</p>
-                          <p className="text-sm text-muted-foreground">{request.assignedDriverName}</p>
+                          <p className="text-sm font-medium">Accepted By</p>
+                          <p className="text-sm text-muted-foreground">{request.acceptedByName}</p>
+                          {request.acceptedAt && (
+                            <p className="text-xs text-muted-foreground">
+                              {new Date(request.acceptedAt).toLocaleTimeString()}
+                            </p>
+                          )}
                         </div>
                       </div>
                     )}

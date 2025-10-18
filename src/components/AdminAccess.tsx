@@ -17,12 +17,12 @@ export function AdminAccess({ onNavigate }: AdminAccessProps) {
         <Settings className="h-5 w-5" />
       </button>
       
-      {/* Operations Button */}
+      {/* Operations Button - Navigate to driver login */}
       <button
-        onClick={() => onNavigate("operations")}
+        onClick={() => onNavigate("driver-login")}
         className="flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground shadow-lg transition-all hover:scale-110 hover:border-accent hover:text-accent hover:shadow-xl"
-        aria-label="Operations access"
-        title="Operations Portal (Drivers)"
+        aria-label="Driver login"
+        title="Driver Login (Operations Portal)"
       >
         <Users className="h-5 w-5" />
       </button>

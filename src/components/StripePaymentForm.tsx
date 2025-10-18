@@ -10,6 +10,7 @@ import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Alert, AlertDescription } from "./ui/alert";
 import { Loader2, CreditCard, Shield, Lock } from "lucide-react";
+import { projectId, publicAnonKey } from "../utils/supabase/info";
 
 interface StripePaymentFormProps {
   amount: number;
@@ -67,7 +68,8 @@ function CheckoutForm({ amount, onSuccess, onError, customerEmail }: Omit<Stripe
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div>
+      {/* Payment Element Container */}
+      <div className="rounded-lg border border-border/50 p-4 bg-background">
         <PaymentElement 
           options={{
             layout: "tabs",
@@ -81,27 +83,29 @@ function CheckoutForm({ amount, onSuccess, onError, customerEmail }: Omit<Stripe
         </Alert>
       )}
 
-      <div className="rounded-lg bg-secondary/50 p-4 space-y-2">
-        <div className="flex items-center gap-2 text-muted-foreground">
-          <Shield className="h-4 w-4 text-primary" />
-          <p className="text-sm">Secure payment powered by Stripe</p>
+      {/* Security Badges */}
+      <div className="rounded-lg bg-primary/5 border border-primary/10 p-4 space-y-2">
+        <div className="flex items-center gap-2">
+          <Shield className="h-5 w-5 text-primary flex-shrink-0" />
+          <p className="text-sm text-foreground">Secure payment powered by Stripe</p>
         </div>
-        <div className="flex items-center gap-2 text-muted-foreground">
-          <Lock className="h-4 w-4 text-primary" />
-          <p className="text-sm">Your payment information is encrypted and secure</p>
+        <div className="flex items-center gap-2">
+          <Lock className="h-5 w-5 text-primary flex-shrink-0" />
+          <p className="text-sm text-foreground">Your payment information is encrypted and secure</p>
         </div>
       </div>
 
+      {/* Payment Button */}
       <Button
         type="submit"
         size="lg"
-        className="w-full bg-accent hover:bg-accent/90"
+        className="w-full bg-accent hover:bg-accent/90 shadow-lg hover:shadow-xl transition-all duration-200"
         disabled={!stripe || isProcessing}
       >
         {isProcessing ? (
           <>
             <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-            Processing...
+            Processing Payment...
           </>
         ) : (
           <>
@@ -111,34 +115,71 @@ function CheckoutForm({ amount, onSuccess, onError, customerEmail }: Omit<Stripe
         )}
       </Button>
 
-      <p className="text-center text-muted-foreground">
-        You'll receive your QR codes immediately after payment
-      </p>
+      {/* Confirmation Message */}
+      <div className="text-center space-y-1">
+        <p className="text-sm text-muted-foreground">
+          You'll receive your QR codes immediately after payment
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Confirmation will be sent to your email
+        </p>
+      </div>
     </form>
   );
 }
 
 export function StripePaymentForm({ amount, clientSecret, onSuccess, onError, customerEmail }: StripePaymentFormProps) {
   const [stripePromise, setStripePromise] = useState<Promise<Stripe | null> | null>(null);
+  const [isLoadingStripe, setIsLoadingStripe] = useState(true);
 
   useEffect(() => {
-    // Get Stripe publishable key from environment or window
-    const publishableKey = (window as any).STRIPE_PUBLISHABLE_KEY;
-    
-    if (!publishableKey) {
-      console.error("Stripe publishable key not configured");
-      onError("Payment system not configured. Please contact support.");
-      return;
-    }
+    const fetchStripeConfig = async () => {
+      try {
+        // Try to get from window first (cached)
+        const cachedKey = (window as any).STRIPE_PUBLISHABLE_KEY;
+        
+        if (cachedKey) {
+          setStripePromise(loadStripe(cachedKey));
+          setIsLoadingStripe(false);
+          return;
+        }
 
-    setStripePromise(loadStripe(publishableKey));
+        // Fetch from server
+        const response = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/stripe-config`,
+          {
+            headers: {
+              'Authorization': `Bearer ${publicAnonKey}`
+            }
+          }
+        );
+
+        const data = await response.json();
+        
+        if (data.success && data.publishableKey) {
+          // Cache in window for subsequent uses
+          (window as any).STRIPE_PUBLISHABLE_KEY = data.publishableKey;
+          setStripePromise(loadStripe(data.publishableKey));
+        } else {
+          throw new Error(data.error || "Failed to get Stripe configuration");
+        }
+      } catch (error) {
+        console.error("Error loading Stripe:", error);
+        onError("Payment system not configured. Please contact support.");
+      } finally {
+        setIsLoadingStripe(false);
+      }
+    };
+
+    fetchStripeConfig();
   }, [onError]);
 
-  if (!stripePromise) {
+  if (isLoadingStripe || !stripePromise) {
     return (
       <Card className="p-8">
-        <div className="flex items-center justify-center">
+        <div className="flex flex-col items-center justify-center space-y-3">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-sm text-muted-foreground">Loading payment system...</p>
         </div>
       </Card>
     );

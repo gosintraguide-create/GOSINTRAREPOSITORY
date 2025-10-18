@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
-import { ArrowLeft, TestTube, CheckCircle, XCircle, Loader2, Mail } from 'lucide-react';
+import { ArrowLeft, TestTube, CheckCircle, XCircle, Loader2, Mail, Ticket, Copy, Users, CalendarDays } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
 import { ClearCacheButton } from './ClearCacheButton';
 import { DatabaseDiagnostics } from './DatabaseDiagnostics';
@@ -15,10 +15,28 @@ interface DiagnosticsPageProps {
 }
 
 export function DiagnosticsPage({ onNavigate }: DiagnosticsPageProps) {
+  // Block search engines from indexing this page
+  useEffect(() => {
+    const metaRobots = document.querySelector('meta[name="robots"]');
+    if (metaRobots) {
+      metaRobots.setAttribute('content', 'noindex, nofollow');
+    } else {
+      const meta = document.createElement('meta');
+      meta.name = 'robots';
+      meta.content = 'noindex, nofollow';
+      document.head.appendChild(meta);
+    }
+    document.title = 'Diagnostics - Access Restricted';
+  }, []);
+
   const [testing, setTesting] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [sendingEmail, setSendingEmail] = useState(false);
   const [testEmail, setTestEmail] = useState('');
+  const [creatingBooking, setCreatingBooking] = useState(false);
+  const [mockBookingResult, setMockBookingResult] = useState<any>(null);
+  const [passengerCount, setPassengerCount] = useState(2);
+  const [daysFromNow, setDaysFromNow] = useState(7);
 
   const testPDFGeneration = async () => {
     setTesting(true);
@@ -115,6 +133,129 @@ export function DiagnosticsPage({ onNavigate }: DiagnosticsPageProps) {
     } finally {
       setSendingEmail(false);
     }
+  };
+
+  const createMockBooking = async () => {
+    setCreatingBooking(true);
+    setMockBookingResult(null);
+    
+    try {
+      console.log('🎫 Creating mock booking...');
+      
+      // Generate passenger data
+      const passengers = [];
+      const names = ['Alice Johnson', 'Bob Smith', 'Charlie Brown', 'Diana Prince', 'Eve Wilson', 'Frank Miller'];
+      for (let i = 0; i < passengerCount; i++) {
+        passengers.push({
+          name: names[i % names.length],
+          type: i < passengerCount - 1 ? 'Adult' : 'Child'
+        });
+      }
+
+      // Create mock booking data
+      // Use verified email for Resend API compliance
+      const mockBooking = {
+        selectedDate: new Date(Date.now() + daysFromNow * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        timeSlot: '9:00',
+        passengers: passengers,
+        contactInfo: {
+          name: passengers[0].name,
+          email: 'gosintra.guide@gmail.com', // Must use verified email for Resend
+          phone: '+351 912 000 000'
+        },
+        guidedTour: null,
+        selectedAttractions: [],
+        totalPrice: passengerCount * 25,
+        paymentIntentId: `mock_${Date.now()}`,
+        isTestBooking: true,
+        skipEmail: true // Don't send confirmation email for mock bookings
+      };
+
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/bookings`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${publicAnonKey}`,
+          },
+          body: JSON.stringify(mockBooking),
+        }
+      );
+
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        setMockBookingResult({
+          success: true,
+          bookingId: data.booking.bookingId,
+          passengerCount: passengers.length,
+          date: mockBooking.selectedDate,
+          totalPrice: mockBooking.totalPrice
+        });
+        toast.success(`✅ Mock booking created! ID: ${data.booking.bookingId}`);
+        console.log('🎫 Mock booking created:', data);
+      } else {
+        setMockBookingResult({
+          success: false,
+          error: data.error || 'Unknown error'
+        });
+        toast.error(`Failed to create booking: ${data.error || 'Unknown error'}`);
+        console.error('🎫 Booking creation failed:', data);
+      }
+    } catch (error) {
+      console.error('🎫 Mock booking error:', error);
+      setMockBookingResult({
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+      toast.error(error instanceof Error ? error.message : 'Failed to create mock booking');
+    } finally {
+      setCreatingBooking(false);
+    }
+  };
+
+  const copyBookingId = (bookingId: string) => {
+    // Try modern Clipboard API first
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(bookingId)
+        .then(() => {
+          toast.success('Booking ID copied to clipboard!');
+        })
+        .catch(() => {
+          // Fallback to older method
+          fallbackCopyText(bookingId);
+        });
+    } else {
+      // Use fallback method
+      fallbackCopyText(bookingId);
+    }
+  };
+
+  const fallbackCopyText = (text: string) => {
+    // Create a temporary textarea element
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+      const successful = document.execCommand('copy');
+      if (successful) {
+        toast.success('Booking ID copied to clipboard!');
+      } else {
+        toast.error('Failed to copy. Please copy manually: ' + text);
+      }
+    } catch (err) {
+      console.error('Fallback copy failed:', err);
+      toast.error('Failed to copy. Please copy manually: ' + text);
+    }
+    
+    document.body.removeChild(textArea);
   };
 
   return (
@@ -303,6 +444,162 @@ export function DiagnosticsPage({ onNavigate }: DiagnosticsPageProps) {
                 <li>PDF contains all tickets with QR codes</li>
                 <li>QR codes are scannable</li>
                 <li>Booking ID follows new AA-#### format</li>
+              </ol>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Mock Booking Creation Card */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Ticket className="size-5" />
+              Create Mock Booking
+            </CardTitle>
+            <CardDescription>
+              Quickly create a test booking in the database for testing QR scanning, booking management, and other features (no email sent)
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <Label htmlFor="passengerCount" className="flex items-center gap-2">
+                  <Users className="size-4" />
+                  Number of Passengers
+                </Label>
+                <Input
+                  id="passengerCount"
+                  type="number"
+                  min="1"
+                  max="6"
+                  value={passengerCount}
+                  onChange={(e) => setPassengerCount(Math.max(1, Math.min(6, parseInt(e.target.value) || 1)))}
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="daysFromNow" className="flex items-center gap-2">
+                  <CalendarDays className="size-4" />
+                  Days From Now
+                </Label>
+                <Input
+                  id="daysFromNow"
+                  type="number"
+                  min="0"
+                  max="365"
+                  value={daysFromNow}
+                  onChange={(e) => setDaysFromNow(Math.max(0, Math.min(365, parseInt(e.target.value) || 7)))}
+                  className="mt-1"
+                />
+              </div>
+            </div>
+
+            <Button
+              onClick={createMockBooking}
+              disabled={creatingBooking}
+              className="w-full"
+            >
+              {creatingBooking ? (
+                <>
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  Creating Mock Booking...
+                </>
+              ) : (
+                <>
+                  <Ticket className="mr-2 size-4" />
+                  Create Mock Booking
+                </>
+              )}
+            </Button>
+
+            {mockBookingResult && (
+              <div className={`rounded-lg border p-4 ${mockBookingResult.success ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50'}`}>
+                {mockBookingResult.success ? (
+                  <>
+                    <div className="mb-3 flex items-center gap-2">
+                      <CheckCircle className="size-5 text-green-600" />
+                      <span className="font-medium text-green-900">Booking Created Successfully!</span>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between rounded-lg bg-white/60 p-3">
+                        <div>
+                          <p className="text-xs text-green-700">Booking ID</p>
+                          <p className="font-mono text-lg font-bold text-green-900">{mockBookingResult.bookingId}</p>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => copyBookingId(mockBookingResult.bookingId)}
+                          className="gap-1"
+                        >
+                          <Copy className="size-3" />
+                          Copy
+                        </Button>
+                      </div>
+                      
+                      <div className="grid grid-cols-3 gap-2 text-sm">
+                        <div className="rounded bg-white/60 p-2">
+                          <p className="text-xs text-green-700">Passengers</p>
+                          <p className="font-semibold text-green-900">{mockBookingResult.passengerCount}</p>
+                        </div>
+                        <div className="rounded bg-white/60 p-2">
+                          <p className="text-xs text-green-700">Date</p>
+                          <p className="font-semibold text-green-900">{new Date(mockBookingResult.date).toLocaleDateString()}</p>
+                        </div>
+                        <div className="rounded bg-white/60 p-2">
+                          <p className="text-xs text-green-700">Total</p>
+                          <p className="font-semibold text-green-900">€{mockBookingResult.totalPrice}</p>
+                        </div>
+                      </div>
+
+                      <div className="rounded-lg border border-green-300 bg-green-100/50 p-3">
+                        <p className="text-xs font-semibold text-green-800 mb-1">✅ What You Can Test Now:</p>
+                        <ul className="space-y-0.5 text-xs text-green-700">
+                          <li>• Scan QR codes in Operations Portal</li>
+                          <li>• View booking in Admin Dashboard</li>
+                          <li>• Test booking management features</li>
+                          <li>• Check analytics and reports</li>
+                          <li>• Verify destination tracking</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="mb-3 flex items-center gap-2">
+                      <XCircle className="size-5 text-red-600" />
+                      <span className="font-medium text-red-900">Failed to Create Booking</span>
+                    </div>
+                    <p className="text-sm text-red-800">{mockBookingResult.error}</p>
+                  </>
+                )}
+              </div>
+            )}
+
+            <div className="rounded-lg border border-purple-200 bg-purple-50 p-4">
+              <h3 className="mb-2 font-medium text-purple-900">Mock Booking Details</h3>
+              <ul className="space-y-1 text-sm text-purple-800">
+                <li>• <strong>Email:</strong> gosintra.guide@gmail.com (verified email - no email sent due to skipEmail flag)</li>
+                <li>• <strong>Phone:</strong> +351 912 000 000</li>
+                <li>• <strong>Time:</strong> 9:00 AM</li>
+                <li>• <strong>Guided Tour:</strong> None</li>
+                <li>• <strong>Attractions:</strong> None</li>
+                <li>• <strong>Price:</strong> €25 per passenger</li>
+                <li>• <strong>Payment:</strong> Mock (test_payment_intent)</li>
+                <li>• <strong>QR Codes:</strong> Generated for each passenger</li>
+              </ul>
+            </div>
+
+            <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+              <h3 className="mb-2 font-medium text-blue-900">Quick Testing Guide</h3>
+              <ol className="list-inside list-decimal space-y-1 text-sm text-blue-800">
+                <li>Create a mock booking with your desired parameters</li>
+                <li>Copy the Booking ID to test booking management</li>
+                <li>Go to Operations Portal to scan the QR codes</li>
+                <li>Check Admin Dashboard to view booking details</li>
+                <li>Test destination tracking and analytics</li>
               </ol>
             </div>
           </CardContent>

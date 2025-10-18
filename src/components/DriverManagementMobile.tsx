@@ -171,7 +171,7 @@ export function DriverManagement() {
     setFormData({
       name: driver.name,
       email: driver.email,
-      password: '',
+      password: driver.password || '', // Load existing password
       phoneNumber: driver.phoneNumber || '',
       vehicleType: driver.vehicleType || '',
       licenseNumber: driver.licenseNumber || '',
@@ -373,6 +373,9 @@ export function DriverManagement() {
                           )}
                         </div>
                         <p className="text-sm text-gray-500 truncate">{driver.email}</p>
+                        <p className="text-sm text-gray-500">
+                          Password: <code className="bg-gray-100 px-1 rounded">{driver.password || '••••••••'}</code>
+                        </p>
                         <p className="text-sm text-gray-500">{driver.phoneNumber || 'No phone'}</p>
                         {driver.vehicleType && (
                           <p className="text-sm text-gray-500">{driver.vehicleType}</p>
@@ -421,6 +424,32 @@ export function DriverManagement() {
                                     setFormData({ ...formData, name: e.target.value })
                                   }
                                 />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label htmlFor="edit-email">Email</Label>
+                                <Input
+                                  id="edit-email"
+                                  type="email"
+                                  value={formData.email}
+                                  disabled
+                                  className="bg-gray-50 text-gray-500"
+                                />
+                                <p className="text-xs text-gray-500">Email cannot be changed</p>
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label htmlFor="edit-password">Password</Label>
+                                <Input
+                                  id="edit-password"
+                                  type="text"
+                                  placeholder="Enter new password"
+                                  value={formData.password}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, password: e.target.value })
+                                  }
+                                />
+                                <p className="text-xs text-gray-500">Leave blank to keep current password</p>
                               </div>
 
                               <div className="space-y-2">

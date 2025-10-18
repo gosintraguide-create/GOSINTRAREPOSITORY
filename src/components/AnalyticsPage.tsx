@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { ArrowLeft, TrendingUp, TrendingDown, DollarSign, Users, Calendar, Package, CheckCircle2, Clock, Download, Filter, BarChart3, LineChart as LineChartIcon, PieChart as PieChartIcon } from "lucide-react";
+import { ArrowLeft, TrendingUp, TrendingDown, DollarSign, Users, Calendar, Package, CheckCircle2, Clock, Download, Filter, BarChart3, LineChart as LineChartIcon, PieChart as PieChartIcon, RefreshCw } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Label } from "./ui/label";
@@ -34,6 +34,20 @@ type TimeFrame = "7days" | "30days" | "3months" | "6months" | "1year" | "all" | 
 const CHART_COLORS = ["#0A4D5C", "#D97843", "#636e72", "#2ecc71", "#f39c12", "#e74c3c", "#9b59b6", "#3498db"];
 
 export function AnalyticsPage({ onNavigate }: AnalyticsPageProps) {
+  // Block search engines from indexing this page
+  useEffect(() => {
+    const metaRobots = document.querySelector('meta[name="robots"]');
+    if (metaRobots) {
+      metaRobots.setAttribute('content', 'noindex, nofollow');
+    } else {
+      const meta = document.createElement('meta');
+      meta.name = 'robots';
+      meta.content = 'noindex, nofollow';
+      document.head.appendChild(meta);
+    }
+    document.title = 'Analytics - Access Restricted';
+  }, []);
+
   const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [timeFrame, setTimeFrame] = useState<TimeFrame>("30days");
@@ -411,10 +425,21 @@ export function AnalyticsPage({ onNavigate }: AnalyticsPageProps) {
               </div>
               <div className="h-1 w-20 rounded-full bg-accent" />
             </div>
-            <Button onClick={exportData} variant="outline" className="gap-2">
-              <Download className="h-4 w-4" />
-              Export Data
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                onClick={loadBookings} 
+                variant="outline" 
+                className="gap-2"
+                disabled={loading}
+              >
+                <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                Refresh Data
+              </Button>
+              <Button onClick={exportData} variant="outline" className="gap-2">
+                <Download className="h-4 w-4" />
+                Export Data
+              </Button>
+            </div>
           </div>
         </div>
 

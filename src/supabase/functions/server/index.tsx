@@ -1845,6 +1845,38 @@ app.get("/make-server-3bd0ade8/availability", async (c) => {
   }
 });
 
+// Get Stripe Publishable Key
+app.get("/make-server-3bd0ade8/stripe-config", async (c) => {
+  try {
+    const publishableKey = Deno.env.get("STRIPE_PUBLISHABLE_KEY");
+    
+    if (!publishableKey) {
+      console.error("Stripe publishable key not configured");
+      return c.json(
+        {
+          success: false,
+          error: "Payment configuration not available",
+        },
+        500,
+      );
+    }
+
+    return c.json({
+      success: true,
+      publishableKey,
+    });
+  } catch (error) {
+    console.error("Error fetching Stripe config:", error);
+    return c.json(
+      {
+        success: false,
+        error: "Failed to get payment configuration",
+      },
+      500,
+    );
+  }
+});
+
 // Create Stripe Payment Intent
 app.post(
   "/make-server-3bd0ade8/create-payment-intent",
@@ -2148,7 +2180,7 @@ app.post("/make-server-3bd0ade8/bookings/lookup", async (c) => {
 app.post("/make-server-3bd0ade8/bookings", async (c) => {
   try {
     const body = await c.req.json();
-    const { paymentIntentId, isTestBooking } = body;
+    const { paymentIntentId, isTestBooking, skipEmail } = body;
 
     // Verify payment if Stripe is configured (skip for test bookings)
     if (stripe && paymentIntentId && !isTestBooking) {
@@ -2288,23 +2320,31 @@ app.post("/make-server-3bd0ade8/bookings", async (c) => {
       `✅ Updated availability for ${date} at ${timeSlot}: ${availableSeats} -> ${availabilitySlots[timeSlot]}`,
     );
 
-    // Send confirmation email with QR codes
-    const emailResult = await sendBookingEmail(
-      booking,
-      qrCodes,
-    );
-
-    if (!emailResult.success) {
-      console.error(
-        "Failed to send email, but booking was created:",
-        emailResult.error,
+    // Send confirmation email with QR codes (unless skipEmail is true)
+    let emailResult = { success: true, skipped: false };
+    
+    if (skipEmail) {
+      console.log('📧 Skipping email send (skipEmail flag set)');
+      emailResult = { success: true, skipped: true };
+    } else {
+      emailResult = await sendBookingEmail(
+        booking,
+        qrCodes,
       );
+
+      if (!emailResult.success) {
+        console.error(
+          "Failed to send email, but booking was created:",
+          emailResult.error,
+        );
+      }
     }
 
     return c.json({
       success: true,
       booking,
-      emailSent: emailResult.success,
+      emailSent: emailResult.success && !emailResult.skipped,
+      emailSkipped: emailResult.skipped,
     });
   } catch (error) {
     console.error("Error creating booking:", error);
@@ -2413,7 +2453,7 @@ app.post("/make-server-3bd0ade8/verify-qr", async (c) => {
 // Check in passenger
 app.post("/make-server-3bd0ade8/checkin", async (c) => {
   try {
-    const { bookingId, passengerIndex, location } =
+    const { bookingId, passengerIndex, location, destination } =
       await c.req.json();
 
     const booking = await kv.get(bookingId);
@@ -2435,6 +2475,7 @@ app.post("/make-server-3bd0ade8/checkin", async (c) => {
       passengerIndex: passengerIndex || 0,
       timestamp: new Date().toISOString(),
       location: location || "Vehicle Pickup",
+      destination: destination || "Unknown",
       date: booking.selectedDate,
     };
 
@@ -2446,8 +2487,26 @@ app.post("/make-server-3bd0ade8/checkin", async (c) => {
     checkIns.push(checkInRecord);
     await kv.set(checkInsKey, checkIns);
 
+    // Track destination count for today
+    const today = new Date().toISOString().split('T')[0];
+    const destKey = `destination_${today}_${destination}`;
+    const destCount = (await kv.get(destKey)) || 0;
+    await kv.set(destKey, destCount + 1);
+
+    // Add to destination log
+    const destLogKey = `destination_log_${today}`;
+    const destLog = (await kv.get(destLogKey)) || [];
+    destLog.push({
+      destination,
+      timestamp: new Date().toISOString(),
+      bookingId,
+      passengerIndex: passengerIndex || 0,
+      customerName: booking.contactInfo.name
+    });
+    await kv.set(destLogKey, destLog);
+
     console.log(
-      `✅ Passenger checked in: ${booking.contactInfo.name} - ${checkInRecord.timestamp}`,
+      `✅ Passenger checked in: ${booking.contactInfo.name} - ${checkInRecord.timestamp} - ${destination}`,
     );
 
     return c.json({
@@ -2494,6 +2553,52 @@ app.get(
     }
   },
 );
+
+// Get destination statistics for today
+app.get("/make-server-3bd0ade8/destinations/stats", async (c) => {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    
+    // List of common destinations
+    const destinations = [
+      "Palácio da Pena",
+      "Castelo dos Mouros",
+      "Palácio Nacional de Sintra",
+      "Quinta da Regaleira",
+      "Palácio de Monserrate",
+      "Cabo da Roca",
+      "Centro Histórico",
+      "Other"
+    ];
+
+    const stats = [];
+    for (const dest of destinations) {
+      const destKey = `destination_${today}_${dest}`;
+      const count = (await kv.get(destKey)) || 0;
+      if (count > 0) {
+        stats.push({ destination: dest, count });
+      }
+    }
+
+    // Sort by count descending
+    stats.sort((a, b) => b.count - a.count);
+
+    return c.json({
+      success: true,
+      date: today,
+      stats,
+    });
+  } catch (error) {
+    console.error("Error fetching destination stats:", error);
+    return c.json(
+      {
+        success: false,
+        message: "Failed to fetch destination stats",
+      },
+      500,
+    );
+  }
+});
 
 // Download booking PDF
 app.get("/make-server-3bd0ade8/bookings/:id/pdf", async (c) => {
@@ -2912,22 +3017,22 @@ app.post(
 // ============================================================
 
 // Create a new pickup request
-app.post("/make-server-3bd0ade8/pickup/request", async (c) => {
+app.post("/make-server-3bd0ade8/pickup-requests", async (c) => {
   try {
     const body = await c.req.json();
     const {
       groupSize,
-      location,
+      pickupLocation,
       destination,
       customerName,
-      customerEmail,
+      customerPhone,
     } = body;
 
-    if (!groupSize || !location) {
+    if (!groupSize || !pickupLocation) {
       return c.json(
         {
           success: false,
-          error: "Group size and location are required",
+          error: "Group size and pickup location are required",
         },
         400,
       );
@@ -2936,16 +3041,18 @@ app.post("/make-server-3bd0ade8/pickup/request", async (c) => {
     // Generate pickup request ID
     const timestamp = Date.now();
     const requestId = `PICKUP_${timestamp}`;
+    const requestTime = new Date().toISOString();
 
     const pickupRequest = {
       id: requestId,
       groupSize: parseInt(groupSize),
-      location,
+      pickupLocation,
       destination: destination || null,
       customerName: customerName || "Guest",
-      customerEmail: customerEmail || null,
+      customerPhone: customerPhone || null,
       status: "pending", // pending, assigned, completed, cancelled
-      createdAt: new Date().toISOString(),
+      requestTime,
+      createdAt: requestTime,
       estimatedArrival: new Date(
         Date.now() + 5 * 60000,
       ).toISOString(), // 5 minutes
@@ -2962,7 +3069,7 @@ app.post("/make-server-3bd0ade8/pickup/request", async (c) => {
     await kv.set("active_pickup_requests", activeRequests);
 
     console.log(
-      `🚗 Pickup request created: ${requestId} - ${groupSize} passengers at ${location}`,
+      `🚗 Pickup request created: ${requestId} - ${groupSize} passengers at ${pickupLocation}`,
     );
 
     return c.json({
@@ -2981,7 +3088,48 @@ app.post("/make-server-3bd0ade8/pickup/request", async (c) => {
   }
 });
 
-// Get all active pickup requests (for operations portal)
+// Get all pending pickup requests (for driver dashboard)
+app.get("/make-server-3bd0ade8/pickup-requests/pending", async (c) => {
+  try {
+    const activeRequestIds =
+      (await kv.get("active_pickup_requests")) || [];
+
+    const requests = [];
+    for (const requestId of activeRequestIds) {
+      const request = await kv.get(requestId);
+      if (request && request.status === "pending") {
+        requests.push(request);
+      }
+    }
+
+    // Sort by creation time (newest first)
+    requests.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() -
+        new Date(a.createdAt).getTime(),
+    );
+
+    return c.json({
+      success: true,
+      requests,
+      count: requests.length,
+    });
+  } catch (error) {
+    console.error(
+      "Error fetching pending pickup requests:",
+      error,
+    );
+    return c.json(
+      {
+        success: false,
+        error: "Failed to fetch pickup requests",
+      },
+      500,
+    );
+  }
+});
+
+// Get all active pickup requests (for operations portal - alias for compatibility)
 app.get("/make-server-3bd0ade8/pickup/active", async (c) => {
   try {
     const activeRequestIds =
@@ -3084,6 +3232,74 @@ app.post(
         {
           success: false,
           error: "Failed to update pickup request",
+        },
+        500,
+      );
+    }
+  },
+);
+
+// Assign pickup request to driver
+app.post(
+  "/make-server-3bd0ade8/pickup-requests/:requestId/assign",
+  async (c) => {
+    try {
+      const requestId = c.req.param("requestId");
+      const body = await c.req.json();
+      const { driverId, driverName } = body;
+
+      if (!driverId || !driverName) {
+        return c.json(
+          {
+            success: false,
+            error: "Driver ID and name are required",
+          },
+          400,
+        );
+      }
+
+      const request = await kv.get(requestId);
+      if (!request) {
+        return c.json(
+          {
+            success: false,
+            error: "Pickup request not found",
+          },
+          404,
+        );
+      }
+
+      // Update the request with driver info
+      request.status = "assigned";
+      request.driverId = driverId;
+      request.driverName = driverName;
+      request.assignedAt = new Date().toISOString();
+      request.updatedAt = new Date().toISOString();
+
+      await kv.set(requestId, request);
+
+      // Remove from active list since it's been claimed
+      const activeRequests =
+        (await kv.get("active_pickup_requests")) || [];
+      const updatedRequests = activeRequests.filter(
+        (id: string) => id !== requestId,
+      );
+      await kv.set("active_pickup_requests", updatedRequests);
+
+      console.log(
+        `🚗 Pickup request ${requestId} assigned to driver ${driverName}`,
+      );
+
+      return c.json({
+        success: true,
+        request,
+      });
+    } catch (error) {
+      console.error("Error assigning pickup request:", error);
+      return c.json(
+        {
+          success: false,
+          error: "Failed to assign pickup request",
         },
         500,
       );
@@ -4212,7 +4428,7 @@ app.post(
   },
 );
 
-// Assign a driver to a pickup request
+// Accept a pickup request (driver indicates they're going)
 app.post(
   "/make-server-3bd0ade8/pickup-requests/:id/assign",
   async (c) => {
@@ -4235,10 +4451,15 @@ app.post(
         );
       }
 
-      request.status = "assigned";
-      request.assignedDriver = driverId;
-      request.assignedDriverName = driverName;
+      request.status = "accepted";
+      request.acceptedBy = driverId;
+      request.acceptedByName = driverName;
+      request.acceptedAt = new Date().toISOString();
       await kv.set(`pickup_request:${requestId}`, request);
+
+      console.log(
+        `✅ Pickup request ${requestId} accepted by driver ${driverName} (${driverId})`,
+      );
 
       return c.json({
         success: true,
@@ -4246,13 +4467,13 @@ app.post(
       });
     } catch (error) {
       console.error(
-        "Error assigning driver to pickup request:",
+        "Error accepting pickup request:",
         error,
       );
       return c.json(
         {
           success: false,
-          error: "Failed to assign driver",
+          error: "Failed to accept request",
         },
         500,
       );
@@ -4342,5 +4563,431 @@ app.get(
     }
   },
 );
+
+// ==================== DRIVER MANAGEMENT ROUTES ====================
+
+// Helper function to hash passwords
+async function hashPassword(password: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+  const hash = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hash))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+// Helper function to generate a simple auth token
+function generateAuthToken(): string {
+  return crypto.randomUUID();
+}
+
+// Get all drivers
+app.get("/make-server-3bd0ade8/drivers", async (c) => {
+  try {
+    console.log("📋 Fetching all drivers...");
+
+    const driversData = await kv.get("drivers_list");
+    const drivers = driversData || [];
+
+    console.log(`✅ Found ${drivers.length} drivers`);
+
+    // Remove password hashes but keep plaintext password for admin
+    const sanitizedDrivers = drivers.map((driver: any) => {
+      const { passwordHash, ...safeDriver } = driver;
+      return safeDriver;
+    });
+
+    return c.json({
+      success: true,
+      drivers: sanitizedDrivers,
+    });
+  } catch (error) {
+    console.error("❌ Error fetching drivers:", error);
+    return c.json(
+      {
+        success: false,
+        error: "Failed to fetch drivers",
+      },
+      500,
+    );
+  }
+});
+
+// Create a new driver
+app.post("/make-server-3bd0ade8/drivers/create", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { name, email, password, phoneNumber, vehicleType, licenseNumber, status } = body;
+
+    if (!name || !email || !password) {
+      return c.json(
+        {
+          success: false,
+          error: "Name, email, and password are required",
+        },
+        400,
+      );
+    }
+
+    console.log(`👤 Creating driver account: ${email}`);
+
+    // Get existing drivers
+    const driversData = await kv.get("drivers_list");
+    const drivers = driversData || [];
+
+    // Check if email already exists
+    const existingDriver = drivers.find(
+      (d: any) => d.email.toLowerCase() === email.toLowerCase(),
+    );
+
+    if (existingDriver) {
+      return c.json(
+        {
+          success: false,
+          error: "A driver with this email already exists",
+        },
+        400,
+      );
+    }
+
+    // Hash the password
+    const passwordHash = await hashPassword(password);
+
+    // Create new driver
+    const newDriver = {
+      id: crypto.randomUUID(),
+      name,
+      email: email.toLowerCase(),
+      passwordHash,
+      password: password, // Store plaintext password for admin access
+      phoneNumber: phoneNumber || "",
+      vehicleType: vehicleType || "",
+      licenseNumber: licenseNumber || "",
+      status: status || "active",
+      createdAt: new Date().toISOString(),
+      lastLogin: null,
+      metrics: {
+        ticketsSold: 0,
+        ticketsSoldToday: 0,
+        revenueGenerated: 0,
+        qrCodesScanned: 0,
+      },
+    };
+
+    // Add to drivers list
+    drivers.push(newDriver);
+    await kv.set("drivers_list", drivers);
+
+    console.log(`✅ Driver created: ${email}`);
+
+    // Remove password hash before sending response
+    const { passwordHash: _, ...safeDriver } = newDriver;
+
+    return c.json({
+      success: true,
+      driver: safeDriver,
+    });
+  } catch (error) {
+    console.error("❌ Error creating driver:", error);
+    return c.json(
+      {
+        success: false,
+        error: "Failed to create driver",
+      },
+      500,
+    );
+  }
+});
+
+// Driver login
+app.post("/make-server-3bd0ade8/drivers/login", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { email, password } = body;
+
+    if (!email || !password) {
+      return c.json(
+        {
+          success: false,
+          error: "Email and password are required",
+        },
+        400,
+      );
+    }
+
+    console.log(`🔐 Driver login attempt: ${email}`);
+
+    // Get all drivers
+    const driversData = await kv.get("drivers_list");
+    const drivers = driversData || [];
+
+    // Find driver by email
+    const driver = drivers.find(
+      (d: any) => d.email.toLowerCase() === email.toLowerCase(),
+    );
+
+    if (!driver) {
+      console.log(`❌ Driver not found: ${email}`);
+      return c.json(
+        {
+          success: false,
+          error: "Invalid email or password",
+        },
+        401,
+      );
+    }
+
+    // Check if driver is active
+    if (driver.status !== "active") {
+      console.log(`❌ Driver account inactive: ${email}`);
+      return c.json(
+        {
+          success: false,
+          error: "Your account is inactive. Please contact your administrator.",
+        },
+        403,
+      );
+    }
+
+    // Verify password
+    const passwordHash = await hashPassword(password);
+    if (passwordHash !== driver.passwordHash) {
+      console.log(`❌ Invalid password for: ${email}`);
+      return c.json(
+        {
+          success: false,
+          error: "Invalid email or password",
+        },
+        401,
+      );
+    }
+
+    // Update last login time
+    driver.lastLogin = new Date().toISOString();
+    await kv.set("drivers_list", drivers);
+
+    // Generate auth token
+    const token = generateAuthToken();
+
+    // Store active session
+    const sessions = (await kv.get("driver_sessions")) || {};
+    sessions[token] = {
+      driverId: driver.id,
+      email: driver.email,
+      loginTime: new Date().toISOString(),
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days
+    };
+    await kv.set("driver_sessions", sessions);
+
+    console.log(`✅ Driver logged in successfully: ${email}`);
+
+    // Remove password hash before sending response
+    const { passwordHash: _, ...safeDriver } = driver;
+
+    return c.json({
+      success: true,
+      driver: safeDriver,
+      token,
+    });
+  } catch (error) {
+    console.error("❌ Error during driver login:", error);
+    return c.json(
+      {
+        success: false,
+        error: "Login failed. Please try again.",
+      },
+      500,
+    );
+  }
+});
+
+// Update driver
+app.put("/make-server-3bd0ade8/drivers/:id", async (c) => {
+  try {
+    const driverId = c.req.param("id");
+    const body = await c.req.json();
+
+    console.log(`✏️ Updating driver: ${driverId}`);
+
+    // Get all drivers
+    const driversData = await kv.get("drivers_list");
+    const drivers = driversData || [];
+
+    // Find driver index
+    const driverIndex = drivers.findIndex((d: any) => d.id === driverId);
+
+    if (driverIndex === -1) {
+      return c.json(
+        {
+          success: false,
+          error: "Driver not found",
+        },
+        404,
+      );
+    }
+
+    // Update driver fields
+    const updatedDriver = {
+      ...drivers[driverIndex],
+      name: body.name || drivers[driverIndex].name,
+      phoneNumber: body.phoneNumber !== undefined ? body.phoneNumber : drivers[driverIndex].phoneNumber,
+      vehicleType: body.vehicleType !== undefined ? body.vehicleType : drivers[driverIndex].vehicleType,
+      licenseNumber: body.licenseNumber !== undefined ? body.licenseNumber : drivers[driverIndex].licenseNumber,
+      status: body.status || drivers[driverIndex].status,
+      updatedAt: new Date().toISOString(),
+    };
+
+    // Update password if provided
+    if (body.password) {
+      updatedDriver.passwordHash = await hashPassword(body.password);
+      updatedDriver.password = body.password; // Also update plaintext password
+    }
+
+    drivers[driverIndex] = updatedDriver;
+    await kv.set("drivers_list", drivers);
+
+    console.log(`✅ Driver updated: ${driverId}`);
+
+    // Remove password hash before sending response
+    const { passwordHash: _, ...safeDriver } = updatedDriver;
+
+    return c.json({
+      success: true,
+      driver: safeDriver,
+    });
+  } catch (error) {
+    console.error("❌ Error updating driver:", error);
+    return c.json(
+      {
+        success: false,
+        error: "Failed to update driver",
+      },
+      500,
+    );
+  }
+});
+
+// Delete driver
+app.delete("/make-server-3bd0ade8/drivers/:id", async (c) => {
+  try {
+    const driverId = c.req.param("id");
+
+    console.log(`🗑️ Deleting driver: ${driverId}`);
+
+    // Get all drivers
+    const driversData = await kv.get("drivers_list");
+    const drivers = driversData || [];
+
+    // Filter out the driver to delete
+    const filteredDrivers = drivers.filter((d: any) => d.id !== driverId);
+
+    if (filteredDrivers.length === drivers.length) {
+      return c.json(
+        {
+          success: false,
+          error: "Driver not found",
+        },
+        404,
+      );
+    }
+
+    await kv.set("drivers_list", filteredDrivers);
+
+    console.log(`✅ Driver deleted: ${driverId}`);
+
+    return c.json({
+      success: true,
+      message: "Driver deleted successfully",
+    });
+  } catch (error) {
+    console.error("❌ Error deleting driver:", error);
+    return c.json(
+      {
+        success: false,
+        error: "Failed to delete driver",
+      },
+      500,
+    );
+  }
+});
+
+// Verify driver token (for authenticated requests)
+app.post("/make-server-3bd0ade8/drivers/verify-token", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { token } = body;
+
+    if (!token) {
+      return c.json(
+        {
+          success: false,
+          error: "Token is required",
+        },
+        400,
+      );
+    }
+
+    // Get active sessions
+    const sessions = (await kv.get("driver_sessions")) || {};
+    const session = sessions[token];
+
+    if (!session) {
+      return c.json(
+        {
+          success: false,
+          error: "Invalid token",
+        },
+        401,
+      );
+    }
+
+    // Check if token is expired
+    if (new Date(session.expiresAt) < new Date()) {
+      // Remove expired session
+      delete sessions[token];
+      await kv.set("driver_sessions", sessions);
+
+      return c.json(
+        {
+          success: false,
+          error: "Token expired",
+        },
+        401,
+      );
+    }
+
+    // Get driver details
+    const driversData = await kv.get("drivers_list");
+    const drivers = driversData || [];
+    const driver = drivers.find((d: any) => d.id === session.driverId);
+
+    if (!driver) {
+      return c.json(
+        {
+          success: false,
+          error: "Driver not found",
+        },
+        404,
+      );
+    }
+
+    // Remove password hash before sending response
+    const { passwordHash: _, ...safeDriver } = driver;
+
+    return c.json({
+      success: true,
+      driver: safeDriver,
+    });
+  } catch (error) {
+    console.error("❌ Error verifying token:", error);
+    return c.json(
+      {
+        success: false,
+        error: "Token verification failed",
+      },
+      500,
+    );
+  }
+});
 
 Deno.serve(app.fetch);

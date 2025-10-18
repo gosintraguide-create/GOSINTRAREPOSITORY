@@ -3,7 +3,6 @@ import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
 import { LiveChat } from "./components/LiveChat";
 import { FloatingCTA } from "./components/FloatingCTA";
-import { AdminAccess } from "./components/AdminAccess";
 import { SEOHead } from "./components/SEOHead";
 import { CookieConsent } from "./components/CookieConsent";
 import { InstallPrompt } from "./components/InstallPrompt";
@@ -160,6 +159,18 @@ export default function App() {
   );
   const [bookingData, setBookingData] = useState<any>(null);
   const [pageData, setPageData] = useState<any>(null);
+  const [driverSession, setDriverSession] = useState<{ driver: any; token: string } | null>(() => {
+    // Check for existing driver session in localStorage
+    const savedSession = localStorage.getItem("driver_session");
+    if (savedSession) {
+      try {
+        return JSON.parse(savedSession);
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
 
   // Handle URL-based page navigation
   useEffect(() => {
@@ -301,6 +312,21 @@ export default function App() {
     if (data) {
       setPageData(data);
     }
+  };
+
+  // Handle driver login
+  const handleDriverLogin = (driver: any, token: string) => {
+    const session = { driver, token };
+    setDriverSession(session);
+    localStorage.setItem("driver_session", JSON.stringify(session));
+    setCurrentPage("operations");
+  };
+
+  // Handle driver logout
+  const handleDriverLogout = () => {
+    setDriverSession(null);
+    localStorage.removeItem("driver_session");
+    setCurrentPage("driver-login");
   };
 
   // Get SEO config for current page
@@ -456,6 +482,26 @@ export default function App() {
         return (
           <ManageBookingPage onNavigate={handleNavigate} />
         );
+      case "driver-login":
+        return (
+          <DriverLoginPage onLoginSuccess={handleDriverLogin} />
+        );
+      case "driver-dashboard":
+        if (!driverSession) {
+          // If no session, redirect to login
+          setCurrentPage("driver-login");
+          return (
+            <DriverLoginPage onLoginSuccess={handleDriverLogin} />
+          );
+        }
+        return (
+          <DriverDashboard
+            driver={driverSession.driver}
+            token={driverSession.token}
+            onLogout={handleDriverLogout}
+            onNavigate={handleNavigate}
+          />
+        );
       case "pena-palace":
       case "quinta-regaleira":
       case "moorish-castle":
@@ -486,7 +532,9 @@ export default function App() {
         currentPage !== "operations" &&
         currentPage !== "manual-booking" &&
         currentPage !== "qr-scanner" &&
-        currentPage !== "diagnostics" && (
+        currentPage !== "diagnostics" &&
+        currentPage !== "driver-login" &&
+        currentPage !== "driver-dashboard" && (
           <SEOHead
             title={seoConfig.title}
             description={seoConfig.description}
@@ -500,7 +548,9 @@ export default function App() {
         currentPage !== "operations" &&
         currentPage !== "manual-booking" &&
         currentPage !== "qr-scanner" &&
-        currentPage !== "diagnostics" && (
+        currentPage !== "diagnostics" &&
+        currentPage !== "driver-login" &&
+        currentPage !== "driver-dashboard" && (
           <Header
             currentPage={currentPage}
             onNavigate={handleNavigate}
@@ -542,16 +592,6 @@ export default function App() {
         currentPage !== "qr-scanner" &&
         currentPage !== "diagnostics" && (
           <FloatingCTA onNavigate={handleNavigate} />
-        )}
-      {/* Admin access button - always visible except on admin page */}
-      {currentPage !== "admin" &&
-        currentPage !== "analytics" &&
-        currentPage !== "operations" &&
-        currentPage !== "manual-booking" &&
-        currentPage !== "booking-confirmation" &&
-        currentPage !== "qr-scanner" &&
-        currentPage !== "diagnostics" && (
-          <AdminAccess onNavigate={handleNavigate} />
         )}
 
       {/* Cookie Consent Banner */}

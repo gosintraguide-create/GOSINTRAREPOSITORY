@@ -43,12 +43,17 @@ export function ClearCacheButton() {
       // 3. Clear localStorage
       const localStorageKeys = Object.keys(localStorage);
       console.log(`🧹 Clearing ${localStorageKeys.length} localStorage items`);
-      // Don't clear language preference
+      // Don't clear language preference or admin session
       const language = localStorage.getItem('language');
+      const adminSession = localStorage.getItem('admin-session');
       localStorage.clear();
       if (language) {
         localStorage.setItem('language', language);
         console.log(`✅ Preserved language: ${language}`);
+      }
+      if (adminSession) {
+        localStorage.setItem('admin-session', adminSession);
+        console.log(`✅ Preserved admin session`);
       }
       
       // 4. Clear sessionStorage
@@ -115,7 +120,7 @@ export function ClearCacheButton() {
       </Button>
       <p className="text-muted-foreground text-xs">
         Clears service worker cache, localStorage, and forces a clean reload.
-        Your language preference will be preserved.
+        Your language preference and admin session will be preserved.
       </p>
     </div>
   );

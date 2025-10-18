@@ -21,7 +21,9 @@ import {
   Send,
   UserCog,
   Navigation,
+  RefreshCw,
 } from "lucide-react";
+import { DestinationTracker } from './DestinationTracker';
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
@@ -138,6 +140,20 @@ const CHART_COLORS = [
 ];
 
 export function AdminPage({ onNavigate }: AdminPageProps) {
+  // Block search engines from indexing this page
+  useEffect(() => {
+    const metaRobots = document.querySelector('meta[name="robots"]');
+    if (metaRobots) {
+      metaRobots.setAttribute('content', 'noindex, nofollow');
+    } else {
+      const meta = document.createElement('meta');
+      meta.name = 'robots';
+      meta.content = 'noindex, nofollow';
+      document.head.appendChild(meta);
+    }
+    document.title = 'Admin Portal - Access Restricted';
+  }, []);
+
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     // Check for existing session in localStorage (persistent across browser sessions)
     const session = localStorage.getItem("admin-session");
@@ -228,10 +244,11 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     setContent(loadContent());
   }, []);
 
-  // Load availability from backend when authenticated
+  // Load availability and bookings from backend when authenticated
   useEffect(() => {
     if (isAuthenticated) {
       loadAvailability();
+      loadBookings();
     }
   }, [isAuthenticated]);
 
@@ -462,8 +479,10 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
       );
 
       setBookings(bookingsWithCheckIns);
+      console.log(`✅ Loaded ${bookingsWithCheckIns.length} bookings with check-in data`);
     } else {
       setBookings([]);
+      console.log('ℹ️ No bookings found');
     }
 
     setLoadingBookings(false);
@@ -974,6 +993,15 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
             <div className="flex gap-2">
               <Button
                 variant="outline"
+                onClick={loadBookings}
+                disabled={loadingBookings}
+                className="gap-2"
+              >
+                <RefreshCw className={`h-4 w-4 ${loadingBookings ? 'animate-spin' : ''}`} />
+                <span className="hidden sm:inline">Refresh Data</span>
+              </Button>
+              <Button
+                variant="outline"
                 onClick={() => onNavigate("home")}
                 className="gap-2"
               >
@@ -1373,6 +1401,9 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                 </div>
               )}
             </Card>
+
+            {/* Destination Tracker */}
+            <DestinationTracker autoRefresh={true} />
 
             {/* Summary Cards */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

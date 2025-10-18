@@ -376,6 +376,32 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
           </p>
         </div>
       </section>
+
+      {/* TEMPORARY TESTING ACCESS - REMOVE IN PRODUCTION */}
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+        <div className="rounded-lg border-2 border-dashed border-yellow-500 bg-yellow-50 p-3 shadow-lg">
+          <p className="mb-2 text-xs font-semibold text-yellow-800">🔧 Testing Access</p>
+          <div className="flex flex-col gap-2">
+            <Button
+              onClick={() => onNavigate("admin")}
+              variant="outline"
+              size="sm"
+              className="w-full gap-2 border-primary text-primary hover:bg-primary hover:text-white"
+            >
+              Admin Portal
+            </Button>
+            <Button
+              onClick={() => onNavigate("operations")}
+              variant="outline"
+              size="sm"
+              className="w-full gap-2 border-accent text-accent hover:bg-accent hover:text-white"
+            >
+              Driver Portal
+            </Button>
+          </div>
+          <p className="mt-2 text-[10px] text-yellow-700">Remove before production</p>
+        </div>
+      </div>
     </div>
   );
 }
