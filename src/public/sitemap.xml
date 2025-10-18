@@ -10,14 +10,6 @@
     <priority>1.0</priority>
   </url>
   
-  <!-- How It Works -->
-  <url>
-    <loc>https://gosintra.pt/?page=how-it-works</loc>
-    <lastmod>2025-01-17</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
   <!-- Buy Ticket -->
   <url>
     <loc>https://gosintra.pt/?page=buy-ticket</loc>

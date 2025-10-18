@@ -14,7 +14,6 @@ export function generateSitemap(): string {
   // Static pages
   const staticPages = [
     { path: '/', changefreq: 'daily', priority: '1.0', lastmod: new Date().toISOString().split('T')[0] },
-    { path: '/how-it-works', changefreq: 'weekly', priority: '0.8', lastmod: new Date().toISOString().split('T')[0] },
     { path: '/attractions', changefreq: 'weekly', priority: '0.9', lastmod: new Date().toISOString().split('T')[0] },
     { path: '/buy-ticket', changefreq: 'daily', priority: '1.0', lastmod: new Date().toISOString().split('T')[0] },
     { path: '/about', changefreq: 'monthly', priority: '0.7', lastmod: new Date().toISOString().split('T')[0] },

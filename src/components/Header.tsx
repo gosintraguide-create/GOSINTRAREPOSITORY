@@ -17,7 +17,6 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
   const t = getUITranslation(language);
 
   const navItems = [
-    { id: "how-it-works", label: t.howItWorks },
     { id: "attractions", label: t.attractions },
     { id: "blog", label: "Travel Guide" },
     { id: "manage-booking", label: t.manageBooking || "My Booking" },

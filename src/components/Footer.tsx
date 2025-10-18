@@ -35,11 +35,6 @@ export function Footer({ onNavigate, language = "en" }: FooterProps) {
             <h3 className="mb-4 text-foreground">Quick Links</h3>
             <ul className="space-y-2 text-muted-foreground">
               <li>
-                <a href="#" className="transition-colors hover:text-primary" onClick={(e) => { e.preventDefault(); onNavigate?.('how-it-works'); }}>
-                  How It Works
-                </a>
-              </li>
-              <li>
                 <a href="#" className="transition-colors hover:text-primary" onClick={(e) => { e.preventDefault(); onNavigate?.('attractions'); }}>
                   Attractions
                 </a>

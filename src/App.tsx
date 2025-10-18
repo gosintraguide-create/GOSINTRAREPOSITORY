@@ -24,11 +24,6 @@ const AttractionsPage = lazy(() =>
     default: m.AttractionsPage,
   })),
 );
-const HowItWorksPage = lazy(() =>
-  import("./components/HowItWorksPage").then((m) => ({
-    default: m.HowItWorksPage,
-  })),
-);
 const BuyTicketPage = lazy(() =>
   import("./components/BuyTicketPage").then((m) => ({
     default: m.BuyTicketPage,
@@ -339,11 +334,6 @@ export default function App() {
           ...websiteContent.seo.attractions,
           path: "/attractions",
         };
-      case "how-it-works":
-        return {
-          ...websiteContent.seo.howItWorks,
-          path: "/how-it-works",
-        };
       case "buy-ticket":
         return {
           ...websiteContent.seo.buyTicket,
@@ -402,13 +392,6 @@ export default function App() {
       case "attractions":
         return (
           <AttractionsPage
-            onNavigate={handleNavigate}
-            language={language}
-          />
-        );
-      case "how-it-works":
-        return (
-          <HowItWorksPage
             onNavigate={handleNavigate}
             language={language}
           />

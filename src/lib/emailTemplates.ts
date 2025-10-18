@@ -487,7 +487,7 @@ export function generateBookingConfirmationEmail(data: BookingEmailData): string
       <!-- Next Steps -->
       <div style="text-align: center; margin: 30px 0;">
         <p style="font-size: 16px; margin-bottom: 15px;">Need help planning your visit?</p>
-        <a href="https://gosintra.com/how-it-works" class="cta-button">View Attraction Guide</a>
+        <a href="https://gosintra.com/attractions" class="cta-button">View Attraction Guide</a>
       </div>
 
       <p style="margin-top: 30px;">If you have any questions, feel free to reach out to us via WhatsApp or email.</p>

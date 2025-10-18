@@ -1,9 +1,15 @@
-import { ArrowRight, Users, MapPin, Clock, Shield, Star, CheckCircle2, TrendingUp } from "lucide-react";
+import { ArrowRight, Users, MapPin, Clock, Shield, Star, CheckCircle2, TrendingUp, Ticket, Car, Bell, Heart, Camera, Zap, CheckCircle, RefreshCw, Download, Smartphone } from "lucide-react";
 import { Button } from "./ui/button";
+import { Card } from "./ui/card";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useState, useEffect } from "react";
 import { loadContentWithLanguage, type WebsiteContent, DEFAULT_CONTENT } from "../lib/contentManager";
 import { getUITranslation } from "../lib/translations";
+
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+}
 
 interface HomePageProps {
   onNavigate: (page: string) => void;
@@ -13,6 +19,8 @@ interface HomePageProps {
 export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
   const [basePrice, setBasePrice] = useState(25);
   const [content, setContent] = useState<WebsiteContent>(DEFAULT_CONTENT);
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [isInstalled, setIsInstalled] = useState(false);
   const t = getUITranslation(language);
 
   useEffect(() => {
@@ -61,6 +69,50 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
     // Load website content with language
     setContent(loadContentWithLanguage(language));
   }, [language]);
+
+  // Listen for PWA install prompt
+  useEffect(() => {
+    // Check if already installed
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      setIsInstalled(true);
+      return;
+    }
+
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
+    };
+
+    const handleAppInstalled = () => {
+      setIsInstalled(true);
+      setDeferredPrompt(null);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('appinstalled', handleAppInstalled);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+
+    // Show the install prompt
+    deferredPrompt.prompt();
+
+    // Wait for the user's response
+    const { outcome } = await deferredPrompt.userChoice;
+    
+    if (outcome === 'accepted') {
+      console.log('User accepted the install prompt');
+    }
+
+    // Clear the deferred prompt
+    setDeferredPrompt(null);
+  };
 
   return (
     <div className="flex-1">
@@ -141,242 +193,381 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
                 {content.homepage.heroCallToAction}
                 <ArrowRight className="ml-2 h-5 w-5 sm:h-6 sm:w-6" />
               </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="h-12 w-full border-2 border-white bg-transparent px-6 text-base text-white hover:bg-white hover:text-primary sm:h-16 sm:w-auto sm:px-8 sm:text-lg"
-                onClick={() => onNavigate("how-it-works")}
-              >
-                {t.howItWorks}
-              </Button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* What's Included - Simple & Clear */}
-      <section className="border-b border-border bg-white py-16">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <h2 className="mb-12 text-center">What's Included</h2>
-          
-          <div className="grid gap-8 md:grid-cols-3">
-            <div className="text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
-                <MapPin className="h-8 w-8 text-primary" />
-              </div>
-              <h3 className="mb-2">Unlimited Rides</h3>
-              <p className="text-muted-foreground">
-                Hop on and off all day. Visit all major attractions at your own pace.
-              </p>
+      {/* Steps Section - Detailed & Engaging */}
+      <section className="relative bg-gradient-to-b from-white via-secondary/20 to-white py-20 sm:py-28">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-16 text-center">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-accent/10 px-4 py-2">
+              <Star className="h-5 w-5 text-accent" />
+              <span className="text-accent">Easy as 1-2-3-4</span>
             </div>
-            
-            <div className="text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
-                <Shield className="h-8 w-8 text-primary" />
-              </div>
-              <h3 className="mb-2">Guaranteed Seating</h3>
-              <p className="text-muted-foreground">
-                Small vehicles (2-6 passengers max). Everyone gets a comfortable seat.
-              </p>
-            </div>
-            
-            <div className="text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
-                <Clock className="h-8 w-8 text-primary" />
-              </div>
-              <h3 className="mb-2">Frequent Service</h3>
-              <p className="text-muted-foreground">
-                New departure every 10-15 minutes from each stop. No long waits.
-              </p>
-            </div>
+            <h2 className="text-foreground">How It Works</h2>
+            <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
+              Three simple steps to the best day of your trip! 🎉
+            </p>
           </div>
-        </div>
-      </section>
 
-      {/* Why Not Tour Buses - Direct Comparison */}
-      <section className="bg-secondary/30 py-16">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <h2 className="mb-3 text-center">Why Choose Go Sintra?</h2>
-          <p className="mb-12 text-center text-lg text-muted-foreground">
-            Premium experience vs. traditional tour buses
-          </p>
-          
-          <div className="grid gap-6 md:grid-cols-2">
-            {/* Go Sintra */}
-            <div className="rounded-2xl bg-white p-8 shadow-lg">
-              <div className="mb-6">
-                <h3 className="mb-1 text-primary">Go Sintra</h3>
-                <span className="inline-block rounded-full bg-accent/10 px-3 py-1 text-sm text-accent">Premium</span>
-              </div>
-              <ul className="space-y-3">
-                {[
-                  "Guaranteed comfortable seat",
-                  "Every 10-15 minutes",
-                  "Small groups (2-6 people)",
-                  "Authentic tuk tuks & jeeps",
-                  "Optional guided commentary",
-                ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            
-            {/* Tour Buses */}
-            <div className="rounded-2xl bg-muted/30 p-8">
-              <div className="mb-6">
-                <h3 className="mb-1 text-muted-foreground">Traditional Buses</h3>
-              </div>
-              <ul className="space-y-3 text-muted-foreground">
-                {[
-                  "Standing room often required",
-                  "Hourly departures or less",
-                  "Large groups (30-50+ people)",
-                  "Standard tour buses",
-                  "Fixed commentary for all",
-                ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <div className="mt-0.5 h-5 w-5 flex-shrink-0 rounded-full border-2 border-muted" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works - 3 Steps */}
-      <section className="py-16">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <h2 className="mb-12 text-center">How It Works</h2>
-          
-          <div className="grid gap-8 md:grid-cols-3">
-            <div className="relative text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-accent text-2xl text-white">
-                1
-              </div>
-              <h3 className="mb-2">Buy Your Pass</h3>
-              <p className="text-muted-foreground">
-                Purchase online in 2 minutes. Get instant confirmation on your phone.
-              </p>
-            </div>
-            
-            <div className="relative text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-accent text-2xl text-white">
-                2
-              </div>
-              <h3 className="mb-2">Hop On & Off</h3>
-              <p className="text-muted-foreground">
-                Show your pass to our professional guide-driver. Explore attractions, then catch the next ride.
-              </p>
-            </div>
-            
-            <div className="relative text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-accent text-2xl text-white">
-                3
-              </div>
-              <h3 className="mb-2">Enjoy Sintra</h3>
-              <p className="text-muted-foreground">
-                Visit palaces, castles, and gardens. Valid all day with unlimited rides.
-              </p>
-            </div>
-          </div>
-          
-          <div className="mt-12 text-center">
-            <Button
-              size="lg"
-              className="bg-accent hover:bg-accent/90"
-              onClick={() => onNavigate("how-it-works")}
-            >
-              See Full Details
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Social Proof - Real Travelers */}
-      <section className="bg-secondary/30 py-16">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="grid items-center gap-8 lg:grid-cols-2">
-            <div className="overflow-hidden rounded-3xl shadow-2xl">
-              <ImageWithFallback
-                src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&q=80"
-                alt="Happy travelers on vintage jeep in Sintra"
-                className="h-full w-full object-cover"
-              />
-            </div>
-            <div>
-              <h2 className="mb-4">Real Travelers, Real Experiences</h2>
-              <p className="mb-6 text-lg text-muted-foreground">
-                Join thousands of visitors who've discovered Sintra the comfortable way. Small groups, 
-                authentic vehicles, and the freedom to explore at your own pace.
-              </p>
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="mt-1 h-6 w-6 flex-shrink-0 text-primary" />
-                  <div>
-                    <h4 className="mb-1">Vintage UMM Jeeps</h4>
-                    <p className="text-muted-foreground">
-                      Experience Sintra in these iconic Portuguese vehicles
-                    </p>
+          <div className="space-y-12">
+            {/* Step 1 */}
+            <div className="group relative">
+              <div className="absolute left-8 top-20 hidden h-full w-1 bg-gradient-to-b from-accent via-primary to-accent opacity-20 md:block" />
+              <Card className="relative overflow-hidden border-2 border-border bg-white shadow-lg transition-all hover:scale-[1.02] hover:shadow-2xl">
+                <div className="flex flex-col gap-6 p-8 md:flex-row md:items-start">
+                  <div className="flex-shrink-0">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-accent to-accent/80 shadow-lg">
+                      <span className="text-2xl text-white">1</span>
+                    </div>
+                  </div>
+                  <div className="flex-1 space-y-3">
+                    <div className="flex items-start gap-4">
+                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10">
+                        <Ticket className="h-6 w-6 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="mb-2 text-foreground">Book in Seconds!</h3>
+                        <p className="text-muted-foreground">Pick your date, add optional attractions, and boom—you're all set! Your digital pass arrives instantly via email. No printing, no hassle, just pure adventure.</p>
+                        <div className="mt-3 inline-flex items-center gap-2 rounded-lg bg-accent/10 px-3 py-1.5 text-sm text-accent">
+                          <CheckCircle className="h-4 w-4" />
+                          ⚡ Takes less than 3 minutes
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="mt-1 h-6 w-6 flex-shrink-0 text-primary" />
-                  <div>
-                    <h4 className="mb-1">Small Group Comfort</h4>
-                    <p className="text-muted-foreground">
-                      Maximum 4-6 people per vehicle for a personal experience
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="mt-1 h-6 w-6 flex-shrink-0 text-primary" />
-                  <div>
-                    <h4 className="mb-1">Professional Driver-Guides</h4>
-                    <p className="text-muted-foreground">
-                      Every vehicle is driven by a certified local guide with deep knowledge of Sintra
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="mt-8">
-                <Button
-                  size="lg"
-                  className="bg-primary hover:bg-primary/90"
-                  onClick={() => onNavigate("buy-ticket")}
-                >
-                  Book Your Adventure
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </div>
+                <div className="absolute right-0 top-0 h-24 w-24 bg-gradient-to-bl from-accent/5 to-transparent" />
+              </Card>
             </div>
+
+            {/* Step 2 */}
+            <div className="group relative">
+              <div className="absolute left-8 top-20 hidden h-full w-1 bg-gradient-to-b from-accent via-primary to-accent opacity-20 md:block" />
+              <Card className="relative overflow-hidden border-2 border-border bg-white shadow-lg transition-all hover:scale-[1.02] hover:shadow-2xl">
+                <div className="flex flex-col gap-6 p-8 md:flex-row md:items-start">
+                  <div className="flex-shrink-0">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-accent to-accent/80 shadow-lg">
+                      <span className="text-2xl text-white">2</span>
+                    </div>
+                  </div>
+                  <div className="flex-1 space-y-3">
+                    <div className="flex items-start gap-4">
+                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10">
+                        <MapPin className="h-6 w-6 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="mb-2 text-foreground">Get Your Magic QR Code</h3>
+                        <p className="text-muted-foreground">Your smartphone becomes your ticket to Sintra! Save your QR code and you're ready to hop on at any of our stops. It's that simple.</p>
+                        <div className="mt-3 inline-flex items-center gap-2 rounded-lg bg-accent/10 px-3 py-1.5 text-sm text-accent">
+                          <CheckCircle className="h-4 w-4" />
+                          📱 Works offline too!
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="absolute right-0 top-0 h-24 w-24 bg-gradient-to-bl from-accent/5 to-transparent" />
+              </Card>
+            </div>
+
+            {/* Step 3 */}
+            <div className="group relative">
+              <div className="absolute left-8 top-20 hidden h-full w-1 bg-gradient-to-b from-accent via-primary to-accent opacity-20 md:block" />
+              <Card className="relative overflow-hidden border-2 border-border bg-white shadow-lg transition-all hover:scale-[1.02] hover:shadow-2xl">
+                <div className="flex flex-col gap-6 p-8 md:flex-row md:items-start">
+                  <div className="flex-shrink-0">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-accent to-accent/80 shadow-lg">
+                      <span className="text-2xl text-white">3</span>
+                    </div>
+                  </div>
+                  <div className="flex-1 space-y-3">
+                    <div className="flex items-start gap-4">
+                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10">
+                        <Car className="h-6 w-6 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="mb-2 text-foreground">Hop On & Explore!</h3>
+                        <p className="text-muted-foreground">See a tuk tuk at the stop? Flash your code to your professional driver-guide and jump in! With rides every 10-15 minutes from 9am to 8pm, you'll never wait long. Explore at your own pace—our guides have you covered all day long.</p>
+                        <div className="mt-3 inline-flex items-center gap-2 rounded-lg bg-accent/10 px-3 py-1.5 text-sm text-accent">
+                          <CheckCircle className="h-4 w-4" />
+                          🎉 Unlimited rides with professional guides
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="absolute right-0 top-0 h-24 w-24 bg-gradient-to-bl from-accent/5 to-transparent" />
+              </Card>
+            </div>
+
+            {/* Step 4 */}
+            <div className="group relative">
+              <Card className="relative overflow-hidden border-2 border-border bg-white shadow-lg transition-all hover:scale-[1.02] hover:shadow-2xl">
+                <div className="flex flex-col gap-6 p-8 md:flex-row md:items-start">
+                  <div className="flex-shrink-0">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-accent to-accent/80 shadow-lg">
+                      <span className="text-2xl text-white">4</span>
+                    </div>
+                  </div>
+                  <div className="flex-1 space-y-3">
+                    <div className="flex items-start gap-4">
+                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10">
+                        <Bell className="h-6 w-6 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="mb-2 text-foreground">No Vehicle at the Stop?</h3>
+                        <p className="text-muted-foreground">If you don't see any vehicles waiting when you arrive at a stop, you can request a pickup! This lets us know you're waiting and helps us get to you faster. Your request helps us optimize our service and reduce wait times for everyone.</p>
+                        <div className="mt-3 inline-flex items-center gap-2 rounded-lg bg-accent/10 px-3 py-1.5 text-sm text-accent">
+                          <CheckCircle className="h-4 w-4" />
+                          🔔 Request pickup anytime
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="absolute right-0 top-0 h-24 w-24 bg-gradient-to-bl from-accent/5 to-transparent" />
+              </Card>
+            </div>
+          </div>
+
+          {/* Install App CTA - After Step 4 */}
+          {!isInstalled && deferredPrompt && (
+            <div className="mt-12 flex justify-center">
+              <Card className="w-full max-w-2xl overflow-hidden border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-white to-accent/5 shadow-xl">
+                <div className="p-8">
+                  <div className="flex flex-col items-center text-center sm:flex-row sm:gap-6 sm:text-left">
+                    {/* Icon */}
+                    <div className="mb-4 flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/80 shadow-lg sm:mb-0">
+                      <Smartphone className="h-8 w-8 text-white" />
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="flex-1">
+                      <h3 className="mb-2 text-foreground">📱 Install Go Sintra App</h3>
+                      <p className="mb-4 text-muted-foreground">
+                        Add our app to your home screen for instant access! Works offline, loads faster, and makes requesting pickups smoother. <strong>Takes just 2 seconds!</strong>
+                      </p>
+                      
+                      {/* Benefits Pills */}
+                      <div className="mb-4 flex flex-wrap justify-center gap-2 sm:justify-start">
+                        <div className="flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">
+                          <Zap className="h-3.5 w-3.5" />
+                          Faster
+                        </div>
+                        <div className="flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">
+                          <CheckCircle className="h-3.5 w-3.5" />
+                          Works Offline
+                        </div>
+                        <div className="flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">
+                          <Heart className="h-3.5 w-3.5" />
+                          Smoother Experience
+                        </div>
+                      </div>
+
+                      {/* Install Button */}
+                      <Button
+                        onClick={handleInstallClick}
+                        size="lg"
+                        className="w-full bg-primary shadow-lg hover:scale-105 hover:bg-primary/90 sm:w-auto"
+                      >
+                        <Download className="mr-2 h-5 w-5" />
+                        Install App (2 seconds)
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Features Grid - Why You'll Love It */}
+      <section className="border-y border-border bg-gradient-to-br from-secondary/30 via-white to-primary/5 py-16 sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-12 text-center">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2">
+              <Heart className="h-5 w-5 text-primary" />
+              <span className="text-primary">Why You'll Love It</span>
+            </div>
+            <h2 className="mb-4 text-foreground">What Makes Us Different</h2>
+            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+              This isn't just transportation—it's part of the adventure! ✨
+            </p>
+          </div>
+          
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Feature 1 */}
+            <Card className="group relative overflow-hidden border-2 border-border bg-white shadow-md transition-all hover:scale-105 hover:shadow-2xl">
+              <div className="absolute inset-0 transition-transform duration-500 group-hover:scale-110">
+                <ImageWithFallback
+                  src="https://images.unsplash.com/photo-1670261197503-e7745a85707c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxleGNpdGVkJTIwdG91cmlzdHMlMjBleHBsb3Jpbmd8ZW58MXx8fHwxNzYwODI0MjQzfDA&ixlib=rb-4.1.0&q=80&w=1080"
+                  alt="Intimate Adventures"
+                  className="h-full w-full object-cover opacity-20"
+                />
+                <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-white/90 to-white/85" />
+              </div>
+              <div className="relative p-6">
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-accent to-accent/80 shadow-lg transition-transform group-hover:scale-110">
+                  <Users className="h-7 w-7 text-white" />
+                </div>
+                <h3 className="mb-2 text-foreground">Intimate Adventures</h3>
+                <p className="text-muted-foreground">
+                  Just 2-6 guests per vehicle means you'll actually enjoy the ride! No tour bus crowds, just cozy exploration.
+                </p>
+              </div>
+              <div className="absolute inset-0 border-2 border-accent opacity-0 transition-opacity group-hover:opacity-100" />
+            </Card>
+
+            {/* Feature 2 */}
+            <Card className="group relative overflow-hidden border-2 border-border bg-white shadow-md transition-all hover:scale-105 hover:shadow-2xl">
+              <div className="absolute inset-0 transition-transform duration-500 group-hover:scale-110">
+                <ImageWithFallback
+                  src="https://images.unsplash.com/photo-1669908753503-78024f9ddfe9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwb3J0dWdhbCUyMHR1ayUyMHR1ayUyMGFkdmVudHVyZXxlbnwxfHx8fDE3NjA4MjQyNDJ8MA&ixlib=rb-4.1.0&q=80&w=1080"
+                  alt="Professional Driver-Guides"
+                  className="h-full w-full object-cover opacity-20"
+                />
+                <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-white/90 to-white/85" />
+              </div>
+              <div className="relative p-6">
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 shadow-lg transition-transform group-hover:scale-110">
+                  <Car className="h-7 w-7 text-white" />
+                </div>
+                <h3 className="mb-2 text-foreground">Professional Driver-Guides</h3>
+                <p className="text-muted-foreground">
+                  Every tuk tuk, vintage jeep, and van is driven by a certified local guide who knows Sintra inside out. Get insights you won't find in any guidebook!
+                </p>
+              </div>
+              <div className="absolute inset-0 border-2 border-accent opacity-0 transition-opacity group-hover:opacity-100" />
+            </Card>
+
+            {/* Feature 3 */}
+            <Card className="group relative overflow-hidden border-2 border-border bg-white shadow-md transition-all hover:scale-105 hover:shadow-2xl">
+              <div className="absolute inset-0 transition-transform duration-500 group-hover:scale-110">
+                <ImageWithFallback
+                  src="https://images.unsplash.com/photo-1697394494123-c6c1323a14f7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzaW50cmElMjBwb3J0dWdhbCUyMGNvbG9yZnVsJTIwcGFsYWNlfGVufDF8fHx8MTc2MDgyNDI0MXww&ixlib=rb-4.1.0&q=80&w=1080"
+                  alt="Your Time, Your Way"
+                  className="h-full w-full object-cover opacity-20"
+                />
+                <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-white/90 to-white/85" />
+              </div>
+              <div className="relative p-6">
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-accent to-accent/80 shadow-lg transition-transform group-hover:scale-110">
+                  <Camera className="h-7 w-7 text-white" />
+                </div>
+                <h3 className="mb-2 text-foreground">Your Time, Your Way</h3>
+                <p className="text-muted-foreground">
+                  Spotted something Instagram-worthy? Hop off! Take your time, snap those photos, and catch the next ride when you're ready.
+                </p>
+              </div>
+              <div className="absolute inset-0 border-2 border-accent opacity-0 transition-opacity group-hover:opacity-100" />
+            </Card>
+
+            {/* Feature 4 */}
+            <Card className="group relative overflow-hidden border-2 border-border bg-white shadow-md transition-all hover:scale-105 hover:shadow-2xl">
+              <div className="absolute inset-0 transition-transform duration-500 group-hover:scale-110">
+                <ImageWithFallback
+                  src="https://images.unsplash.com/photo-1576053437997-efe2472c87ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzaW50cmElMjBjYXN0bGUlMjBhZXJpYWwlMjB2aWV3fGVufDF8fHx8MTc2MDgyNDI0M3ww&ixlib=rb-4.1.0&q=80&w=1080"
+                  alt="Never Rush Again"
+                  className="h-full w-full object-cover opacity-20"
+                />
+                <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-white/90 to-white/85" />
+              </div>
+              <div className="relative p-6">
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 shadow-lg transition-transform group-hover:scale-110">
+                  <Clock className="h-7 w-7 text-white" />
+                </div>
+                <h3 className="mb-2 text-foreground">Never Rush Again</h3>
+                <p className="text-muted-foreground">
+                  Vehicles pass every 10-15 minutes all day long (9am-8pm). Missed one? No worries, another's coming soon!
+                </p>
+              </div>
+              <div className="absolute inset-0 border-2 border-accent opacity-0 transition-opacity group-hover:opacity-100" />
+            </Card>
+
+            {/* Feature 5 */}
+            <Card className="group relative overflow-hidden border-2 border-border bg-white shadow-md transition-all hover:scale-105 hover:shadow-2xl">
+              <div className="absolute inset-0 transition-transform duration-500 group-hover:scale-110">
+                <ImageWithFallback
+                  src="https://images.unsplash.com/photo-1673515335086-c762bbd7a7cf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoYXBweSUyMHRyYXZlbGVyJTIwcGhvbmUlMjBib29raW5nfGVufDF8fHx8MTc2MDgyNDI0MXww&ixlib=rb-4.1.0&q=80&w=1080"
+                  alt="Guaranteed Seats"
+                  className="h-full w-full object-cover opacity-20"
+                />
+                <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-white/90 to-white/85" />
+              </div>
+              <div className="relative p-6">
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-accent to-accent/80 shadow-lg transition-transform group-hover:scale-110">
+                  <Heart className="h-7 w-7 text-white" />
+                </div>
+                <h3 className="mb-2 text-foreground">Guaranteed Seats</h3>
+                <p className="text-muted-foreground">
+                  Unlike public transport, your seat is waiting for you. Pre-booked, stress-free, comfortable—the way travel should be!
+                </p>
+              </div>
+              <div className="absolute inset-0 border-2 border-accent opacity-0 transition-opacity group-hover:opacity-100" />
+            </Card>
+
+            {/* Feature 6 */}
+            <Card className="group relative overflow-hidden border-2 border-border bg-white shadow-md transition-all hover:scale-105 hover:shadow-2xl">
+              <div className="absolute inset-0 transition-transform duration-500 group-hover:scale-110">
+                <ImageWithFallback
+                  src="https://images.unsplash.com/photo-1697394494123-c6c1323a14f7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzaW50cmElMjBwb3J0dWdhbCUyMGNvbG9yZnVsJTIwcGFsYWNlfGVufDF8fHx8MTc2MDgyNDI0MXww&ixlib=rb-4.1.0&q=80&w=1080"
+                  alt="Instant Everything"
+                  className="h-full w-full object-cover opacity-20"
+                />
+                <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-white/90 to-white/85" />
+              </div>
+              <div className="relative p-6">
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 shadow-lg transition-transform group-hover:scale-110">
+                  <Zap className="h-7 w-7 text-white" />
+                </div>
+                <h3 className="mb-2 text-foreground">Instant Everything</h3>
+                <p className="text-muted-foreground">
+                  Book now, ride now! Digital tickets mean no waiting in lines. Just point, scan, and you're on your way to adventure.
+                </p>
+              </div>
+              <div className="absolute inset-0 border-2 border-accent opacity-0 transition-opacity group-hover:opacity-100" />
+            </Card>
           </div>
         </div>
       </section>
 
-      {/* Final CTA - Big and Clear */}
-      <section className="bg-gradient-to-br from-primary to-primary/90 py-20">
-        <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-          <h2 className="mb-4 text-white">
-            Ready to Explore?
+      {/* Final CTA - More Exciting */}
+      <section className="relative overflow-hidden bg-gradient-to-r from-primary via-primary/95 to-accent py-20 sm:py-28">
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute left-1/4 top-10 h-32 w-32 animate-bounce rounded-full bg-white/30 blur-2xl" style={{ animationDuration: "3s" }} />
+          <div className="absolute bottom-10 right-1/4 h-40 w-40 animate-bounce rounded-full bg-white/30 blur-2xl" style={{ animationDuration: "4s", animationDelay: "1s" }} />
+        </div>
+
+        <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
+          <div className="mb-6 flex justify-center">
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white shadow-2xl">
+              <Ticket className="h-10 w-10 text-accent" />
+            </div>
+          </div>
+          
+          <h2 className="mb-4 text-white drop-shadow-lg">
+            Ready for the Best Day Ever?
           </h2>
-          <p className="mb-8 text-xl text-white/90">
-            Book now and start your Sintra adventure
+          <p className="mb-8 text-xl text-white/95 drop-shadow-md">
+            Book your full day pass now—adventure awaits! 🚗✨
           </p>
+          
           <Button
             size="lg"
-            className="h-16 bg-accent px-12 text-xl shadow-2xl hover:scale-105 hover:bg-accent/90"
+            className="bg-white text-primary shadow-2xl transition-all hover:scale-105 hover:bg-white/90 hover:shadow-accent/50"
             onClick={() => onNavigate("buy-ticket")}
           >
-            Buy Day Pass - €{basePrice}
-            <ArrowRight className="ml-2 h-5 w-5" />
+            <Ticket className="mr-2 h-5 w-5" />
+            Get Your Day Pass Now - €{basePrice}
+            <RefreshCw className="ml-2 h-5 w-5" />
           </Button>
-          <p className="mt-6 text-white/80">
-            Valid until 8:00 PM • Unlimited rides • Instant confirmation
+          
+          <p className="mt-4 text-sm text-white/80">
+            ⚡ Instant confirmation • 📱 Mobile-friendly • 💳 Secure payment
           </p>
         </div>
       </section>

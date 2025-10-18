@@ -304,9 +304,9 @@ export function BookingConfirmationPage({ onNavigate, booking }: BookingConfirma
             <Button
               size="lg"
               variant="outline"
-              onClick={() => onNavigate("how-it-works")}
+              onClick={() => onNavigate("attractions")}
             >
-              How It Works
+              View Attractions
             </Button>
           </div>
 

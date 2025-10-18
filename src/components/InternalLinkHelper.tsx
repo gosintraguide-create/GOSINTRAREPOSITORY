@@ -48,7 +48,6 @@ export function InternalLinkHelper({ onInsertLink }: InternalLinkHelperProps) {
 
   const staticPages = [
     { name: "Home", path: "/" },
-    { name: "How It Works", path: "/how-it-works" },
     { name: "Attractions", path: "/attractions" },
     { name: "Travel Guide (Blog)", path: "/blog" },
     { name: "About Us", path: "/about" },
