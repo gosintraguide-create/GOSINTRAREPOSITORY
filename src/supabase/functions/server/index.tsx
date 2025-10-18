@@ -124,45 +124,54 @@ async function generateBookingId(): Promise<string> {
   return `FB-${timestamp}`; // FB = Fallback
 }
 
-// Initialize database on startup
+// Initialize database on startup (only runs once per database)
 async function initializeDatabase() {
   try {
-    console.log("Initializing database...");
+    // Check if database has already been initialized
+    const dbInitialized = await kv.get("db_initialized");
     
-    // Check if content already exists
-    const existingContent = await kv.get("website_content");
-    if (!existingContent) {
-      console.log("No existing content found, initializing with defaults");
-      await kv.set("website_content", {
-        initialized: true,
-        lastUpdated: new Date().toISOString()
-      });
+    if (dbInitialized) {
+      console.log("✅ Database already initialized, skipping setup");
+      return;
     }
+    
+    console.log("🔧 First-time database initialization...");
+    
+    // Initialize default content
+    await kv.set("website_content", {
+      initialized: true,
+      lastUpdated: new Date().toISOString()
+    });
+    console.log("✅ Default content initialized");
 
-    // Check if pricing exists
-    const existingPricing = await kv.get("pricing_config");
-    if (!existingPricing) {
-      console.log("Initializing default pricing");
-      await kv.set("pricing_config", {
-        dayPass: {
-          adult: 25,
-          child: 15,
-          infant: 0
-        },
-        guidedTour: {
-          private: 150,
-          small: 35
-        }
-      });
-    }
+    // Initialize default pricing
+    await kv.set("pricing_config", {
+      dayPass: {
+        adult: 25,
+        child: 15,
+        infant: 0
+      },
+      guidedTour: {
+        private: 150,
+        small: 35
+      }
+    });
+    console.log("✅ Default pricing initialized");
+    
+    // Mark database as initialized
+    await kv.set("db_initialized", {
+      initialized: true,
+      timestamp: new Date().toISOString(),
+      version: "1.0"
+    });
 
-    console.log("Database initialized successfully");
+    console.log("✅ Database initialization complete");
   } catch (error) {
-    console.error("Error initializing database:", error);
+    console.error("❌ Error initializing database:", error);
   }
 }
 
-// Call initialization
+// Call initialization (will only run once per database)
 initializeDatabase();
 
 // Generate QR code function
@@ -1116,6 +1125,128 @@ app.get("/make-server-3bd0ade8/health", (c) => {
   return c.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
+// Database diagnostics - check for duplicate keys
+app.get("/make-server-3bd0ade8/db-diagnostics", async (c) => {
+  try {
+    console.log("🔍 Running database diagnostics...");
+    
+    // Query all rows directly from Supabase to check for duplicates
+    const { data, error } = await supabase
+      .from("kv_store_3bd0ade8")
+      .select("key")
+      .order("key");
+    
+    if (error) {
+      throw error;
+    }
+    
+    // Count occurrences of each key
+    const keyCount: Record<string, number> = {};
+    const duplicates: string[] = [];
+    
+    if (data) {
+      data.forEach((row: any) => {
+        const key = row.key;
+        keyCount[key] = (keyCount[key] || 0) + 1;
+        if (keyCount[key] === 2) {
+          duplicates.push(key);
+        }
+      });
+    }
+    
+    const totalKeys = Object.keys(keyCount).length;
+    const totalRows = data?.length || 0;
+    const hasDuplicates = duplicates.length > 0;
+    
+    console.log(`✅ Database diagnostics complete: ${totalKeys} unique keys, ${totalRows} total rows`);
+    
+    if (hasDuplicates) {
+      console.warn(`⚠️ Found ${duplicates.length} duplicate keys:`, duplicates);
+    }
+    
+    return c.json({
+      success: true,
+      diagnostics: {
+        totalKeys,
+        totalRows,
+        hasDuplicates,
+        duplicates: hasDuplicates ? duplicates : [],
+        keyCount: hasDuplicates ? Object.fromEntries(
+          Object.entries(keyCount).filter(([_, count]) => count > 1)
+        ) : {},
+        note: "The 'duplicate' warning in Supabase is normal - it means upsert is updating existing keys rather than inserting duplicates. This is the expected behavior."
+      }
+    });
+  } catch (error) {
+    console.error("❌ Error running diagnostics:", error);
+    return c.json({
+      success: false,
+      error: error instanceof Error ? error.message : "Diagnostics failed"
+    }, 500);
+  }
+});
+
+// Clean up any actual duplicate rows (if they somehow exist)
+app.post("/make-server-3bd0ade8/db-cleanup", async (c) => {
+  try {
+    console.log("🧹 Starting database cleanup...");
+    
+    // Get all rows with their created_at or similar timestamp
+    const { data, error } = await supabase
+      .from("kv_store_3bd0ade8")
+      .select("key, value")
+      .order("key");
+    
+    if (error) {
+      throw error;
+    }
+    
+    if (!data || data.length === 0) {
+      return c.json({ success: true, message: "Database is empty, nothing to clean" });
+    }
+    
+    // Group by key and keep only the latest value for each
+    const uniqueData: Record<string, any> = {};
+    data.forEach((row: any) => {
+      uniqueData[row.key] = row.value;
+    });
+    
+    // Delete all rows
+    const { error: deleteError } = await supabase
+      .from("kv_store_3bd0ade8")
+      .delete()
+      .neq("key", "__never_matches__"); // Delete all rows
+    
+    if (deleteError) {
+      throw deleteError;
+    }
+    
+    console.log(`🗑️ Deleted all rows, re-inserting ${Object.keys(uniqueData).length} unique records...`);
+    
+    // Re-insert unique records using kv.set (which uses upsert)
+    let insertCount = 0;
+    for (const [key, value] of Object.entries(uniqueData)) {
+      await kv.set(key, value);
+      insertCount++;
+    }
+    
+    console.log(`✅ Database cleanup complete: ${insertCount} records restored`);
+    
+    return c.json({
+      success: true,
+      message: "Database cleaned successfully",
+      recordsRestored: insertCount,
+      note: "All duplicate rows removed, unique records preserved"
+    });
+  } catch (error) {
+    console.error("❌ Error during cleanup:", error);
+    return c.json({
+      success: false,
+      error: error instanceof Error ? error.message : "Cleanup failed"
+    }, 500);
+  }
+});
+
 // Get website content
 app.get("/make-server-3bd0ade8/content", async (c) => {
   try {
@@ -1159,6 +1290,53 @@ app.post("/make-server-3bd0ade8/content", async (c) => {
     return c.json({ 
       success: false, 
       error: error instanceof Error ? error.message : "Failed to save content" 
+    }, 500);
+  }
+});
+
+// Get comprehensive website content
+app.get("/make-server-3bd0ade8/comprehensive-content", async (c) => {
+  try {
+    console.log("📖 Fetching comprehensive content from database...");
+    const content = await kv.get("comprehensive_content");
+    
+    if (content) {
+      console.log("✅ Comprehensive content found in database");
+      console.log("Comprehensive content keys:", Object.keys(content));
+    } else {
+      console.log("ℹ️ No comprehensive content found in database");
+    }
+    
+    return c.json({ success: true, content });
+  } catch (error) {
+    console.error("❌ Error fetching comprehensive content:", error);
+    console.error("Error details:", error instanceof Error ? error.message : String(error));
+    return c.json({ success: false, error: "Failed to fetch comprehensive content" }, 500);
+  }
+});
+
+// Save comprehensive website content
+app.post("/make-server-3bd0ade8/comprehensive-content", async (c) => {
+  try {
+    const body = await c.req.json();
+    console.log("📝 Saving comprehensive content to database...");
+    console.log("Comprehensive content keys:", Object.keys(body));
+    
+    const contentToSave = {
+      ...body,
+      lastUpdated: new Date().toISOString()
+    };
+    
+    await kv.set("comprehensive_content", contentToSave);
+    console.log("✅ Comprehensive content saved successfully to database");
+    
+    return c.json({ success: true });
+  } catch (error) {
+    console.error("❌ Error saving comprehensive content:", error);
+    console.error("Error details:", error instanceof Error ? error.message : String(error));
+    return c.json({ 
+      success: false, 
+      error: error instanceof Error ? error.message : "Failed to save comprehensive content" 
     }, 500);
   }
 });

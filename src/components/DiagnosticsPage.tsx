@@ -7,6 +7,7 @@ import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { ArrowLeft, TestTube, CheckCircle, XCircle, Loader2, Mail } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
 import { ClearCacheButton } from './ClearCacheButton';
+import { DatabaseDiagnostics } from './DatabaseDiagnostics';
 
 interface DiagnosticsPageProps {
   onNavigate: (page: string) => void;
@@ -305,6 +306,11 @@ export function DiagnosticsPage({ onNavigate }: DiagnosticsPageProps) {
             </div>
           </CardContent>
         </Card>
+
+        {/* Database Diagnostics */}
+        <div className="mt-6">
+          <DatabaseDiagnostics />
+        </div>
 
         {/* Cache Clear Card */}
         <Card className="mt-6">

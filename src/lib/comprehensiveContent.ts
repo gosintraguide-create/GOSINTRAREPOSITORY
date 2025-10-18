@@ -1176,7 +1176,7 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
 };
 
 // Import API functions
-import { saveContent as saveContentToAPI, getContent as getContentFromAPI } from './api';
+import { saveComprehensiveContent as saveComprehensiveContentToAPI, getComprehensiveContent as getComprehensiveContentFromAPI } from './api';
 
 // Save and load functions
 export function saveComprehensiveContent(content: ComprehensiveContent): void {
@@ -1184,7 +1184,7 @@ export function saveComprehensiveContent(content: ComprehensiveContent): void {
   console.log("Comprehensive content saved to localStorage");
   
   // Also save to database (non-blocking)
-  saveContentToAPI({ comprehensive: content }).catch(error => {
+  saveComprehensiveContentToAPI(content).catch(error => {
     console.error('Failed to save comprehensive content to database:', error);
   });
 }
@@ -1194,9 +1194,10 @@ export async function saveComprehensiveContentAsync(content: ComprehensiveConten
   try {
     // Save to localStorage
     localStorage.setItem("comprehensive-content", JSON.stringify(content));
+    console.log('💾 Saving comprehensive content to database...');
     
     // Save to database and wait for result
-    const result = await saveContentToAPI({ comprehensive: content });
+    const result = await saveComprehensiveContentToAPI(content);
     
     if (result.success) {
       console.log('✅ Comprehensive content saved to database successfully');
@@ -1229,12 +1230,12 @@ export function loadComprehensiveContent(): ComprehensiveContent {
 // Async function to sync content from database
 export async function syncComprehensiveContentFromDatabase(): Promise<ComprehensiveContent> {
   try {
-    const content = await getContentFromAPI();
-    if (content && content.comprehensive) {
+    const content = await getComprehensiveContentFromAPI();
+    if (content) {
       // Save to localStorage for offline access
-      localStorage.setItem("comprehensive-content", JSON.stringify(content.comprehensive));
+      localStorage.setItem("comprehensive-content", JSON.stringify(content));
       console.log('✅ Synced comprehensive content from database to localStorage');
-      return deepMerge(DEFAULT_COMPREHENSIVE_CONTENT, content.comprehensive);
+      return deepMerge(DEFAULT_COMPREHENSIVE_CONTENT, content);
     } else {
       console.log('ℹ️ No comprehensive content in database yet, using defaults or localStorage');
     }

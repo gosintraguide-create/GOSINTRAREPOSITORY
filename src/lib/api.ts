@@ -63,6 +63,19 @@ export async function saveContent(content: any) {
   });
 }
 
+// Comprehensive Content Management (separate from simple content)
+export async function getComprehensiveContent() {
+  const response = await apiCall('/comprehensive-content', {}, true); // Silent mode - has fallback
+  return response.data?.content || null;
+}
+
+export async function saveComprehensiveContent(content: any) {
+  return await apiCall('/comprehensive-content', {
+    method: 'POST',
+    body: JSON.stringify(content),
+  });
+}
+
 // Pricing Management
 export async function getPricing() {
   const response = await apiCall('/pricing', {}, true); // Silent mode - has fallback
