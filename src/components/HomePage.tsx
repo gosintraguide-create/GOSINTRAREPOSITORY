@@ -16,11 +16,47 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
   const t = getUITranslation(language);
 
   useEffect(() => {
-    const savedPricing = localStorage.getItem("admin-pricing");
-    if (savedPricing) {
-      const pricing = JSON.parse(savedPricing);
-      setBasePrice(pricing.basePrice);
+    async function loadPricingFromDB() {
+      try {
+        const { projectId, publicAnonKey } = await import('../utils/supabase/info');
+        const response = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/pricing`,
+          {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${publicAnonKey}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.pricing?.basePrice) {
+            setBasePrice(data.pricing.basePrice);
+            localStorage.setItem("admin-pricing", JSON.stringify(data.pricing));
+            return;
+          }
+        }
+      } catch (error) {
+        // Silently handle error - backend may not be available
+      }
+      
+      // Fallback to localStorage
+      const savedPricing = localStorage.getItem("admin-pricing");
+      if (savedPricing) {
+        try {
+          const pricing = JSON.parse(savedPricing);
+          if (pricing.basePrice) {
+            setBasePrice(pricing.basePrice);
+          }
+        } catch (e) {
+          // Use default basePrice (25)
+        }
+      }
     }
+    
+    loadPricingFromDB();
     
     // Load website content with language
     setContent(loadContentWithLanguage(language));

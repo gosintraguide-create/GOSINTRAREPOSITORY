@@ -10,7 +10,8 @@ interface ApiResponse<T> {
 
 async function apiCall<T>(
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  silent = false // Silent mode for optional API calls with fallbacks
 ): Promise<ApiResponse<T>> {
   try {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
@@ -25,7 +26,9 @@ async function apiCall<T>(
     const data = await response.json();
 
     if (!response.ok) {
-      console.error(`API Error (${endpoint}):`, data);
+      if (!silent) {
+        console.error(`API Error (${endpoint}):`, data);
+      }
       return {
         success: false,
         error: data.error || 'An error occurred',
@@ -37,7 +40,9 @@ async function apiCall<T>(
       data: data,
     };
   } catch (error) {
-    console.error(`Network error calling ${endpoint}:`, error);
+    if (!silent) {
+      console.log(`ℹ️ Backend not available (${endpoint}) - using local data`);
+    }
     return {
       success: false,
       error: 'Network error. Please check your connection.',
@@ -47,7 +52,7 @@ async function apiCall<T>(
 
 // Content Management
 export async function getContent() {
-  const response = await apiCall('/content');
+  const response = await apiCall('/content', {}, true); // Silent mode - has fallback
   return response.data?.content || null;
 }
 
@@ -60,7 +65,7 @@ export async function saveContent(content: any) {
 
 // Pricing Management
 export async function getPricing() {
-  const response = await apiCall('/pricing');
+  const response = await apiCall('/pricing', {}, true); // Silent mode - has fallback
   return response.data?.pricing || null;
 }
 

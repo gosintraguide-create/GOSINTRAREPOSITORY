@@ -264,6 +264,25 @@ export default function App() {
     }
   }, []);
 
+  // Sync content from database on app startup (non-blocking)
+  useEffect(() => {
+    async function syncContent() {
+      try {
+        const { syncContentFromDatabaseWithLanguage } = await import("./lib/contentManager");
+        const freshContent = await syncContentFromDatabaseWithLanguage(language);
+        setWebsiteContent(freshContent);
+        console.log('✅ Content synced from database');
+      } catch (error) {
+        console.log('ℹ️ Using local content (backend unavailable)');
+        // Silently fail and use local content - this is expected in development
+      }
+    }
+    
+    // Delay sync slightly to not block initial render
+    const timer = setTimeout(syncContent, 100);
+    return () => clearTimeout(timer);
+  }, []); // Only run once on mount
+
   // Update content when language changes
   useEffect(() => {
     setWebsiteContent(loadContentWithLanguage(language));

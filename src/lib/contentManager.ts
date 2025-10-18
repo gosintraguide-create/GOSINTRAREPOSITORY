@@ -294,21 +294,64 @@ export function loadContentWithLanguage(languageCode: string = 'en'): WebsiteCon
 export async function syncContentFromDatabase(): Promise<WebsiteContent> {
   try {
     const content = await getContentFromAPI();
-    if (content) {
-      // Save to localStorage for offline access
-      localStorage.setItem("website-content", JSON.stringify(content));
-      return {
-        ...DEFAULT_CONTENT,
-        ...content,
-        company: { ...DEFAULT_CONTENT.company, ...content.company },
-        homepage: { ...DEFAULT_CONTENT.homepage, ...content.homepage },
-        about: { ...DEFAULT_CONTENT.about, ...content.about },
-        attractions: { ...DEFAULT_CONTENT.attractions, ...content.attractions },
-        seo: { ...DEFAULT_CONTENT.seo, ...content.seo },
-      };
+    if (content && content.initialized) {
+      // Only save if there's actual content (not just the initialized flag)
+      const hasActualContent = Object.keys(content).length > 2; // More than just initialized and lastUpdated
+      
+      if (hasActualContent) {
+        // Save to localStorage for offline access
+        localStorage.setItem("website-content", JSON.stringify(content));
+        console.log('✅ Synced content from database to localStorage');
+        return {
+          ...DEFAULT_CONTENT,
+          ...content,
+          company: { ...DEFAULT_CONTENT.company, ...content.company },
+          homepage: { ...DEFAULT_CONTENT.homepage, ...content.homepage },
+          about: { ...DEFAULT_CONTENT.about, ...content.about },
+          attractions: { ...DEFAULT_CONTENT.attractions, ...content.attractions },
+          seo: { ...DEFAULT_CONTENT.seo, ...content.seo },
+        };
+      } else {
+        console.log('⚠️ Database content is empty, using defaults');
+      }
+    } else {
+      console.log('ℹ️ No content in database yet, using defaults');
     }
   } catch (error) {
     console.error('Failed to sync content from database:', error);
   }
   return loadContent();
+}
+
+// Async function to sync content from database with language support
+export async function syncContentFromDatabaseWithLanguage(languageCode: string = 'en'): Promise<WebsiteContent> {
+  try {
+    const content = await getContentFromAPI();
+    const translation = getTranslation(languageCode);
+    
+    if (content && content.initialized) {
+      // Only save if there's actual content
+      const hasActualContent = Object.keys(content).length > 2;
+      
+      if (hasActualContent) {
+        // Save to localStorage for offline access
+        localStorage.setItem("website-content", JSON.stringify(content));
+        
+        // Merge database content with translation (database content takes precedence)
+        return {
+          ...translation,
+          ...content,
+          company: { ...translation.company, ...content.company },
+          homepage: { ...translation.homepage, ...content.homepage },
+          about: { ...translation.about, ...content.about },
+          attractions: { ...translation.attractions, ...content.attractions },
+          seo: { ...translation.seo, ...content.seo },
+        };
+      }
+    }
+  } catch (error) {
+    // Silently fail - backend may not be available
+    // This is normal during development or if backend is down
+  }
+  return loadContentWithLanguage(languageCode);
 }

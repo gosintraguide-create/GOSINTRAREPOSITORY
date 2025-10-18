@@ -87,13 +87,56 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
   const [replyMessage, setReplyMessage] = useState("");
   const [loadingConversations, setLoadingConversations] = useState(false);
 
-  // Load settings from localStorage
+  // Load settings from database and localStorage
   useEffect(() => {
-    const savedPricing = localStorage.getItem("admin-pricing");
-    
-    if (savedPricing) {
-      setPricing(JSON.parse(savedPricing));
+    // Load pricing from database
+    async function loadPricingFromDB() {
+      try {
+        const response = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/pricing`,
+          {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${publicAnonKey}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.pricing) {
+            setPricing({
+              ...DEFAULT_PRICING,
+              ...data.pricing,
+              attractions: {
+                ...DEFAULT_PRICING.attractions,
+                ...data.pricing.attractions,
+              }
+            });
+            // Also save to localStorage for offline use
+            localStorage.setItem("admin-pricing", JSON.stringify(data.pricing));
+            console.log('✅ Loaded pricing from database');
+            return;
+          }
+        }
+      } catch (error) {
+        // Silently handle error - backend may not be available
+      }
+      
+      // Fallback to localStorage if database fetch fails
+      const savedPricing = localStorage.getItem("admin-pricing");
+      if (savedPricing) {
+        try {
+          setPricing(JSON.parse(savedPricing));
+          console.log('ℹ️ Using saved pricing');
+        } catch (e) {
+          console.log('ℹ️ Using default pricing');
+        }
+      }
     }
+    
+    loadPricingFromDB();
     
     // Load website content
     setContent(loadContent());
@@ -134,9 +177,33 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     }
   };
 
-  const saveSettings = () => {
-    localStorage.setItem("admin-pricing", JSON.stringify(pricing));
-    toast.success("Settings saved successfully!");
+  const saveSettings = async () => {
+    try {
+      // Save to localStorage for backward compatibility
+      localStorage.setItem("admin-pricing", JSON.stringify(pricing));
+      
+      // Save to database for persistence across deployments
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/pricing`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${publicAnonKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(pricing),
+        }
+      );
+      
+      if (!response.ok) {
+        throw new Error('Failed to save pricing to database');
+      }
+      
+      toast.success("Settings saved successfully to database!");
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      toast.error("Failed to save settings to database. Saved locally only.");
+    }
   };
 
   const saveAvailability = async () => {

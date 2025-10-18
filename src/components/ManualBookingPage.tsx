@@ -61,16 +61,53 @@ export function ManualBookingPage({ onNavigate }: ManualBookingPageProps) {
     paymentMethod: "cash" as "cash" | "card",
   });
 
-  // Load pricing from localStorage
+  // Load pricing from database and fallback to localStorage
   useEffect(() => {
-    const savedPricing = localStorage.getItem("admin-pricing");
-    if (savedPricing) {
+    async function loadPricingFromDB() {
       try {
-        setPricing(JSON.parse(savedPricing));
+        const { projectId, publicAnonKey } = await import('../utils/supabase/info');
+        const response = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/pricing`,
+          {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${publicAnonKey}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.pricing) {
+            setPricing({
+              ...pricing,
+              ...data.pricing,
+              attractions: {
+                ...pricing.attractions,
+                ...data.pricing.attractions,
+              }
+            });
+            localStorage.setItem("admin-pricing", JSON.stringify(data.pricing));
+            return;
+          }
+        }
       } catch (error) {
-        console.error("Error loading pricing:", error);
+        // Silently handle error - backend may not be available
+      }
+      
+      // Fallback to localStorage
+      const savedPricing = localStorage.getItem("admin-pricing");
+      if (savedPricing) {
+        try {
+          setPricing(JSON.parse(savedPricing));
+        } catch (error) {
+          // Use default pricing
+        }
       }
     }
+    
+    loadPricingFromDB();
   }, []);
 
   const calculatePrice = () => {
