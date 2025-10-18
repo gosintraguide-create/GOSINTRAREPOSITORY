@@ -129,6 +129,38 @@ export function QRScannerPage({ onNavigate }: QRScannerPageProps) {
       
       if (result.success) {
         setScanResult(result);
+        
+        // Record scan for driver if logged in
+        try {
+          const driverSession = localStorage.getItem('driver_session');
+          if (driverSession) {
+            const { driver } = JSON.parse(driverSession);
+            
+            // Parse QR data to get booking ID and passenger index
+            const [bookingId, passengerIndex] = qrData.split('|');
+            
+            // Record the scan
+            await fetch(
+              `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/drivers/record-scan`,
+              {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${publicAnonKey}`,
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  driverId: driver.id,
+                  bookingId,
+                  passengerIndex: parseInt(passengerIndex) || 0
+                }),
+              }
+            );
+          }
+        } catch (error) {
+          // Don't fail the scan if driver recording fails
+          console.error('Failed to record driver scan:', error);
+        }
+        
         if (!result.booking.alreadyCheckedIn && !result.booking.isExpired) {
           toast.success("Valid pass scanned!");
         } else if (result.booking.alreadyCheckedIn) {

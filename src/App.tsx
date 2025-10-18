@@ -100,21 +100,17 @@ const ManualBookingPage = lazy(() =>
     default: m.ManualBookingPage,
   })),
 );
-const PWAIconUploader = lazy(() =>
-  import("./components/PWAIconUploader").then((m) => ({
-    default: m.PWAIconUploader,
+const DriverLoginPage = lazy(() =>
+  import("./components/DriverLoginPage").then((m) => ({
+    default: m.DriverLoginPage,
   })),
 );
-const PWAIconInstaller = lazy(() =>
-  import("./components/PWAIconInstaller").then((m) => ({
-    default: m.PWAIconInstaller,
+const DriverDashboard = lazy(() =>
+  import("./components/DriverDashboard").then((m) => ({
+    default: m.DriverDashboard,
   })),
 );
-const DebugIconsPage = lazy(() =>
-  import("./components/DebugIconsPage").then((m) => ({
-    default: m.DebugIconsPage,
-  })),
-);
+
 const BlogPage = lazy(() =>
   import("./components/BlogPage").then((m) => ({
     default: m.BlogPage,
@@ -460,12 +456,6 @@ export default function App() {
         return (
           <ManageBookingPage onNavigate={handleNavigate} />
         );
-      case "pwa-icons":
-        return <PWAIconUploader onNavigate={handleNavigate} />;
-      case "pwa-installer":
-        return <PWAIconInstaller onNavigate={handleNavigate} />;
-      case "debug-icons":
-        return <DebugIconsPage onNavigate={handleNavigate} />;
       case "pena-palace":
       case "quinta-regaleira":
       case "moorish-castle":

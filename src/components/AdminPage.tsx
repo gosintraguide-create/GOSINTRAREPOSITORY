@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Settings, Lock, Calendar as CalendarIcon, DollarSign, Users, Save, Eye, EyeOff, Package, QrCode, AlertCircle, CheckCircle2, Clock, TrendingUp, BarChart3, PieChart, Calendar as CalendarIconMetrics, MessageCircle, Send } from "lucide-react";
+import { Settings, Lock, Calendar as CalendarIcon, DollarSign, Users, Save, Eye, EyeOff, Package, QrCode, AlertCircle, CheckCircle2, Clock, TrendingUp, BarChart3, PieChart, Calendar as CalendarIconMetrics, MessageCircle, Send, UserCog } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
@@ -14,6 +14,7 @@ import { safeJsonFetch } from '../lib/apiErrorHandler';
 import { ContentEditor } from './ContentEditor';
 import { BlogEditor } from './BlogEditor';
 import { SEOTools } from './SEOTools';
+import { DriverManagement } from './DriverManagementMobile';
 import {
   LineChart,
   Line,
@@ -86,6 +87,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
   const [conversationMessages, setConversationMessages] = useState<any[]>([]);
   const [replyMessage, setReplyMessage] = useState("");
   const [loadingConversations, setLoadingConversations] = useState(false);
+  const [activeTab, setActiveTab] = useState("metrics");
 
   // Load settings from database and localStorage
   useEffect(() => {
@@ -786,22 +788,6 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
               </Button>
               <Button
                 variant="outline"
-                onClick={() => onNavigate("pwa-icons")}
-                className="gap-2 bg-accent/5 border-accent/20 hover:bg-accent/10"
-              >
-                <Package className="h-4 w-4" />
-                Upload PWA Icons
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => onNavigate("pwa-installer")}
-                className="gap-2 bg-accent/5 border-accent/20 hover:bg-accent/10"
-              >
-                <Package className="h-4 w-4" />
-                Install PWA Icons
-              </Button>
-              <Button
-                variant="outline"
                 onClick={() => onNavigate("diagnostics")}
                 className="gap-2"
               >
@@ -820,15 +806,16 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
           </div>
         </div>
 
-        <Tabs defaultValue="metrics" className="w-full">
-          <TabsList className="grid w-full grid-cols-8 mb-8">
+        <Tabs defaultValue="metrics" value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <div className="overflow-x-auto mb-8 -mx-4 px-4 sm:mx-0 sm:px-0">
+            <TabsList className="inline-flex w-auto min-w-full sm:grid sm:w-full sm:grid-cols-9">
             <TabsTrigger value="metrics" className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
-              Analytics
+              <span className={activeTab === "metrics" ? "" : "hidden sm:inline"}>Analytics</span>
             </TabsTrigger>
             <TabsTrigger value="messages" className="flex items-center gap-2">
               <MessageCircle className="h-4 w-4" />
-              Messages
+              <span className={activeTab === "messages" ? "" : "hidden sm:inline"}>Messages</span>
               {conversations.filter(c => c.unreadByAdmin > 0).length > 0 && (
                 <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
                   {conversations.filter(c => c.unreadByAdmin > 0).length}
@@ -837,19 +824,23 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
             </TabsTrigger>
             <TabsTrigger value="bookings" className="flex items-center gap-2">
               <Package className="h-4 w-4" />
-              Bookings
+              <span className={activeTab === "bookings" ? "" : "hidden sm:inline"}>Bookings</span>
+            </TabsTrigger>
+            <TabsTrigger value="drivers" className="flex items-center gap-2">
+              <UserCog className="h-4 w-4" />
+              <span className={activeTab === "drivers" ? "" : "hidden sm:inline"}>Drivers</span>
             </TabsTrigger>
             <TabsTrigger value="pricing" className="flex items-center gap-2">
               <DollarSign className="h-4 w-4" />
-              Pricing
+              <span className={activeTab === "pricing" ? "" : "hidden sm:inline"}>Pricing</span>
             </TabsTrigger>
             <TabsTrigger value="availability" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
-              Availability
+              <span className={activeTab === "availability" ? "" : "hidden sm:inline"}>Availability</span>
             </TabsTrigger>
             <TabsTrigger value="content" className="flex items-center gap-2">
               <Settings className="h-4 w-4" />
-              Content
+              <span className={activeTab === "content" ? "" : "hidden sm:inline"}>Content</span>
             </TabsTrigger>
             <TabsTrigger value="blog" className="flex items-center gap-2">
               <Package className="h-4 w-4" />
@@ -860,6 +851,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
               SEO
             </TabsTrigger>
           </TabsList>
+          </div>
 
           {/* ====== METRICS TAB ====== */}
           <TabsContent value="metrics" className="space-y-6">
@@ -1525,6 +1517,11 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                 </div>
               )}
             </Card>
+          </TabsContent>
+
+          {/* ====== DRIVERS TAB ====== */}
+          <TabsContent value="drivers" className="space-y-6">
+            <DriverManagement />
           </TabsContent>
 
           {/* ====== PRICING TAB ====== */}

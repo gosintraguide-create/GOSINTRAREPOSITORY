@@ -2787,4 +2787,445 @@ app.get("/make-server-3bd0ade8/pwa-icons/manifest.json", async (c) => {
   }
 });
 
+// ==========================================
+// DRIVER AUTHENTICATION & MANAGEMENT ROUTES
+// ==========================================
+
+// Create driver account (admin only)
+app.post("/make-server-3bd0ade8/drivers/create", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { name, email, password, phoneNumber, vehicleType, licenseNumber } = body;
+
+    if (!name || !email || !password) {
+      return c.json({ error: "Name, email, and password are required" }, 400);
+    }
+
+    const existingDriver = await kv.get(`driver:credentials:${email}`);
+    if (existingDriver) {
+      return c.json({ error: "Driver with this email already exists" }, 400);
+    }
+
+    const driverId = `driver_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    const hashedPassword = btoa(password);
+
+    await kv.set(`driver:credentials:${email}`, {
+      driverId,
+      email,
+      password: hashedPassword,
+      createdAt: new Date().toISOString()
+    });
+
+    const driverProfile = {
+      id: driverId,
+      name,
+      email,
+      phoneNumber: phoneNumber || '',
+      vehicleType: vehicleType || '',
+      licenseNumber: licenseNumber || '',
+      status: 'active',
+      isOnline: false,
+      createdAt: new Date().toISOString(),
+      totalTicketsSold: 0,
+      totalRevenue: 0,
+      totalQRScans: 0
+    };
+
+    await kv.set(`driver:${driverId}`, driverProfile);
+
+    const driversList = await kv.get('drivers:list') || [];
+    driversList.push(driverId);
+    await kv.set('drivers:list', driversList);
+
+    console.log(`✅ Driver account created: ${driverId} (${email})`);
+
+    return c.json({ 
+      success: true, 
+      driver: { ...driverProfile, password: undefined } 
+    });
+  } catch (error) {
+    console.error("Error creating driver:", error);
+    return c.json({ error: "Failed to create driver account" }, 500);
+  }
+});
+
+// Driver login
+app.post("/make-server-3bd0ade8/drivers/login", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { email, password } = body;
+
+    if (!email || !password) {
+      return c.json({ error: "Email and password are required" }, 400);
+    }
+
+    const credentials = await kv.get(`driver:credentials:${email}`);
+    if (!credentials) {
+      return c.json({ error: "Invalid email or password" }, 401);
+    }
+
+    const hashedPassword = btoa(password);
+    if (credentials.password !== hashedPassword) {
+      return c.json({ error: "Invalid email or password" }, 401);
+    }
+
+    const driverProfile = await kv.get(`driver:${credentials.driverId}`);
+    if (!driverProfile) {
+      return c.json({ error: "Driver profile not found" }, 404);
+    }
+
+    if (driverProfile.status !== 'active') {
+      return c.json({ error: "Driver account is inactive" }, 403);
+    }
+
+    // Update driver to online status
+    const updatedProfile = {
+      ...driverProfile,
+      isOnline: true,
+      lastLoginAt: new Date().toISOString()
+    };
+    await kv.set(`driver:${credentials.driverId}`, updatedProfile);
+
+    console.log(`✅ Driver logged in: ${credentials.driverId} (${email})`);
+
+    return c.json({ 
+      success: true, 
+      driver: { ...updatedProfile, password: undefined },
+      token: credentials.driverId
+    });
+  } catch (error) {
+    console.error("Error during driver login:", error);
+    return c.json({ error: "Login failed" }, 500);
+  }
+});
+
+// Driver logout
+app.post("/make-server-3bd0ade8/drivers/logout", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { driverId } = body;
+
+    if (!driverId) {
+      return c.json({ error: "Driver ID is required" }, 400);
+    }
+
+    const driver = await kv.get(`driver:${driverId}`);
+    if (driver) {
+      const updatedProfile = {
+        ...driver,
+        isOnline: false,
+        lastLogoutAt: new Date().toISOString()
+      };
+      await kv.set(`driver:${driverId}`, updatedProfile);
+      console.log(`✅ Driver logged out: ${driverId}`);
+    }
+
+    return c.json({ success: true });
+  } catch (error) {
+    console.error("Error during driver logout:", error);
+    return c.json({ error: "Logout failed" }, 500);
+  }
+});
+
+// Get all drivers (admin only)
+app.get("/make-server-3bd0ade8/drivers", async (c) => {
+  try {
+    const driversList = await kv.get('drivers:list') || [];
+    const drivers = [];
+
+    for (const driverId of driversList) {
+      const driver = await kv.get(`driver:${driverId}`);
+      if (driver) {
+        drivers.push(driver);
+      }
+    }
+
+    return c.json({ success: true, drivers });
+  } catch (error) {
+    console.error("Error fetching drivers:", error);
+    return c.json({ error: "Failed to fetch drivers" }, 500);
+  }
+});
+
+// Get single driver by ID
+app.get("/make-server-3bd0ade8/drivers/:driverId", async (c) => {
+  try {
+    const driverId = c.req.param('driverId');
+    const driver = await kv.get(`driver:${driverId}`);
+
+    if (!driver) {
+      return c.json({ error: "Driver not found" }, 404);
+    }
+
+    return c.json({ success: true, driver });
+  } catch (error) {
+    console.error("Error fetching driver:", error);
+    return c.json({ error: "Failed to fetch driver" }, 500);
+  }
+});
+
+// Update driver profile (admin only)
+app.put("/make-server-3bd0ade8/drivers/:driverId", async (c) => {
+  try {
+    const driverId = c.req.param('driverId');
+    const body = await c.req.json();
+
+    const driver = await kv.get(`driver:${driverId}`);
+    if (!driver) {
+      return c.json({ error: "Driver not found" }, 404);
+    }
+
+    const updatedDriver = {
+      ...driver,
+      name: body.name || driver.name,
+      phoneNumber: body.phoneNumber !== undefined ? body.phoneNumber : driver.phoneNumber,
+      vehicleType: body.vehicleType !== undefined ? body.vehicleType : driver.vehicleType,
+      licenseNumber: body.licenseNumber !== undefined ? body.licenseNumber : driver.licenseNumber,
+      status: body.status || driver.status,
+      updatedAt: new Date().toISOString()
+    };
+
+    await kv.set(`driver:${driverId}`, updatedDriver);
+
+    console.log(`✅ Driver profile updated: ${driverId}`);
+
+    return c.json({ success: true, driver: updatedDriver });
+  } catch (error) {
+    console.error("Error updating driver:", error);
+    return c.json({ error: "Failed to update driver" }, 500);
+  }
+});
+
+// Delete driver (admin only)
+app.delete("/make-server-3bd0ade8/drivers/:driverId", async (c) => {
+  try {
+    const driverId = c.req.param('driverId');
+
+    const driver = await kv.get(`driver:${driverId}`);
+    if (!driver) {
+      return c.json({ error: "Driver not found" }, 404);
+    }
+
+    const driversList = await kv.get('drivers:list') || [];
+    const updatedList = driversList.filter(id => id !== driverId);
+    await kv.set('drivers:list', updatedList);
+
+    await kv.del(`driver:${driverId}`);
+    await kv.del(`driver:credentials:${driver.email}`);
+
+    console.log(`✅ Driver deleted: ${driverId}`);
+
+    return c.json({ success: true });
+  } catch (error) {
+    console.error("Error deleting driver:", error);
+    return c.json({ error: "Failed to delete driver" }, 500);
+  }
+});
+
+// Record manual ticket sale
+app.post("/make-server-3bd0ade8/drivers/record-sale", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { driverId, amount, ticketType, quantity, notes } = body;
+
+    if (!driverId || !amount || !quantity) {
+      return c.json({ error: "Driver ID, amount, and quantity are required" }, 400);
+    }
+
+    const driver = await kv.get(`driver:${driverId}`);
+    if (!driver) {
+      return c.json({ error: "Driver not found" }, 404);
+    }
+
+    const saleId = `sale_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    const sale = {
+      id: saleId,
+      driverId,
+      amount: parseFloat(amount),
+      ticketType: ticketType || 'day-pass',
+      quantity: parseInt(quantity),
+      notes: notes || '',
+      timestamp: new Date().toISOString(),
+      date: new Date().toISOString().split('T')[0]
+    };
+
+    await kv.set(`driver:sale:${saleId}`, sale);
+
+    const updatedDriver = {
+      ...driver,
+      totalTicketsSold: (driver.totalTicketsSold || 0) + parseInt(quantity),
+      totalRevenue: (driver.totalRevenue || 0) + parseFloat(amount),
+      lastSaleAt: new Date().toISOString()
+    };
+    await kv.set(`driver:${driverId}`, updatedDriver);
+
+    const today = new Date().toISOString().split('T')[0];
+    const metricsKey = `driver:metrics:${driverId}:${today}`;
+    const metrics = await kv.get(metricsKey) || {
+      driverId,
+      date: today,
+      ticketsSold: 0,
+      revenue: 0,
+      qrScans: 0
+    };
+
+    metrics.ticketsSold += parseInt(quantity);
+    metrics.revenue += parseFloat(amount);
+    await kv.set(metricsKey, metrics);
+
+    console.log(`✅ Manual sale recorded: ${saleId} by driver ${driverId}`);
+
+    return c.json({ success: true, sale, driver: updatedDriver });
+  } catch (error) {
+    console.error("Error recording sale:", error);
+    return c.json({ error: "Failed to record sale" }, 500);
+  }
+});
+
+// Record QR code scan
+app.post("/make-server-3bd0ade8/drivers/record-scan", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { driverId, bookingId, passengerIndex } = body;
+
+    if (!driverId || !bookingId) {
+      return c.json({ error: "Driver ID and booking ID are required" }, 400);
+    }
+
+    const driver = await kv.get(`driver:${driverId}`);
+    if (!driver) {
+      return c.json({ error: "Driver not found" }, 404);
+    }
+
+    const scanId = `scan_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    const scan = {
+      id: scanId,
+      driverId,
+      bookingId,
+      passengerIndex: passengerIndex || 0,
+      timestamp: new Date().toISOString(),
+      date: new Date().toISOString().split('T')[0]
+    };
+
+    await kv.set(`driver:scan:${scanId}`, scan);
+
+    const updatedDriver = {
+      ...driver,
+      totalQRScans: (driver.totalQRScans || 0) + 1,
+      lastScanAt: new Date().toISOString()
+    };
+    await kv.set(`driver:${driverId}`, updatedDriver);
+
+    const today = new Date().toISOString().split('T')[0];
+    const metricsKey = `driver:metrics:${driverId}:${today}`;
+    const metrics = await kv.get(metricsKey) || {
+      driverId,
+      date: today,
+      ticketsSold: 0,
+      revenue: 0,
+      qrScans: 0
+    };
+
+    metrics.qrScans += 1;
+    await kv.set(metricsKey, metrics);
+
+    console.log(`✅ QR scan recorded: ${scanId} by driver ${driverId}`);
+
+    return c.json({ success: true, scan, driver: updatedDriver });
+  } catch (error) {
+    console.error("Error recording scan:", error);
+    return c.json({ error: "Failed to record scan" }, 500);
+  }
+});
+
+// Get driver metrics for a date range
+app.get("/make-server-3bd0ade8/drivers/:driverId/metrics", async (c) => {
+  try {
+    const driverId = c.req.param('driverId');
+    const startDate = c.req.query('startDate');
+    const endDate = c.req.query('endDate');
+
+    const driver = await kv.get(`driver:${driverId}`);
+    if (!driver) {
+      return c.json({ error: "Driver not found" }, 404);
+    }
+
+    const end = endDate ? new Date(endDate) : new Date();
+    const start = startDate ? new Date(startDate) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+    const metrics = [];
+    const currentDate = new Date(start);
+
+    while (currentDate <= end) {
+      const dateStr = currentDate.toISOString().split('T')[0];
+      const metricsKey = `driver:metrics:${driverId}:${dateStr}`;
+      const dayMetrics = await kv.get(metricsKey);
+
+      if (dayMetrics) {
+        metrics.push(dayMetrics);
+      } else {
+        metrics.push({
+          driverId,
+          date: dateStr,
+          ticketsSold: 0,
+          revenue: 0,
+          qrScans: 0
+        });
+      }
+
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return c.json({ success: true, metrics, driver });
+  } catch (error) {
+    console.error("Error fetching driver metrics:", error);
+    return c.json({ error: "Failed to fetch metrics" }, 500);
+  }
+});
+
+// Get driver's recent activity
+app.get("/make-server-3bd0ade8/drivers/:driverId/activity", async (c) => {
+  try {
+    const driverId = c.req.param('driverId');
+    const limit = parseInt(c.req.query('limit') || '20');
+
+    const driver = await kv.get(`driver:${driverId}`);
+    if (!driver) {
+      return c.json({ error: "Driver not found" }, 404);
+    }
+
+    const allKeys = await kv.getByPrefix('driver:');
+    
+    const sales = [];
+    const scans = [];
+
+    for (const [key, value] of Object.entries(allKeys)) {
+      if (key.startsWith(`driver:sale:`) && value.driverId === driverId) {
+        sales.push(value);
+      } else if (key.startsWith(`driver:scan:`) && value.driverId === driverId) {
+        scans.push(value);
+      }
+    }
+
+    sales.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    scans.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+    const activity = [
+      ...sales.slice(0, limit).map(s => ({ ...s, type: 'sale' })),
+      ...scans.slice(0, limit).map(s => ({ ...s, type: 'scan' }))
+    ].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, limit);
+
+    return c.json({ 
+      success: true, 
+      activity,
+      driver,
+      totalSales: sales.length,
+      totalScans: scans.length
+    });
+  } catch (error) {
+    console.error("Error fetching driver activity:", error);
+    return c.json({ error: "Failed to fetch activity" }, 500);
+  }
+});
+
 Deno.serve(app.fetch);

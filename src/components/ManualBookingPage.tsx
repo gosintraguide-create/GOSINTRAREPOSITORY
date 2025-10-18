@@ -184,6 +184,37 @@ export function ManualBookingPage({ onNavigate }: ManualBookingPageProps) {
         setCompletedBooking(response.booking);
         setBookingComplete(true);
         toast.success("Booking created!");
+        
+        // Record manual sale for driver if logged in
+        try {
+          const driverSession = localStorage.getItem('driver_session');
+          if (driverSession) {
+            const { driver } = JSON.parse(driverSession);
+            const quantity = formData.adults + formData.children + formData.infants;
+            
+            // Record the sale
+            await fetch(
+              `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/make-server-3bd0ade8/drivers/record-sale`,
+              {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  driverId: driver.id,
+                  amount: totalPrice,
+                  ticketType: 'day-pass',
+                  quantity,
+                  notes: `Manual booking: ${response.booking.id}`
+                }),
+              }
+            );
+          }
+        } catch (error) {
+          // Don't fail the booking if driver recording fails
+          console.error('Failed to record driver sale:', error);
+        }
       } else {
         toast.error(response.error || "Failed to create booking");
       }
