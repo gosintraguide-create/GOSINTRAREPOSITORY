@@ -9,15 +9,30 @@ import Stripe from "npm:stripe@17.3.1";
 
 const app = new Hono();
 
-// Middleware
+// Middleware - Allow all origins for development
 app.use("*", cors({
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:4173',
-    'https://go-sintra.vercel.app',           // Add your actual Vercel URL here
-    // 'https://your-custom-domain.com',      // Add custom domain when ready
-  ],
+  origin: (origin) => {
+    // Allow all localhost origins
+    if (origin?.includes('localhost')) return origin;
+    
+    // Allow all Vercel preview and production URLs
+    if (origin?.includes('vercel.app')) return origin;
+    
+    // Allow specific production domains
+    const allowedDomains = [
+      'https://go-sintra.vercel.app',
+      // Add your custom domain here when ready
+      // 'https://your-custom-domain.com',
+    ];
+    
+    if (allowedDomains.includes(origin || '')) return origin;
+    
+    // For development, allow all origins
+    return origin || '*';
+  },
   credentials: true,
+  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowHeaders: ['Content-Type', 'Authorization'],
 }));
 app.use("*", logger(console.log));
 
@@ -1125,6 +1140,45 @@ app.get("/make-server-3bd0ade8/health", (c) => {
   return c.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
+// Simple database check - test if we can query the table
+app.get("/make-server-3bd0ade8/db-check", async (c) => {
+  try {
+    console.log("🔍 Testing database connection...");
+    
+    // Try to count rows
+    const { count, error } = await supabase
+      .from("kv_store_3bd0ade8")
+      .select("*", { count: 'exact', head: true });
+    
+    if (error) {
+      console.error("Database check failed:", error);
+      return c.json({
+        success: false,
+        error: error.message,
+        hint: "The kv_store_3bd0ade8 table may not exist or you don't have permission to access it",
+        supabaseUrl: Deno.env.get("SUPABASE_URL"),
+        hasServiceRole: !!Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")
+      }, 500);
+    }
+    
+    console.log(`✅ Database check passed: ${count} rows found`);
+    
+    return c.json({
+      success: true,
+      message: "Database connection successful",
+      rowCount: count,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error("❌ Database check error:", error);
+    return c.json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+      stack: error instanceof Error ? error.stack : undefined
+    }, 500);
+  }
+});
+
 // Database diagnostics - check for duplicate keys
 app.get("/make-server-3bd0ade8/db-diagnostics", async (c) => {
   try {
@@ -1137,7 +1191,13 @@ app.get("/make-server-3bd0ade8/db-diagnostics", async (c) => {
       .order("key");
     
     if (error) {
-      throw error;
+      console.error("Database query error:", error);
+      return c.json({
+        success: false,
+        error: `Database query failed: ${error.message}`,
+        details: error,
+        hint: "Make sure the kv_store_3bd0ade8 table exists in your Supabase database"
+      }, 500);
     }
     
     // Count occurrences of each key
@@ -1174,14 +1234,21 @@ app.get("/make-server-3bd0ade8/db-diagnostics", async (c) => {
         keyCount: hasDuplicates ? Object.fromEntries(
           Object.entries(keyCount).filter(([_, count]) => count > 1)
         ) : {},
-        note: "The 'duplicate' warning in Supabase is normal - it means upsert is updating existing keys rather than inserting duplicates. This is the expected behavior."
+        note: "The 'duplicate' warning in Supabase is normal - it means upsert is updating existing keys rather than inserting duplicates. This is the expected behavior.",
+        explanation: {
+          whatIsUpsert: "Upsert = UPDATE if key exists, INSERT if it doesn't",
+          whyWarning: "Supabase logs 'duplicate' when it updates instead of inserts",
+          isThisBad: "No! This is the correct and expected behavior for a key-value store",
+          whenToWorry: "Only if you see actual duplicate rows (totalRows > totalKeys)"
+        }
       }
     });
   } catch (error) {
     console.error("❌ Error running diagnostics:", error);
     return c.json({
       success: false,
-      error: error instanceof Error ? error.message : "Diagnostics failed"
+      error: error instanceof Error ? error.message : "Diagnostics failed",
+      stack: error instanceof Error ? error.stack : undefined
     }, 500);
   }
 });

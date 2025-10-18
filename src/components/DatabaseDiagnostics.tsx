@@ -10,10 +10,15 @@ export function DatabaseDiagnostics() {
   const [diagnostics, setDiagnostics] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [cleaning, setCleaning] = useState(false);
+  const [dbCheck, setDbCheck] = useState<any>(null);
+  const [checkingDb, setCheckingDb] = useState(false);
 
   const runDiagnostics = async () => {
     setLoading(true);
+    setDiagnostics(null); // Clear previous results
     try {
+      console.log("🔍 Starting database diagnostics...");
+      
       const response = await fetch(
         `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/db-diagnostics`,
         {
@@ -25,7 +30,9 @@ export function DatabaseDiagnostics() {
         }
       );
 
+      console.log("Response status:", response.status);
       const result = await response.json();
+      console.log("Response data:", result);
       
       if (result.success) {
         setDiagnostics(result.diagnostics);
@@ -35,13 +42,79 @@ export function DatabaseDiagnostics() {
           toast.success("Database is healthy - no duplicates found");
         }
       } else {
-        toast.error("Failed to run diagnostics");
+        console.error("Diagnostics failed:", result);
+        toast.error(`Failed to run diagnostics: ${result.error || 'Unknown error'}`);
+        // Still set some diagnostic info to show the error
+        setDiagnostics({
+          error: result.error,
+          hint: result.hint,
+          details: result.details
+        });
       }
     } catch (error) {
       console.error("Error running diagnostics:", error);
-      toast.error("Failed to run diagnostics");
+      toast.error(`Failed to run diagnostics: ${error instanceof Error ? error.message : 'Network error'}`);
+      setDiagnostics({
+        error: error instanceof Error ? error.message : 'Network error'
+      });
     }
     setLoading(false);
+  };
+
+  const testDatabaseConnection = async () => {
+    setCheckingDb(true);
+    setDbCheck(null);
+    try {
+      const url = `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/db-check`;
+      console.log("🔍 Testing database connection...");
+      console.log("URL:", url);
+      console.log("Project ID:", projectId);
+      console.log("Has Anon Key:", !!publicAnonKey);
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${publicAnonKey}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      console.log("Response status:", response.status);
+      console.log("Response ok:", response.ok);
+      
+      const result = await response.json();
+      console.log("Database check result:", result);
+      setDbCheck(result);
+      
+      if (result.success) {
+        toast.success(`Database connected! ${result.rowCount} rows found`);
+      } else {
+        toast.error(`Database connection failed: ${result.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error("Error checking database:", error);
+      console.error("Error details:", {
+        message: error instanceof Error ? error.message : 'Unknown',
+        name: error instanceof Error ? error.name : 'Unknown',
+        stack: error instanceof Error ? error.stack : 'No stack'
+      });
+      
+      const errorMessage = error instanceof Error ? error.message : 'Network error';
+      toast.error(`Failed to check database: ${errorMessage}`);
+      
+      setDbCheck({
+        success: false,
+        error: errorMessage,
+        hint: "Make sure the Supabase Edge Function is deployed and accessible",
+        troubleshooting: [
+          "1. Check if the Edge Function 'make-server-3bd0ade8' is deployed in Supabase",
+          "2. Verify your internet connection",
+          "3. Check browser console for CORS errors",
+          "4. Ensure Supabase project is active and not paused"
+        ]
+      });
+    }
+    setCheckingDb(false);
   };
 
   const cleanupDatabase = async () => {
@@ -89,15 +162,70 @@ export function DatabaseDiagnostics() {
               <p className="text-muted-foreground">Check database health and clean up duplicates</p>
             </div>
           </div>
-          <Button
-            onClick={runDiagnostics}
-            disabled={loading}
-            className="gap-2"
-          >
-            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-            Run Diagnostics
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={testDatabaseConnection}
+              disabled={checkingDb}
+              variant="outline"
+              className="gap-2"
+            >
+              <Database className={`h-4 w-4 ${checkingDb ? 'animate-pulse' : ''}`} />
+              Test Connection
+            </Button>
+            <Button
+              onClick={runDiagnostics}
+              disabled={loading}
+              className="gap-2"
+            >
+              <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+              Run Diagnostics
+            </Button>
+          </div>
         </div>
+
+        {/* Database Connection Test Result */}
+        {dbCheck && (
+          <div className="mb-6">
+            {dbCheck.success ? (
+              <Alert className="bg-green-50 border-green-200">
+                <CheckCircle2 className="h-4 w-4 text-green-600" />
+                <AlertDescription className="text-green-900">
+                  <strong>Database Connected!</strong> Found {dbCheck.rowCount} rows in kv_store_3bd0ade8
+                  <div className="mt-1 text-sm text-green-700">
+                    Connection tested at {new Date(dbCheck.timestamp).toLocaleTimeString()}
+                  </div>
+                </AlertDescription>
+              </Alert>
+            ) : (
+              <Alert className="bg-red-50 border-red-200">
+                <AlertCircle className="h-4 w-4 text-red-600" />
+                <AlertDescription className="text-red-900">
+                  <strong>Connection Failed:</strong> {dbCheck.error}
+                  {dbCheck.hint && (
+                    <div className="mt-2 text-sm">
+                      <strong>Hint:</strong> {dbCheck.hint}
+                    </div>
+                  )}
+                  {dbCheck.troubleshooting && (
+                    <div className="mt-3 text-sm">
+                      <strong>Troubleshooting Steps:</strong>
+                      <ul className="list-disc pl-5 mt-2 space-y-1">
+                        {dbCheck.troubleshooting.map((step: string, i: number) => (
+                          <li key={i}>{step}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {dbCheck.supabaseUrl && (
+                    <div className="mt-2 text-sm">
+                      <strong>Supabase URL:</strong> {dbCheck.supabaseUrl}
+                    </div>
+                  )}
+                </AlertDescription>
+              </Alert>
+            )}
+          </div>
+        )}
 
         <Alert className="mb-6 bg-blue-50 border-blue-200">
           <Info className="h-4 w-4 text-blue-600" />
@@ -108,7 +236,29 @@ export function DatabaseDiagnostics() {
           </AlertDescription>
         </Alert>
 
-        {diagnostics && (
+        {diagnostics && diagnostics.error && (
+          <Alert className="bg-red-50 border-red-200">
+            <AlertCircle className="h-4 w-4 text-red-600" />
+            <AlertDescription className="text-red-900">
+              <strong>Error:</strong> {diagnostics.error}
+              {diagnostics.hint && (
+                <div className="mt-2 text-sm">
+                  <strong>Hint:</strong> {diagnostics.hint}
+                </div>
+              )}
+              {diagnostics.details && (
+                <details className="mt-2">
+                  <summary className="cursor-pointer text-sm font-medium">Technical Details</summary>
+                  <pre className="mt-2 text-xs overflow-auto p-2 bg-red-100 rounded">
+                    {JSON.stringify(diagnostics.details, null, 2)}
+                  </pre>
+                </details>
+              )}
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {diagnostics && !diagnostics.error && (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="p-4 rounded-lg bg-secondary/50">
@@ -149,17 +299,43 @@ export function DatabaseDiagnostics() {
                 <CheckCircle2 className="h-4 w-4 text-green-600" />
                 <AlertDescription className="text-green-900">
                   <strong>All good!</strong> No duplicate rows found in the database.
-                  The "duplicate" warnings in Supabase are just informational messages about the upsert operation.
+                  <div className="mt-2 text-sm">
+                    The "duplicate" warnings in Supabase are just informational messages about the upsert operation working correctly.
+                  </div>
                 </AlertDescription>
               </Alert>
             )}
 
-            <div className="p-4 rounded-lg bg-secondary/30 border border-border">
-              <div className="text-muted-foreground mb-2">Note:</div>
-              <p className="text-foreground">
-                {diagnostics.note}
-              </p>
-            </div>
+            {diagnostics.explanation && (
+              <div className="p-4 rounded-lg bg-blue-50 border border-blue-200">
+                <div className="text-blue-900 mb-3">
+                  <strong>Understanding the "Duplicate" Warning</strong>
+                </div>
+                <div className="space-y-2 text-sm text-blue-800">
+                  <div>
+                    <strong>What is Upsert?</strong> {diagnostics.explanation.whatIsUpsert}
+                  </div>
+                  <div>
+                    <strong>Why the warning?</strong> {diagnostics.explanation.whyWarning}
+                  </div>
+                  <div>
+                    <strong>Is this bad?</strong> {diagnostics.explanation.isThisBad}
+                  </div>
+                  <div>
+                    <strong>When to worry:</strong> {diagnostics.explanation.whenToWorry}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {diagnostics.note && (
+              <div className="p-4 rounded-lg bg-secondary/30 border border-border">
+                <div className="text-muted-foreground mb-2">Note:</div>
+                <p className="text-foreground">
+                  {diagnostics.note}
+                </p>
+              </div>
+            )}
           </div>
         )}
 

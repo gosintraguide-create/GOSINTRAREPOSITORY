@@ -2,9 +2,13 @@
 
 ## 🚨 START HERE
 
-**Ready to deploy with analytics?** → **[`DEPLOY_WITH_ANALYTICS.md`](./DEPLOY_WITH_ANALYTICS.md)**
+### Getting "Failed to fetch" Error?
+→ **[`FIX_FAILED_TO_FETCH.md`](./FIX_FAILED_TO_FETCH.md)** ← START HERE  
+Quick 3-step fix for Edge Function deployment issues
 
-This is your fastest path to deployment. Analytics installed, all fixes applied, output directory set to `Build` - just 3 commands!
+### Ready to deploy with analytics?
+→ **[`DEPLOY_WITH_ANALYTICS.md`](./DEPLOY_WITH_ANALYTICS.md)**  
+Fastest path to deployment. Analytics installed, all fixes applied, output directory set to `Build` - just 3 commands!
 
 ---
 
@@ -229,6 +233,15 @@ First Time Setup
 - **[BLOG_SEO_SUMMARY.md](./BLOG_SEO_SUMMARY.md)** - SEO optimization
 - **[CONTENT_MANAGEMENT_GUIDE.md](./CONTENT_MANAGEMENT_GUIDE.md)** - Content management
 - **[SEO_OPTIMIZATION_GUIDE.md](./SEO_OPTIMIZATION_GUIDE.md)** - SEO strategy
+
+### Database & Diagnostics Docs ✨ NEW
+
+- **[EDGE_FUNCTION_DEPLOYMENT_GUIDE.md](./EDGE_FUNCTION_DEPLOYMENT_GUIDE.md)** - Fix "Failed to fetch" error 🚨 START HERE IF ERROR
+- **[DATABASE_STATUS.md](./DATABASE_STATUS.md)** - Complete fix summary
+- **[DATABASE_SAVE_FIX.md](./DATABASE_SAVE_FIX.md)** - Content save conflict fix
+- **[SUPABASE_STORAGE_EXPLAINED.md](./SUPABASE_STORAGE_EXPLAINED.md)** - Why 0 storage is normal
+- **[DIAGNOSTICS_TROUBLESHOOTING.md](./DIAGNOSTICS_TROUBLESHOOTING.md)** - Troubleshooting guide
+- **[DATABASE_QUICK_REFERENCE.md](./DATABASE_QUICK_REFERENCE.md)** - Quick reference card
 
 ### Status & History
 

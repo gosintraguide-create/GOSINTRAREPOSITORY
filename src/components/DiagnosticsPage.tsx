@@ -8,6 +8,7 @@ import { ArrowLeft, TestTube, CheckCircle, XCircle, Loader2, Mail } from 'lucide
 import { toast } from 'sonner@2.0.3';
 import { ClearCacheButton } from './ClearCacheButton';
 import { DatabaseDiagnostics } from './DatabaseDiagnostics';
+import { EdgeFunctionHealthCheck } from './EdgeFunctionHealthCheck';
 
 interface DiagnosticsPageProps {
   onNavigate: (page: string) => void;
@@ -306,6 +307,11 @@ export function DiagnosticsPage({ onNavigate }: DiagnosticsPageProps) {
             </div>
           </CardContent>
         </Card>
+
+        {/* Edge Function Health Check - MUST BE FIRST */}
+        <div className="mt-6">
+          <EdgeFunctionHealthCheck />
+        </div>
 
         {/* Database Diagnostics */}
         <div className="mt-6">
