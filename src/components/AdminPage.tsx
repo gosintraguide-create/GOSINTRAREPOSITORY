@@ -7,7 +7,7 @@ import { Card } from "./ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Calendar } from "./ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { loadContent, saveContent, DEFAULT_CONTENT, type WebsiteContent } from "../lib/contentManager";
+import { loadContent, saveContent, saveContentAsync, DEFAULT_CONTENT, type WebsiteContent } from "../lib/contentManager";
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { toast } from "sonner@2.0.3";
 import { safeJsonFetch } from '../lib/apiErrorHandler';
@@ -242,16 +242,37 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     }
   };
 
-  const saveContentSettings = () => {
-    saveContent(content);
-    toast.success("Content saved successfully! Refresh the page to see changes.");
+  const saveContentSettings = async () => {
+    try {
+      const result = await saveContentAsync(content);
+      
+      if (result.success) {
+        toast.success("Content saved successfully to database!");
+      } else {
+        toast.error(`Failed to save to database: ${result.error}. Saved locally only.`);
+      }
+    } catch (error) {
+      console.error('Error saving content:', error);
+      toast.error("Failed to save content. Please try again.");
+    }
   };
 
-  const resetContent = () => {
+  const resetContent = async () => {
     if (confirm("Are you sure you want to reset all content to defaults? This cannot be undone.")) {
       setContent(DEFAULT_CONTENT);
-      saveContent(DEFAULT_CONTENT);
-      toast.success("Content reset to defaults!");
+      
+      try {
+        const result = await saveContentAsync(DEFAULT_CONTENT);
+        
+        if (result.success) {
+          toast.success("Content reset to defaults and saved to database!");
+        } else {
+          toast.error(`Content reset locally but database save failed: ${result.error}`);
+        }
+      } catch (error) {
+        console.error('Error resetting content:', error);
+        toast.error("Content reset locally but database save failed.");
+      }
     }
   };
 

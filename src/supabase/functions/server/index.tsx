@@ -1119,10 +1119,20 @@ app.get("/make-server-3bd0ade8/health", (c) => {
 // Get website content
 app.get("/make-server-3bd0ade8/content", async (c) => {
   try {
+    console.log("📖 Fetching content from database...");
     const content = await kv.get("website_content");
+    
+    if (content) {
+      console.log("✅ Content found in database");
+      console.log("Content keys:", Object.keys(content));
+    } else {
+      console.log("ℹ️ No content found in database");
+    }
+    
     return c.json({ success: true, content });
   } catch (error) {
-    console.error("Error fetching content:", error);
+    console.error("❌ Error fetching content:", error);
+    console.error("Error details:", error instanceof Error ? error.message : String(error));
     return c.json({ success: false, error: "Failed to fetch content" }, 500);
   }
 });
@@ -1131,24 +1141,44 @@ app.get("/make-server-3bd0ade8/content", async (c) => {
 app.post("/make-server-3bd0ade8/content", async (c) => {
   try {
     const body = await c.req.json();
-    await kv.set("website_content", {
+    console.log("📝 Saving content to database...");
+    console.log("Content keys:", Object.keys(body));
+    
+    const contentToSave = {
       ...body,
       lastUpdated: new Date().toISOString()
-    });
+    };
+    
+    await kv.set("website_content", contentToSave);
+    console.log("✅ Content saved successfully to database");
+    
     return c.json({ success: true });
   } catch (error) {
-    console.error("Error saving content:", error);
-    return c.json({ success: false, error: "Failed to save content" }, 500);
+    console.error("❌ Error saving content:", error);
+    console.error("Error details:", error instanceof Error ? error.message : String(error));
+    return c.json({ 
+      success: false, 
+      error: error instanceof Error ? error.message : "Failed to save content" 
+    }, 500);
   }
 });
 
 // Get pricing configuration
 app.get("/make-server-3bd0ade8/pricing", async (c) => {
   try {
+    console.log("💰 Fetching pricing from database...");
     const pricing = await kv.get("pricing_config");
+    
+    if (pricing) {
+      console.log("✅ Pricing found in database");
+    } else {
+      console.log("ℹ️ No pricing found in database, will use defaults");
+    }
+    
     return c.json({ success: true, pricing });
   } catch (error) {
-    console.error("Error fetching pricing:", error);
+    console.error("❌ Error fetching pricing:", error);
+    console.error("Error details:", error instanceof Error ? error.message : String(error));
     return c.json({ success: false, error: "Failed to fetch pricing" }, 500);
   }
 });
@@ -1157,11 +1187,20 @@ app.get("/make-server-3bd0ade8/pricing", async (c) => {
 app.post("/make-server-3bd0ade8/pricing", async (c) => {
   try {
     const body = await c.req.json();
+    console.log("💰 Saving pricing to database...");
+    console.log("Pricing data:", JSON.stringify(body, null, 2));
+    
     await kv.set("pricing_config", body);
+    console.log("✅ Pricing saved successfully to database");
+    
     return c.json({ success: true });
   } catch (error) {
-    console.error("Error saving pricing:", error);
-    return c.json({ success: false, error: "Failed to save pricing" }, 500);
+    console.error("❌ Error saving pricing:", error);
+    console.error("Error details:", error instanceof Error ? error.message : String(error));
+    return c.json({ 
+      success: false, 
+      error: error instanceof Error ? error.message : "Failed to save pricing" 
+    }, 500);
   }
 });
 

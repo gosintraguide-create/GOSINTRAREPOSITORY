@@ -12,6 +12,7 @@ import { toast } from "sonner@2.0.3";
 import {
   loadComprehensiveContent,
   saveComprehensiveContent,
+  saveComprehensiveContentAsync,
   DEFAULT_COMPREHENSIVE_CONTENT,
   type ComprehensiveContent,
 } from "../lib/comprehensiveContent";
@@ -31,18 +32,39 @@ export function ContentEditor() {
     setContent(loadComprehensiveContent());
   }, []);
 
-  const handleSave = () => {
-    saveComprehensiveContent(content);
-    setHasChanges(false);
-    toast.success("All content saved successfully!");
+  const handleSave = async () => {
+    try {
+      const result = await saveComprehensiveContentAsync(content);
+      
+      if (result.success) {
+        setHasChanges(false);
+        toast.success("All content saved successfully to database!");
+      } else {
+        toast.error(`Failed to save to database: ${result.error}. Saved locally only.`);
+      }
+    } catch (error) {
+      console.error('Error saving content:', error);
+      toast.error("Failed to save content. Please try again.");
+    }
   };
 
-  const handleReset = () => {
+  const handleReset = async () => {
     if (confirm("Are you sure you want to reset all content to defaults? This cannot be undone.")) {
       setContent(DEFAULT_COMPREHENSIVE_CONTENT);
-      saveComprehensiveContent(DEFAULT_COMPREHENSIVE_CONTENT);
-      setHasChanges(false);
-      toast.success("Content reset to defaults");
+      
+      try {
+        const result = await saveComprehensiveContentAsync(DEFAULT_COMPREHENSIVE_CONTENT);
+        
+        if (result.success) {
+          setHasChanges(false);
+          toast.success("Content reset to defaults and saved to database!");
+        } else {
+          toast.error(`Content reset locally but database save failed: ${result.error}`);
+        }
+      } catch (error) {
+        console.error('Error resetting content:', error);
+        toast.error("Content reset locally but database save failed.");
+      }
     }
   };
 

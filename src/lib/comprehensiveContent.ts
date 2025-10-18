@@ -1175,10 +1175,40 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
   },
 };
 
+// Import API functions
+import { saveContent as saveContentToAPI, getContent as getContentFromAPI } from './api';
+
 // Save and load functions
 export function saveComprehensiveContent(content: ComprehensiveContent): void {
   localStorage.setItem("comprehensive-content", JSON.stringify(content));
-  console.log("Comprehensive content saved");
+  console.log("Comprehensive content saved to localStorage");
+  
+  // Also save to database (non-blocking)
+  saveContentToAPI({ comprehensive: content }).catch(error => {
+    console.error('Failed to save comprehensive content to database:', error);
+  });
+}
+
+// Async version that waits for database save
+export async function saveComprehensiveContentAsync(content: ComprehensiveContent): Promise<{ success: boolean; error?: string }> {
+  try {
+    // Save to localStorage
+    localStorage.setItem("comprehensive-content", JSON.stringify(content));
+    
+    // Save to database and wait for result
+    const result = await saveContentToAPI({ comprehensive: content });
+    
+    if (result.success) {
+      console.log('✅ Comprehensive content saved to database successfully');
+      return { success: true };
+    } else {
+      console.error('❌ Failed to save comprehensive content to database:', result.error);
+      return { success: false, error: result.error || 'Failed to save to database' };
+    }
+  } catch (error) {
+    console.error('❌ Error saving comprehensive content:', error);
+    return { success: false, error: String(error) };
+  }
 }
 
 export function loadComprehensiveContent(): ComprehensiveContent {
@@ -1194,6 +1224,24 @@ export function loadComprehensiveContent(): ComprehensiveContent {
     }
   }
   return DEFAULT_COMPREHENSIVE_CONTENT;
+}
+
+// Async function to sync content from database
+export async function syncComprehensiveContentFromDatabase(): Promise<ComprehensiveContent> {
+  try {
+    const content = await getContentFromAPI();
+    if (content && content.comprehensive) {
+      // Save to localStorage for offline access
+      localStorage.setItem("comprehensive-content", JSON.stringify(content.comprehensive));
+      console.log('✅ Synced comprehensive content from database to localStorage');
+      return deepMerge(DEFAULT_COMPREHENSIVE_CONTENT, content.comprehensive);
+    } else {
+      console.log('ℹ️ No comprehensive content in database yet, using defaults or localStorage');
+    }
+  } catch (error) {
+    console.error('Failed to sync comprehensive content from database:', error);
+  }
+  return loadComprehensiveContent();
 }
 
 // Deep merge utility to ensure all default fields exist

@@ -240,6 +240,28 @@ export function saveContent(content: WebsiteContent): void {
   });
 }
 
+// Async version that waits for database save and returns result
+export async function saveContentAsync(content: WebsiteContent): Promise<{ success: boolean; error?: string }> {
+  try {
+    // Save to localStorage as backup
+    localStorage.setItem("website-content", JSON.stringify(content));
+    
+    // Save to database and wait for result
+    const result = await saveContentToAPI(content);
+    
+    if (result.success) {
+      console.log('✅ Content saved to database successfully');
+      return { success: true };
+    } else {
+      console.error('❌ Failed to save content to database:', result.error);
+      return { success: false, error: result.error || 'Failed to save to database' };
+    }
+  } catch (error) {
+    console.error('❌ Error saving content:', error);
+    return { success: false, error: String(error) };
+  }
+}
+
 export function loadContent(): WebsiteContent {
   // Try localStorage first for immediate response
   const saved = localStorage.getItem("website-content");
