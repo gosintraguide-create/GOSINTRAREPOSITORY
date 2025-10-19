@@ -470,7 +470,7 @@ async function generateBookingPDF(
         size: 7,
         color: rgb(0.42, 0.447, 0.533),
       });
-      page.drawText(passenger.name.toUpperCase(), {
+      page.drawText((passenger.name || passenger.fullName || `Passenger ${i + 1}`).toUpperCase(), {
         x: col1X,
         y: contentY - 14,
         size: 11,
@@ -484,7 +484,7 @@ async function generateBookingPDF(
         size: 7,
         color: rgb(0.42, 0.447, 0.533),
       });
-      page.drawText(passenger.type.toUpperCase(), {
+      page.drawText((passenger.type || 'Adult').toUpperCase(), {
         x: col2X,
         y: contentY - 14,
         size: 11,
@@ -978,7 +978,8 @@ async function sendBookingEmail(
     console.log(
       `✅ Email payload includes ${passengersWithQR.length} passengers with QR codes:`,
       passengersWithQR.map((p: any, i: number) => ({
-        name: p.name,
+        name: p.name || p.fullName || `Passenger ${i + 1}`,
+        type: p.type || 'Adult',
         hasQRCode: !!p.qrCode,
         qrCodeLength: p.qrCode?.length || 0,
       })),
@@ -986,7 +987,7 @@ async function sendBookingEmail(
 
     // Build HTML email
     const htmlContent = generateBookingConfirmationHTML({
-      customerName: booking.contactInfo.name,
+      customerName: booking.contactInfo?.name || booking.fullName || 'Guest',
       bookingId: booking.id,
       selectedDate: booking.selectedDate,
       formattedDate,
@@ -997,8 +998,18 @@ async function sendBookingEmail(
       attractions: booking.selectedAttractions,
     });
 
+    const recipientEmail = booking.contactInfo?.email || booking.email;
+    
+    if (!recipientEmail) {
+      console.error('❌ No email address found in booking');
+      return {
+        success: false,
+        error: 'No email address provided',
+      };
+    }
+    
     console.log(
-      `📧 Preparing email with ${qrCodes.length} QR codes for ${booking.contactInfo.email}`,
+      `📧 Preparing email with ${qrCodes.length} QR codes for ${recipientEmail}`,
     );
     console.log(
       `QR Code sample (first 100 chars): ${qrCodes[0]?.substring(0, 100)}...`,
@@ -1058,7 +1069,7 @@ async function sendBookingEmail(
     // To use your own domain (e.g., bookings@gosintra.com), verify it at https://resend.com/domains
     const emailPayload: any = {
       from: "Go Sintra <onboarding@resend.dev>",
-      to: [booking.contactInfo.email],
+      to: [recipientEmail],
       subject: `🎉 Your Go Sintra Booking Confirmed - ${formattedDate}`,
       html: htmlContent,
     };
@@ -1236,8 +1247,8 @@ function generateBookingConfirmationHTML(data: any): string {
           .map(
             (passenger: any, index: number) => `
           <div style="background-color: #f5f5f5; border-radius: 8px; padding: 15px; margin: 10px 0; display: flex; align-items: center; gap: 12px;">
-            <span style="display: inline-block; background-color: #D97843; color: #ffffff; padding: 6px 14px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase;">${passenger.type}</span>
-            <span style="color: #0A4D5C; font-weight: 500; font-size: 16px;">${passenger.name}</span>
+            <span style="display: inline-block; background-color: #D97843; color: #ffffff; padding: 6px 14px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase;">${passenger.type || 'Adult'}</span>
+            <span style="color: #0A4D5C; font-weight: 500; font-size: 16px;">${passenger.name || passenger.fullName || `Passenger ${index + 1}`}</span>
           </div>
         `,
           )

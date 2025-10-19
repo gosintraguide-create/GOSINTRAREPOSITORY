@@ -8,6 +8,7 @@ import { Label } from "./ui/label";
 import { Badge } from "./ui/badge";
 import { CheckCircle, Loader2, ArrowLeft, User, Users, Ticket, CreditCard, Banknote, Plus, Minus, ArrowRight, Baby } from "lucide-react";
 import { format } from "date-fns";
+import { projectId, publicAnonKey } from "../utils/supabase/info";
 
 interface ManualBookingPageProps {
   onNavigate: (page: string) => void;
@@ -208,11 +209,11 @@ export function ManualBookingPage({ onNavigate }: ManualBookingPageProps) {
             
             // Record the sale
             await fetch(
-              `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/make-server-3bd0ade8/drivers/record-sale`,
+              `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/drivers/record-sale`,
               {
                 method: 'POST',
                 headers: {
-                  'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+                  'Authorization': `Bearer ${publicAnonKey}`,
                   'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
