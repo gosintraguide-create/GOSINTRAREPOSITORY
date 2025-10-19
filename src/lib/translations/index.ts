@@ -4,6 +4,8 @@ import { pt } from './pt';
 import { es } from './es';
 import { fr } from './fr';
 import { de } from './de';
+import { nl } from './nl';
+import { it } from './it';
 
 export const translations: { [key: string]: WebsiteContent } = {
   en,
@@ -11,6 +13,8 @@ export const translations: { [key: string]: WebsiteContent } = {
   es,
   fr,
   de,
+  nl,
+  it,
 };
 
 export function getTranslation(languageCode: string): WebsiteContent {
@@ -81,6 +85,43 @@ export interface UITranslations {
   highlights: string;
   tips: string;
   buyAttractionTicket: string;
+  
+  // HomePage specific
+  easyAs1234: string;
+  howItWorksTitle: string;
+  howItWorksSubtitle: string;
+  step1Title: string;
+  step1Description: string;
+  step1Badge: string;
+  step2Title: string;
+  step2Description: string;
+  step2Badge: string;
+  step3Title: string;
+  step3Description: string;
+  step3Badge: string;
+  step4Title: string;
+  step4Description: string;
+  step4Badge: string;
+  
+  // Install App Card
+  installAppTitle: string;
+  installAppDescription: string;
+  installAppFaster: string;
+  installAppOffline: string;
+  installAppSmoother: string;
+  installAppButton: string;
+  installAppButtonShort: string;
+  installAppLater: string;
+  installAppMaybeLater: string;
+  iosInstructions: string;
+  iosStep1: string;
+  iosStep2: string;
+  iosStep3: string;
+  viewInstructions: string;
+  
+  // Features section
+  whyYouLoveIt: string;
+  startingAt: string;
 }
 
 export const uiTranslations: { [key: string]: UITranslations } = {
@@ -139,6 +180,43 @@ export const uiTranslations: { [key: string]: UITranslations } = {
     highlights: "Highlights",
     tips: "Tips",
     buyAttractionTicket: "Buy Attraction Ticket",
+    
+    // HomePage specific
+    easyAs1234: "Easy as 1-2-3-4",
+    howItWorksTitle: "How It Works",
+    howItWorksSubtitle: "Three simple steps to the best day of your trip! 🎉",
+    step1Title: "Book in Seconds!",
+    step1Description: "Pick your date, add optional attractions, and boom—you're all set! Your digital pass arrives instantly via email. No printing, no hassle, just pure adventure.",
+    step1Badge: "⚡ Takes less than 3 minutes",
+    step2Title: "Get Your Magic QR Code",
+    step2Description: "Your smartphone becomes your ticket to Sintra! Save your QR code and you're ready to hop on at any of our stops. It's that simple.",
+    step2Badge: "📱 Works offline too!",
+    step3Title: "Hop On & Explore!",
+    step3Description: "See a tuk tuk at the stop? Flash your code to your professional driver-guide and jump in! With rides every 10-15 minutes from 9am to 8pm, you'll never wait long. Explore at your own pace—our guides have you covered all day long.",
+    step3Badge: "🎉 Unlimited rides with professional guides",
+    step4Title: "No Vehicle at the Stop?",
+    step4Description: "If you don't see any vehicles waiting when you arrive at a stop, you can request a pickup! This lets us know you're waiting and helps us get to you faster. Your request helps us optimize our service and reduce wait times for everyone.",
+    step4Badge: "🔔 Request pickup anytime",
+    
+    // Install App Card
+    installAppTitle: "📱 Install Go Sintra App",
+    installAppDescription: "Add to your home screen! Works offline, loads faster, and makes requesting pickups smoother. Takes just 2 seconds!",
+    installAppFaster: "Faster",
+    installAppOffline: "Offline",
+    installAppSmoother: "Smoother",
+    installAppButton: "Install Now (2 sec)",
+    installAppButtonShort: "Install App",
+    installAppLater: "Later",
+    installAppMaybeLater: "Maybe Later",
+    iosInstructions: "iOS Instructions:",
+    iosStep1: "1. Tap the Share button in Safari",
+    iosStep2: "2. Tap \"Add to Home Screen\"",
+    iosStep3: "3. Tap \"Add\" - Done! 🎉",
+    viewInstructions: "View Instructions",
+    
+    // Features section
+    whyYouLoveIt: "Why You'll Love It",
+    startingAt: "Starting at",
   },
   pt: {
     home: "Início",
@@ -195,6 +273,43 @@ export const uiTranslations: { [key: string]: UITranslations } = {
     highlights: "Destaques",
     tips: "Dicas",
     buyAttractionTicket: "Comprar Bilhete da Atração",
+    
+    // HomePage specific
+    easyAs1234: "Fácil como 1-2-3-4",
+    howItWorksTitle: "Como Funciona",
+    howItWorksSubtitle: "Três passos simples para o melhor dia da sua viagem! 🎉",
+    step1Title: "Reserve em Segundos!",
+    step1Description: "Escolha a sua data, adicione atrações opcionais e pronto—está tudo preparado! O seu passe digital chega instantaneamente por e-mail. Sem impressões, sem complicações, apenas pura aventura.",
+    step1Badge: "⚡ Demora menos de 3 minutos",
+    step2Title: "Receba o Seu Código QR Mágico",
+    step2Description: "O seu smartphone torna-se o seu bilhete para Sintra! Guarde o seu código QR e está pronto para entrar em qualquer uma das nossas paragens. É assim tão simples.",
+    step2Badge: "📱 Funciona offline também!",
+    step3Title: "Entre e Explore!",
+    step3Description: "Vê um tuk tuk na paragem? Mostre o seu código ao seu motorista-guia profissional e entre! Com viagens de 10 em 10-15 minutos das 9h às 20h, nunca esperará muito. Explore ao seu ritmo—os nossos guias acompanham-no o dia todo.",
+    step3Badge: "🎉 Viagens ilimitadas com guias profissionais",
+    step4Title: "Não Há Veículo na Paragem?",
+    step4Description: "Se não vir nenhum veículo à espera quando chegar a uma paragem, pode solicitar uma recolha! Isto permite-nos saber que está à espera e ajuda-nos a chegar até si mais rapidamente. O seu pedido ajuda-nos a otimizar o nosso serviço e reduzir os tempos de espera para todos.",
+    step4Badge: "🔔 Solicite recolha a qualquer momento",
+    
+    // Install App Card
+    installAppTitle: "📱 Instalar App Go Sintra",
+    installAppDescription: "Adicione ao seu ecrã inicial! Funciona offline, carrega mais rápido e facilita o pedido de recolhas. Demora apenas 2 segundos!",
+    installAppFaster: "Mais Rápido",
+    installAppOffline: "Offline",
+    installAppSmoother: "Mais Suave",
+    installAppButton: "Instalar Agora (2 seg)",
+    installAppButtonShort: "Instalar App",
+    installAppLater: "Mais Tarde",
+    installAppMaybeLater: "Talvez Mais Tarde",
+    iosInstructions: "Instruções iOS:",
+    iosStep1: "1. Toque no botão Partilhar no Safari",
+    iosStep2: "2. Toque em \"Adicionar ao Ecrã Principal\"",
+    iosStep3: "3. Toque em \"Adicionar\" - Feito! 🎉",
+    viewInstructions: "Ver Instruções",
+    
+    // Features section
+    whyYouLoveIt: "Por Que Vai Adorar",
+    startingAt: "A partir de",
   },
   es: {
     home: "Inicio",
@@ -251,6 +366,43 @@ export const uiTranslations: { [key: string]: UITranslations } = {
     highlights: "Aspectos Destacados",
     tips: "Consejos",
     buyAttractionTicket: "Comprar Entrada de Atracción",
+    
+    // HomePage specific
+    easyAs1234: "Fácil como 1-2-3-4",
+    howItWorksTitle: "Cómo Funciona",
+    howItWorksSubtitle: "¡Tres simples pasos para el mejor día de tu viaje! 🎉",
+    step1Title: "¡Reserva en Segundos!",
+    step1Description: "Elige tu fecha, añade atracciones opcionales y listo—¡ya está todo preparado! Tu pase digital llega instantáneamente por correo electrónico. Sin impresiones, sin complicaciones, solo pura aventura.",
+    step1Badge: "⚡ Lleva menos de 3 minutos",
+    step2Title: "Obtén Tu Código QR Mágico",
+    step2Description: "¡Tu smartphone se convierte en tu billete a Sintra! Guarda tu código QR y estarás listo para subir en cualquiera de nuestras paradas. Así de simple.",
+    step2Badge: "📱 ¡Funciona sin conexión también!",
+    step3Title: "¡Súbete y Explora!",
+    step3Description: "¿Ves un tuk tuk en la parada? ¡Muestra tu código a tu conductor-guía profesional y sube! Con viajes cada 10-15 minutos de 9am a 8pm, nunca esperarás mucho. Explora a tu ritmo—nuestros guías te acompañan todo el día.",
+    step3Badge: "🎉 Viajes ilimitados con guías profesionales",
+    step4Title: "¿No Hay Vehículo en la Parada?",
+    step4Description: "Si no ves ningún vehículo esperando cuando llegues a una parada, ¡puedes solicitar una recogida! Esto nos permite saber que estás esperando y nos ayuda a llegar a ti más rápido. Tu solicitud nos ayuda a optimizar nuestro servicio y reducir los tiempos de espera para todos.",
+    step4Badge: "🔔 Solicita recogida en cualquier momento",
+    
+    // Install App Card
+    installAppTitle: "📱 Instalar App Go Sintra",
+    installAppDescription: "¡Añade a tu pantalla de inicio! Funciona sin conexión, carga más rápido y facilita las solicitudes de recogida. ¡Solo lleva 2 segundos!",
+    installAppFaster: "Más Rápido",
+    installAppOffline: "Sin Conexión",
+    installAppSmoother: "Más Fluido",
+    installAppButton: "Instalar Ahora (2 seg)",
+    installAppButtonShort: "Instalar App",
+    installAppLater: "Más Tarde",
+    installAppMaybeLater: "Quizás Más Tarde",
+    iosInstructions: "Instrucciones iOS:",
+    iosStep1: "1. Toca el botón Compartir en Safari",
+    iosStep2: "2. Toca \"Añadir a Pantalla de Inicio\"",
+    iosStep3: "3. Toca \"Añadir\" - ¡Listo! 🎉",
+    viewInstructions: "Ver Instrucciones",
+    
+    // Features section
+    whyYouLoveIt: "Por Qué Te Encantará",
+    startingAt: "Desde",
   },
   fr: {
     home: "Accueil",
@@ -307,6 +459,43 @@ export const uiTranslations: { [key: string]: UITranslations } = {
     highlights: "Points Forts",
     tips: "Conseils",
     buyAttractionTicket: "Acheter un Billet d'Attraction",
+    
+    // HomePage specific
+    easyAs1234: "Facile comme 1-2-3-4",
+    howItWorksTitle: "Comment Ça Marche",
+    howItWorksSubtitle: "Trois étapes simples pour le meilleur jour de votre voyage! 🎉",
+    step1Title: "Réservez en Secondes!",
+    step1Description: "Choisissez votre date, ajoutez des attractions optionnelles et voilà—vous êtes prêt! Votre pass numérique arrive instantanément par e-mail. Pas d'impression, pas de tracas, juste de la pure aventure.",
+    step1Badge: "⚡ Prend moins de 3 minutes",
+    step2Title: "Obtenez Votre Code QR Magique",
+    step2Description: "Votre smartphone devient votre billet pour Sintra! Enregistrez votre code QR et vous êtes prêt à monter à n'importe lequel de nos arrêts. C'est aussi simple que ça.",
+    step2Badge: "📱 Fonctionne hors ligne aussi!",
+    step3Title: "Montez et Explorez!",
+    step3Description: "Vous voyez un tuk tuk à l'arrêt? Montrez votre code à votre chauffeur-guide professionnel et montez! Avec des trajets toutes les 10-15 minutes de 9h à 20h, vous n'attendrez jamais longtemps. Explorez à votre rythme—nos guides vous accompagnent toute la journée.",
+    step3Badge: "🎉 Trajets illimités avec des guides professionnels",
+    step4Title: "Pas de Véhicule à l'Arrêt?",
+    step4Description: "Si vous ne voyez aucun véhicule en attente lorsque vous arrivez à un arrêt, vous pouvez demander un ramassage! Cela nous permet de savoir que vous attendez et nous aide à vous rejoindre plus rapidement. Votre demande nous aide à optimiser notre service et à réduire les temps d'attente pour tous.",
+    step4Badge: "🔔 Demandez un ramassage à tout moment",
+    
+    // Install App Card
+    installAppTitle: "📱 Installer l'App Go Sintra",
+    installAppDescription: "Ajoutez à votre écran d'accueil! Fonctionne hors ligne, charge plus vite et facilite les demandes de ramassage. Prend juste 2 secondes!",
+    installAppFaster: "Plus Rapide",
+    installAppOffline: "Hors Ligne",
+    installAppSmoother: "Plus Fluide",
+    installAppButton: "Installer Maintenant (2 sec)",
+    installAppButtonShort: "Installer l'App",
+    installAppLater: "Plus Tard",
+    installAppMaybeLater: "Peut-être Plus Tard",
+    iosInstructions: "Instructions iOS:",
+    iosStep1: "1. Appuyez sur le bouton Partager dans Safari",
+    iosStep2: "2. Appuyez sur \"Ajouter à l'écran d'accueil\"",
+    iosStep3: "3. Appuyez sur \"Ajouter\" - Terminé! 🎉",
+    viewInstructions: "Voir les Instructions",
+    
+    // Features section
+    whyYouLoveIt: "Pourquoi Vous Allez Adorer",
+    startingAt: "À partir de",
   },
   de: {
     home: "Startseite",
@@ -363,6 +552,229 @@ export const uiTranslations: { [key: string]: UITranslations } = {
     highlights: "Highlights",
     tips: "Tipps",
     buyAttractionTicket: "Sehenswürdigkeiten-Ticket Kaufen",
+    
+    // HomePage specific
+    easyAs1234: "Einfach wie 1-2-3-4",
+    howItWorksTitle: "So Funktioniert's",
+    howItWorksSubtitle: "Drei einfache Schritte zum besten Tag Ihrer Reise! 🎉",
+    step1Title: "In Sekunden Buchen!",
+    step1Description: "Wählen Sie Ihr Datum, fügen Sie optionale Attraktionen hinzu und fertig—Sie sind startklar! Ihr digitaler Pass kommt sofort per E-Mail. Kein Drucken, kein Ärger, nur pures Abenteuer.",
+    step1Badge: "⚡ Dauert weniger als 3 Minuten",
+    step2Title: "Erhalten Sie Ihren Magischen QR-Code",
+    step2Description: "Ihr Smartphone wird zu Ihrem Ticket nach Sintra! Speichern Sie Ihren QR-Code und Sie können an jeder unserer Haltestellen einsteigen. So einfach ist das.",
+    step2Badge: "📱 Funktioniert auch offline!",
+    step3Title: "Einsteigen und Erkunden!",
+    step3Description: "Sehen Sie einen Tuk Tuk an der Haltestelle? Zeigen Sie Ihren Code Ihrem professionellen Fahrer-Guide und steigen Sie ein! Mit Fahrten alle 10-15 Minuten von 9 bis 20 Uhr warten Sie nie lange. Erkunden Sie in Ihrem eigenen Tempo—unsere Guides begleiten Sie den ganzen Tag.",
+    step3Badge: "🎉 Unbegrenzte Fahrten mit professionellen Guides",
+    step4Title: "Kein Fahrzeug an der Haltestelle?",
+    step4Description: "Wenn Sie kein wartendes Fahrzeug sehen, wenn Sie an einer Haltestelle ankommen, können Sie eine Abholung anfordern! Das lässt uns wissen, dass Sie warten und hilft uns, schneller zu Ihnen zu kommen. Ihre Anfrage hilft uns, unseren Service zu optimieren und die Wartezeiten für alle zu reduzieren.",
+    step4Badge: "🔔 Jederzeit Abholung anfordern",
+    
+    // Install App Card
+    installAppTitle: "📱 Go Sintra App Installieren",
+    installAppDescription: "Fügen Sie zu Ihrem Startbildschirm hinzu! Funktioniert offline, lädt schneller und erleichtert Abholungsanfragen. Dauert nur 2 Sekunden!",
+    installAppFaster: "Schneller",
+    installAppOffline: "Offline",
+    installAppSmoother: "Flüssiger",
+    installAppButton: "Jetzt Installieren (2 Sek)",
+    installAppButtonShort: "App Installieren",
+    installAppLater: "Später",
+    installAppMaybeLater: "Vielleicht Später",
+    iosInstructions: "iOS-Anleitung:",
+    iosStep1: "1. Tippen Sie auf die Teilen-Schaltfläche in Safari",
+    iosStep2: "2. Tippen Sie auf \"Zum Home-Bildschirm\"",
+    iosStep3: "3. Tippen Sie auf \"Hinzufügen\" - Fertig! 🎉",
+    viewInstructions: "Anleitung Anzeigen",
+    
+    // Features section
+    whyYouLoveIt: "Warum Sie Es Lieben Werden",
+    startingAt: "Ab",
+  },
+  nl: {
+    home: "Home",
+    howItWorks: "Hoe Het Werkt",
+    attractions: "Attracties",
+    manageBooking: "Mijn Boeking",
+    buyTicket: "Koop Dagpas",
+    about: "Over & Contact",
+    contact: "Contact",
+    
+    bookNow: "Nu Boeken",
+    learnMore: "Meer Weten",
+    close: "Sluiten",
+    submit: "Verzenden",
+    cancel: "Annuleren",
+    download: "Downloaden",
+    print: "Afdrukken",
+    
+    selectDate: "Selecteer Datum",
+    selectPassengers: "Selecteer Passagiers",
+    addPassenger: "Passagier Toevoegen",
+    passengerName: "Passagiersnaam",
+    passengerType: "Passagierstype",
+    adult: "Volwassene",
+    child: "Kind (4-12)",
+    infant: "Baby (0-3)",
+    total: "Totaal",
+    confirmBooking: "Boeking Bevestigen",
+    bookingConfirmed: "Boeking Bevestigd!",
+    
+    requestPickup: "Ophalen Aanvragen",
+    currentLocation: "Huidige Locatie",
+    trackVehicle: "Voertuig Volgen",
+    estimatedArrival: "Geschatte Aankomst",
+    
+    chatWithUs: "Chat met ons",
+    needHelp: "Hulp nodig?",
+    whatsappUs: "WhatsApp Ons",
+    
+    operatingHours: "Openingstijden",
+    perPerson: "per persoon",
+    fullDay: "hele dag",
+    passengers: "passagiers",
+    bookingId: "Boeking ID",
+    date: "Datum",
+    
+    quickLinks: "Snelle Links",
+    contactInfo: "Contactinformatie",
+    followUs: "Volg Ons",
+    
+    ticketPrice: "Ticketprijs",
+    openingHours: "Openingstijden",
+    recommendedDuration: "Aanbevolen Duur",
+    highlights: "Hoogtepunten",
+    tips: "Tips",
+    buyAttractionTicket: "Koop Attractieticket",
+    
+    // HomePage specific
+    easyAs1234: "Gemakkelijk als 1-2-3-4",
+    howItWorksTitle: "Hoe Het Werkt",
+    howItWorksSubtitle: "Drie simpele stappen naar de beste dag van je reis! 🎉",
+    step1Title: "Boek in Seconden!",
+    step1Description: "Kies je datum, voeg optionele attracties toe en klaar—je bent er helemaal klaar voor! Je digitale pas komt direct per e-mail. Geen printen, geen gedoe, alleen pure avontuur.",
+    step1Badge: "⚡ Duurt minder dan 3 minuten",
+    step2Title: "Ontvang Je Magische QR-Code",
+    step2Description: "Je smartphone wordt je ticket naar Sintra! Bewaar je QR-code en je bent klaar om in te stappen bij een van onze stops. Zo simpel is het.",
+    step2Badge: "📱 Werkt ook offline!",
+    step3Title: "Stap In en Ontdek!",
+    step3Description: "Zie je een tuk tuk bij de stop? Laat je code aan je professionele chauffeur-gids zien en stap in! Met ritten elke 10-15 minuten van 9.00 tot 20.00 uur wacht je nooit lang. Verken op je eigen tempo—onze gidsen begeleiden je de hele dag.",
+    step3Badge: "🎉 Onbeperkte ritten met professionele gidsen",
+    step4Title: "Geen Voertuig bij de Stop?",
+    step4Description: "Als je geen wachtend voertuig ziet wanneer je bij een stop aankomt, kun je een ophaalverzoek doen! Dit laat ons weten dat je wacht en helpt ons om je sneller te bereiken. Je verzoek helpt ons onze service te optimaliseren en wachttijden voor iedereen te verminderen.",
+    step4Badge: "🔔 Vraag altijd ophalen aan",
+    
+    // Install App Card
+    installAppTitle: "📱 Installeer Go Sintra App",
+    installAppDescription: "Voeg toe aan je startscherm! Werkt offline, laadt sneller en maakt het aanvragen van ophalen soepeler. Duurt slechts 2 seconden!",
+    installAppFaster: "Sneller",
+    installAppOffline: "Offline",
+    installAppSmoother: "Soepeler",
+    installAppButton: "Nu Installeren (2 sec)",
+    installAppButtonShort: "App Installeren",
+    installAppLater: "Later",
+    installAppMaybeLater: "Misschien Later",
+    iosInstructions: "iOS Instructies:",
+    iosStep1: "1. Tik op de Deel-knop in Safari",
+    iosStep2: "2. Tik op \"Voeg toe aan beginscherm\"",
+    iosStep3: "3. Tik op \"Voeg toe\" - Klaar! 🎉",
+    viewInstructions: "Bekijk Instructies",
+    
+    // Features section
+    whyYouLoveIt: "Waarom Je Het Geweldig Vindt",
+    startingAt: "Vanaf",
+  },
+  it: {
+    home: "Home",
+    howItWorks: "Come Funziona",
+    attractions: "Attrazioni",
+    manageBooking: "La Mia Prenotazione",
+    buyTicket: "Acquista Pass",
+    about: "Chi Siamo & Contatti",
+    contact: "Contatti",
+    
+    bookNow: "Prenota Ora",
+    learnMore: "Scopri di Più",
+    close: "Chiudi",
+    submit: "Invia",
+    cancel: "Annulla",
+    download: "Scarica",
+    print: "Stampa",
+    
+    selectDate: "Seleziona Data",
+    selectPassengers: "Seleziona Passeggeri",
+    addPassenger: "Aggiungi Passeggero",
+    passengerName: "Nome Passeggero",
+    passengerType: "Tipo di Passeggero",
+    adult: "Adulto",
+    child: "Bambino (4-12)",
+    infant: "Neonato (0-3)",
+    total: "Totale",
+    confirmBooking: "Conferma Prenotazione",
+    bookingConfirmed: "Prenotazione Confermata!",
+    
+    requestPickup: "Richiedi Prelievo",
+    currentLocation: "Posizione Attuale",
+    trackVehicle: "Traccia Veicolo",
+    estimatedArrival: "Arrivo Stimato",
+    
+    chatWithUs: "Chatta con noi",
+    needHelp: "Hai bisogno di aiuto?",
+    whatsappUs: "WhatsApp",
+    
+    operatingHours: "Orari di Funzionamento",
+    perPerson: "a persona",
+    fullDay: "giorno intero",
+    passengers: "passeggeri",
+    bookingId: "ID Prenotazione",
+    date: "Data",
+    
+    quickLinks: "Link Rapidi",
+    contactInfo: "Informazioni di Contatto",
+    followUs: "Seguici",
+    
+    ticketPrice: "Prezzo del Biglietto",
+    openingHours: "Orari di Apertura",
+    recommendedDuration: "Durata Consigliata",
+    highlights: "Punti Salienti",
+    tips: "Consigli",
+    buyAttractionTicket: "Acquista Biglietto Attrazione",
+    
+    // HomePage specific
+    easyAs1234: "Facile come 1-2-3-4",
+    howItWorksTitle: "Come Funziona",
+    howItWorksSubtitle: "Tre semplici passaggi per il miglior giorno del tuo viaggio! 🎉",
+    step1Title: "Prenota in Secondi!",
+    step1Description: "Scegli la tua data, aggiungi attrazioni opzionali e boom—sei pronto! Il tuo pass digitale arriva istantaneamente via email. Niente stampe, niente problemi, solo pura avventura.",
+    step1Badge: "⚡ Richiede meno di 3 minuti",
+    step2Title: "Ottieni il Tuo Codice QR Magico",
+    step2Description: "Il tuo smartphone diventa il tuo biglietto per Sintra! Salva il tuo codice QR e sei pronto per salire a una qualsiasi delle nostre fermate. È così semplice.",
+    step2Badge: "📱 Funziona anche offline!",
+    step3Title: "Sali e Esplora!",
+    step3Description: "Vedi un tuk tuk alla fermata? Mostra il tuo codice al tuo autista-guida professionale e sali! Con corse ogni 10-15 minuti dalle 9:00 alle 20:00, non aspetterai mai a lungo. Esplora al tuo ritmo—le nostre guide ti accompagnano tutto il giorno.",
+    step3Badge: "🎉 Corse illimitate con guide professioniste",
+    step4Title: "Nessun Veicolo alla Fermata?",
+    step4Description: "Se non vedi alcun veicolo in attesa quando arrivi a una fermata, puoi richiedere un prelievo! Questo ci fa sapere che stai aspettando e ci aiuta a raggiungerti più velocemente. La tua richiesta ci aiuta a ottimizzare il nostro servizio e ridurre i tempi di attesa per tutti.",
+    step4Badge: "🔔 Richiedi il prelievo in qualsiasi momento",
+    
+    // Install App Card
+    installAppTitle: "📱 Installa l'App Go Sintra",
+    installAppDescription: "Aggiungi alla tua schermata iniziale! Funziona offline, carica più velocemente e rende più facile richiedere prelievi. Ci vogliono solo 2 secondi!",
+    installAppFaster: "Più Veloce",
+    installAppOffline: "Offline",
+    installAppSmoother: "Più Fluida",
+    installAppButton: "Installa Ora (2 sec)",
+    installAppButtonShort: "Installa App",
+    installAppLater: "Più Tardi",
+    installAppMaybeLater: "Forse Più Tardi",
+    iosInstructions: "Istruzioni iOS:",
+    iosStep1: "1. Tocca il pulsante Condividi in Safari",
+    iosStep2: "2. Tocca \"Aggiungi a Home\"",
+    iosStep3: "3. Tocca \"Aggiungi\" - Fatto! 🎉",
+    viewInstructions: "Vedi Istruzioni",
+    
+    // Features section
+    whyYouLoveIt: "Perché Ti Piacerà",
+    startingAt: "A partire da",
   },
 };
 
