@@ -993,7 +993,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <div className="mb-3 flex items-center gap-3">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
@@ -1005,39 +1005,45 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
               </div>
               <div className="h-1 w-20 rounded-full bg-accent" />
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button
                 variant="outline"
                 onClick={loadBookings}
                 disabled={loadingBookings}
                 className="gap-2"
+                size="sm"
               >
                 <RefreshCw className={`h-4 w-4 ${loadingBookings ? 'animate-spin' : ''}`} />
-                <span className="hidden sm:inline">Refresh Data</span>
+                <span className="hidden md:inline">Refresh Data</span>
+                <span className="md:hidden">Refresh</span>
               </Button>
               <Button
                 variant="outline"
                 onClick={() => onNavigate("home")}
                 className="gap-2"
+                size="sm"
               >
-                Back to Website
+                <span className="hidden sm:inline">Back to Website</span>
+                <span className="sm:hidden">Website</span>
               </Button>
 
               <Button
                 variant="outline"
                 onClick={() => onNavigate("diagnostics")}
                 className="gap-2"
+                size="sm"
               >
                 <AlertCircle className="h-4 w-4" />
-                Diagnostics
+                <span className="hidden lg:inline">Diagnostics</span>
               </Button>
               <Button
                 variant="outline"
                 onClick={() => onNavigate("qr-scanner")}
                 className="gap-2"
+                size="sm"
               >
                 <QrCode className="h-4 w-4" />
-                QR Scanner
+                <span className="hidden lg:inline">QR Scanner</span>
               </Button>
             </div>
           </div>
@@ -1050,14 +1056,21 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
           className="w-full"
         >
           <div className="mb-8">
-            <div className="flex items-center justify-between gap-4">
-              <TabsList className="w-auto">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <TabsList className="w-full sm:w-auto flex-wrap h-auto">
                 <TabsTrigger
                   value="pickups"
                   className="flex items-center gap-2"
                 >
                   <Navigation className="h-4 w-4" />
                   <span>Pickups</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="bookings"
+                  className="flex items-center gap-2"
+                >
+                  <Package className="h-4 w-4" />
+                  <span>Bookings</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="messages"
@@ -1101,21 +1114,6 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                     </SheetDescription>
                   </SheetHeader>
                   <div className="mt-6 space-y-2">
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-3"
-                      onClick={() => {
-                        setActiveTab("bookings");
-                        setMoreMenuOpen(false);
-                      }}
-                    >
-                      <Package className="h-5 w-5" />
-                      <div className="flex flex-col items-start">
-                        <span>Bookings</span>
-                        <span className="text-xs text-muted-foreground">View and manage all bookings</span>
-                      </div>
-                    </Button>
-
                     <Button
                       variant="ghost"
                       className="w-full justify-start gap-3"

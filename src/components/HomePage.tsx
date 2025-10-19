@@ -22,6 +22,7 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
+  const [isSafari, setIsSafari] = useState(false);
   const [showInstallCard, setShowInstallCard] = useState(false);
   const t = getUITranslation(language);
 
@@ -83,6 +84,12 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
     // Detect iOS
     const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
     setIsIOS(isIOSDevice);
+    
+    // Detect Safari (not Chrome or other browsers on iOS)
+    const isSafariBrowser = isIOSDevice && 
+      /Safari/.test(navigator.userAgent) && 
+      !/CriOS|FxiOS|OPiOS|mercury|EdgiOS/.test(navigator.userAgent);
+    setIsSafari(isSafariBrowser);
 
     // Check if dismissed recently
     const dismissed = localStorage.getItem('install-card-dismissed');
@@ -123,7 +130,11 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
     if (!deferredPrompt) {
       // If no prompt available, scroll to show instructions or alert
       if (isIOS) {
-        alert('To install: Tap the Share button in Safari, then tap "Add to Home Screen"');
+        if (isSafari) {
+          alert('To install: Tap the Share button in Safari, then tap "Add to Home Screen"');
+        } else {
+          alert('To install this app, please open this site in Safari. Chrome on iOS doesn\'t support installing web apps.');
+        }
       }
       return;
     }
@@ -352,11 +363,11 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
                         <Bell className="h-5 w-5 text-primary sm:h-6 sm:w-6" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="mb-1.5 text-foreground sm:mb-2">No Vehicle at the Stop?</h3>
-                        <p className="text-sm text-muted-foreground sm:text-base">If you don't see any vehicles waiting when you arrive at a stop, you can request a pickup! This lets us know you're waiting and helps us get to you faster. Your request helps us optimize our service and reduce wait times for everyone.</p>
+                        <h3 className="mb-1.5 text-foreground sm:mb-2">{t.step4Title}</h3>
+                        <p className="text-sm text-muted-foreground sm:text-base">{t.step4Description}</p>
                         <div className="mt-2 inline-flex items-center gap-2 rounded-lg bg-accent/10 px-2.5 py-1 text-xs text-accent sm:mt-3 sm:px-3 sm:py-1.5 sm:text-sm">
                           <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                          🔔 Request pickup anytime
+                          {t.step4Badge}
                         </div>
                       </div>
                     </div>
@@ -389,39 +400,50 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
                     
                     {/* Content */}
                     <div className="flex-1 text-center sm:text-left">
-                      <h3 className="mb-2 text-foreground">📱 Install Go Sintra App</h3>
+                      <h3 className="mb-2 text-foreground">{t.installAppTitle}</h3>
                       <p className="mb-3 text-sm text-muted-foreground sm:mb-4 sm:text-base">
-                        Add to your home screen! Works offline, loads faster, and makes requesting pickups smoother. <strong>Takes just 2 seconds!</strong>
+                        {t.installAppDescription}
                       </p>
                       
                       {/* Benefits Pills - Simplified */}
                       <div className="mb-3 flex flex-wrap justify-center gap-2 sm:mb-4 sm:justify-start">
                         <div className="flex items-center gap-1.5 rounded-full bg-accent/10 px-2.5 py-1 text-xs text-accent sm:px-3 sm:text-sm">
                           <Zap className="h-3.5 w-3.5" />
-                          Faster
+                          {t.installAppFaster}
                         </div>
                         <div className="flex items-center gap-1.5 rounded-full bg-accent/10 px-2.5 py-1 text-xs text-accent sm:px-3 sm:text-sm">
                           <CheckCircle className="h-3.5 w-3.5" />
-                          Offline
+                          {t.installAppOffline}
                         </div>
                         <div className="flex items-center gap-1.5 rounded-full bg-accent/10 px-2.5 py-1 text-xs text-accent sm:px-3 sm:text-sm">
                           <Heart className="h-3.5 w-3.5" />
-                          Smoother
+                          {t.installAppSmoother}
                         </div>
                       </div>
 
                       {/* Install Instructions */}
                       {isIOS && !deferredPrompt ? (
-                        <div className="mb-3 rounded-lg bg-accent/10 p-3 text-left text-xs sm:mb-4 sm:text-sm">
-                          <p className="mb-1.5 text-accent sm:mb-2">
-                            <strong>iOS Instructions:</strong>
-                          </p>
-                          <ol className="space-y-0.5 text-muted-foreground sm:space-y-1">
-                            <li>1. Tap the <strong>Share</strong> button in Safari</li>
-                            <li>2. Tap <strong>"Add to Home Screen"</strong></li>
-                            <li>3. Tap <strong>"Add"</strong> - Done! 🎉</li>
-                          </ol>
-                        </div>
+                        isSafari ? (
+                          <div className="mb-3 rounded-lg bg-accent/10 p-3 text-left text-xs sm:mb-4 sm:text-sm">
+                            <p className="mb-1.5 text-accent sm:mb-2">
+                              <strong>{t.iosInstructions}</strong>
+                            </p>
+                            <ol className="space-y-0.5 text-muted-foreground sm:space-y-1">
+                              <li>{t.iosStep1}</li>
+                              <li>{t.iosStep2}</li>
+                              <li>{t.iosStep3}</li>
+                            </ol>
+                          </div>
+                        ) : (
+                          <div className="mb-3 rounded-lg bg-amber-50 border border-amber-200 p-3 text-left text-xs sm:mb-4 sm:text-sm">
+                            <p className="mb-1.5 text-amber-800">
+                              <strong>{t.chromeIosWarning}</strong>
+                            </p>
+                            <p className="text-amber-700">
+                              {t.chromeIosMessage}
+                            </p>
+                          </div>
+                        )
                       ) : null}
 
                       {/* Install Button */}
@@ -432,7 +454,7 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
                           className="w-full bg-accent shadow-lg transition-all hover:scale-105 hover:bg-accent/90 sm:w-auto sm:flex-1"
                         >
                           <Download className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                          {deferredPrompt ? 'Install Now (2 sec)' : isIOS ? 'View Instructions' : 'Install App'}
+                          {deferredPrompt ? t.installAppButton : isIOS ? t.viewInstructions : t.installAppButtonShort}
                         </Button>
                         <Button
                           onClick={handleDismissInstallCard}
@@ -440,7 +462,7 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
                           variant="outline"
                           className="w-full border-accent/30 text-accent hover:bg-accent/10 sm:w-auto"
                         >
-                          Maybe Later
+                          {t.installAppMaybeLater}
                         </Button>
                       </div>
                     </div>
@@ -458,7 +480,7 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
           <div className="mb-12 text-center">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2">
               <Heart className="h-5 w-5 text-primary" />
-              <span className="text-primary">Why You'll Love It</span>
+              <span className="text-primary">{t.whyYouLoveIt}</span>
             </div>
             <h2 className="mb-4 text-foreground">What Makes Us Different</h2>
             <p className="mx-auto max-w-2xl text-lg text-muted-foreground">

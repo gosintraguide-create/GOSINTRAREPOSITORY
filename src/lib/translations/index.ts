@@ -118,6 +118,8 @@ export interface UITranslations {
   iosStep2: string;
   iosStep3: string;
   viewInstructions: string;
+  chromeIosWarning: string;
+  chromeIosMessage: string;
   
   // Features section
   whyYouLoveIt: string;
@@ -213,6 +215,8 @@ export const uiTranslations: { [key: string]: UITranslations } = {
     iosStep2: "2. Tap \"Add to Home Screen\"",
     iosStep3: "3. Tap \"Add\" - Done! 🎉",
     viewInstructions: "View Instructions",
+    chromeIosWarning: "⚠️ Chrome on iOS doesn't support installing web apps",
+    chromeIosMessage: "Please open this site in Safari to install the app to your home screen.",
     
     // Features section
     whyYouLoveIt: "Why You'll Love It",
@@ -306,6 +310,8 @@ export const uiTranslations: { [key: string]: UITranslations } = {
     iosStep2: "2. Toque em \"Adicionar ao Ecrã Principal\"",
     iosStep3: "3. Toque em \"Adicionar\" - Feito! 🎉",
     viewInstructions: "Ver Instruções",
+    chromeIosWarning: "⚠️ Chrome no iOS não suporta instalação de aplicações web",
+    chromeIosMessage: "Por favor, abra este site no Safari para instalar a aplicação no seu ecrã principal.",
     
     // Features section
     whyYouLoveIt: "Por Que Vai Adorar",
@@ -399,6 +405,8 @@ export const uiTranslations: { [key: string]: UITranslations } = {
     iosStep2: "2. Toca \"Añadir a Pantalla de Inicio\"",
     iosStep3: "3. Toca \"Añadir\" - ¡Listo! 🎉",
     viewInstructions: "Ver Instrucciones",
+    chromeIosWarning: "⚠️ Chrome en iOS no admite la instalación de aplicaciones web",
+    chromeIosMessage: "Por favor, abre este sitio en Safari para instalar la aplicación en tu pantalla de inicio.",
     
     // Features section
     whyYouLoveIt: "Por Qué Te Encantará",
@@ -492,6 +500,8 @@ export const uiTranslations: { [key: string]: UITranslations } = {
     iosStep2: "2. Appuyez sur \"Ajouter à l'écran d'accueil\"",
     iosStep3: "3. Appuyez sur \"Ajouter\" - Terminé! 🎉",
     viewInstructions: "Voir les Instructions",
+    chromeIosWarning: "⚠️ Chrome sur iOS ne prend pas en charge l'installation d'applications web",
+    chromeIosMessage: "Veuillez ouvrir ce site dans Safari pour installer l'application sur votre écran d'accueil.",
     
     // Features section
     whyYouLoveIt: "Pourquoi Vous Allez Adorer",
@@ -585,6 +595,8 @@ export const uiTranslations: { [key: string]: UITranslations } = {
     iosStep2: "2. Tippen Sie auf \"Zum Home-Bildschirm\"",
     iosStep3: "3. Tippen Sie auf \"Hinzufügen\" - Fertig! 🎉",
     viewInstructions: "Anleitung Anzeigen",
+    chromeIosWarning: "⚠️ Chrome auf iOS unterstützt keine Installation von Web-Apps",
+    chromeIosMessage: "Bitte öffnen Sie diese Seite in Safari, um die App auf Ihrem Startbildschirm zu installieren.",
     
     // Features section
     whyYouLoveIt: "Warum Sie Es Lieben Werden",
@@ -678,6 +690,8 @@ export const uiTranslations: { [key: string]: UITranslations } = {
     iosStep2: "2. Tik op \"Voeg toe aan beginscherm\"",
     iosStep3: "3. Tik op \"Voeg toe\" - Klaar! 🎉",
     viewInstructions: "Bekijk Instructies",
+    chromeIosWarning: "⚠️ Chrome op iOS ondersteunt geen installatie van web-apps",
+    chromeIosMessage: "Open deze site in Safari om de app op je beginscherm te installeren.",
     
     // Features section
     whyYouLoveIt: "Waarom Je Het Geweldig Vindt",
@@ -771,6 +785,8 @@ export const uiTranslations: { [key: string]: UITranslations } = {
     iosStep2: "2. Tocca \"Aggiungi a Home\"",
     iosStep3: "3. Tocca \"Aggiungi\" - Fatto! 🎉",
     viewInstructions: "Vedi Istruzioni",
+    chromeIosWarning: "⚠️ Chrome su iOS non supporta l'installazione di app web",
+    chromeIosMessage: "Apri questo sito in Safari per installare l'app sulla schermata Home.",
     
     // Features section
     whyYouLoveIt: "Perché Ti Piacerà",
