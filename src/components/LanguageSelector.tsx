@@ -5,7 +5,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { FlagGB, FlagPT, FlagES, FlagFR, FlagDE } from "./FlagIcons";
+import { FlagGB, FlagPT, FlagES, FlagFR, FlagDE, FlagNL, FlagIT } from "./FlagIcons";
 
 interface Language {
   code: string;
@@ -20,6 +20,8 @@ const languages: Language[] = [
   { code: "es", name: "Spanish", nativeName: "Español", FlagComponent: FlagES },
   { code: "fr", name: "French", nativeName: "Français", FlagComponent: FlagFR },
   { code: "de", name: "German", nativeName: "Deutsch", FlagComponent: FlagDE },
+  { code: "nl", name: "Dutch", nativeName: "Nederlands", FlagComponent: FlagNL },
+  { code: "it", name: "Italian", nativeName: "Italiano", FlagComponent: FlagIT },
 ];
 
 interface LanguageSelectorProps {

@@ -21,6 +21,8 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
   const [content, setContent] = useState<WebsiteContent>(DEFAULT_CONTENT);
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+  const [showInstallCard, setShowInstallCard] = useState(false);
   const t = getUITranslation(language);
 
   useEffect(() => {
@@ -78,14 +80,34 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
       return;
     }
 
+    // Detect iOS
+    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    setIsIOS(isIOSDevice);
+
+    // Check if dismissed recently
+    const dismissed = localStorage.getItem('install-card-dismissed');
+    if (dismissed) {
+      const dismissedTime = parseInt(dismissed);
+      const hoursSinceDismissed = (Date.now() - dismissedTime) / (1000 * 60 * 60);
+      if (hoursSinceDismissed < 24) {
+        // Don't show again for 24 hours
+        return;
+      }
+    }
+
+    // Show the install card (will be visible for iOS or when prompt is available)
+    setShowInstallCard(true);
+
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
+      setShowInstallCard(true);
     };
 
     const handleAppInstalled = () => {
       setIsInstalled(true);
       setDeferredPrompt(null);
+      setShowInstallCard(false);
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -98,7 +120,13 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
   }, []);
 
   const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
+    if (!deferredPrompt) {
+      // If no prompt available, scroll to show instructions or alert
+      if (isIOS) {
+        alert('To install: Tap the Share button in Safari, then tap "Add to Home Screen"');
+      }
+      return;
+    }
 
     // Show the install prompt
     deferredPrompt.prompt();
@@ -112,6 +140,12 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
 
     // Clear the deferred prompt
     setDeferredPrompt(null);
+    setShowInstallCard(false);
+  };
+
+  const handleDismissInstallCard = () => {
+    setShowInstallCard(false);
+    localStorage.setItem('install-card-dismissed', Date.now().toString());
   };
 
   return (
@@ -204,178 +238,211 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
           <div className="mb-16 text-center">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-accent/10 px-4 py-2">
               <Star className="h-5 w-5 text-accent" />
-              <span className="text-accent">Easy as 1-2-3-4</span>
+              <span className="text-accent">{t.easyAs1234}</span>
             </div>
-            <h2 className="text-foreground">How It Works</h2>
+            <h2 className="text-foreground">{t.howItWorksTitle}</h2>
             <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-              Three simple steps to the best day of your trip! 🎉
+              {t.howItWorksSubtitle}
             </p>
           </div>
 
-          <div className="space-y-12">
+          <div className="space-y-6 sm:space-y-12">
             {/* Step 1 */}
             <div className="group relative">
-              <div className="absolute left-8 top-20 hidden h-full w-1 bg-gradient-to-b from-accent via-primary to-accent opacity-20 md:block" />
+              <div className="absolute left-6 top-16 hidden h-full w-1 bg-gradient-to-b from-accent via-primary to-accent opacity-20 md:block" />
               <Card className="relative overflow-hidden border-2 border-border bg-white shadow-lg transition-all hover:scale-[1.02] hover:shadow-2xl">
-                <div className="flex flex-col gap-6 p-8 md:flex-row md:items-start">
+                <div className="flex flex-col gap-3 p-4 sm:gap-6 sm:p-8 md:flex-row md:items-start">
                   <div className="flex-shrink-0">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-accent to-accent/80 shadow-lg">
-                      <span className="text-2xl text-white">1</span>
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-accent to-accent/80 shadow-lg sm:h-16 sm:w-16 sm:rounded-2xl">
+                      <span className="text-xl text-white sm:text-2xl">1</span>
                     </div>
                   </div>
-                  <div className="flex-1 space-y-3">
-                    <div className="flex items-start gap-4">
-                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10">
-                        <Ticket className="h-6 w-6 text-primary" />
+                  <div className="flex-1 space-y-2 sm:space-y-3">
+                    <div className="flex items-start gap-3 sm:gap-4">
+                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10 sm:h-12 sm:w-12 sm:rounded-xl">
+                        <Ticket className="h-5 w-5 text-primary sm:h-6 sm:w-6" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="mb-2 text-foreground">Book in Seconds!</h3>
-                        <p className="text-muted-foreground">Pick your date, add optional attractions, and boom—you're all set! Your digital pass arrives instantly via email. No printing, no hassle, just pure adventure.</p>
-                        <div className="mt-3 inline-flex items-center gap-2 rounded-lg bg-accent/10 px-3 py-1.5 text-sm text-accent">
-                          <CheckCircle className="h-4 w-4" />
-                          ⚡ Takes less than 3 minutes
+                        <h3 className="mb-1.5 text-foreground sm:mb-2">{t.step1Title}</h3>
+                        <p className="text-sm text-muted-foreground sm:text-base">{t.step1Description}</p>
+                        <div className="mt-2 inline-flex items-center gap-2 rounded-lg bg-accent/10 px-2.5 py-1 text-xs text-accent sm:mt-3 sm:px-3 sm:py-1.5 sm:text-sm">
+                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                          {t.step1Badge}
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="absolute right-0 top-0 h-24 w-24 bg-gradient-to-bl from-accent/5 to-transparent" />
+                <div className="absolute right-0 top-0 h-16 w-16 bg-gradient-to-bl from-accent/5 to-transparent sm:h-24 sm:w-24" />
               </Card>
             </div>
 
             {/* Step 2 */}
             <div className="group relative">
-              <div className="absolute left-8 top-20 hidden h-full w-1 bg-gradient-to-b from-accent via-primary to-accent opacity-20 md:block" />
+              <div className="absolute left-6 top-16 hidden h-full w-1 bg-gradient-to-b from-accent via-primary to-accent opacity-20 md:block" />
               <Card className="relative overflow-hidden border-2 border-border bg-white shadow-lg transition-all hover:scale-[1.02] hover:shadow-2xl">
-                <div className="flex flex-col gap-6 p-8 md:flex-row md:items-start">
+                <div className="flex flex-col gap-3 p-4 sm:gap-6 sm:p-8 md:flex-row md:items-start">
                   <div className="flex-shrink-0">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-accent to-accent/80 shadow-lg">
-                      <span className="text-2xl text-white">2</span>
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-accent to-accent/80 shadow-lg sm:h-16 sm:w-16 sm:rounded-2xl">
+                      <span className="text-xl text-white sm:text-2xl">2</span>
                     </div>
                   </div>
-                  <div className="flex-1 space-y-3">
-                    <div className="flex items-start gap-4">
-                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10">
-                        <MapPin className="h-6 w-6 text-primary" />
+                  <div className="flex-1 space-y-2 sm:space-y-3">
+                    <div className="flex items-start gap-3 sm:gap-4">
+                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10 sm:h-12 sm:w-12 sm:rounded-xl">
+                        <MapPin className="h-5 w-5 text-primary sm:h-6 sm:w-6" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="mb-2 text-foreground">Get Your Magic QR Code</h3>
-                        <p className="text-muted-foreground">Your smartphone becomes your ticket to Sintra! Save your QR code and you're ready to hop on at any of our stops. It's that simple.</p>
-                        <div className="mt-3 inline-flex items-center gap-2 rounded-lg bg-accent/10 px-3 py-1.5 text-sm text-accent">
-                          <CheckCircle className="h-4 w-4" />
-                          📱 Works offline too!
+                        <h3 className="mb-1.5 text-foreground sm:mb-2">{t.step2Title}</h3>
+                        <p className="text-sm text-muted-foreground sm:text-base">{t.step2Description}</p>
+                        <div className="mt-2 inline-flex items-center gap-2 rounded-lg bg-accent/10 px-2.5 py-1 text-xs text-accent sm:mt-3 sm:px-3 sm:py-1.5 sm:text-sm">
+                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                          {t.step2Badge}
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="absolute right-0 top-0 h-24 w-24 bg-gradient-to-bl from-accent/5 to-transparent" />
+                <div className="absolute right-0 top-0 h-16 w-16 bg-gradient-to-bl from-accent/5 to-transparent sm:h-24 sm:w-24" />
               </Card>
             </div>
 
             {/* Step 3 */}
             <div className="group relative">
-              <div className="absolute left-8 top-20 hidden h-full w-1 bg-gradient-to-b from-accent via-primary to-accent opacity-20 md:block" />
+              <div className="absolute left-6 top-16 hidden h-full w-1 bg-gradient-to-b from-accent via-primary to-accent opacity-20 md:block" />
               <Card className="relative overflow-hidden border-2 border-border bg-white shadow-lg transition-all hover:scale-[1.02] hover:shadow-2xl">
-                <div className="flex flex-col gap-6 p-8 md:flex-row md:items-start">
+                <div className="flex flex-col gap-3 p-4 sm:gap-6 sm:p-8 md:flex-row md:items-start">
                   <div className="flex-shrink-0">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-accent to-accent/80 shadow-lg">
-                      <span className="text-2xl text-white">3</span>
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-accent to-accent/80 shadow-lg sm:h-16 sm:w-16 sm:rounded-2xl">
+                      <span className="text-xl text-white sm:text-2xl">3</span>
                     </div>
                   </div>
-                  <div className="flex-1 space-y-3">
-                    <div className="flex items-start gap-4">
-                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10">
-                        <Car className="h-6 w-6 text-primary" />
+                  <div className="flex-1 space-y-2 sm:space-y-3">
+                    <div className="flex items-start gap-3 sm:gap-4">
+                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10 sm:h-12 sm:w-12 sm:rounded-xl">
+                        <Car className="h-5 w-5 text-primary sm:h-6 sm:w-6" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="mb-2 text-foreground">Hop On & Explore!</h3>
-                        <p className="text-muted-foreground">See a tuk tuk at the stop? Flash your code to your professional driver-guide and jump in! With rides every 10-15 minutes from 9am to 8pm, you'll never wait long. Explore at your own pace—our guides have you covered all day long.</p>
-                        <div className="mt-3 inline-flex items-center gap-2 rounded-lg bg-accent/10 px-3 py-1.5 text-sm text-accent">
-                          <CheckCircle className="h-4 w-4" />
-                          🎉 Unlimited rides with professional guides
+                        <h3 className="mb-1.5 text-foreground sm:mb-2">{t.step3Title}</h3>
+                        <p className="text-sm text-muted-foreground sm:text-base">{t.step3Description}</p>
+                        <div className="mt-2 inline-flex items-center gap-2 rounded-lg bg-accent/10 px-2.5 py-1 text-xs text-accent sm:mt-3 sm:px-3 sm:py-1.5 sm:text-sm">
+                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                          {t.step3Badge}
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="absolute right-0 top-0 h-24 w-24 bg-gradient-to-bl from-accent/5 to-transparent" />
+                <div className="absolute right-0 top-0 h-16 w-16 bg-gradient-to-bl from-accent/5 to-transparent sm:h-24 sm:w-24" />
               </Card>
             </div>
 
             {/* Step 4 */}
             <div className="group relative">
               <Card className="relative overflow-hidden border-2 border-border bg-white shadow-lg transition-all hover:scale-[1.02] hover:shadow-2xl">
-                <div className="flex flex-col gap-6 p-8 md:flex-row md:items-start">
+                <div className="flex flex-col gap-3 p-4 sm:gap-6 sm:p-8 md:flex-row md:items-start">
                   <div className="flex-shrink-0">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-accent to-accent/80 shadow-lg">
-                      <span className="text-2xl text-white">4</span>
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-accent to-accent/80 shadow-lg sm:h-16 sm:w-16 sm:rounded-2xl">
+                      <span className="text-xl text-white sm:text-2xl">4</span>
                     </div>
                   </div>
-                  <div className="flex-1 space-y-3">
-                    <div className="flex items-start gap-4">
-                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10">
-                        <Bell className="h-6 w-6 text-primary" />
+                  <div className="flex-1 space-y-2 sm:space-y-3">
+                    <div className="flex items-start gap-3 sm:gap-4">
+                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10 sm:h-12 sm:w-12 sm:rounded-xl">
+                        <Bell className="h-5 w-5 text-primary sm:h-6 sm:w-6" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="mb-2 text-foreground">No Vehicle at the Stop?</h3>
-                        <p className="text-muted-foreground">If you don't see any vehicles waiting when you arrive at a stop, you can request a pickup! This lets us know you're waiting and helps us get to you faster. Your request helps us optimize our service and reduce wait times for everyone.</p>
-                        <div className="mt-3 inline-flex items-center gap-2 rounded-lg bg-accent/10 px-3 py-1.5 text-sm text-accent">
-                          <CheckCircle className="h-4 w-4" />
+                        <h3 className="mb-1.5 text-foreground sm:mb-2">No Vehicle at the Stop?</h3>
+                        <p className="text-sm text-muted-foreground sm:text-base">If you don't see any vehicles waiting when you arrive at a stop, you can request a pickup! This lets us know you're waiting and helps us get to you faster. Your request helps us optimize our service and reduce wait times for everyone.</p>
+                        <div className="mt-2 inline-flex items-center gap-2 rounded-lg bg-accent/10 px-2.5 py-1 text-xs text-accent sm:mt-3 sm:px-3 sm:py-1.5 sm:text-sm">
+                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                           🔔 Request pickup anytime
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="absolute right-0 top-0 h-24 w-24 bg-gradient-to-bl from-accent/5 to-transparent" />
+                <div className="absolute right-0 top-0 h-16 w-16 bg-gradient-to-bl from-accent/5 to-transparent sm:h-24 sm:w-24" />
               </Card>
             </div>
           </div>
 
           {/* Install App CTA - After Step 4 */}
-          {!isInstalled && deferredPrompt && (
-            <div className="mt-12 flex justify-center">
-              <Card className="w-full max-w-2xl overflow-hidden border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-white to-accent/5 shadow-xl">
-                <div className="p-8">
-                  <div className="flex flex-col items-center text-center sm:flex-row sm:gap-6 sm:text-left">
+          {!isInstalled && showInstallCard && (
+            <div className="mt-8 flex justify-center sm:mt-12">
+              <Card className="relative w-full max-w-2xl overflow-hidden border-2 border-accent/30 bg-gradient-to-br from-accent/5 via-white to-accent/10 shadow-xl">
+                {/* Dismiss Button */}
+                <button
+                  onClick={handleDismissInstallCard}
+                  className="absolute right-2 top-2 z-10 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-accent/10 hover:text-accent sm:right-3 sm:top-3"
+                  aria-label="Dismiss"
+                >
+                  <CheckCircle className="h-4 w-4" />
+                </button>
+
+                <div className="p-5 sm:p-8">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:gap-6">
                     {/* Icon */}
-                    <div className="mb-4 flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/80 shadow-lg sm:mb-0">
-                      <Smartphone className="h-8 w-8 text-white" />
+                    <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center self-center rounded-xl bg-gradient-to-br from-accent to-accent/80 shadow-lg sm:h-16 sm:w-16 sm:rounded-2xl sm:self-start">
+                      <Smartphone className="h-7 w-7 text-white sm:h-8 sm:w-8" />
                     </div>
                     
                     {/* Content */}
-                    <div className="flex-1">
+                    <div className="flex-1 text-center sm:text-left">
                       <h3 className="mb-2 text-foreground">📱 Install Go Sintra App</h3>
-                      <p className="mb-4 text-muted-foreground">
-                        Add our app to your home screen for instant access! Works offline, loads faster, and makes requesting pickups smoother. <strong>Takes just 2 seconds!</strong>
+                      <p className="mb-3 text-sm text-muted-foreground sm:mb-4 sm:text-base">
+                        Add to your home screen! Works offline, loads faster, and makes requesting pickups smoother. <strong>Takes just 2 seconds!</strong>
                       </p>
                       
-                      {/* Benefits Pills */}
-                      <div className="mb-4 flex flex-wrap justify-center gap-2 sm:justify-start">
-                        <div className="flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">
+                      {/* Benefits Pills - Simplified */}
+                      <div className="mb-3 flex flex-wrap justify-center gap-2 sm:mb-4 sm:justify-start">
+                        <div className="flex items-center gap-1.5 rounded-full bg-accent/10 px-2.5 py-1 text-xs text-accent sm:px-3 sm:text-sm">
                           <Zap className="h-3.5 w-3.5" />
                           Faster
                         </div>
-                        <div className="flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">
+                        <div className="flex items-center gap-1.5 rounded-full bg-accent/10 px-2.5 py-1 text-xs text-accent sm:px-3 sm:text-sm">
                           <CheckCircle className="h-3.5 w-3.5" />
-                          Works Offline
+                          Offline
                         </div>
-                        <div className="flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">
+                        <div className="flex items-center gap-1.5 rounded-full bg-accent/10 px-2.5 py-1 text-xs text-accent sm:px-3 sm:text-sm">
                           <Heart className="h-3.5 w-3.5" />
-                          Smoother Experience
+                          Smoother
                         </div>
                       </div>
 
+                      {/* Install Instructions */}
+                      {isIOS && !deferredPrompt ? (
+                        <div className="mb-3 rounded-lg bg-accent/10 p-3 text-left text-xs sm:mb-4 sm:text-sm">
+                          <p className="mb-1.5 text-accent sm:mb-2">
+                            <strong>iOS Instructions:</strong>
+                          </p>
+                          <ol className="space-y-0.5 text-muted-foreground sm:space-y-1">
+                            <li>1. Tap the <strong>Share</strong> button in Safari</li>
+                            <li>2. Tap <strong>"Add to Home Screen"</strong></li>
+                            <li>3. Tap <strong>"Add"</strong> - Done! 🎉</li>
+                          </ol>
+                        </div>
+                      ) : null}
+
                       {/* Install Button */}
-                      <Button
-                        onClick={handleInstallClick}
-                        size="lg"
-                        className="w-full bg-primary shadow-lg hover:scale-105 hover:bg-primary/90 sm:w-auto"
-                      >
-                        <Download className="mr-2 h-5 w-5" />
-                        Install App (2 seconds)
-                      </Button>
+                      <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
+                        <Button
+                          onClick={handleInstallClick}
+                          size="lg"
+                          className="w-full bg-accent shadow-lg transition-all hover:scale-105 hover:bg-accent/90 sm:w-auto sm:flex-1"
+                        >
+                          <Download className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                          {deferredPrompt ? 'Install Now (2 sec)' : isIOS ? 'View Instructions' : 'Install App'}
+                        </Button>
+                        <Button
+                          onClick={handleDismissInstallCard}
+                          size="lg"
+                          variant="outline"
+                          className="w-full border-accent/30 text-accent hover:bg-accent/10 sm:w-auto"
+                        >
+                          Maybe Later
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>

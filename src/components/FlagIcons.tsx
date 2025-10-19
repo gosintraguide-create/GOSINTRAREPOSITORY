@@ -72,3 +72,23 @@ export function FlagDE({ className = "w-6 h-4" }: FlagIconProps) {
     </svg>
   );
 }
+
+export function FlagNL({ className = "w-6 h-4" }: FlagIconProps) {
+  return (
+    <svg viewBox="0 0 900 600" className={className}>
+      <rect width="900" height="600" fill="#FFF"/>
+      <rect width="900" height="200" fill="#AE1C28"/>
+      <rect width="900" height="200" y="400" fill="#21468B"/>
+    </svg>
+  );
+}
+
+export function FlagIT({ className = "w-6 h-4" }: FlagIconProps) {
+  return (
+    <svg viewBox="0 0 3 2" className={className}>
+      <rect width="3" height="2" fill="#FFF"/>
+      <rect width="1" height="2" fill="#009246"/>
+      <rect width="1" height="2" x="2" fill="#CE2B37"/>
+    </svg>
+  );
+}
