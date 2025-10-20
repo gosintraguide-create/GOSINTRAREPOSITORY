@@ -6,6 +6,7 @@ import * as kv from "./kv_store.tsx";
 import QRCode from "npm:qrcode@1.5.4";
 import { PDFDocument, rgb } from "npm:pdf-lib@1.17.1";
 import Stripe from "npm:stripe@17.3.1";
+import { generateBookingConfirmationHTML } from "./email_template.tsx";
 
 const app = new Hono();
 
@@ -255,671 +256,301 @@ async function generateBookingPDF(
       month: "long",
       day: "numeric",
     });
+    
+    const shortDate = new Date(
+      booking.selectedDate,
+    ).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
 
     const bookingIdShort =
       booking.id.split("_")[1] || booking.id;
 
-    // Add a page
-    let page = pdfDoc.addPage([595, 842]); // A4 size in points
-    const { width, height } = page.getSize();
-
-    let yPosition = height - 50;
-
-    // Header background
-    page.drawRectangle({
-      x: 0,
-      y: height - 120,
-      width: width,
-      height: 120,
-      color: rgb(0.039, 0.302, 0.361), // #0A4D5C
-    });
-
-    // Title
-    page.drawText("Booking Confirmed!", {
-      x: 50,
-      y: height - 60,
-      size: 28,
-      color: rgb(1, 1, 1),
-    });
-
-    page.drawText(
-      "Go Sintra - Premium Hop-On/Hop-Off Service",
-      {
-        x: 50,
-        y: height - 90,
-        size: 14,
-        color: rgb(1, 1, 1),
-      },
-    );
-
-    yPosition = height - 150;
-
-    // Booking Details Section
-    page.drawRectangle({
-      x: 50,
-      y: yPosition - 120,
-      width: width - 100,
-      height: 120,
-      color: rgb(1, 0.957, 0.929), // #FFF4ED
-    });
-
-    page.drawText("Booking Details", {
-      x: 70,
-      y: yPosition - 30,
-      size: 16,
-      color: rgb(0.039, 0.302, 0.361),
-    });
-
-    page.drawText(`Booking ID: ${bookingIdShort}`, {
-      x: 70,
-      y: yPosition - 55,
-      size: 11,
-      color: rgb(0.176, 0.204, 0.212),
-    });
-
-    page.drawText(`Date: ${formattedDate}`, {
-      x: 70,
-      y: yPosition - 75,
-      size: 11,
-      color: rgb(0.176, 0.204, 0.212),
-    });
-
-    page.drawText(`Operating Hours: 9:00 AM - 8:00 PM`, {
-      x: 70,
-      y: yPosition - 95,
-      size: 11,
-      color: rgb(0.176, 0.204, 0.212),
-    });
-
-    page.drawText(
-      `Day Passes: ${booking.passengers.length} ${booking.passengers.length === 1 ? "passenger" : "passengers"}`,
-      {
-        x: 70,
-        y: yPosition - 115,
-        size: 11,
-        color: rgb(0.176, 0.204, 0.212),
-      },
-    );
-
-    yPosition -= 150;
-
-    // Instructions Section
-    page.drawRectangle({
-      x: 50,
-      y: yPosition - 100,
-      width: width - 100,
-      height: 100,
-      color: rgb(0.961, 0.961, 0.961), // #F5F5F5
-    });
-
-    page.drawText("How to Use Your Pass:", {
-      x: 70,
-      y: yPosition - 25,
-      size: 12,
-      color: rgb(0.039, 0.302, 0.361),
-    });
-
-    page.drawText(
-      "Show your QR code to the driver when boarding",
-      {
-        x: 70,
-        y: yPosition - 45,
-        size: 9,
-        color: rgb(0.176, 0.204, 0.212),
-      },
-    );
-
-    page.drawText(
-      "Valid for unlimited hop-on/hop-off rides until 8:00 PM",
-      {
-        x: 70,
-        y: yPosition - 60,
-        size: 9,
-        color: rgb(0.176, 0.204, 0.212),
-      },
-    );
-
-    page.drawText("New vehicles depart every 10-15 minutes", {
-      x: 70,
-      y: yPosition - 75,
-      size: 9,
-      color: rgb(0.176, 0.204, 0.212),
-    });
-
-    yPosition -= 130;
-
-    // Generate tickets for each passenger (new perforated design)
+    // Generate one full-page ticket per passenger
     for (let i = 0; i < booking.passengers.length; i++) {
       const passenger = booking.passengers[i];
       const qrCode = qrCodes[i];
 
-      // Check if we need a new page
-      if (yPosition < 260) {
-        page = pdfDoc.addPage([595, 842]);
-        yPosition = height - 50;
-      }
+      // Create a new page for this passenger
+      const page = pdfDoc.addPage([595, 842]); // A4 size in points
+      const { width, height } = page.getSize();
 
-      const ticketHeight = 230;
-      const ticketWidth = width - 100;
-      const ticketX = 50;
-      const ticketY = yPosition - ticketHeight;
-
-      // Main ticket section width (70% of total for better proportions)
-      const mainWidth = ticketWidth * 0.68;
-      const stubWidth = ticketWidth * 0.32;
-
-      // === MAIN TICKET SECTION ===
-
-      // Ticket background
+      // === BACKGROUND - Cream color ===
       page.drawRectangle({
-        x: ticketX,
-        y: ticketY,
-        width: mainWidth,
-        height: ticketHeight,
-        color: rgb(1, 0.973, 0.941), // #FFF8F0
-        borderColor: rgb(0.867, 0.816, 0.753), // #DDD0C0
-        borderWidth: 1.5,
+        x: 0,
+        y: 0,
+        width: width,
+        height: height,
+        color: rgb(1, 0.957, 0.929), // #FFF4ED
       });
 
-      // Header background (terracotta)
+      // === TOP HEADER - Teal gradient ===
       page.drawRectangle({
-        x: ticketX,
-        y: ticketY + ticketHeight - 40,
-        width: mainWidth,
-        height: 40,
+        x: 0,
+        y: height - 140,
+        width: width,
+        height: 140,
+        color: rgb(0.039, 0.302, 0.361), // #0A4D5C
+      });
+
+      // Terracotta bottom accent
+      page.drawRectangle({
+        x: 0,
+        y: height - 145,
+        width: width,
+        height: 5,
         color: rgb(0.851, 0.471, 0.263), // #D97843
       });
 
-      // Header text - "DAY PASS"
+      // Logo/Title - Large (GO SINTRA = 9 chars * 20 ≈ 180)
+      page.drawText("GO SINTRA", {
+        x: width / 2 - 90,
+        y: height - 55,
+        size: 36,
+        color: rgb(1, 1, 1),
+      });
+
+      // DAY PASS = 8 chars * 11 ≈ 88
       page.drawText("DAY PASS", {
-        x: ticketX + 15,
-        y: ticketY + ticketHeight - 25,
-        size: 11,
-        color: rgb(1, 0.973, 0.941),
+        x: width / 2 - 44,
+        y: height - 85,
+        size: 20,
+        color: rgb(0.851, 0.471, 0.263),
       });
 
-      // Booking ID in header with border
-      const bookingIdWidth = bookingIdShort.length * 5.5;
-      page.drawRectangle({
-        x: ticketX + mainWidth - bookingIdWidth - 25,
-        y: ticketY + ticketHeight - 32,
-        width: bookingIdWidth + 15,
-        height: 18,
-        borderColor: rgb(1, 0.973, 0.941, 0.4),
-        borderWidth: 1,
-      });
-      page.drawText(bookingIdShort, {
-        x: ticketX + mainWidth - bookingIdWidth - 18,
-        y: ticketY + ticketHeight - 23,
-        size: 9,
-        color: rgb(1, 0.973, 0.941),
-      });
-
-      // Define consistent left margin and column positions
-      const leftMargin = ticketX + 18;
-      const col1X = leftMargin;
-      const col2X = ticketX + mainWidth / 2 + 5;
-
-      // Content area - Row 1: Passenger Info
-      let contentY = ticketY + ticketHeight - 60;
-
-      // Passenger Name (spans both columns for longer names)
-      page.drawText("NAME OF PASSENGER", {
-        x: col1X,
-        y: contentY,
-        size: 7,
-        color: rgb(0.42, 0.447, 0.533),
-      });
-      page.drawText((passenger.name || passenger.fullName || `Passenger ${i + 1}`).toUpperCase(), {
-        x: col1X,
-        y: contentY - 14,
-        size: 11,
-        color: rgb(0.176, 0.204, 0.212),
-      });
-
-      // Ticket Type (right column)
-      page.drawText("TICKET TYPE", {
-        x: col2X,
-        y: contentY,
-        size: 7,
-        color: rgb(0.42, 0.447, 0.533),
-      });
-      page.drawText((passenger.type || 'Adult').toUpperCase(), {
-        x: col2X,
-        y: contentY - 14,
-        size: 11,
-        color: rgb(0.176, 0.204, 0.212),
-      });
-
-      // Row 2: Location Info
-      contentY -= 42;
-
-      // Service Area (left column)
-      page.drawText("SERVICE AREA", {
-        x: col1X,
-        y: contentY,
-        size: 7,
-        color: rgb(0.42, 0.447, 0.533),
-      });
-      page.drawText("SINTRA", {
-        x: col1X,
-        y: contentY - 14,
-        size: 11,
-        color: rgb(0.176, 0.204, 0.212),
-      });
-
-      // Coverage (right column)
-      page.drawText("COVERAGE", {
-        x: col2X,
-        y: contentY,
-        size: 7,
-        color: rgb(0.42, 0.447, 0.533),
-      });
-      page.drawText("ALL ROUTES", {
-        x: col2X,
-        y: contentY - 14,
-        size: 11,
-        color: rgb(0.176, 0.204, 0.212),
-      });
-
-      // Divider line
-      contentY -= 28;
-      page.drawLine({
-        start: { x: ticketX + 12, y: contentY },
-        end: { x: ticketX + mainWidth - 12, y: contentY },
-        color: rgb(0.867, 0.816, 0.753),
-        thickness: 1,
-      });
-
-      // Row 3: Date & Time Info (3 columns)
-      contentY -= 18;
-
-      const col3Width = mainWidth / 3;
-
-      // Date
-      page.drawText("DATE", {
-        x: col1X,
-        y: contentY,
-        size: 7,
-        color: rgb(0.42, 0.447, 0.533),
-      });
-      page.drawText(formattedDate, {
-        x: col1X,
-        y: contentY - 13,
-        size: 9,
-        color: rgb(0.176, 0.204, 0.212),
-      });
-
-      // Start Time
-      page.drawText("START TIME", {
-        x: ticketX + col3Width + 8,
-        y: contentY,
-        size: 7,
-        color: rgb(0.42, 0.447, 0.533),
-      });
-      page.drawText(booking.timeSlot, {
-        x: ticketX + col3Width + 8,
-        y: contentY - 13,
-        size: 9,
-        color: rgb(0.176, 0.204, 0.212),
-      });
-
-      // Valid Until
-      page.drawText("VALID UNTIL", {
-        x: ticketX + col3Width * 2 + 3,
-        y: contentY,
-        size: 7,
-        color: rgb(0.42, 0.447, 0.533),
-      });
-      page.drawText("20:00", {
-        x: ticketX + col3Width * 2 + 3,
-        y: contentY - 13,
-        size: 9,
-        color: rgb(0.176, 0.204, 0.212),
-      });
-
-      // === PERFORATION LINE ===
-      const perforationX = ticketX + mainWidth;
-      // Draw dashed perforation line
-      for (let j = 0; j < 40; j++) {
-        const dashY = ticketY + (ticketHeight / 40) * j;
-        page.drawRectangle({
-          x: perforationX - 0.5,
-          y: dashY,
-          width: 1,
-          height: ticketHeight / 80,
-          color: rgb(0.867, 0.816, 0.753),
+      // Ticket counter badge
+      if (booking.passengers.length > 1) {
+        const badgeText = `${i + 1} / ${booking.passengers.length}`;
+        const badgeWidth = badgeText.length * 7;
+        page.drawText(badgeText, {
+          x: width / 2 - badgeWidth / 2,
+          y: height - 115,
+          size: 14,
+          color: rgb(0.941, 0.914, 0.894),
         });
       }
 
-      // Left and right notches (perforated edges)
-      const notchRadius = 4;
-      const notchCount = 5;
-      for (let n = 0; n < notchCount; n++) {
-        const notchY =
-          ticketY + (ticketHeight / (notchCount + 1)) * (n + 1);
+      // === QR CODE - LARGE AND CENTERED ===
+      let yPos = height - 200;
 
-        // Left notch
-        page.drawCircle({
-          x: ticketX,
-          y: notchY,
-          size: notchRadius,
-          color: rgb(1, 1, 1), // White background
-          borderColor: rgb(0.867, 0.816, 0.753),
-          borderWidth: 0.5,
-        });
-
-        // Right notch
-        page.drawCircle({
-          x: ticketX + ticketWidth,
-          y: notchY,
-          size: notchRadius,
-          color: rgb(1, 1, 1),
-          borderColor: rgb(0.867, 0.816, 0.753),
-          borderWidth: 0.5,
-        });
-      }
-
-      // === STUB SECTION ===
-
-      // Stub background
-      page.drawRectangle({
-        x: perforationX,
-        y: ticketY,
-        width: stubWidth,
-        height: ticketHeight,
-        color: rgb(1, 0.973, 0.941), // #FFF8F0
-        borderColor: rgb(0.867, 0.816, 0.753),
-        borderWidth: 1.5,
+      // SCAN TO BOARD = 13 chars * 9 ≈ 117
+      page.drawText("SCAN TO BOARD", {
+        x: width / 2 - 58,
+        y: yPos,
+        size: 16,
+        color: rgb(0.039, 0.302, 0.361),
       });
 
-      // Stub header
-      page.drawRectangle({
-        x: perforationX,
-        y: ticketY + ticketHeight - 40,
-        width: stubWidth,
-        height: 40,
-        color: rgb(0.851, 0.471, 0.263), // #D97843
-      });
+      yPos -= 40;
 
-      page.drawText("DAY PASS", {
-        x: perforationX + 12,
-        y: ticketY + ticketHeight - 25,
-        size: 9,
-        color: rgb(1, 0.973, 0.941),
-      });
-
-      // Stub content - centered alignment
-      const stubCenterX = perforationX + stubWidth / 2;
-      let stubY = ticketY + ticketHeight - 62;
-
-      // Passenger (first name only)
-      const firstName = passenger.name.split(" ")[0];
-      const firstNameWidth = firstName.length * 4.5;
-
-      page.drawText("PASSENGER", {
-        x: stubCenterX - 22,
-        y: stubY,
-        size: 7,
-        color: rgb(0.42, 0.447, 0.533),
-      });
-      page.drawText(firstName.toUpperCase(), {
-        x: stubCenterX - firstNameWidth / 2,
-        y: stubY - 13,
-        size: 9,
-        color: rgb(0.176, 0.204, 0.212),
-      });
-
-      stubY -= 35;
-
-      // Service
-      page.drawText("SERVICE", {
-        x: stubCenterX - 18,
-        y: stubY,
-        size: 7,
-        color: rgb(0.42, 0.447, 0.533),
-      });
-      page.drawText("SINTRA", {
-        x: stubCenterX - 18,
-        y: stubY - 13,
-        size: 9,
-        color: rgb(0.176, 0.204, 0.212),
-      });
-
-      stubY -= 28;
-
-      // Divider
-      page.drawLine({
-        start: { x: perforationX + 8, y: stubY },
-        end: { x: perforationX + stubWidth - 8, y: stubY },
-        color: rgb(0.867, 0.816, 0.753),
-        thickness: 1,
-      });
-
-      stubY -= 18;
-
-      // QR Code - centered
       if (qrCode) {
         try {
-          const qrBase64 = qrCode.replace(
-            /^data:image\/png;base64,/,
-            "",
-          );
-          const qrImageBytes = Uint8Array.from(
-            atob(qrBase64),
-            (c) => c.charCodeAt(0),
+          const qrBase64 = qrCode.replace(/^data:image\/png;base64,/, "");
+          const qrImageBytes = Uint8Array.from(atob(qrBase64), (c) =>
+            c.charCodeAt(0)
           );
           const qrImage = await pdfDoc.embedPng(qrImageBytes);
 
-          const qrSize = 75;
-          const qrX = perforationX + (stubWidth - qrSize) / 2;
+          const qrSize = 220;
+          const qrX = (width - qrSize) / 2;
 
-          // White background for QR with rounded corners effect
+          // White background with teal border
           page.drawRectangle({
-            x: qrX - 4,
-            y: stubY - qrSize - 4,
-            width: qrSize + 8,
-            height: qrSize + 8,
+            x: qrX - 12,
+            y: yPos - qrSize - 12,
+            width: qrSize + 24,
+            height: qrSize + 24,
             color: rgb(1, 1, 1),
-            borderColor: rgb(0.9, 0.9, 0.9),
-            borderWidth: 1,
+            borderColor: rgb(0.039, 0.302, 0.361),
+            borderWidth: 4,
           });
 
           page.drawImage(qrImage, {
             x: qrX,
-            y: stubY - qrSize,
+            y: yPos - qrSize,
             width: qrSize,
             height: qrSize,
           });
 
-          stubY -= qrSize + 10;
+          yPos -= qrSize + 30;
 
-          // "Scan to validate" text - centered
-          const scanTextWidth = 52;
-          page.drawText("Scan to validate", {
-            x: stubCenterX - scanTextWidth / 2,
-            y: stubY,
-            size: 7,
-            color: rgb(0.42, 0.447, 0.533),
-          });
-
-          console.log(
-            `✅ Added QR code for passenger ${i + 1}: ${passenger.name}`,
-          );
+          console.log(`✅ Added QR code for passenger ${i + 1}: ${passenger.name}`);
         } catch (err) {
-          console.error(
-            `Error adding QR code for passenger ${i + 1}:`,
-            err,
-          );
+          console.error(`Error adding QR code for passenger ${i + 1}:`, err);
         }
       }
 
-      stubY -= 18;
-
-      // Divider
-      page.drawLine({
-        start: { x: perforationX + 8, y: stubY },
-        end: { x: perforationX + stubWidth - 8, y: stubY },
-        color: rgb(0.867, 0.816, 0.753),
-        thickness: 1,
-      });
-
-      stubY -= 14;
-
-      // Date in stub - centered
-      page.drawText("DATE", {
-        x: stubCenterX - 12,
-        y: stubY,
-        size: 7,
-        color: rgb(0.42, 0.447, 0.533),
-      });
-
-      const dateWidth = formattedDate.length * 3.5;
-      page.drawText(formattedDate, {
-        x: stubCenterX - dateWidth / 2,
-        y: stubY - 12,
-        size: 8,
-        color: rgb(0.176, 0.204, 0.212),
-      });
-
-      stubY -= 28;
-
-      // Booking ID at bottom - centered
-      const idWidth = bookingIdShort.length * 3;
-      page.drawText(bookingIdShort, {
-        x: stubCenterX - idWidth / 2,
-        y: stubY,
-        size: 7,
-        color: rgb(0.42, 0.447, 0.533),
-      });
-
-      // Counter badge (if multiple passengers)
-      if (booking.passengers.length > 1) {
-        const badgeRadius = 16;
-        const badgeX = ticketX + ticketWidth - badgeRadius - 5;
-        const badgeY = ticketY + ticketHeight - badgeRadius - 5;
-
-        // Badge circle with shadow effect
-        page.drawCircle({
-          x: badgeX,
-          y: badgeY,
-          size: badgeRadius,
-          color: rgb(0.039, 0.302, 0.361), // primary
-          borderColor: rgb(1, 1, 1),
-          borderWidth: 3.5,
-        });
-
-        // Counter text - better centering
-        const counterText = `${i + 1}`;
-        const ofText = `of ${booking.passengers.length}`;
-
-        page.drawText(counterText, {
-          x: badgeX - 5,
-          y: badgeY + 4,
-          size: 11,
-          color: rgb(1, 1, 1),
-        });
-        page.drawText(ofText, {
-          x: badgeX - ofText.length * 2.5,
-          y: badgeY - 8,
-          size: 7,
-          color: rgb(1, 1, 1),
-        });
-      }
-
-      yPosition -= ticketHeight + 35;
-    }
-
-    // Order Summary on last page or new page if needed
-    if (yPosition < 150) {
-      page = pdfDoc.addPage([595, 842]);
-      yPosition = height - 50;
-    }
-
-    page.drawRectangle({
-      x: 50,
-      y: yPosition - 90,
-      width: width - 100,
-      height: 90,
-      color: rgb(1, 0.957, 0.929), // #FFF4ED
-    });
-
-    page.drawText("Order Summary", {
-      x: 70,
-      y: yPosition - 30,
-      size: 14,
-      color: rgb(0.039, 0.302, 0.361),
-    });
-
-    page.drawText(
-      `Day Pass (${booking.passengers.length} ${booking.passengers.length === 1 ? "passenger" : "passengers"})`,
-      {
-        x: 70,
-        y: yPosition - 55,
+      // === PASSENGER NAME - LARGE ===
+      // PASSENGER = 9 chars * 6 ≈ 54
+      page.drawText("PASSENGER", {
+        x: width / 2 - 27,
+        y: yPos,
         size: 11,
-        color: rgb(0.176, 0.204, 0.212),
-      },
-    );
+        color: rgb(0.42, 0.447, 0.533),
+      });
 
-    page.drawText(`€${booking.totalPrice.toFixed(2)}`, {
-      x: width - 120,
-      y: yPosition - 55,
-      size: 11,
-      color: rgb(0.176, 0.204, 0.212),
-    });
-
-    // Total line
-    page.drawText("Total Paid", {
-      x: 70,
-      y: yPosition - 75,
-      size: 14,
-      color: rgb(0.039, 0.302, 0.361),
-    });
-
-    page.drawText(`€${booking.totalPrice.toFixed(2)}`, {
-      x: width - 120,
-      y: yPosition - 75,
-      size: 14,
-      color: rgb(0.039, 0.302, 0.361),
-    });
-
-    // Footer on every page
-    const pages = pdfDoc.getPages();
-    for (const pg of pages) {
-      pg.drawRectangle({
-        x: 0,
-        y: 0,
-        width: width,
-        height: 80,
+      yPos -= 25;
+      const passengerName = (passenger.name || passenger.fullName || `Passenger ${i + 1}`).toUpperCase();
+      const nameWidth = passengerName.length * 13; // size 22 approximation
+      page.drawText(passengerName, {
+        x: (width - nameWidth) / 2,
+        y: yPos,
+        size: 22,
         color: rgb(0.039, 0.302, 0.361),
       });
 
-      pg.drawText("Go Sintra", {
-        x: width / 2 - 30,
-        y: 50,
+      yPos -= 50;
+
+      // === DETAILS SECTION ===
+      const leftCol = 100;
+      const rightCol = width / 2 + 50;
+
+      // Date
+      page.drawText("DATE", {
+        x: leftCol,
+        y: yPos,
         size: 10,
+        color: rgb(0.42, 0.447, 0.533),
+      });
+      page.drawText(shortDate, {
+        x: leftCol,
+        y: yPos - 20,
+        size: 14,
+        color: rgb(0.039, 0.302, 0.361),
+      });
+
+      // Type
+      page.drawText("TYPE", {
+        x: rightCol,
+        y: yPos,
+        size: 10,
+        color: rgb(0.42, 0.447, 0.533),
+      });
+      page.drawText(passenger.type || 'Adult', {
+        x: rightCol,
+        y: yPos - 20,
+        size: 14,
+        color: rgb(0.039, 0.302, 0.361),
+      });
+
+      yPos -= 70;
+
+      // Valid Hours
+      page.drawText("VALID HOURS", {
+        x: leftCol,
+        y: yPos,
+        size: 10,
+        color: rgb(0.42, 0.447, 0.533),
+      });
+      page.drawText("9:00 AM - 8:00 PM", {
+        x: leftCol,
+        y: yPos - 20,
+        size: 14,
+        color: rgb(0.039, 0.302, 0.361),
+      });
+
+      // Booking ID
+      page.drawText("BOOKING ID", {
+        x: rightCol,
+        y: yPos,
+        size: 10,
+        color: rgb(0.42, 0.447, 0.533),
+      });
+      page.drawText(bookingIdShort, {
+        x: rightCol,
+        y: yPos - 20,
+        size: 14,
+        color: rgb(0.039, 0.302, 0.361),
+      });
+
+      yPos -= 70;
+
+      // === INSTRUCTIONS ===
+      // HOW TO USE = 10 chars * 6 ≈ 60
+      page.drawText("HOW TO USE", {
+        x: width / 2 - 30,
+        y: yPos,
+        size: 11,
+        color: rgb(0.42, 0.447, 0.533),
+      });
+
+      yPos -= 25;
+
+      // Line 1 = 53 chars * 6 ≈ 318
+      const instruction1 = "Show QR code to driver • Unlimited rides until 8 PM";
+      page.drawText(instruction1, {
+        x: width / 2 - 159,
+        y: yPos,
+        size: 11,
+        color: rgb(0.176, 0.204, 0.212),
+      });
+
+      yPos -= 20;
+
+      // Line 2 = 53 chars * 6 ≈ 318
+      const instruction2 = "Professional guides • Vehicles every 10-15 minutes";
+      page.drawText(instruction2, {
+        x: width / 2 - 153,
+        y: yPos,
+        size: 11,
+        color: rgb(0.176, 0.204, 0.212),
+      });
+
+      // === BOTTOM FOOTER - Teal ===
+      page.drawRectangle({
+        x: 0,
+        y: 0,
+        width: width,
+        height: 100,
+        color: rgb(0.039, 0.302, 0.361),
+      });
+
+      // Terracotta top accent
+      page.drawRectangle({
+        x: 0,
+        y: 100,
+        width: width,
+        height: 5,
+        color: rgb(0.851, 0.471, 0.263),
+      });
+
+      // GO SINTRA - size 14, ~8 per char = 72
+      const footerTitle = "GO SINTRA";
+      page.drawText(footerTitle, {
+        x: width / 2 - (footerTitle.length * 4),
+        y: 65,
+        size: 14,
         color: rgb(1, 1, 1),
       });
 
-      pg.drawText(
-        "Email: info@gosintra.com | WhatsApp: +351 932 967 279",
-        {
-          x: width / 2 - 150,
-          y: 35,
-          size: 8,
-          color: rgb(1, 1, 1),
-        },
-      );
+      // Premium Hop-On/Hop-Off Service - size 10, ~5.5 per char = 170
+      const footerSubtitle = "Premium Hop-On/Hop-Off Service";
+      page.drawText(footerSubtitle, {
+        x: width / 2 - (footerSubtitle.length * 2.75),
+        y: 48,
+        size: 10,
+        color: rgb(0.851, 0.471, 0.263),
+      });
 
-      pg.drawText(
-        "Operating Daily: 9:00 AM - 8:00 PM | Sintra, Portugal",
-        {
-          x: width / 2 - 135,
-          y: 20,
-          size: 8,
-          color: rgb(1, 1, 1),
-        },
-      );
+      // Email & WhatsApp line - size 9, ~5 per char = 245
+      const contactLine = "info@gosintra.com  |  WhatsApp: +351 932 967 279";
+      page.drawText(contactLine, {
+        x: width / 2 - (contactLine.length * 2.5),
+        y: 30,
+        size: 9,
+        color: rgb(1, 1, 1),
+      });
+
+      // Operating hours line - size 8, ~4.5 per char = 252
+      const hoursLine = "Operating Daily: 9:00 AM - 8:00 PM  |  Sintra, Portugal";
+      page.drawText(hoursLine, {
+        x: width / 2 - (hoursLine.length * 2.25),
+        y: 15,
+        size: 8,
+        color: rgb(0.941, 0.914, 0.894),
+      });
     }
 
     // Save PDF
@@ -1176,133 +807,7 @@ async function sendBookingEmail(
   }
 }
 
-// HTML email template generator
-function generateBookingConfirmationHTML(data: any): string {
-  const {
-    customerName,
-    bookingId,
-    formattedDate,
-    passengers,
-    totalPrice,
-    dayPassCount,
-    guidedTour,
-    attractions,
-  } = data;
-
-  const bookingIdShort = bookingId.split("_")[1] || bookingId;
-
-  return `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your Go Sintra Booking Confirmation</title>
-</head>
-<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #fffbf7; color: #2d3436;">
-  <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
-    
-    <!-- Header -->
-    <div style="background: linear-gradient(135deg, #0A4D5C 0%, #0d5f70 100%); padding: 40px 20px; text-align: center;">
-      <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">🎉 Booking Confirmed!</h1>
-    </div>
-
-    <!-- Content -->
-    <div style="padding: 40px 30px;">
-      <p style="font-size: 18px; margin-bottom: 20px; color: #2d3436;">Dear ${customerName},</p>
-      
-      <p>Thank you for choosing Go Sintra! We're excited to help you discover the magic of Sintra.</p>
-      
-      <!-- PDF Attachment Notice -->
-      <div style="background-color: #e6f7ff; border-left: 4px solid #1890ff; padding: 15px; margin: 25px 0; border-radius: 8px;">
-        <p style="margin: 0; color: #0050b3;"><strong>📎 Your Tickets Are Attached!</strong></p>
-        <p style="margin: 8px 0 0 0; color: #0050b3; font-size: 14px;">We've attached a PDF file with all your QR code tickets. Save it to your phone or print it out. Each passenger needs their own QR code to board.</p>
-      </div>
-      
-      <!-- Booking Details -->
-      <div style="background-color: #fff4ed; border-left: 4px solid #D97843; padding: 20px; margin: 25px 0; border-radius: 8px;">
-        <h2 style="margin: 0 0 15px 0; font-size: 20px; color: #0A4D5C;">📋 Booking Details</h2>
-        <div style="margin: 10px 0; padding: 8px 0; border-bottom: 1px solid #f0e9e3;">
-          <strong style="color: #6b7280;">Booking ID:</strong>
-          <span style="color: #2d3436; font-weight: 500; float: right;">${bookingIdShort}</span>
-        </div>
-        <div style="margin: 10px 0; padding: 8px 0; border-bottom: 1px solid #f0e9e3;">
-          <strong style="color: #6b7280;">Date:</strong>
-          <span style="color: #2d3436; font-weight: 500; float: right;">${formattedDate}</span>
-        </div>
-        <div style="margin: 10px 0; padding: 8px 0; border-bottom: 1px solid #f0e9e3;">
-          <strong style="color: #6b7280;">Operating Hours:</strong>
-          <span style="color: #2d3436; font-weight: 500; float: right;">9:00 AM - 8:00 PM</span>
-        </div>
-        <div style="margin: 10px 0; padding: 8px 0;">
-          <strong style="color: #6b7280;">Day Passes:</strong>
-          <span style="color: #2d3436; font-weight: 500; float: right;">${dayPassCount} ${dayPassCount === 1 ? "passenger" : "passengers"}</span>
-        </div>
-      </div>
-
-      <!-- Passengers List -->
-      <div style="margin: 30px 0;">
-        <h2 style="color: #0A4D5C; margin-bottom: 15px;">👥 Passengers</h2>
-        ${passengers
-          .map(
-            (passenger: any, index: number) => `
-          <div style="background-color: #f5f5f5; border-radius: 8px; padding: 15px; margin: 10px 0; display: flex; align-items: center; gap: 12px;">
-            <span style="display: inline-block; background-color: #D97843; color: #ffffff; padding: 6px 14px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase;">${passenger.type || 'Adult'}</span>
-            <span style="color: #0A4D5C; font-weight: 500; font-size: 16px;">${passenger.name || passenger.fullName || `Passenger ${index + 1}`}</span>
-          </div>
-        `,
-          )
-          .join("")}
-      </div>
-
-      <!-- Order Summary -->
-      <div style="background-color: #fff4ed; padding: 20px; border-radius: 8px; margin: 25px 0;">
-        <h3 style="color: #0A4D5C; margin: 0 0 15px 0;">💰 Order Summary</h3>
-        <div style="margin: 10px 0;">
-          <span>Day Pass (${dayPassCount} ${dayPassCount === 1 ? "passenger" : "passengers"})</span>
-          <span style="float: right;">€${totalPrice.toFixed(2)}</span>
-        </div>
-        <div style="border-top: 2px solid #D97843; padding-top: 15px; margin-top: 15px; font-size: 20px; font-weight: 700; color: #0A4D5C;">
-          <span>Total Paid</span>
-          <span style="float: right;">€${totalPrice.toFixed(2)}</span>
-        </div>
-      </div>
-
-      <!-- Instructions -->
-      <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 25px 0;">
-        <h3 style="margin: 0 0 15px 0; font-size: 18px; color: #0A4D5C;">📱 How to Use Your Pass</h3>
-        <ul style="margin: 0; padding-left: 20px;">
-          <li style="margin: 8px 0; line-height: 1.6;"><strong>Show QR Code:</strong> Present your QR code to the driver when boarding any vehicle</li>
-          <li style="margin: 8px 0; line-height: 1.6;"><strong>Unlimited Rides:</strong> Use your pass for unlimited hop-on/hop-off rides until 8:00 PM</li>
-          <li style="margin: 8px 0; line-height: 1.6;"><strong>Regular Service:</strong> New vehicles depart every 10-15 minutes from all major attractions</li>
-          <li style="margin: 8px 0; line-height: 1.6;"><strong>Small Vehicles:</strong> Guaranteed seating in groups of 2-6 passengers</li>
-          <li style="margin: 8px 0; line-height: 1.6;"><strong>Flexible Schedule:</strong> Spend as much time as you want at each attraction</li>
-        </ul>
-      </div>
-
-      <p style="margin-top: 30px;">If you have any questions, feel free to reach out to us via WhatsApp or email.</p>
-      
-      <p style="margin-top: 20px;">Safe travels and enjoy Sintra!</p>
-      <p style="margin: 5px 0;"><strong>The Go Sintra Team</strong></p>
-    </div>
-
-    <!-- Footer -->
-    <div style="background-color: #0A4D5C; color: #ffffff; padding: 30px; text-align: center;">
-      <p style="margin: 5px 0; font-size: 14px;"><strong>Go Sintra</strong></p>
-      <p style="margin: 5px 0; font-size: 14px;">Premium Hop-On/Hop-Off Service</p>
-      <p style="margin-top: 15px; font-size: 14px;">
-        📧 <a href="mailto:info@gosintra.com" style="color: #D97843; text-decoration: none;">info@gosintra.com</a> | 
-        📱 WhatsApp: +351 932 967 279
-      </p>
-      <p style="margin-top: 15px; font-size: 12px; color: #f0e9e3;">
-        Operating Daily: 9:00 AM - 8:00 PM | Sintra, Portugal
-      </p>
-    </div>
-  </div>
-</body>
-</html>
-  `.trim();
-}
+// Email template is now in ./email_template.tsx
 
 // Health check
 app.get("/make-server-3bd0ade8/health", (c) => {

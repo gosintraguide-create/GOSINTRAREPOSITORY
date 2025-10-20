@@ -71,16 +71,40 @@ export function generateBookingConfirmationEmail(data: BookingEmailData): string
       margin: 0 auto;
       background-color: #ffffff;
     }
+    .ticket-page {
+      page-break-after: always;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .ticket-page:last-child {
+      page-break-after: auto;
+    }
+    @media print {
+      .ticket-page {
+        page-break-after: always;
+        min-height: 100vh;
+      }
+      .ticket-page:last-child {
+        page-break-after: auto;
+      }
+    }
     .header {
       background: linear-gradient(135deg, #0A4D5C 0%, #0d5f70 100%);
       padding: 40px 20px;
       text-align: center;
+      border-bottom: 4px solid #D97843;
     }
     .header h1 {
       margin: 0;
       color: #ffffff;
       font-size: 28px;
       font-weight: 700;
+    }
+    .header .tagline {
+      margin: 10px 0 0 0;
+      color: #f0e9e3;
+      font-size: 16px;
     }
     .content {
       padding: 40px 30px;
@@ -123,35 +147,6 @@ export function generateBookingConfirmationEmail(data: BookingEmailData): string
     .qr-section {
       margin: 30px 0;
     }
-    .qr-card {
-      background-color: #ffffff;
-      border: 2px solid #f0e9e3;
-      border-radius: 12px;
-      padding: 20px;
-      margin: 20px 0;
-      text-align: center;
-    }
-    .qr-card h3 {
-      margin: 0 0 15px 0;
-      font-size: 18px;
-      color: #0A4D5C;
-    }
-    .qr-card img {
-      max-width: 250px;
-      height: auto;
-      margin: 15px auto;
-    }
-    .passenger-type {
-      display: inline-block;
-      background-color: #D97843;
-      color: #ffffff;
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      margin-bottom: 10px;
-    }
     .instructions {
       background-color: #f5f5f5;
       padding: 20px;
@@ -191,10 +186,11 @@ export function generateBookingConfirmationEmail(data: BookingEmailData): string
       color: #0A4D5C;
     }
     .footer {
-      background-color: #0A4D5C;
+      background: linear-gradient(135deg, #0A4D5C 0%, #073844 100%);
       color: #ffffff;
       padding: 30px;
       text-align: center;
+      border-top: 4px solid #D97843;
     }
     .footer p {
       margin: 5px 0;
@@ -203,253 +199,220 @@ export function generateBookingConfirmationEmail(data: BookingEmailData): string
     .footer a {
       color: #D97843;
       text-decoration: none;
+      font-weight: 600;
     }
-    .cta-button {
+    .manage-booking {
+      background: linear-gradient(135deg, #0A4D5C 0%, #0d5f70 100%);
+      border-radius: 12px;
+      padding: 25px;
+      margin: 30px 0;
+      text-align: center;
+      border: 3px solid #D97843;
+    }
+    .manage-booking h3 {
+      margin: 0 0 10px 0;
+      font-size: 22px;
+      color: #ffffff;
+    }
+    .manage-booking p {
+      margin: 10px 0 20px 0;
+      color: #f0e9e3;
+      line-height: 1.6;
+    }
+    .manage-booking-btn {
       display: inline-block;
       background-color: #D97843;
       color: #ffffff;
-      padding: 12px 30px;
+      padding: 14px 35px;
       border-radius: 8px;
       text-decoration: none;
-      font-weight: 600;
-      margin: 20px 0;
+      font-weight: 700;
+      font-size: 16px;
+      margin: 10px 0;
+      transition: all 0.3s ease;
+    }
+    .manage-booking-benefits {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .manage-booking-benefits ul {
+      list-style: none;
+      padding: 0;
+      margin: 10px 0 0 0;
+      color: #f0e9e3;
+      font-size: 14px;
+    }
+    .manage-booking-benefits li {
+      margin: 8px 0;
+      padding-left: 20px;
+      position: relative;
+    }
+    .manage-booking-benefits li:before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #D97843;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  ${passengers.map((passenger, index) => `
+  <div class="container ticket-page">
     <!-- Header -->
     <div class="header">
-      <h1>🎉 Booking Confirmed!</h1>
+      <h1>🎉 ${index === 0 ? 'Booking Confirmed!' : 'Your Day Pass'}</h1>
+      <p class="tagline">Your adventure through Sintra awaits</p>
     </div>
 
     <!-- Content -->
     <div class="content">
+      ${index === 0 ? `
       <p class="greeting">Dear ${customerName},</p>
       
-      <p>Thank you for choosing Go Sintra! We're excited to help you discover the magic of Sintra.</p>
-      
-      <!-- Booking Details -->
-      <div class="booking-info">
-        <h2>📋 Booking Details</h2>
-        <div class="info-row">
-          <span class="info-label">Booking ID:</span>
-          <span class="info-value">${bookingId.split('_')[1]}</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Date:</span>
-          <span class="info-value">${formattedDate}</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Operating Hours:</span>
-          <span class="info-value">9:00 AM - 8:00 PM</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Day Passes:</span>
-          <span class="info-value">${dayPassCount} ${dayPassCount === 1 ? 'passenger' : 'passengers'}</span>
-        </div>
-      </div>
+      <p>Thank you for choosing Go Sintra! Your day pass for ${formattedDate} is ready.</p>
+      ` : `
+      <p class="greeting">Day Pass ${index + 1} of ${passengers.length}</p>
+      `}
 
-      <!-- Ticket Cards -->
+      <!-- Ticket Card -->
       <div class="qr-section">
-        <h2 style="color: #0A4D5C; margin-bottom: 20px;">🎫 Your Day Pass Tickets</h2>
-        <p style="margin-bottom: 20px;">Save these tickets or show them directly from this email to board any vehicle. Each passenger needs their own ticket.</p>
+        <h2 style="color: #0A4D5C; margin-bottom: 15px;">🎫 Your Day Pass</h2>
+        <p style="margin-bottom: 20px; color: #6b7280;">Show this QR code to board any vehicle</p>
         
-        ${passengers.map((passenger, index) => `
-          <div style="margin: 30px 0; position: relative;">
-            <!-- Ticket Container -->
-            <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; max-width: 650px; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-              <tr>
-                <!-- Main Ticket Section -->
-                <td style="background-color: #FFF8F0; border: 2px solid #DDD0C0; border-right: none; padding: 0; vertical-align: top; width: 70%;">
-                  <!-- Header -->
-                  <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; background-color: #D97843;">
-                    <tr>
-                      <td style="padding: 15px 20px;">
-                        <table cellpadding="0" cellspacing="0" border="0" style="width: 100%;">
-                          <tr>
-                            <td style="color: #FFF8F0; font-size: 16px; letter-spacing: 1px; font-weight: 600;">
-                              DAY PASS
-                            </td>
-                            <td style="text-align: right;">
-                              <span style="color: #FFF8F0; font-size: 13px; border: 1px solid rgba(255,248,240,0.3); padding: 6px 12px; border-radius: 4px;">
-                                ${bookingId}
-                              </span>
-                            </td>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
-                  
-                  <!-- Body -->
-                  <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; padding: 25px 20px;">
-                    <tr>
-                      <td>
-                        <!-- Passenger Info -->
-                        <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; margin-bottom: 15px;">
-                          <tr>
-                            <td style="width: 50%; padding-right: 10px;">
-                              <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">
-                                Name of Passenger
-                              </div>
-                              <div style="font-size: 15px; color: #2d3436; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">
-                                ${passenger.name}
-                              </div>
-                            </td>
-                            <td style="width: 50%; padding-left: 10px;">
-                              <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">
-                                Ticket Type
-                              </div>
-                              <div style="font-size: 15px; color: #2d3436; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">
-                                ${passenger.type}
-                              </div>
-                            </td>
-                          </tr>
-                        </table>
-                        
-                        <!-- Location Info -->
-                        <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; margin-bottom: 15px;">
-                          <tr>
-                            <td style="width: 50%; padding-right: 10px;">
-                              <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">
-                                Service Area
-                              </div>
-                              <div style="font-size: 15px; color: #2d3436; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">
-                                SINTRA
-                              </div>
-                            </td>
-                            <td style="width: 50%; padding-left: 10px;">
-                              <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">
-                                Coverage
-                              </div>
-                              <div style="font-size: 15px; color: #2d3436; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">
-                                ALL ROUTES
-                              </div>
-                            </td>
-                          </tr>
-                        </table>
-                        
-                        <!-- Date/Time Info -->
-                        <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; border-top: 1px solid #DDD0C0; padding-top: 15px; margin-top: 15px;">
-                          <tr>
-                            <td style="width: 33%; padding-right: 5px;">
-                              <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">
-                                Date
-                              </div>
-                              <div style="font-size: 14px; color: #2d3436; letter-spacing: 0.3px; font-weight: 500;">
-                                ${formattedDate}
-                              </div>
-                            </td>
-                            <td style="width: 33%; padding: 0 5px;">
-                              <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">
-                                Start Time
-                              </div>
-                              <div style="font-size: 14px; color: #2d3436; letter-spacing: 0.3px; font-weight: 500;">
-                                9:00 AM
-                              </div>
-                            </td>
-                            <td style="width: 33%; padding-left: 5px;">
-                              <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">
-                                Valid Until
-                              </div>
-                              <div style="font-size: 14px; color: #2d3436; letter-spacing: 0.3px; font-weight: 500;">
-                                8:00 PM
-                              </div>
-                            </td>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-                
-                <!-- Perforation Line -->
-                <td style="width: 2px; background: repeating-linear-gradient(to bottom, #DDD0C0 0px, #DDD0C0 6px, transparent 6px, transparent 12px); padding: 0;">
-                </td>
-                
-                <!-- Stub Section -->
-                <td style="background-color: #FFF8F0; border: 2px solid #DDD0C0; border-left: none; padding: 0; vertical-align: top; width: 30%;">
-                  <!-- Stub Header -->
-                  <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; background-color: #D97843;">
-                    <tr>
-                      <td style="padding: 15px; color: #FFF8F0; font-size: 14px; letter-spacing: 1px; font-weight: 600; text-align: center;">
-                        DAY PASS
-                      </td>
-                    </tr>
-                  </table>
-                  
-                  <!-- Stub Body -->
-                  <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; padding: 20px 15px;">
-                    <tr>
-                      <td style="text-align: center;">
-                        <!-- Passenger Name -->
-                        <div style="margin-bottom: 15px;">
-                          <div style="font-size: 10px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">
-                            Passenger
-                          </div>
-                          <div style="font-size: 13px; color: #2d3436; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">
-                            ${passenger.name.split(' ')[0]}
-                          </div>
-                        </div>
-                        
-                        <!-- Service -->
-                        <div style="margin-bottom: 15px;">
-                          <div style="font-size: 10px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">
-                            Service
-                          </div>
-                          <div style="font-size: 13px; color: #2d3436; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">
-                            SINTRA
-                          </div>
-                        </div>
-                        
-                        <!-- QR Code -->
-                        <div style="border-top: 1px solid #DDD0C0; padding-top: 15px; margin-bottom: 15px;">
-                          <div style="background-color: #ffffff; padding: 10px; display: inline-block; border-radius: 4px;">
-                            <img src="${passenger.qrCode}" alt="QR Code" style="width: 120px; height: 120px; display: block;" />
-                          </div>
-                          <div style="font-size: 9px; color: #6b7280; margin-top: 8px;">
-                            Scan to validate
-                          </div>
-                        </div>
-                        
-                        <!-- Date -->
-                        <div style="border-top: 1px solid #DDD0C0; padding-top: 12px; margin-bottom: 12px;">
-                          <div style="font-size: 10px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">
-                            Date
-                          </div>
-                          <div style="font-size: 12px; color: #2d3436; letter-spacing: 0.3px; font-weight: 500;">
-                            ${formattedDate}
-                          </div>
-                        </div>
-                        
-                        <!-- Booking ID -->
-                        <div style="font-size: 9px; color: #6b7280;">
-                          ${bookingId}
-                        </div>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-            </table>
+        <div style="margin: 30px 0;">
+          <!-- Modern Ticket Container -->
+          <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; max-width: 500px; margin: 0 auto; background: linear-gradient(135deg, #0A4D5C 0%, #0d5f70 100%); border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(10, 77, 92, 0.3);">
+            <!-- Header -->
+            <tr>
+              <td style="padding: 25px 30px; text-align: center; border-bottom: 3px solid #D97843;">
+                <table cellpadding="0" cellspacing="0" border="0" style="width: 100%;">
+                  <tr>
+                    <td style="color: #ffffff; font-size: 24px; font-weight: 700; letter-spacing: 1px;">
+                      GO SINTRA
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="color: #D97843; font-size: 14px; font-weight: 600; padding-top: 5px; letter-spacing: 0.5px;">
+                      DAY PASS
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
             
-            ${passengers.length > 1 ? `
-            <!-- Passenger Counter Badge -->
-            <div style="position: absolute; top: -10px; right: 10px; background-color: #0A4D5C; color: #ffffff; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2); border: 4px solid #ffffff;">
-              <div style="text-align: center; line-height: 1.2;">
-                <div style="font-size: 16px; font-weight: 700;">${index + 1}</div>
-                <div style="font-size: 10px;">of ${passengers.length}</div>
-              </div>
-            </div>
-            ` : ''}
-          </div>
-        `).join('')}
+            <!-- QR Code Section - Prominent -->
+            <tr>
+              <td style="background-color: #ffffff; padding: 40px 30px; text-align: center;">
+                <div style="background-color: #ffffff; padding: 15px; display: inline-block; border-radius: 12px; border: 3px solid #0A4D5C;">
+                  <img src="${passenger.qrCode}" alt="QR Code" style="width: 200px; height: 200px; display: block;" />
+                </div>
+                <div style="margin-top: 15px; color: #0A4D5C; font-size: 16px; font-weight: 600;">
+                  Scan to Board
+                </div>
+              </td>
+            </tr>
+            
+            <!-- Passenger Info Section -->
+            <tr>
+              <td style="background-color: #fff4ed; padding: 30px;">
+                <!-- Passenger Name -->
+                <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; margin-bottom: 20px;">
+                  <tr>
+                    <td style="text-align: center;">
+                      <div style="font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">
+                        Passenger Name
+                      </div>
+                      <div style="font-size: 22px; color: #0A4D5C; font-weight: 700; letter-spacing: 0.5px;">
+                        ${passenger.name}
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+                
+                <!-- Details Grid -->
+                <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; border-top: 2px solid #D97843; padding-top: 20px;">
+                  <tr>
+                    <td style="width: 50%; padding: 0 10px 15px 0; vertical-align: top;">
+                      <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
+                        Date
+                      </div>
+                      <div style="font-size: 15px; color: #2d3436; font-weight: 600;">
+                        ${new Date(selectedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </div>
+                    </td>
+                    <td style="width: 50%; padding: 0 0 15px 10px; vertical-align: top;">
+                      <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
+                        Type
+                      </div>
+                      <div style="font-size: 15px; color: #2d3436; font-weight: 600;">
+                        ${passenger.type}
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="width: 50%; padding: 0 10px 0 0; vertical-align: top;">
+                      <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
+                        Valid Hours
+                      </div>
+                      <div style="font-size: 15px; color: #2d3436; font-weight: 600;">
+                        9:00 AM - 8:00 PM
+                      </div>
+                    </td>
+                    <td style="width: 50%; padding: 0 0 0 10px; vertical-align: top;">
+                      <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
+                        Booking ID
+                      </div>
+                      <div style="font-size: 13px; color: #2d3436; font-weight: 600; font-family: monospace;">
+                        ${bookingId.split('_')[1]}
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            
+            <!-- Footer -->
+            <tr>
+              <td style="background: linear-gradient(135deg, #0A4D5C 0%, #073844 100%); padding: 20px 30px; text-align: center;">
+                <div style="color: #f0e9e3; font-size: 13px; margin-bottom: 5px;">
+                  Unlimited Rides • Professional Guides
+                </div>
+                <div style="color: #D97843; font-size: 12px; font-weight: 600;">
+                  Sintra, Portugal
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
       </div>
 
-      <!-- Order Summary -->
+      ${index === 0 ? `
+      <!-- Manage Booking Section -->
+      <div class="manage-booking">
+        <h3>🎯 Manage Your Booking</h3>
+        <p>Request pickups, get route tips, and access exclusive benefits</p>
+        <a href="https://gosintra.com/manage-booking?id=${bookingId}" class="manage-booking-btn">
+          Manage My Booking →
+        </a>
+      </div>
+      ` : ''}
+
+      <!-- Instructions -->
+      <div class="instructions">
+        <h3>📱 How It Works</h3>
+        <ul>
+          <li><strong>Show Your QR Code</strong> to board at any stop</li>
+          <li><strong>Unlimited Rides</strong> from 9 AM to 8 PM with professional guides</li>
+          <li><strong>Vehicles Every 10-15 Minutes</strong> at all major attractions</li>
+        </ul>
+      </div>
+
+      ${index === 0 ? `
+      <!-- Order Summary (only on first page) -->
       <div class="summary">
-        <h3 style="color: #0A4D5C; margin: 0 0 15px 0;">���� Order Summary</h3>
+        <h3 style="color: #0A4D5C; margin: 0 0 15px 0;">💰 Order Summary</h3>
         <div class="summary-row">
           <span>Day Pass (${dayPassCount} ${dayPassCount === 1 ? 'passenger' : 'passengers'})</span>
           <span>€${(totalPrice - (guidedTour?.price || 0) - (attractions?.reduce((sum, a) => sum + a.price, 0) || 0)).toFixed(2)}</span>
@@ -471,44 +434,39 @@ export function generateBookingConfirmationEmail(data: BookingEmailData): string
           <span>€${totalPrice.toFixed(2)}</span>
         </div>
       </div>
+      ` : ''}
 
-      <!-- Instructions -->
-      <div class="instructions">
-        <h3>📱 How to Use Your Pass</h3>
-        <ul>
-          <li><strong>Show QR Code:</strong> Present your QR code to the driver when boarding any vehicle</li>
-          <li><strong>Unlimited Rides:</strong> Use your pass for unlimited hop-on/hop-off rides until 8 PM</li>
-          <li><strong>Regular Service:</strong> New vehicles depart every 10-15 minutes from all major attractions</li>
-          <li><strong>Small Vehicles:</strong> Guaranteed seating in groups of 2-6 passengers</li>
-          <li><strong>Flexible Schedule:</strong> Spend as much time as you want at each attraction</li>
-        </ul>
-      </div>
-
-      <!-- Next Steps -->
-      <div style="text-align: center; margin: 30px 0;">
-        <p style="font-size: 16px; margin-bottom: 15px;">Need help planning your visit?</p>
-        <a href="https://gosintra.com/attractions" class="cta-button">View Attraction Guide</a>
-      </div>
-
+      ${index === 0 ? `
       <p style="margin-top: 30px;">If you have any questions, feel free to reach out to us via WhatsApp or email.</p>
       
       <p style="margin-top: 20px;">Safe travels and enjoy Sintra!</p>
       <p style="margin: 5px 0;"><strong>The Go Sintra Team</strong></p>
+      ` : `
+      <p style="margin-top: 30px; text-align: center;">
+        <strong>Questions?</strong> Contact us via WhatsApp or email.
+      </p>
+      `}
     </div>
 
     <!-- Footer -->
     <div class="footer">
-      <p><strong>Go Sintra</strong></p>
-      <p>Premium Hop-On/Hop-Off Service</p>
-      <p style="margin-top: 15px;">
-        📧 <a href="mailto:info@gosintra.com">info@gosintra.com</a> | 
-        📱 WhatsApp: +351 932 967 279
+      <p style="font-size: 20px; margin-bottom: 10px;"><strong>🎫 Go Sintra</strong></p>
+      <p style="color: #D97843; font-weight: 600;">Premium Hop-On/Hop-Off Day Pass Service</p>
+      <p style="margin-top: 20px;">
+        📧 <a href="mailto:info@gosintra.com">info@gosintra.com</a>
       </p>
-      <p style="margin-top: 15px; font-size: 12px; color: #f0e9e3;">
+      <p style="margin-top: 5px;">
+        📱 WhatsApp: <a href="https://wa.me/351932967279">+351 932 967 279</a>
+      </p>
+      <p style="margin-top: 20px; font-size: 12px; color: #f0e9e3;">
         Operating Daily: 9:00 AM - 8:00 PM | Sintra, Portugal
+      </p>
+      <p style="margin-top: 10px; font-size: 11px; color: #b0a89e;">
+        Driven by professional local guides
       </p>
     </div>
   </div>
+  `).join('')}
 </body>
 </html>
   `.trim();
@@ -541,20 +499,18 @@ BOOKING CONFIRMED - GO SINTRA
 
 Dear ${customerName},
 
-Thank you for choosing Go Sintra! We're excited to help you discover the magic of Sintra.
-
-BOOKING DETAILS
-================
-Booking ID: ${bookingId.split('_')[1]}
-Date: ${formattedDate}
-Operating Hours: 9:00 AM - 8:00 PM
-Day Passes: ${dayPassCount} ${dayPassCount === 1 ? 'passenger' : 'passengers'}
+Thank you for choosing Go Sintra! Your day pass for ${formattedDate} is ready.
 
 YOUR DIGITAL PASSES
 ===================
 ${passengers.map((p, i) => `${i + 1}. ${p.name} (${p.type})`).join('\n')}
 
-(QR codes are attached to this email. Please save them or show them directly from this email to board.)
+Show the QR codes (attached) to board any vehicle.
+
+MANAGE YOUR BOOKING
+===================
+Request pickups, get route tips, and access exclusive benefits:
+https://gosintra.com/manage-booking?id=${bookingId}
 
 ORDER SUMMARY
 =============
@@ -563,13 +519,11 @@ ${guidedTour ? `Guided Tour (${guidedTour.type}): €${guidedTour.price.toFixed(
 ---
 Total Paid: €${totalPrice.toFixed(2)}
 
-HOW TO USE YOUR PASS
-====================
-1. Show your QR code to the driver when boarding
-2. Enjoy unlimited hop-on/hop-off rides until 8 PM
-3. New vehicles depart every 10-15 minutes
-4. Guaranteed seating in small groups of 2-6
-5. Spend as much time as you want at each attraction
+HOW IT WORKS
+============
+1. Show your QR code to board at any stop
+2. Unlimited rides from 9 AM to 8 PM with professional guides
+3. Vehicles every 10-15 minutes at all major attractions
 
 Need help? Contact us:
 Email: info@gosintra.com

@@ -5,24 +5,27 @@ import { Card } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Input } from "./ui/input";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
-import { loadContent, type WebsiteContent, DEFAULT_CONTENT } from "../lib/contentManager";
+import { loadContentWithLanguage, type WebsiteContent, DEFAULT_CONTENT } from "../lib/contentManager";
+import { getUITranslation } from "../lib/translations";
 import { searchArticles, type BlogArticle } from "../lib/blogManager";
 import { motion } from "motion/react";
 
 interface AttractionsPageProps {
   onNavigate: (page: string, data?: any) => void;
+  language?: string;
 }
 
-export function AttractionsPage({ onNavigate }: AttractionsPageProps) {
+export function AttractionsPage({ onNavigate, language = "en" }: AttractionsPageProps) {
   const [content, setContent] = useState<WebsiteContent>(DEFAULT_CONTENT);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<BlogArticle[]>([]);
   const [showResults, setShowResults] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+  const t = getUITranslation(language);
 
   useEffect(() => {
-    setContent(loadContent());
-  }, []);
+    setContent(loadContentWithLanguage(language));
+  }, [language]);
 
   useEffect(() => {
     if (searchQuery.trim().length > 1) {
@@ -181,7 +184,7 @@ export function AttractionsPage({ onNavigate }: AttractionsPageProps) {
                         {attraction.duration}
                       </div>
                       <div className="flex items-center gap-2 text-primary">
-                        <span>Learn More</span>
+                        <span>{t.learnMore}</span>
                         <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-2" />
                       </div>
                     </div>

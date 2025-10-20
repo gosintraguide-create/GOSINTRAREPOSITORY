@@ -1,4 +1,4 @@
-import { Menu, X } from "lucide-react";
+import { Menu, X, Ticket } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { LanguageSelector } from "./LanguageSelector";
@@ -66,6 +66,7 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
                 className="ml-2 bg-accent hover:bg-accent/90 shadow-lg hover:shadow-xl transition-all hover:scale-105"
                 onClick={() => onNavigate("buy-ticket")}
               >
+                <Ticket className="mr-2 h-5 w-5" />
                 {t.buyTicket}
               </Button>
             </nav>
@@ -94,6 +95,7 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
                 size="lg"
                 className="w-full bg-accent hover:bg-accent/90 mb-4"
               >
+                <Ticket className="mr-2 h-5 w-5" />
                 {t.buyTicket}
               </Button>
               

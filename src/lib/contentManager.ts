@@ -46,6 +46,193 @@ export interface WebsiteContent {
     buyTicket: { title: string; description: string; keywords: string };
     about: { title: string; description: string; keywords: string };
   };
+  blog: {
+    pageTitle: string;
+    pageSubtitle: string;
+    searchPlaceholder: string;
+    filterBy: string;
+    allArticles: string;
+    noArticlesFound: string;
+    tryDifferentSearch: string;
+    noArticlesInCategory: string;
+    articlesFound: string;
+    article: string;
+    articles: string;
+    readGuide: string;
+    minRead: string;
+    browseTopics: string;
+    exploreByCategory: string;
+    exploreCategoryDescription: string;
+    guide: string;
+    guides: string;
+    ctaTitle: string;
+    ctaSubtitle: string;
+    ctaButton: string;
+    backToBlog: string;
+    articleNotFound: string;
+    share: string;
+    updated: string;
+    relatedArticles: string;
+    moreArticles: string;
+    categories: {
+      planning: string;
+      "getting-there": string;
+      attractions: string;
+      tips: string;
+      history: string;
+    };
+    categoryDescriptions: {
+      planning: string;
+      "getting-there": string;
+      attractions: string;
+      tips: string;
+      history: string;
+    };
+  };
+  buyTicket?: {
+    hero: {
+      title: string;
+    };
+    steps: {
+      step1Description: string;
+      step2Description: string;
+      step3Description: string;
+      step4Description: string;
+    };
+    dateSelection: {
+      planYourVisit: string;
+      planYourVisitDescription: string;
+      selectDate: string;
+      pickDate: string;
+      preferredStartTime: string;
+      selectTime: string;
+      checkingAvailability: string;
+      numberOfGuests: string;
+      numberOfPasses: string;
+      passLabel: string;
+      passesLabel: string;
+      guest: string;
+      guests: string;
+      tourType: string;
+      standardTour: string;
+      standardTourDescription: string;
+      guidedTour: string;
+      guidedTourDescription: string;
+      guidedCommentaryIncluded: string;
+      guidedCommentaryDescription: string;
+      continueButton: string;
+      passValidFullDay: string;
+      soldOut: string;
+      limited: string;
+      available: string;
+      soldOutForTime: string;
+      limitedAvailability: string;
+      goodAvailability: string;
+      preferredPickupSpot: string;
+      pickupPlaceholder: string;
+      pickupHelpText: string;
+      vehicleDispatchSmall: string; // "Perfect! We'll dispatch an appropriate vehicle for your group of {quantity}"
+      vehicleDispatchLarge: string; // "Large group! You'll need {vehicles} vehicles coordinated to arrive together."
+      vehicles: string;
+      dayPassPriceSummary: string; // "Day Pass"
+      dayPassWithGuided: string; // "(includes guided commentary)"
+      forGuests: string; // "for {quantity} {guest/guests}"
+    };
+    step2: {
+      title: string; // "Add Attraction Tickets?"
+      description: string;
+      descriptionMultiple: string; // "Prices shown for X guests"
+      notAvailableMessage: string;
+      comingSoonBadge: string;
+      comingSoonMessage: string;
+      comingSoonTip: string;
+      eachLabel: string; // "each"
+      tipTitle: string;
+      tipMessage: string; // "You'll receive digital tickets via email along with your day pass QR code(s)"
+      backButton: string;
+      continueButton: string;
+    };
+    step3: {
+      title: string; // "Your Information"
+      fullName: string;
+      fullNamePlaceholder: string;
+      email: string;
+      emailPlaceholder: string;
+      confirmEmail: string;
+      confirmEmailPlaceholder: string;
+      qrCodeMessage: string; // "Your QR code will be sent here"
+      emailsDontMatch: string;
+      backButton: string;
+      continueButton: string;
+    };
+    step4: {
+      orderSummary: string;
+      paymentDetails: string;
+      startingAt: string;
+      dayPassWithQuantity: string; // "Day Pass (×{quantity})"
+      plusGuided: string; // "+ Guided"
+      attractionTickets: string;
+      total: string;
+      benefit1: string; // "Unlimited hop-on/hop-off until 8:00 PM"
+      benefit2: string; // "Guaranteed seating in small vehicles"
+      benefit3: string; // "Flexible - use anytime during operating hours"
+      benefit4Single: string; // "QR code sent via email"
+      benefit4Multiple: string; // "{quantity} QR codes sent via email"
+      benefit5: string; // "Guided commentary included"
+      paymentInitFailed: string;
+      preparingPayment: string;
+      retry: string;
+      goBack: string;
+      backButton: string;
+    };
+    pickupLocations: {
+      sintraTrainStation: string;
+      sintraTownCenter: string;
+      penaPalace: string;
+      quintaRegaleira: string;
+      moorishCastle: string;
+      monserratePalace: string;
+      sintraPalace: string;
+      other: string;
+    };
+    timeSlots: {
+      guidedTourLabel: string; // "Guided Tour"
+    };
+    passengersSelection: {
+      yourInformation: string;
+      fullName: string;
+      fullNamePlaceholder: string;
+      email: string;
+      emailPlaceholder: string;
+      phoneNumber: string;
+      phoneNumberPlaceholder: string;
+      specialRequests: string;
+      specialRequestsPlaceholder: string;
+      backButton: string;
+      continueButton: string;
+    };
+    payment: {
+      reviewAndPay: string;
+      orderSummary: string;
+      dayPass: string;
+      dayPasses: string;
+      passes: string;
+      tourType: string;
+      guidedTour: string;
+      attractionTickets: string;
+      subtotal: string;
+      total: string;
+      cardPaymentDetails: string;
+      backButton: string;
+      payNow: string;
+      processingPayment: string;
+    };
+    messages: {
+      bookingConfirmedEmail: string;
+      bookingConfirmed: string;
+      bookingFailed: string;
+    };
+  };
   featureFlags?: {
     enableAttractionTickets?: boolean;
   };
@@ -231,6 +418,49 @@ export const DEFAULT_CONTENT: WebsiteContent = {
       keywords: "about Go Sintra, Sintra tour company, premium Sintra tours, small group Sintra",
     },
   },
+  blog: {
+    pageTitle: "Your Ultimate Sintra Travel Guide",
+    pageSubtitle: "Expert tips, insider secrets, and everything you need for a magical Sintra adventure ✨",
+    searchPlaceholder: "Search for guides, tips, and itineraries...",
+    filterBy: "Filter by:",
+    allArticles: "All Articles",
+    noArticlesFound: "No articles found",
+    tryDifferentSearch: "Try a different search term",
+    noArticlesInCategory: "No articles available in this category",
+    articlesFound: "Articles Found",
+    article: "Article",
+    articles: "Articles",
+    readGuide: "Read Guide",
+    minRead: "min read",
+    browseTopics: "Browse Topics",
+    exploreByCategory: "Explore by Category",
+    exploreCategoryDescription: "Find exactly what you're looking for—organized by topic!",
+    guide: "guide",
+    guides: "guides",
+    ctaTitle: "Ready to Start Your Adventure?",
+    ctaSubtitle: "Now that you're armed with insider knowledge, book your flexible day pass with professional driver-guides! 🎉",
+    ctaButton: "Book Your Day Pass",
+    backToBlog: "Back to Blog",
+    articleNotFound: "Article not found",
+    share: "Share",
+    updated: "Updated",
+    relatedArticles: "Related Articles",
+    moreArticles: "More Articles",
+    categories: {
+      planning: "Planning Your Visit",
+      "getting-there": "Getting There",
+      attractions: "Attractions & Sights",
+      tips: "Travel Tips",
+      history: "History & Culture",
+    },
+    categoryDescriptions: {
+      planning: "Everything you need to know to plan the perfect Sintra day trip",
+      "getting-there": "Transportation guides and tips for reaching Sintra",
+      attractions: "In-depth guides to Sintra's palaces, castles, and gardens",
+      tips: "Insider tips and local advice for exploring Sintra",
+      history: "Learn about Sintra's rich history and cultural heritage",
+    },
+  },
   featureFlags: {
     enableAttractionTickets: false,
   },
@@ -283,6 +513,7 @@ export function loadContent(): WebsiteContent {
         about: { ...DEFAULT_CONTENT.about, ...parsed.about },
         attractions: { ...DEFAULT_CONTENT.attractions, ...parsed.attractions },
         seo: { ...DEFAULT_CONTENT.seo, ...parsed.seo },
+        blog: { ...DEFAULT_CONTENT.blog, ...parsed.blog },
         featureFlags: { ...DEFAULT_CONTENT.featureFlags, ...parsed.featureFlags },
       };
     } catch {
@@ -311,6 +542,7 @@ export function loadContentWithLanguage(languageCode: string = 'en'): WebsiteCon
         about: { ...translation.about, ...parsed.about },
         attractions: { ...translation.attractions, ...parsed.attractions },
         seo: { ...translation.seo, ...parsed.seo },
+        blog: { ...translation.blog, ...parsed.blog },
         featureFlags: { ...translation.featureFlags, ...parsed.featureFlags },
       };
     } catch {
@@ -340,6 +572,7 @@ export async function syncContentFromDatabase(): Promise<WebsiteContent> {
           about: { ...DEFAULT_CONTENT.about, ...content.about },
           attractions: { ...DEFAULT_CONTENT.attractions, ...content.attractions },
           seo: { ...DEFAULT_CONTENT.seo, ...content.seo },
+          blog: { ...DEFAULT_CONTENT.blog, ...content.blog },
           featureFlags: { ...DEFAULT_CONTENT.featureFlags, ...content.featureFlags },
         };
       } else {
@@ -377,6 +610,7 @@ export async function syncContentFromDatabaseWithLanguage(languageCode: string =
           about: { ...translation.about, ...content.about },
           attractions: { ...translation.attractions, ...content.attractions },
           seo: { ...translation.seo, ...content.seo },
+          blog: { ...translation.blog, ...content.blog },
           featureFlags: { ...translation.featureFlags, ...content.featureFlags },
         };
       }

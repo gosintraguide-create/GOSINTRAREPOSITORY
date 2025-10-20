@@ -3,6 +3,12 @@ import { useEffect, useState } from "react";
 import { loadContent, type WebsiteContent, DEFAULT_CONTENT } from "../lib/contentManager";
 import Frame from "../imports/Frame";
 import { getUITranslation } from "../lib/translations";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 interface FooterProps {
   onNavigate?: (page: string) => void;
@@ -93,6 +99,19 @@ export function Footer({ onNavigate, language = "en" }: FooterProps) {
             >
               Terms
             </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="text-muted-foreground hover:text-accent transition-colors text-sm">
+                Reserved Area
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => onNavigate?.("admin")}>
+                  Admin Portal
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onNavigate?.("operations")}>
+                  Driver Portal
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>

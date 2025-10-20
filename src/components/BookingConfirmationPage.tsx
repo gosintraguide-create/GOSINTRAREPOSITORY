@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { CheckCircle, Download, Mail, Calendar, Users, ArrowRight, Printer, AlertCircle, FileDown } from "lucide-react";
+import { CheckCircle, Download, Mail, Calendar, Users, ArrowRight, Printer, AlertCircle, FileDown, Ticket } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Badge } from "./ui/badge";
@@ -74,7 +74,8 @@ export function BookingConfirmationPage({ onNavigate, booking }: BookingConfirma
       <div className="min-h-screen bg-background py-20">
         <div className="container px-4 text-center">
           <p>No booking found. Please make a booking first.</p>
-          <Button onClick={() => onNavigate("buy-ticket")} className="mt-4">
+          <Button onClick={() => onNavigate("buy-ticket")} className="mt-4 bg-accent hover:bg-accent/90">
+            <Ticket className="mr-2 h-5 w-5" />
             Book Now
           </Button>
         </div>

@@ -18,6 +18,7 @@ import { Calendar as CalendarComponent } from "./ui/calendar";
 import { Calendar as CalendarIcon, Calendar, Users, MapPin, Phone, Mail, CheckCircle, Loader2, Check, ChevronLeft, ChevronRight, RefreshCw, Car, ArrowRight, User, CreditCard, Ticket, Receipt, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { StripePaymentForm } from "./StripePaymentForm";
+import { getTranslation } from "../lib/translations";
 
 // FEATURE FLAG: Set to false to disable attraction ticket sales
 // To re-enable in the future, simply change this to true
@@ -67,18 +68,19 @@ const TIME_SLOTS = [
   { value: "16:00", label: "4:00 PM" },
 ];
 
-const PICKUP_LOCATIONS = [
-  { value: "sintra-train-station", label: "Sintra Train Station" },
-  { value: "sintra-town-center", label: "Sintra Town Center" },
-  { value: "pena-palace", label: "Pena Palace" },
-  { value: "quinta-regaleira", label: "Quinta da Regaleira" },
-  { value: "moorish-castle", label: "Moorish Castle" },
-  { value: "monserrate-palace", label: "Monserrate Palace" },
-  { value: "sintra-palace", label: "Sintra National Palace" },
-  { value: "other", label: "Other / Will Decide Later" },
-];
-
 export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTicketPageProps) {
+  const t = getTranslation(language);
+  
+  const PICKUP_LOCATIONS = [
+    { value: "sintra-train-station", label: t.buyTicket.pickupLocations.sintraTrainStation },
+    { value: "sintra-town-center", label: t.buyTicket.pickupLocations.sintraTownCenter },
+    { value: "pena-palace", label: t.buyTicket.pickupLocations.penaPalace },
+    { value: "quinta-regaleira", label: t.buyTicket.pickupLocations.quintaRegaleira },
+    { value: "moorish-castle", label: t.buyTicket.pickupLocations.moorishCastle },
+    { value: "monserrate-palace", label: t.buyTicket.pickupLocations.monserratePalace },
+    { value: "sintra-palace", label: t.buyTicket.pickupLocations.sintraPalace },
+    { value: "other", label: t.buyTicket.pickupLocations.other },
+  ];
   const [currentStep, setCurrentStep] = useState(1);
   const [bookingComplete, setBookingComplete] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -370,7 +372,7 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
         
         <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
           <h1 className="mb-3 bg-gradient-to-r from-primary via-primary/90 to-accent bg-clip-text text-foreground">
-            Book Your Day Pass
+            {t.buyTicket.hero.title}
           </h1>
           <div className="mx-auto mb-6 h-1 w-20 rounded-full bg-accent" />
           
@@ -396,10 +398,10 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
           
           <div className="mt-4">
             <p className="text-muted-foreground">
-              {currentStep === 1 && "Choose your date and preferred start time"}
-              {currentStep === 2 && "Add attraction tickets (optional)"}
-              {currentStep === 3 && "Enter your information"}
-              {currentStep === 4 && "Complete your booking"}
+              {currentStep === 1 && t.buyTicket.steps.step1Description}
+              {currentStep === 2 && t.buyTicket.steps.step2Description}
+              {currentStep === 3 && t.buyTicket.steps.step3Description}
+              {currentStep === 4 && t.buyTicket.steps.step4Description}
             </p>
           </div>
         </div>
@@ -417,18 +419,18 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                       <CalendarIcon className="h-5 w-5 text-primary" />
                     </div>
-                    <h2 className="text-foreground">Plan your visit</h2>
+                    <h2 className="text-foreground">{t.buyTicket.dateSelection.planYourVisit}</h2>
                   </div>
                   <div className="h-1 w-16 rounded-full bg-accent" />
                   <p className="mt-4 text-muted-foreground">
-                    Your day pass gives you unlimited hop-on/hop-off access from your start time until 8:00 PM. Start times help us manage capacity.
+                    {t.buyTicket.dateSelection.planYourVisitDescription}
                   </p>
                 </div>
 
                 <div className="space-y-6">
                   <div className="grid gap-6 sm:grid-cols-2">
                     <div>
-                      <Label htmlFor="date" className="text-foreground">Select Date</Label>
+                      <Label htmlFor="date" className="text-foreground">{t.buyTicket.dateSelection.selectDate}</Label>
                       <Popover>
                         <PopoverTrigger asChild>
                           <Button
@@ -438,7 +440,7 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                             }`}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
-                            {formData.date ? format(new Date(formData.date), "PPP") : "Pick a date"}
+                            {formData.date ? format(new Date(formData.date), "PPP") : t.buyTicket.dateSelection.pickDate}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
@@ -458,11 +460,11 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                     </div>
 
                     <div>
-                      <Label htmlFor="timeSlot" className="text-foreground">Preferred Start Time</Label>
+                      <Label htmlFor="timeSlot" className="text-foreground">{t.buyTicket.dateSelection.preferredStartTime}</Label>
                       {loadingAvailability && (
                         <p className="mt-1 text-xs text-muted-foreground flex items-center gap-1">
                           <Loader2 className="h-3 w-3 animate-spin" />
-                          Checking availability...
+                          {t.buyTicket.dateSelection.checkingAvailability}
                         </p>
                       )}
                       <Select
@@ -473,7 +475,7 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                         disabled={!formData.date || loadingAvailability}
                       >
                         <SelectTrigger className="mt-2 border-border">
-                          <SelectValue placeholder="Select time" />
+                          <SelectValue placeholder={t.buyTicket.dateSelection.selectTime} />
                         </SelectTrigger>
                         <SelectContent>
                           {TIME_SLOTS.map((slot) => {
@@ -495,12 +497,12 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                                       isLowAvailability ? 'text-accent' : 
                                       'text-muted-foreground'
                                     }`}>
-                                      {isSoldOut ? 'Sold Out' : isLowAvailability ? 'Limited' : 'Available'}
+                                      {isSoldOut ? t.buyTicket.dateSelection.soldOut : isLowAvailability ? t.buyTicket.dateSelection.limited : t.buyTicket.dateSelection.available}
                                     </span>
                                   )}
                                   {slot.isGuided && (
                                     <span className="text-xs text-accent">
-                                      Guided Tour
+                                      {t.buyTicket.timeSlots.guidedTourLabel}
                                     </span>
                                   )}
                                 </div>
@@ -509,29 +511,29 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                           })}
                         </SelectContent>
                       </Select>
-                      <p className="mt-1 text-muted-foreground">Pass valid for a full day</p>
+                      <p className="mt-1 text-muted-foreground">{t.buyTicket.dateSelection.passValidFullDay}</p>
                       {formData.date && formData.timeSlot && (
                         <p className={`mt-1 ${
                           getAvailability(formData.date, formData.timeSlot) === 0 ? 'text-destructive' :
                           getAvailability(formData.date, formData.timeSlot) < 10 ? 'text-accent' :
                           'text-primary'
                         }`}>
-                          {getAvailability(formData.date, formData.timeSlot) === 0 ? 'Sold out for this time' :
-                           getAvailability(formData.date, formData.timeSlot) < 10 ? 'Limited availability' :
-                           'Good availability'}
+                          {getAvailability(formData.date, formData.timeSlot) === 0 ? t.buyTicket.dateSelection.soldOutForTime :
+                           getAvailability(formData.date, formData.timeSlot) < 10 ? t.buyTicket.dateSelection.limitedAvailability :
+                           t.buyTicket.dateSelection.goodAvailability}
                         </p>
                       )}
                     </div>
                   </div>
 
                   <div>
-                    <Label htmlFor="pickupLocation" className="text-foreground">Preferred First Pickup Spot</Label>
+                    <Label htmlFor="pickupLocation" className="text-foreground">{t.buyTicket.dateSelection.preferredPickupSpot}</Label>
                     <Select
                       value={formData.pickupLocation}
                       onValueChange={(value) => handleInputChange("pickupLocation", value)}
                     >
                       <SelectTrigger className="mt-2 border-border">
-                        <SelectValue placeholder="Where do you want to start?" />
+                        <SelectValue placeholder={t.buyTicket.dateSelection.pickupPlaceholder} />
                       </SelectTrigger>
                       <SelectContent>
                         {PICKUP_LOCATIONS.map((location) => (
@@ -541,11 +543,11 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                         ))}
                       </SelectContent>
                     </Select>
-                    <p className="mt-1 text-muted-foreground">This helps us coordinate vehicles, but you can hop on anywhere</p>
+                    <p className="mt-1 text-muted-foreground">{t.buyTicket.dateSelection.pickupHelpText}</p>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="quantity" className="text-foreground">Number of Guests</Label>
+                    <Label htmlFor="quantity" className="text-foreground">{t.buyTicket.dateSelection.numberOfGuests}</Label>
                     <div className="flex items-center gap-3">
                       <Button
                         type="button"
@@ -580,7 +582,7 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                         <div className="flex items-start gap-2 text-muted-foreground">
                           <Car className="h-4 w-4 mt-0.5 flex-shrink-0 text-primary" />
                           <p>
-                            Perfect! We'll dispatch an appropriate vehicle for your group of {formData.quantity}
+                            {t.buyTicket.dateSelection.vehicleDispatchSmall} {formData.quantity}
                           </p>
                         </div>
                       </div>
@@ -589,7 +591,7 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                         <div className="flex items-start gap-2 text-muted-foreground">
                           <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0 text-accent" />
                           <p>
-                            Large group! You'll need <strong className="text-foreground">{Math.ceil(formData.quantity / 6)} vehicles</strong> coordinated to arrive together.
+                            {t.buyTicket.dateSelection.vehicleDispatchLarge} <strong className="text-foreground">{Math.ceil(formData.quantity / 6)} {t.buyTicket.dateSelection.vehicles}</strong> {t.buyTicket.dateSelection.coordinatedToArrive}
                           </p>
                         </div>
                       </div>
@@ -603,10 +605,10 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                         <Check className="h-5 w-5 mt-0.5 flex-shrink-0 text-primary" />
                         <div className="flex-1">
                           <p className="text-foreground">
-                            Guided Commentary Included
+                            {t.buyTicket.dateSelection.guidedCommentaryIncluded}
                           </p>
                           <p className="mt-1 text-muted-foreground">
-                            Expert commentary about Sintra's history, architecture, and hidden gems at each stop.
+                            {t.buyTicket.dateSelection.guidedCommentaryDescription}
                           </p>
                         </div>
                       </div>
@@ -617,11 +619,11 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                   <div className="rounded-lg bg-secondary/50 p-6">
                     <div className="flex justify-between items-center">
                       <div>
-                        <p className="text-muted-foreground">Day Pass{isGuidedTourTime ? ' (includes guided commentary)' : ''}</p>
+                        <p className="text-muted-foreground">{t.buyTicket.dateSelection.dayPassPriceSummary}{isGuidedTourTime ? ` ${t.buyTicket.dateSelection.dayPassWithGuided}` : ''}</p>
                       </div>
                       <div className="text-right">
                         <p className="text-2xl text-primary">€{passTotal + guidedTourTotal}</p>
-                        <p className="text-muted-foreground">for {formData.quantity} {formData.quantity === 1 ? 'guest' : 'guests'}</p>
+                        <p className="text-muted-foreground">{t.buyTicket.dateSelection.forGuests} {formData.quantity} {formData.quantity === 1 ? t.buyTicket.dateSelection.guest : t.buyTicket.dateSelection.guests}</p>
                       </div>
                     </div>
                   </div>
@@ -635,7 +637,7 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                     onClick={handleNext}
                     disabled={!canProceedStep1}
                   >
-                    Continue
+                    {t.buyTicket.dateSelection.continueButton}
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </div>

@@ -285,10 +285,42 @@ export default function App() {
     return () => clearTimeout(timer);
   }, []); // Only run once on mount
 
-  // Update content when language changes
+  // Update content when language changes - sync from database
   useEffect(() => {
-    setWebsiteContent(loadContentWithLanguage(language));
+    async function syncContentForLanguage() {
+      try {
+        const { syncContentFromDatabaseWithLanguage } = await import("./lib/contentManager");
+        const freshContent = await syncContentFromDatabaseWithLanguage(language);
+        setWebsiteContent(freshContent);
+        console.log(`✅ Content synced for language: ${language}`);
+      } catch (error) {
+        console.log('ℹ️ Using local content for language change');
+        // Fallback to local content
+        setWebsiteContent(loadContentWithLanguage(language));
+      }
+    }
+    
+    syncContentForLanguage();
   }, [language]);
+
+  // Periodic content refresh every 3 minutes to catch updates
+  useEffect(() => {
+    async function periodicSync() {
+      try {
+        const { syncContentFromDatabaseWithLanguage } = await import("./lib/contentManager");
+        const freshContent = await syncContentFromDatabaseWithLanguage(language);
+        setWebsiteContent(freshContent);
+        console.log('🔄 Periodic content refresh completed');
+      } catch (error) {
+        // Silently fail - this is a background refresh
+      }
+    }
+    
+    // Set up periodic refresh every 3 minutes (180000ms)
+    const interval = setInterval(periodicSync, 180000);
+    
+    return () => clearInterval(interval);
+  }, [language]); // Re-set interval when language changes
 
   // Scroll to top when page changes
   useEffect(() => {
@@ -425,12 +457,13 @@ export default function App() {
       case "about":
         return <AboutPage language={language} />;
       case "blog":
-        return <BlogPage onNavigate={handleNavigate} />;
+        return <BlogPage onNavigate={handleNavigate} language={language} />;
       case "blog-article":
         return (
           <BlogArticlePage
             onNavigate={handleNavigate}
             slug={pageData?.slug || ""}
+            language={language}
           />
         );
       case "admin":

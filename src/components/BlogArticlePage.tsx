@@ -13,12 +13,16 @@ import { TableOfContents } from "./TableOfContents";
 import { ReadingProgress } from "./ReadingProgress";
 import { ArticleFAQ } from "./ArticleFAQ";
 
+import { loadContentWithLanguage } from "../lib/contentManager";
+
 interface BlogArticlePageProps {
   onNavigate: (page: string, data?: any) => void;
   slug: string;
+  language: string;
 }
 
-export function BlogArticlePage({ onNavigate, slug }: BlogArticlePageProps) {
+export function BlogArticlePage({ onNavigate, slug, language }: BlogArticlePageProps) {
+  const content = loadContentWithLanguage(language);
   const [article, setArticle] = useState<BlogArticle | null>(null);
   const [relatedArticles, setRelatedArticles] = useState<BlogArticle[]>([]);
   const [otherArticles, setOtherArticles] = useState<BlogArticle[]>([]);
@@ -33,7 +37,8 @@ export function BlogArticlePage({ onNavigate, slug }: BlogArticlePageProps) {
       // Get category name
       const categories = loadCategories();
       const category = categories.find(cat => cat.slug === foundArticle.category);
-      setCategoryName(category?.name || foundArticle.category);
+      const translatedCategoryName = content.blog.categories[foundArticle.category as keyof typeof content.blog.categories];
+      setCategoryName(category?.name || translatedCategoryName || foundArticle.category);
 
       // Find related articles (same category, excluding current)
       const allArticles = getPublishedArticles();
@@ -69,10 +74,10 @@ export function BlogArticlePage({ onNavigate, slug }: BlogArticlePageProps) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <h2 className="mb-4 text-foreground">Article not found</h2>
+          <h2 className="mb-4 text-foreground">{content.blog.articleNotFound}</h2>
           <Button onClick={() => onNavigate("blog")}>
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Blog
+            {content.blog.backToBlog}
           </Button>
         </div>
       </div>
@@ -133,7 +138,7 @@ export function BlogArticlePage({ onNavigate, slug }: BlogArticlePageProps) {
             className="gap-2"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Blog
+            {content.blog.backToBlog}
           </Button>
         </div>
       </div>
@@ -172,7 +177,7 @@ export function BlogArticlePage({ onNavigate, slug }: BlogArticlePageProps) {
             )}
             <div className="flex items-center gap-1.5">
               <Clock className="h-3.5 w-3.5" />
-              {article.readTimeMinutes} min read
+              {article.readTimeMinutes} {content.blog.minRead}
             </div>
             {article.author && (
               <div className="flex items-center gap-1.5">
@@ -220,7 +225,7 @@ export function BlogArticlePage({ onNavigate, slug }: BlogArticlePageProps) {
               className="gap-1.5 text-xs text-muted-foreground hover:text-foreground"
             >
               <Share2 className="h-3.5 w-3.5" />
-              Share
+              {content.blog.share}
             </Button>
 
             {showShareMenu && (
@@ -320,7 +325,7 @@ export function BlogArticlePage({ onNavigate, slug }: BlogArticlePageProps) {
                               </h4>
                               <div className="flex items-center gap-1 text-xs text-muted-foreground">
                                 <Clock className="h-3 w-3" />
-                                {otherArticle.readTimeMinutes} min read
+                                {otherArticle.readTimeMinutes} {content.blog.minRead}
                               </div>
                             </div>
                           </div>
@@ -331,7 +336,7 @@ export function BlogArticlePage({ onNavigate, slug }: BlogArticlePageProps) {
                             </h4>
                             <div className="flex items-center gap-1 text-xs text-muted-foreground">
                               <Clock className="h-3 w-3" />
-                              {otherArticle.readTimeMinutes} min read
+                              {otherArticle.readTimeMinutes} {content.blog.minRead}
                             </div>
                           </div>
                         )}

@@ -7,15 +7,21 @@ import { Badge } from "./ui/badge";
 import { Textarea } from "./ui/textarea";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useState, useEffect } from "react";
-import { loadContent, type WebsiteContent, DEFAULT_CONTENT } from "../lib/contentManager";
+import { loadContentWithLanguage, type WebsiteContent, DEFAULT_CONTENT } from "../lib/contentManager";
+import { getUITranslation } from "../lib/translations";
 import { motion } from "motion/react";
 
-export function AboutPage() {
+interface AboutPageProps {
+  language?: string;
+}
+
+export function AboutPage({ language = "en" }: AboutPageProps) {
   const [content, setContent] = useState<WebsiteContent>(DEFAULT_CONTENT);
+  const t = getUITranslation(language);
 
   useEffect(() => {
-    setContent(loadContent());
-  }, []);
+    setContent(loadContentWithLanguage(language));
+  }, [language]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

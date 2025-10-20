@@ -15,13 +15,16 @@ import {
   type BlogArticle,
   type BlogCategory,
 } from "../lib/blogManager";
+import { loadContentWithLanguage } from "../lib/contentManager";
 import { motion } from "motion/react";
 
 interface BlogPageProps {
   onNavigate: (page: string, data?: any) => void;
+  language: string;
 }
 
-export function BlogPage({ onNavigate }: BlogPageProps) {
+export function BlogPage({ onNavigate, language }: BlogPageProps) {
+  const content = loadContentWithLanguage(language);
   const [articles, setArticles] = useState<BlogArticle[]>([]);
   const [categories, setCategories] = useState<BlogCategory[]>([]);
   const [filteredArticles, setFilteredArticles] = useState<BlogArticle[]>([]);
@@ -69,7 +72,9 @@ export function BlogPage({ onNavigate }: BlogPageProps) {
 
   const getCategoryName = (categorySlug: string) => {
     const category = categories.find(cat => cat.slug === categorySlug);
-    return category?.name || categorySlug;
+    if (category?.name) return category.name;
+    // Fallback to translated category name
+    return content.blog.categories[categorySlug as keyof typeof content.blog.categories] || categorySlug;
   };
 
   return (
@@ -103,7 +108,7 @@ export function BlogPage({ onNavigate }: BlogPageProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              Your Ultimate Sintra Travel Guide
+              {content.blog.pageTitle}
             </motion.h1>
             
             <motion.p
@@ -112,7 +117,7 @@ export function BlogPage({ onNavigate }: BlogPageProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              Expert tips, insider secrets, and everything you need for a magical Sintra adventure ✨
+              {content.blog.pageSubtitle}
             </motion.p>
 
             <motion.div
@@ -125,7 +130,7 @@ export function BlogPage({ onNavigate }: BlogPageProps) {
                 <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   type="text"
-                  placeholder="Search for guides, tips, and itineraries..."
+                  placeholder={content.blog.searchPlaceholder}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="h-14 rounded-full bg-white pl-12 pr-4 shadow-xl"
@@ -142,7 +147,7 @@ export function BlogPage({ onNavigate }: BlogPageProps) {
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-2">
               <Filter className="h-4 w-4 text-muted-foreground" />
-              <span className="text-muted-foreground">Filter by:</span>
+              <span className="text-muted-foreground">{content.blog.filterBy}</span>
             </div>
             <div className="flex flex-wrap gap-2">
               <Button
@@ -150,7 +155,7 @@ export function BlogPage({ onNavigate }: BlogPageProps) {
                 size="sm"
                 onClick={() => setSelectedCategory("all")}
               >
-                All Articles
+                {content.blog.allArticles}
               </Button>
               {categories.map(category => (
                 <Button
@@ -159,7 +164,7 @@ export function BlogPage({ onNavigate }: BlogPageProps) {
                   size="sm"
                   onClick={() => setSelectedCategory(category.slug)}
                 >
-                  {category.name}
+                  {getCategoryName(category.slug)}
                 </Button>
               ))}
             </div>
@@ -173,16 +178,16 @@ export function BlogPage({ onNavigate }: BlogPageProps) {
           {filteredArticles.length === 0 ? (
             <div className="py-20 text-center">
               <BookOpen className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-              <h3 className="mb-2 text-foreground">No articles found</h3>
+              <h3 className="mb-2 text-foreground">{content.blog.noArticlesFound}</h3>
               <p className="text-muted-foreground">
-                {searchQuery ? "Try a different search term" : "No articles available in this category"}
+                {searchQuery ? content.blog.tryDifferentSearch : content.blog.noArticlesInCategory}
               </p>
             </div>
           ) : (
             <>
               <div className="mb-8 text-center">
                 <Badge>
-                  {filteredArticles.length} {filteredArticles.length === 1 ? 'Article' : 'Articles'} Found
+                  {filteredArticles.length} {filteredArticles.length === 1 ? content.blog.article : content.blog.articles} {content.blog.articlesFound}
                 </Badge>
               </div>
 
@@ -222,7 +227,7 @@ export function BlogPage({ onNavigate }: BlogPageProps) {
                           </div>
                           <div className="flex items-center gap-1">
                             <Clock className="h-4 w-4" />
-                            {article.readTimeMinutes} min read
+                            {article.readTimeMinutes} {content.blog.minRead}
                           </div>
                         </div>
 
@@ -246,7 +251,7 @@ export function BlogPage({ onNavigate }: BlogPageProps) {
                         )}
 
                         <div className="flex items-center gap-2 text-primary">
-                          <span>Read Guide</span>
+                          <span>{content.blog.readGuide}</span>
                           <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-2" />
                         </div>
                       </div>
@@ -263,10 +268,10 @@ export function BlogPage({ onNavigate }: BlogPageProps) {
       <section className="border-t border-border bg-secondary/30 py-16 sm:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="mb-12 text-center">
-            <Badge className="mb-4">Browse Topics</Badge>
-            <h2 className="mb-4 text-foreground">Explore by Category</h2>
+            <Badge className="mb-4">{content.blog.browseTopics}</Badge>
+            <h2 className="mb-4 text-foreground">{content.blog.exploreByCategory}</h2>
             <p className="text-muted-foreground">
-              Find exactly what you're looking for—organized by topic!
+              {content.blog.exploreCategoryDescription}
             </p>
           </div>
 
@@ -291,13 +296,13 @@ export function BlogPage({ onNavigate }: BlogPageProps) {
                     <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                       <BookOpen className="h-6 w-6 text-primary" />
                     </div>
-                    <h3 className="mb-2 text-foreground group-hover:text-primary">{category.name}</h3>
+                    <h3 className="mb-2 text-foreground group-hover:text-primary">{getCategoryName(category.slug)}</h3>
                     <p className="mb-4 text-muted-foreground">
-                      {category.description}
+                      {content.blog.categoryDescriptions[category.slug as keyof typeof content.blog.categoryDescriptions] || category.description}
                     </p>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">
-                        {categoryArticleCount} {categoryArticleCount === 1 ? 'guide' : 'guides'}
+                        {categoryArticleCount} {categoryArticleCount === 1 ? content.blog.guide : content.blog.guides}
                       </span>
                       <ArrowRight className="h-4 w-4 text-primary transition-transform group-hover:translate-x-2" />
                     </div>
@@ -318,16 +323,16 @@ export function BlogPage({ onNavigate }: BlogPageProps) {
             </div>
           </div>
 
-          <h2 className="mb-4 text-white">Ready to Start Your Adventure?</h2>
+          <h2 className="mb-4 text-white">{content.blog.ctaTitle}</h2>
           <p className="mb-8 text-xl text-white/90">
-            Now that you're armed with insider knowledge, book your flexible day pass with professional driver-guides! 🎉
+            {content.blog.ctaSubtitle}
           </p>
           <Button
             size="lg"
             className="bg-white text-accent shadow-xl hover:bg-white/90"
             onClick={() => onNavigate("buy-ticket")}
           >
-            Book Your Day Pass
+            {content.blog.ctaButton}
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </div>
