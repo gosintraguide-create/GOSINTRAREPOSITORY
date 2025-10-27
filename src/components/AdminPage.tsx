@@ -2312,12 +2312,13 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                       id="basePrice"
                       type="number"
                       min="0"
+                      step="0.01"
                       value={pricing.basePrice}
                       onChange={(e) =>
                         setPricing({
                           ...pricing,
                           basePrice:
-                            parseInt(e.target.value) || 0,
+                            parseFloat(e.target.value) || 0,
                         })
                       }
                       className="mt-2 border-border"
@@ -2332,12 +2333,13 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                       id="guidedSurcharge"
                       type="number"
                       min="0"
+                      step="0.01"
                       value={pricing.guidedTourSurcharge}
                       onChange={(e) =>
                         setPricing({
                           ...pricing,
                           guidedTourSurcharge:
-                            parseInt(e.target.value) || 0,
+                            parseFloat(e.target.value) || 0,
                         })
                       }
                       className="mt-2 border-border"
@@ -2349,13 +2351,13 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                   <p className="text-muted-foreground">
                     Preview: Day pass will cost{" "}
                     <strong className="text-foreground">
-                      €{pricing.basePrice}
+                      €{pricing.basePrice.toFixed(2)}
                     </strong>{" "}
                     per person. With guided commentary:{" "}
                     <strong className="text-foreground">
                       €
-                      {pricing.basePrice +
-                        pricing.guidedTourSurcharge}
+                      {(pricing.basePrice +
+                        pricing.guidedTourSurcharge).toFixed(2)}
                     </strong>
                   </p>
                 </div>
@@ -2394,11 +2396,12 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                         <Input
                           type="number"
                           min="0"
+                          step="0.01"
                           value={attraction.price}
                           onChange={(e) =>
                             updateAttractionPrice(
                               id,
-                              parseInt(e.target.value) || 0,
+                              parseFloat(e.target.value) || 0,
                             )
                           }
                           className="border-border"

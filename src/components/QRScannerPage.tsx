@@ -231,6 +231,7 @@ export function QRScannerPage({ onNavigate }: QRScannerPageProps) {
           },
           body: JSON.stringify({ 
             bookingId: scanResult.booking.bookingId,
+            passengerIndex: scanResult.booking.passengerIndex || 0,
             location: "Vehicle Pickup",
             destination: selectedDestination
           }),

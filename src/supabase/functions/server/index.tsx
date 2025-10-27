@@ -733,7 +733,7 @@ async function sendBookingEmail(
     }
 
     console.log(
-      `📤 Sending email to ${booking.contactInfo.email}...`,
+      `📤 Sending email to ${recipientEmail}...`,
     );
     console.log(
       `📤 Email has ${emailPayload.attachments ? emailPayload.attachments.length : 0} attachment(s)`,
@@ -785,7 +785,7 @@ async function sendBookingEmail(
 
     console.log("Email sent successfully:", result);
     console.log(
-      `📧 Booking confirmation email sent to ${booking.contactInfo.email} from onboarding@resend.dev`,
+      `📧 Booking confirmation email sent to ${recipientEmail} from onboarding@resend.dev`,
     );
     if (pdfBase64) {
       console.log(
@@ -1580,8 +1580,8 @@ app.get("/make-server-3bd0ade8/bookings", async (c) => {
     ];
 
     // Filter out any null or invalid bookings
+    // Note: getByPrefix already returns values directly, not {key, value} objects
     const validBookings = allBookings
-      .map((b) => b.value)
       .filter(
         (booking) =>
           booking && booking.id && booking.selectedDate,
@@ -1861,6 +1861,7 @@ app.post("/make-server-3bd0ade8/bookings", async (c) => {
       booking,
       emailSent: emailResult.success && !emailResult.skipped,
       emailSkipped: emailResult.skipped,
+      emailError: emailResult.success ? undefined : emailResult.error,
     });
   } catch (error) {
     console.error("Error creating booking:", error);

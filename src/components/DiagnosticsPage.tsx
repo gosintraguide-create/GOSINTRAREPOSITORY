@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
-import { ArrowLeft, TestTube, CheckCircle, XCircle, Loader2, Mail, Ticket, Copy, Users, CalendarDays } from 'lucide-react';
+import { ArrowLeft, TestTube, CheckCircle, XCircle, Loader2, Mail, Ticket, Copy, Users, CalendarDays, Database } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
 import { ClearCacheButton } from './ClearCacheButton';
 import { DatabaseDiagnostics } from './DatabaseDiagnostics';
@@ -37,6 +38,9 @@ export function DiagnosticsPage({ onNavigate }: DiagnosticsPageProps) {
   const [mockBookingResult, setMockBookingResult] = useState<any>(null);
   const [passengerCount, setPassengerCount] = useState(2);
   const [daysFromNow, setDaysFromNow] = useState(7);
+  const [bookingQueryResult, setBookingQueryResult] = useState<any>(null);
+  const [queryingBookings, setQueryingBookings] = useState(false);
+  const [bookingIdLookup, setBookingIdLookup] = useState('');
 
   const testPDFGeneration = async () => {
     setTesting(true);
@@ -135,6 +139,72 @@ export function DiagnosticsPage({ onNavigate }: DiagnosticsPageProps) {
     }
   };
 
+  const testBookingRetrieval = async () => {
+    setQueryingBookings(true);
+    setBookingQueryResult(null);
+    
+    try {
+      console.log('🔍 Testing booking retrieval...');
+      
+      // Query all bookings
+      const bookingsResponse = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/bookings`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${publicAnonKey}`,
+          },
+        }
+      );
+      
+      const bookingsData = await bookingsResponse.json();
+      console.log('📊 All bookings response:', bookingsData);
+      
+      // If we have a specific booking ID to look up, try to fetch it
+      let specificBooking = null;
+      if (bookingIdLookup) {
+        console.log(`🔍 Looking up specific booking: ${bookingIdLookup}`);
+        const specificResponse = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/bookings/${bookingIdLookup}`,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${publicAnonKey}`,
+            },
+          }
+        );
+        const specificData = await specificResponse.json();
+        console.log('📋 Specific booking response:', specificData);
+        specificBooking = specificData;
+      }
+      
+      setBookingQueryResult({
+        success: bookingsData.success,
+        totalBookings: bookingsData.bookings?.length || 0,
+        bookings: bookingsData.bookings || [],
+        error: bookingsData.error,
+        specificBooking: specificBooking,
+        rawResponse: bookingsData
+      });
+      
+      if (bookingsData.success) {
+        toast.success(`Found ${bookingsData.bookings?.length || 0} bookings`);
+      } else {
+        toast.error(`Failed to retrieve bookings: ${bookingsData.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('🔍 Booking query error:', error);
+      const errorMsg = error instanceof Error ? error.message : 'Network error';
+      setBookingQueryResult({
+        success: false,
+        error: errorMsg
+      });
+      toast.error(`Failed to query bookings: ${errorMsg}`);
+    } finally {
+      setQueryingBookings(false);
+    }
+  };
+
   const createMockBooking = async () => {
     setCreatingBooking(true);
     setMockBookingResult(null);
@@ -171,6 +241,12 @@ export function DiagnosticsPage({ onNavigate }: DiagnosticsPageProps) {
         skipEmail: true // Don't send confirmation email for mock bookings
       };
 
+      console.log('📤 Sending mock booking request:', {
+        date: mockBooking.selectedDate,
+        passengers: mockBooking.passengers.length,
+        price: mockBooking.totalPrice
+      });
+
       const response = await fetch(
         `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/bookings`,
         {
@@ -185,31 +261,86 @@ export function DiagnosticsPage({ onNavigate }: DiagnosticsPageProps) {
 
       const data = await response.json();
       
-      if (response.ok && data.success) {
+      console.log('📥 Server response:', {
+        ok: response.ok,
+        status: response.status,
+        success: data.success,
+        hasBooking: !!data.booking,
+        bookingId: data.booking?.id,
+        error: data.error,
+        fullResponse: data
+      });
+      
+      if (response.ok && data.success && data.booking && data.booking.id) {
+        const createdBookingId = data.booking.id;
+        
+        // VERIFICATION STEP: Query the booking immediately to confirm it was saved
+        console.log(`🔍 Verifying booking ${createdBookingId} was saved to database...`);
+        
+        try {
+          const verifyResponse = await fetch(
+            `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/bookings/${createdBookingId}`,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${publicAnonKey}`,
+              },
+            }
+          );
+          
+          const verifyData = await verifyResponse.json();
+          console.log('🔍 Verification result:', verifyData);
+          
+          if (!verifyResponse.ok || !verifyData.success) {
+            throw new Error('Booking was created but cannot be retrieved from database');
+          }
+          
+          console.log('✅ Booking verified in database!');
+        } catch (verifyError) {
+          console.error('❌ Verification failed:', verifyError);
+          setMockBookingResult({
+            success: false,
+            error: `Booking created but verification failed: ${verifyError instanceof Error ? verifyError.message : 'Unknown error'}. Check server logs.`
+          });
+          toast.error('⚠️ Booking created but cannot be verified!');
+          return;
+        }
+        
         setMockBookingResult({
           success: true,
-          bookingId: data.booking.bookingId,
+          bookingId: createdBookingId,
           passengerCount: passengers.length,
           date: mockBooking.selectedDate,
           totalPrice: mockBooking.totalPrice
         });
-        toast.success(`✅ Mock booking created! ID: ${data.booking.bookingId}`);
-        console.log('🎫 Mock booking created:', data);
+        toast.success(`✅ Mock booking created & verified! ID: ${createdBookingId}`);
+        console.log('🎫 Mock booking created successfully:', {
+          id: createdBookingId,
+          passengers: data.booking.passengers?.length,
+          qrCodes: data.booking.qrCodes?.length,
+          emailSkipped: data.emailSkipped
+        });
       } else {
+        const errorMsg = data.error || 'Unknown error - check server response in console';
         setMockBookingResult({
           success: false,
-          error: data.error || 'Unknown error'
+          error: errorMsg
         });
-        toast.error(`Failed to create booking: ${data.error || 'Unknown error'}`);
-        console.error('🎫 Booking creation failed:', data);
+        toast.error(`Failed to create booking: ${errorMsg}`);
+        console.error('🎫 Booking creation failed:', {
+          response: data,
+          status: response.status,
+          responseText: JSON.stringify(data, null, 2)
+        });
       }
     } catch (error) {
       console.error('🎫 Mock booking error:', error);
+      const errorMsg = error instanceof Error ? error.message : 'Network error - check console for details';
       setMockBookingResult({
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: errorMsg
       });
-      toast.error(error instanceof Error ? error.message : 'Failed to create mock booking');
+      toast.error(`Failed to create mock booking: ${errorMsg}`);
     } finally {
       setCreatingBooking(false);
     }
@@ -461,6 +592,18 @@ export function DiagnosticsPage({ onNavigate }: DiagnosticsPageProps) {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
+              <h3 className="mb-2 font-medium text-yellow-900">⚠️ Troubleshooting</h3>
+              <p className="text-sm text-yellow-800 mb-2">
+                If mock bookings show "success" but don't appear in Analytics → All Bookings:
+              </p>
+              <ul className="list-disc pl-5 space-y-1 text-sm text-yellow-800 mb-3">
+                <li>Scroll down and run "Edge Function Health Check" below</li>
+                <li>Check browser console (F12) for detailed logs</li>
+                <li>Verify booking ID is being returned in console</li>
+                <li>The server must be deployed to Supabase for persistence</li>
+              </ul>
+            </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <Label htmlFor="passengerCount" className="flex items-center gap-2">
@@ -563,6 +706,18 @@ export function DiagnosticsPage({ onNavigate }: DiagnosticsPageProps) {
                           <li>• Check analytics and reports</li>
                           <li>• Verify destination tracking</li>
                         </ul>
+                        <Button
+                          onClick={() => {
+                            setBookingIdLookup(mockBookingResult.bookingId);
+                            setTimeout(() => testBookingRetrieval(), 500);
+                          }}
+                          variant="outline"
+                          size="sm"
+                          className="w-full mt-2 bg-white hover:bg-green-50 border-green-400"
+                        >
+                          <Database className="mr-2 size-3" />
+                          Verify This Booking Was Saved
+                        </Button>
                       </div>
                     </div>
                   </>
@@ -602,6 +757,156 @@ export function DiagnosticsPage({ onNavigate }: DiagnosticsPageProps) {
                 <li>Test destination tracking and analytics</li>
               </ol>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Booking Retrieval Test Card */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Database className="size-5" />
+              Test Booking Retrieval
+            </CardTitle>
+            <CardDescription>
+              Query the database to see all bookings and verify that created bookings are being saved correctly
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+              <h3 className="mb-2 font-medium text-blue-900">ℹ️ What This Tests</h3>
+              <ul className="list-disc pl-5 space-y-1 text-sm text-blue-800">
+                <li>Queries the GET /bookings endpoint (same as Analytics page)</li>
+                <li>Shows total number of bookings found</li>
+                <li>Lists all booking IDs and details</li>
+                <li>Can lookup a specific booking by ID</li>
+                <li>Reveals if bookings are being saved but not retrieved</li>
+              </ul>
+            </div>
+
+            <div>
+              <Label htmlFor="bookingIdLookup">Specific Booking ID (optional)</Label>
+              <Input
+                id="bookingIdLookup"
+                type="text"
+                placeholder="e.g., AA-1234"
+                value={bookingIdLookup}
+                onChange={(e) => setBookingIdLookup(e.target.value)}
+                className="mt-1"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Enter a booking ID to look it up specifically, or leave blank to query all bookings
+              </p>
+            </div>
+
+            <Button
+              onClick={testBookingRetrieval}
+              disabled={queryingBookings}
+              className="w-full"
+            >
+              {queryingBookings ? (
+                <>
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  Querying Database...
+                </>
+              ) : (
+                <>
+                  <Database className="mr-2 size-4" />
+                  Query All Bookings
+                </>
+              )}
+            </Button>
+
+            {bookingQueryResult && (
+              <div className={`rounded-lg border p-4 ${bookingQueryResult.success ? 'border-blue-500 bg-blue-50' : 'border-red-500 bg-red-50'}`}>
+                {bookingQueryResult.success ? (
+                  <>
+                    <div className="mb-3 flex items-center gap-2">
+                      <CheckCircle className="size-5 text-blue-600" />
+                      <span className="font-medium text-blue-900">
+                        Found {bookingQueryResult.totalBookings} Booking{bookingQueryResult.totalBookings !== 1 ? 's' : ''}
+                      </span>
+                    </div>
+                    
+                    {bookingQueryResult.totalBookings === 0 ? (
+                      <div className="rounded-lg border border-yellow-300 bg-yellow-50 p-3 mb-3">
+                        <p className="text-sm text-yellow-900 font-medium mb-2">⚠️ No bookings found in database!</p>
+                        <p className="text-sm text-yellow-800">This means:</p>
+                        <ul className="list-disc pl-5 mt-1 text-sm text-yellow-800 space-y-1">
+                          <li>Mock bookings are NOT being saved to the database</li>
+                          <li>The server may be deployed but kv.set() is failing silently</li>
+                          <li>Check Edge Function logs in Supabase Dashboard</li>
+                          <li>Look for errors in the browser console (F12)</li>
+                        </ul>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        <div className="rounded-lg bg-white/60 p-3">
+                          <p className="text-xs text-blue-700 mb-2 font-semibold">All Bookings:</p>
+                          <div className="space-y-2 max-h-60 overflow-y-auto">
+                            {bookingQueryResult.bookings.slice(0, 10).map((booking: any, idx: number) => (
+                              <div key={idx} className="text-sm border-b border-blue-200 pb-2">
+                                <div className="font-mono font-bold text-blue-900">{booking.id}</div>
+                                <div className="text-xs text-blue-700 grid grid-cols-2 gap-1 mt-1">
+                                  <div>Date: {booking.selectedDate}</div>
+                                  <div>Passengers: {booking.passengers?.length || 0}</div>
+                                  <div>Email: {booking.contactInfo?.email}</div>
+                                  <div>Status: {booking.status}</div>
+                                </div>
+                              </div>
+                            ))}
+                            {bookingQueryResult.totalBookings > 10 && (
+                              <p className="text-xs text-blue-600 italic">
+                                ... and {bookingQueryResult.totalBookings - 10} more
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        {bookingIdLookup && bookingQueryResult.specificBooking && (
+                          <div className="rounded-lg bg-green-50 border border-green-300 p-3">
+                            <p className="text-xs text-green-800 mb-2 font-semibold">
+                              Specific Booking Lookup ({bookingIdLookup}):
+                            </p>
+                            {bookingQueryResult.specificBooking.success ? (
+                              <div className="text-sm text-green-900">
+                                <div className="font-mono font-bold">{bookingQueryResult.specificBooking.booking.id}</div>
+                                <div className="text-xs mt-1">
+                                  ✅ Found! This booking exists in the database.
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="text-sm text-red-900">
+                                ❌ Not found: {bookingQueryResult.specificBooking.error}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    <details className="mt-3">
+                      <summary className="cursor-pointer text-xs font-medium text-blue-800 hover:text-blue-900">
+                        Show Raw Response (Debug)
+                      </summary>
+                      <pre className="mt-2 text-xs overflow-auto p-3 bg-blue-100 rounded max-h-60">
+                        {JSON.stringify(bookingQueryResult.rawResponse, null, 2)}
+                      </pre>
+                    </details>
+                  </>
+                ) : (
+                  <>
+                    <div className="mb-3 flex items-center gap-2">
+                      <XCircle className="size-5 text-red-600" />
+                      <span className="font-medium text-red-900">Query Failed</span>
+                    </div>
+                    <p className="text-sm text-red-800">{bookingQueryResult.error}</p>
+                    <p className="text-xs text-red-700 mt-2">
+                      Make sure the Edge Function is deployed and accessible. Run the Health Check below.
+                    </p>
+                  </>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
 

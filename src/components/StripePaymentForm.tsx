@@ -73,6 +73,10 @@ function CheckoutForm({ amount, onSuccess, onError, customerEmail }: Omit<Stripe
         <PaymentElement 
           options={{
             layout: "tabs",
+            wallets: {
+              applePay: "auto",
+              googlePay: "auto",
+            },
           }}
         />
       </div>
@@ -92,6 +96,10 @@ function CheckoutForm({ amount, onSuccess, onError, customerEmail }: Omit<Stripe
         <div className="flex items-center gap-2">
           <Lock className="h-5 w-5 text-primary flex-shrink-0" />
           <p className="text-sm text-foreground">Your payment information is encrypted and secure</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <CreditCard className="h-5 w-5 text-primary flex-shrink-0" />
+          <p className="text-sm text-foreground">Accepts all cards, Apple Pay, and Google Pay</p>
         </div>
       </div>
 

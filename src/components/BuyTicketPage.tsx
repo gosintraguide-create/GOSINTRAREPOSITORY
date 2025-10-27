@@ -325,13 +325,32 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
         } else {
           toast.success("Booking confirmed! QR codes are ready.");
           
-          // Check if domain verification is needed
-          if (response.error?.includes("Domain verification required") || response.error?.includes("verify")) {
-            toast.warning("⚠️ Email system requires domain verification. QR codes are available on this page.", {
+          // Check for specific email error details
+          const emailError = response.data.emailError;
+          
+          if (emailError) {
+            console.error("Email sending failed:", emailError);
+            
+            // Check if domain verification is needed
+            if (emailError.includes("Domain verification required") || emailError.includes("verify") || emailError.includes("only send testing emails")) {
+              toast.warning("⚠️ Email system requires domain verification. QR codes are available on this page.", {
+                duration: 7000,
+              });
+            } else if (emailError.includes("No email address")) {
+              toast.warning("⚠️ No email address provided. Save your QR codes from this page.", {
+                duration: 6000,
+              });
+            } else {
+              // Show generic email error with details
+              toast.warning(`⚠️ Email couldn't be sent: ${emailError}. Save your QR codes from this page.`, {
+                duration: 7000,
+              });
+            }
+          } else {
+            // Email error without details
+            toast.warning("Email couldn't be sent. Save your QR codes from this page.", {
               duration: 6000,
             });
-          } else {
-            toast.warning("Email couldn't be sent. Save your QR codes from this page.");
           }
         }
       } else {
