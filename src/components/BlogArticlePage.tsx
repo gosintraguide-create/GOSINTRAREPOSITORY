@@ -189,11 +189,11 @@ export function BlogArticlePage({ onNavigate, slug, language }: BlogArticlePageP
       </section>
 
       {/* Featured Image */}
-      {article.featuredImage && (
+      {(article.heroImage || article.featuredImage) && (
         <section className="mx-auto max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
           <div className="overflow-hidden rounded-lg shadow-lg">
             <ImageWithFallback
-              src={article.featuredImage}
+              src={article.heroImage || article.featuredImage || ""}
               alt={article.title}
               className="aspect-[21/9] w-full object-cover sm:aspect-video"
             />

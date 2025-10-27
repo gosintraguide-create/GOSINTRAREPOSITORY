@@ -204,10 +204,10 @@ export function BlogPage({ onNavigate, language }: BlogPageProps) {
                       className="group h-full cursor-pointer overflow-hidden transition-all hover:shadow-xl"
                       onClick={() => handleArticleClick(article)}
                     >
-                      {article.featuredImage && (
+                      {(article.thumbnailImage || article.featuredImage) && (
                         <div className="relative aspect-video overflow-hidden">
                           <ImageWithFallback
-                            src={article.featuredImage}
+                            src={article.thumbnailImage || article.featuredImage || ""}
                             alt={article.title}
                             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                           />
