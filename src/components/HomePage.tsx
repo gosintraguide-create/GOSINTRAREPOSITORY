@@ -340,82 +340,53 @@ export function HomePage({
               </Button>
             </div>
 
-            {/* Quick Links CTA Cards */}
-            <div className="mx-auto mt-12 max-w-4xl">
-              <p className="mb-4 text-center text-sm text-white/80 sm:text-base">
-                Plan your perfect day in Sintra
-              </p>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
-                {/* Attractions Card */}
-                <Card
-                  className="group cursor-pointer overflow-hidden border-2 border-white/20 bg-white/95 backdrop-blur-sm transition-all hover:scale-105 hover:border-accent hover:shadow-2xl"
-                  onClick={() => onNavigate("attractions")}
-                >
-                  <div className="relative aspect-[16/9] overflow-hidden">
-                    <ImageWithFallback
-                      src="https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=800&h=450&fit=crop"
-                      alt="Pena Palace - Sintra's top attraction"
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5">
-                      <div className="mb-2 flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-white sm:h-5 sm:w-5" />
-                        <span className="text-xs text-white/90 sm:text-sm">
-                          UNESCO Sites
-                        </span>
-                      </div>
-                      <h3 className="mb-1 text-lg text-white sm:text-xl">
-                        Explore Attractions
-                      </h3>
-                      <p className="text-xs text-white/80 sm:text-sm">
-                        Discover palaces, castles & gardens
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between p-4 sm:p-5">
-                    <span className="text-sm text-primary group-hover:text-accent sm:text-base">
-                      View all stops
-                    </span>
-                    <ArrowRight className="h-4 w-4 text-primary transition-transform group-hover:translate-x-1 group-hover:text-accent sm:h-5 sm:w-5" />
-                  </div>
-                </Card>
+            {/* Compact Quick Links */}
+            <div className="mx-auto mt-8 flex max-w-lg flex-col items-center gap-3 sm:flex-row sm:gap-4">
+              {/* Attractions Link */}
+              <button
+                onClick={() => onNavigate("attractions")}
+                className="group flex w-full items-center gap-3 rounded-xl border border-white/30 bg-white/10 px-4 py-3 backdrop-blur-sm transition-all hover:scale-105 hover:border-white/50 hover:bg-white/20 sm:w-auto"
+              >
+                <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
+                  <ImageWithFallback
+                    src="https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=200&h=200&fit=crop"
+                    alt="Attractions"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div className="flex-1 text-left">
+                  <p className="text-sm text-white">
+                    Explore Attractions
+                  </p>
+                  <p className="text-xs text-white/70">
+                    UNESCO sites & palaces
+                  </p>
+                </div>
+                <ArrowRight className="h-4 w-4 flex-shrink-0 text-white/70 transition-transform group-hover:translate-x-1 group-hover:text-white" />
+              </button>
 
-                {/* Travel Guide Card */}
-                <Card
-                  className="group cursor-pointer overflow-hidden border-2 border-white/20 bg-white/95 backdrop-blur-sm transition-all hover:scale-105 hover:border-accent hover:shadow-2xl"
-                  onClick={() => onNavigate("blog")}
-                >
-                  <div className="relative aspect-[16/9] overflow-hidden">
-                    <ImageWithFallback
-                      src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&h=450&fit=crop"
-                      alt="Travel tips and guides for Sintra"
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5">
-                      <div className="mb-2 flex items-center gap-2">
-                        <Camera className="h-4 w-4 text-white sm:h-5 sm:w-5" />
-                        <span className="text-xs text-white/90 sm:text-sm">
-                          Insider Tips
-                        </span>
-                      </div>
-                      <h3 className="mb-1 text-lg text-white sm:text-xl">
-                        Travel Guide
-                      </h3>
-                      <p className="text-xs text-white/80 sm:text-sm">
-                        Tips, routes & local secrets
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between p-4 sm:p-5">
-                    <span className="text-sm text-primary group-hover:text-accent sm:text-base">
-                      Read our guides
-                    </span>
-                    <ArrowRight className="h-4 w-4 text-primary transition-transform group-hover:translate-x-1 group-hover:text-accent sm:h-5 sm:w-5" />
-                  </div>
-                </Card>
-              </div>
+              {/* Travel Guide Link */}
+              <button
+                onClick={() => onNavigate("blog")}
+                className="group flex w-full items-center gap-3 rounded-xl border border-white/30 bg-white/10 px-4 py-3 backdrop-blur-sm transition-all hover:scale-105 hover:border-white/50 hover:bg-white/20 sm:w-auto"
+              >
+                <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
+                  <ImageWithFallback
+                    src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=200&h=200&fit=crop"
+                    alt="Travel Guide"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div className="flex-1 text-left">
+                  <p className="text-sm text-white">
+                    Travel Guide
+                  </p>
+                  <p className="text-xs text-white/70">
+                    Tips & local secrets
+                  </p>
+                </div>
+                <ArrowRight className="h-4 w-4 flex-shrink-0 text-white/70 transition-transform group-hover:translate-x-1 group-hover:text-white" />
+              </button>
             </div>
           </div>
         </div>
