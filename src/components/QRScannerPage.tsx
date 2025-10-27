@@ -90,6 +90,13 @@ export function QRScannerPage({ onNavigate }: QRScannerPageProps) {
         setScanning(true);
         setScanResult(null);
         
+        // Show tip for first-time users
+        const hasSeenCameraTip = localStorage.getItem('camera-permission-tip-seen');
+        if (!hasSeenCameraTip) {
+          toast.success("Camera activated! Permission saved for future use.", { duration: 3000 });
+          localStorage.setItem('camera-permission-tip-seen', 'true');
+        }
+        
         // Start scanning loop
         scanIntervalRef.current = window.setInterval(() => {
           captureAndDecodeQR();
@@ -97,7 +104,7 @@ export function QRScannerPage({ onNavigate }: QRScannerPageProps) {
       }
     } catch (error) {
       console.error("Camera access error:", error);
-      toast.error("Unable to access camera. Please grant camera permissions.");
+      toast.error("Unable to access camera. Please grant camera permissions and ensure HTTPS is enabled.");
     }
   };
 
@@ -134,7 +141,11 @@ export function QRScannerPage({ onNavigate }: QRScannerPageProps) {
 
       if (code && code.data) {
         setIsProcessing(true);
-        stopScanning();
+        // Pause scanning but keep camera alive
+        if (scanIntervalRef.current) {
+          clearInterval(scanIntervalRef.current);
+          scanIntervalRef.current = null;
+        }
         await verifyQRCode(code.data);
       }
     } catch (error) {
@@ -318,8 +329,8 @@ export function QRScannerPage({ onNavigate }: QRScannerPageProps) {
     setSelectedDestination("");
     setShowDestinationDialog(false);
     
-    // Resume scanning if camera is still active
-    if (scanning && !scanIntervalRef.current && videoRef.current) {
+    // Resume scanning if camera stream is still active
+    if (streamRef.current && !scanIntervalRef.current && videoRef.current) {
       scanIntervalRef.current = window.setInterval(() => {
         captureAndDecodeQR();
       }, 500);
@@ -583,20 +594,6 @@ export function QRScannerPage({ onNavigate }: QRScannerPageProps) {
                 <span className="text-muted-foreground">Processing...</span>
               </div>
             )}
-          </CardContent>
-        </Card>
-
-        {/* Instructions */}
-        <Card>
-          <CardHeader>
-            <CardTitle>How to Use</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-muted-foreground">
-            <p>1. Click "Start Scanning" to activate the camera (one-time permission)</p>
-            <p>2. Point the camera at the customer's QR code</p>
-            <p>3. Tap destination in the quick selector popup</p>
-            <p>4. Scanner automatically resets for next passenger</p>
-            <p className="text-xs text-accent pt-2">💡 Camera stays on for faster scanning!</p>
           </CardContent>
         </Card>
 

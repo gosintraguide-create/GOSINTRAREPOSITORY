@@ -34,6 +34,7 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
   };
   
   const [basePrice, setBasePrice] = useState(getInitialPrice);
+  const [priceLoaded, setPriceLoaded] = useState(false);
   const [content, setContent] = useState<WebsiteContent>(DEFAULT_CONTENT);
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
@@ -62,6 +63,7 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
           if (data.pricing?.basePrice) {
             setBasePrice(data.pricing.basePrice);
             localStorage.setItem("admin-pricing", JSON.stringify(data.pricing));
+            setPriceLoaded(true);
             return;
           }
         }
@@ -81,6 +83,9 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
           // Use default basePrice (25)
         }
       }
+      
+      // Mark as loaded even if we used default
+      setPriceLoaded(true);
     }
     
     loadPricingFromDB();
@@ -213,36 +218,38 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
             </div>
             
             {/* Tilted Price Card */}
-            <div className="mb-8 flex justify-center sm:mb-10">
-              <div className="relative">
-                <div className="relative mx-auto flex h-36 items-center justify-center sm:h-40 md:h-44">
-                  {/* Left Photo Card - Almost fully visible */}
-                  <div className="absolute -left-24 top-1/2 z-0 w-32 -translate-y-1/2 scale-[0.85] rotate-[-2deg] transform overflow-hidden rounded-xl shadow-xl transition-all hover:z-20 hover:-left-[90px] hover:rotate-[-1deg] hover:scale-[0.88] sm:-left-32 sm:hover:-left-[122px] md:-left-40 md:w-48 md:hover:-left-[154px]">
-                    <ImageWithFallback 
-                      src="https://images.unsplash.com/photo-1715616130000-375a7e5fac95?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoYXBweSUyMHRvdXJpc3RzJTIwc2lnaHRzZWVpbmclMjBncm91cHxlbnwxfHx8fDE3NjA4MTcwODJ8MA&ixlib=rb-4.1.0&q=80&w=1080"
-                      alt="Happy travelers in Sintra"
-                      className="h-32 w-full object-cover sm:h-36 md:h-40"
-                    />
-                  </div>
-                  
-                  {/* Right Photo Card - Almost fully visible */}
-                  <div className="absolute -right-24 top-1/2 z-0 w-32 -translate-y-1/2 scale-[0.85] rotate-[-2deg] transform overflow-hidden rounded-xl shadow-xl transition-all hover:z-20 hover:-right-[90px] hover:rotate-[-1deg] hover:scale-[0.88] sm:-right-32 sm:w-40 sm:hover:-right-[122px] md:-right-40 md:w-48 md:hover:-right-[154px]">
-                    <ImageWithFallback 
-                      src="https://images.unsplash.com/photo-1759668558962-23ae91b34bfc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0cmF2ZWxlcnMlMjBmcmllbmRzJTIwdmFjYXRpb24lMjB8ZW58MXx8fHwxNzYwODE3MDgyfDA&ixlib=rb-4.1.0&q=80&w=1080"
-                      alt="Friends enjoying their trip"
-                      className="h-32 w-full object-cover sm:h-36 md:h-40"
-                    />
-                  </div>
-                  
-                  {/* Center Price Card - Front and center */}
-                  <div className="relative z-10 flex h-32 w-32 flex-col items-center justify-center rotate-[-2deg] transform rounded-2xl bg-white shadow-2xl transition-transform hover:rotate-0 hover:scale-105 sm:h-36 sm:w-40 md:h-40 md:w-48">
-                    <p className="mb-1 text-xs uppercase tracking-wide text-muted-foreground sm:text-sm">Starting at</p>
-                    <p className="text-4xl font-extrabold text-accent sm:text-5xl">€{basePrice}</p>
-                    <p className="mt-1 text-xs text-muted-foreground sm:text-sm">per person / full day</p>
+            {priceLoaded && (
+              <div className="mb-8 flex justify-center sm:mb-10">
+                <div className="relative">
+                  <div className="relative mx-auto flex h-36 items-center justify-center sm:h-40 md:h-44">
+                    {/* Left Photo Card - Almost fully visible */}
+                    <div className="absolute -left-24 top-1/2 z-0 w-32 -translate-y-1/2 scale-[0.85] rotate-[-2deg] transform overflow-hidden rounded-xl shadow-xl transition-all hover:z-20 hover:-left-[90px] hover:rotate-[-1deg] hover:scale-[0.88] sm:-left-32 sm:hover:-left-[122px] md:-left-40 md:w-48 md:hover:-left-[154px]">
+                      <ImageWithFallback 
+                        src="https://images.unsplash.com/photo-1715616130000-375a7e5fac95?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoYXBweSUyMHRvdXJpc3RzJTIwc2lnaHRzZWVpbmclMjBncm91cHxlbnwxfHx8fDE3NjA4MTcwODJ8MA&ixlib=rb-4.1.0&q=80&w=1080"
+                        alt="Happy travelers in Sintra"
+                        className="h-32 w-full object-cover sm:h-36 md:h-40"
+                      />
+                    </div>
+                    
+                    {/* Right Photo Card - Almost fully visible */}
+                    <div className="absolute -right-24 top-1/2 z-0 w-32 -translate-y-1/2 scale-[0.85] rotate-[-2deg] transform overflow-hidden rounded-xl shadow-xl transition-all hover:z-20 hover:-right-[90px] hover:rotate-[-1deg] hover:scale-[0.88] sm:-right-32 sm:w-40 sm:hover:-right-[122px] md:-right-40 md:w-48 md:hover:-right-[154px]">
+                      <ImageWithFallback 
+                        src="https://images.unsplash.com/photo-1759668558962-23ae91b34bfc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0cmF2ZWxlcnMlMjBmcmllbmRzJTIwdmFjYXRpb24lMjB8ZW58MXx8fHwxNzYwODE3MDgyfDA&ixlib=rb-4.1.0&q=80&w=1080"
+                        alt="Friends enjoying their trip"
+                        className="h-32 w-full object-cover sm:h-36 md:h-40"
+                      />
+                    </div>
+                    
+                    {/* Center Price Card - Front and center */}
+                    <div className="relative z-10 flex h-32 w-32 flex-col items-center justify-center rotate-[-2deg] transform rounded-2xl bg-white shadow-2xl transition-transform hover:rotate-0 hover:scale-105 sm:h-36 sm:w-40 md:h-40 md:w-48">
+                      <p className="mb-1 text-xs uppercase tracking-wide text-muted-foreground sm:text-sm">Starting at</p>
+                      <p className="text-4xl font-extrabold text-accent sm:text-5xl">€{basePrice}</p>
+                      <p className="mt-1 text-xs text-muted-foreground sm:text-sm">per person / full day</p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
             
             {/* Primary CTA */}
             <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center sm:gap-4">
