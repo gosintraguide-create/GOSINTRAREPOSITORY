@@ -35,6 +35,7 @@ import {
 } from "../lib/blogManager";
 import { InternalLinkHelper } from "./InternalLinkHelper";
 import { loadBlogTags } from "../lib/blogTags";
+import { ImageSelector } from "./ImageSelector";
 
 export function BlogEditor() {
   const [articles, setArticles] = useState<BlogArticle[]>([]);
@@ -422,18 +423,46 @@ export function BlogEditor() {
                   </div>
                 </div>
 
-                <div>
-                  <Label>Featured Image URL</Label>
-                  <Input
-                    value={editingArticle.featuredImage || ""}
-                    onChange={(e) =>
+                <div className="space-y-4 rounded-lg border border-border p-4">
+                  <h4 className="font-medium">Images</h4>
+                  <ImageSelector
+                    label="Hero Image"
+                    description="Large image shown at the top of the article page"
+                    value={editingArticle.heroImage || ""}
+                    onChange={(url) =>
                       setEditingArticle({
                         ...editingArticle,
-                        featuredImage: e.target.value,
+                        heroImage: url,
                       })
                     }
-                    placeholder="https://images.unsplash.com/..."
                   />
+                  <ImageSelector
+                    label="Thumbnail Image"
+                    description="Small image shown in blog post listings and cards"
+                    value={editingArticle.thumbnailImage || ""}
+                    onChange={(url) =>
+                      setEditingArticle({
+                        ...editingArticle,
+                        thumbnailImage: url,
+                      })
+                    }
+                  />
+                  <div>
+                    <Label>Featured Image URL (Legacy - Optional)</Label>
+                    <Input
+                      value={editingArticle.featuredImage || ""}
+                      onChange={(e) =>
+                        setEditingArticle({
+                          ...editingArticle,
+                          featuredImage: e.target.value,
+                        })
+                      }
+                      placeholder="https://images.unsplash.com/..."
+                    />
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      For backwards compatibility or external image URLs
+                    </p>
+                  </div>
                 </div>
               </div>
 

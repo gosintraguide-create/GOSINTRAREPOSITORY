@@ -114,6 +114,8 @@ export interface ComprehensiveContent {
         tips: string[];
         price: number;
         parkOnlyPrice?: number;
+        heroImage?: string;
+        cardImage?: string;
       };
     };
     attractionDetailPage: {

@@ -37,6 +37,9 @@ export interface WebsiteContent {
       tips: string[];
       price: number;
       parkOnlyPrice?: number;
+      heroImage?: string;
+      cardImage?: string;
+      image?: string;
     };
   };
   seo: {

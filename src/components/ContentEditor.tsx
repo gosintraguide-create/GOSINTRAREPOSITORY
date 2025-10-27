@@ -28,6 +28,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "./ui/accordion";
+import { ImageSelector } from "./ImageSelector";
 
 export function ContentEditor() {
   const [content, setContent] = useState<ComprehensiveContent>(DEFAULT_COMPREHENSIVE_CONTENT);
@@ -977,6 +978,27 @@ export function ContentEditor() {
                           />
                         </div>
                       )}
+                      <div className="border-t pt-4">
+                        <h4 className="mb-4 font-medium">Images</h4>
+                        <div className="space-y-4">
+                          <ImageSelector
+                            label="Hero Image"
+                            description="Large image shown at the top of the attraction detail page"
+                            value={attraction.heroImage || ""}
+                            onChange={(url) => 
+                              updateContent(["attractions", "attractionDetails", key, "heroImage"], url)
+                            }
+                          />
+                          <ImageSelector
+                            label="Card Image"
+                            description="Image shown on attraction cards in listings"
+                            value={attraction.cardImage || ""}
+                            onChange={(url) => 
+                              updateContent(["attractions", "attractionDetails", key, "cardImage"], url)
+                            }
+                          />
+                        </div>
+                      </div>
                     </div>
                   </AccordionContent>
                 </AccordionItem>

@@ -15,6 +15,8 @@ export interface BlogArticle {
   publishDate: string;
   lastModified: string;
   featuredImage?: string;
+  heroImage?: string;
+  thumbnailImage?: string;
   category: string;
   tags: string[];
   isPublished: boolean;
