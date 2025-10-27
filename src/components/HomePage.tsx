@@ -1,14 +1,37 @@
-import { ArrowRight, Users, MapPin, Clock, Shield, Star, CheckCircle2, TrendingUp, Ticket, Car, Bell, Heart, Camera, Zap, CheckCircle, RefreshCw, Download, Smartphone } from "lucide-react";
+import {
+  ArrowRight,
+  Users,
+  MapPin,
+  Clock,
+  Shield,
+  Star,
+  CheckCircle2,
+  TrendingUp,
+  Ticket,
+  Car,
+  Bell,
+  Heart,
+  Camera,
+  Zap,
+  CheckCircle,
+  RefreshCw,
+  Download,
+  Smartphone,
+} from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useState, useEffect } from "react";
-import { loadContentWithLanguage, type WebsiteContent, DEFAULT_CONTENT } from "../lib/contentManager";
+import {
+  loadContentWithLanguage,
+  type WebsiteContent,
+  DEFAULT_CONTENT,
+} from "../lib/contentManager";
 import { getUITranslation } from "../lib/translations";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
 interface HomePageProps {
@@ -16,11 +39,15 @@ interface HomePageProps {
   language?: string;
 }
 
-export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
+export function HomePage({
+  onNavigate,
+  language = "en",
+}: HomePageProps) {
   // Initialize basePrice from localStorage to prevent flash
   const getInitialPrice = () => {
     try {
-      const savedPricing = localStorage.getItem("admin-pricing");
+      const savedPricing =
+        localStorage.getItem("admin-pricing");
       if (savedPricing) {
         const pricing = JSON.parse(savedPricing);
         if (pricing.basePrice) {
@@ -32,11 +59,13 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
     }
     return 25;
   };
-  
+
   const [basePrice, setBasePrice] = useState(getInitialPrice);
   const [priceLoaded, setPriceLoaded] = useState(false);
-  const [content, setContent] = useState<WebsiteContent>(DEFAULT_CONTENT);
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [content, setContent] =
+    useState<WebsiteContent>(DEFAULT_CONTENT);
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [isSafari, setIsSafari] = useState(false);
@@ -46,23 +75,28 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
   useEffect(() => {
     async function loadPricingFromDB() {
       try {
-        const { projectId, publicAnonKey } = await import('../utils/supabase/info');
+        const { projectId, publicAnonKey } = await import(
+          "../utils/supabase/info"
+        );
         const response = await fetch(
           `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/pricing`,
           {
-            method: 'GET',
+            method: "GET",
             headers: {
-              'Authorization': `Bearer ${publicAnonKey}`,
-              'Content-Type': 'application/json',
+              Authorization: `Bearer ${publicAnonKey}`,
+              "Content-Type": "application/json",
             },
-          }
+          },
         );
-        
+
         if (response.ok) {
           const data = await response.json();
           if (data.pricing?.basePrice) {
             setBasePrice(data.pricing.basePrice);
-            localStorage.setItem("admin-pricing", JSON.stringify(data.pricing));
+            localStorage.setItem(
+              "admin-pricing",
+              JSON.stringify(data.pricing),
+            );
             setPriceLoaded(true);
             return;
           }
@@ -70,9 +104,10 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
       } catch (error) {
         // Silently handle error - backend may not be available
       }
-      
+
       // Fallback to localStorage
-      const savedPricing = localStorage.getItem("admin-pricing");
+      const savedPricing =
+        localStorage.getItem("admin-pricing");
       if (savedPricing) {
         try {
           const pricing = JSON.parse(savedPricing);
@@ -83,13 +118,13 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
           // Use default basePrice (25)
         }
       }
-      
+
       // Mark as loaded even if we used default
       setPriceLoaded(true);
     }
-    
+
     loadPricingFromDB();
-    
+
     // Load website content with language
     setContent(loadContentWithLanguage(language));
   }, [language]);
@@ -97,26 +132,36 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
   // Listen for PWA install prompt
   useEffect(() => {
     // Check if already installed
-    if (window.matchMedia('(display-mode: standalone)').matches) {
+    if (
+      window.matchMedia("(display-mode: standalone)").matches
+    ) {
       setIsInstalled(true);
       return;
     }
 
     // Detect iOS
-    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    const isIOSDevice =
+      /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+      !(window as any).MSStream;
     setIsIOS(isIOSDevice);
-    
+
     // Detect Safari (not Chrome or other browsers on iOS)
-    const isSafariBrowser = isIOSDevice && 
-      /Safari/.test(navigator.userAgent) && 
-      !/CriOS|FxiOS|OPiOS|mercury|EdgiOS/.test(navigator.userAgent);
+    const isSafariBrowser =
+      isIOSDevice &&
+      /Safari/.test(navigator.userAgent) &&
+      !/CriOS|FxiOS|OPiOS|mercury|EdgiOS/.test(
+        navigator.userAgent,
+      );
     setIsSafari(isSafariBrowser);
 
     // Check if dismissed recently
-    const dismissed = localStorage.getItem('install-card-dismissed');
+    const dismissed = localStorage.getItem(
+      "install-card-dismissed",
+    );
     if (dismissed) {
       const dismissedTime = parseInt(dismissed);
-      const hoursSinceDismissed = (Date.now() - dismissedTime) / (1000 * 60 * 60);
+      const hoursSinceDismissed =
+        (Date.now() - dismissedTime) / (1000 * 60 * 60);
       if (hoursSinceDismissed < 24) {
         // Don't show again for 24 hours
         return;
@@ -138,12 +183,21 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
       setShowInstallCard(false);
     };
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    window.addEventListener('appinstalled', handleAppInstalled);
+    window.addEventListener(
+      "beforeinstallprompt",
+      handleBeforeInstallPrompt,
+    );
+    window.addEventListener("appinstalled", handleAppInstalled);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-      window.removeEventListener('appinstalled', handleAppInstalled);
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt,
+      );
+      window.removeEventListener(
+        "appinstalled",
+        handleAppInstalled,
+      );
     };
   }, []);
 
@@ -152,9 +206,13 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
       // If no prompt available, scroll to show instructions or alert
       if (isIOS) {
         if (isSafari) {
-          alert('To install: Tap the Share button in Safari, then tap "Add to Home Screen"');
+          alert(
+            'To install: Tap the Share button in Safari, then tap "Add to Home Screen"',
+          );
         } else {
-          alert('To install this app, please open this site in Safari. Chrome on iOS doesn\'t support installing web apps.');
+          alert(
+            "To install this app, please open this site in Safari. Chrome on iOS doesn't support installing web apps.",
+          );
         }
       }
       return;
@@ -165,9 +223,9 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
 
     // Wait for the user's response
     const { outcome } = await deferredPrompt.userChoice;
-    
-    if (outcome === 'accepted') {
-      console.log('User accepted the install prompt');
+
+    if (outcome === "accepted") {
+      console.log("User accepted the install prompt");
     }
 
     // Clear the deferred prompt
@@ -177,7 +235,10 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
 
   const handleDismissInstallCard = () => {
     setShowInstallCard(false);
-    localStorage.setItem('install-card-dismissed', Date.now().toString());
+    localStorage.setItem(
+      "install-card-dismissed",
+      Date.now().toString(),
+    );
   };
 
   return (
@@ -188,35 +249,45 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
           <div className="absolute left-10 top-10 h-64 w-64 rounded-full bg-white blur-3xl" />
           <div className="absolute bottom-10 right-10 h-96 w-96 rounded-full bg-accent blur-3xl" />
         </div>
-        
+
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="mb-4 text-white text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight drop-shadow-[0_4px_12px_rgba(0,0,0,0.4)]">
               {content.homepage.heroTitle}
             </h1>
-            
+
             <p className="mx-auto mb-6 max-w-2xl text-base sm:text-xl text-white/90">
               {content.homepage.heroSubtitle}
             </p>
-            
+
             {/* Key Benefits Pills */}
             <div className="mb-10 flex flex-wrap justify-center gap-2 sm:gap-3">
-              {content.homepage.benefitPills.map((benefit, index) => {
-                const IconComponent = 
-                  benefit.icon === "Users" ? Users :
-                  benefit.icon === "Clock" ? Clock :
-                  benefit.icon === "MapPin" ? MapPin :
-                  Shield;
-                
-                return (
-                  <div key={index} className="flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-2 backdrop-blur-sm sm:gap-2 sm:px-5 sm:py-3">
-                    <IconComponent className="h-4 w-4 text-white sm:h-5 sm:w-5" />
-                    <span className="text-sm text-white sm:text-base">{benefit.text}</span>
-                  </div>
-                );
-              })}
+              {content.homepage.benefitPills.map(
+                (benefit, index) => {
+                  const IconComponent =
+                    benefit.icon === "Users"
+                      ? Users
+                      : benefit.icon === "Clock"
+                        ? Clock
+                        : benefit.icon === "MapPin"
+                          ? MapPin
+                          : Shield;
+
+                  return (
+                    <div
+                      key={index}
+                      className="flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-2 backdrop-blur-sm sm:gap-2 sm:px-5 sm:py-3"
+                    >
+                      <IconComponent className="h-4 w-4 text-white sm:h-5 sm:w-5" />
+                      <span className="text-sm text-white sm:text-base">
+                        {benefit.text}
+                      </span>
+                    </div>
+                  );
+                },
+              )}
             </div>
-            
+
             {/* Tilted Price Card */}
             {priceLoaded && (
               <div className="mb-8 flex justify-center sm:mb-10">
@@ -224,33 +295,39 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
                   <div className="relative mx-auto flex h-36 items-center justify-center sm:h-40 md:h-44">
                     {/* Left Photo Card - Almost fully visible */}
                     <div className="absolute -left-24 top-1/2 z-0 w-32 -translate-y-1/2 scale-[0.85] rotate-[-2deg] transform overflow-hidden rounded-xl shadow-xl transition-all hover:z-20 hover:-left-[90px] hover:rotate-[-1deg] hover:scale-[0.88] sm:-left-32 sm:hover:-left-[122px] md:-left-40 md:w-48 md:hover:-left-[154px]">
-                      <ImageWithFallback 
+                      <ImageWithFallback
                         src="https://images.unsplash.com/photo-1715616130000-375a7e5fac95?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoYXBweSUyMHRvdXJpc3RzJTIwc2lnaHRzZWVpbmclMjBncm91cHxlbnwxfHx8fDE3NjA4MTcwODJ8MA&ixlib=rb-4.1.0&q=80&w=1080"
                         alt="Happy travelers in Sintra"
                         className="h-32 w-full object-cover sm:h-36 md:h-40"
                       />
                     </div>
-                    
+
                     {/* Right Photo Card - Almost fully visible */}
                     <div className="absolute -right-24 top-1/2 z-0 w-32 -translate-y-1/2 scale-[0.85] rotate-[-2deg] transform overflow-hidden rounded-xl shadow-xl transition-all hover:z-20 hover:-right-[90px] hover:rotate-[-1deg] hover:scale-[0.88] sm:-right-32 sm:w-40 sm:hover:-right-[122px] md:-right-40 md:w-48 md:hover:-right-[154px]">
-                      <ImageWithFallback 
+                      <ImageWithFallback
                         src="https://images.unsplash.com/photo-1759668558962-23ae91b34bfc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0cmF2ZWxlcnMlMjBmcmllbmRzJTIwdmFjYXRpb24lMjB8ZW58MXx8fHwxNzYwODE3MDgyfDA&ixlib=rb-4.1.0&q=80&w=1080"
                         alt="Friends enjoying their trip"
                         className="h-32 w-full object-cover sm:h-36 md:h-40"
                       />
                     </div>
-                    
+
                     {/* Center Price Card - Front and center */}
                     <div className="relative z-10 flex h-32 w-32 flex-col items-center justify-center rotate-[-2deg] transform rounded-2xl bg-white shadow-2xl transition-transform hover:rotate-0 hover:scale-105 sm:h-36 sm:w-40 md:h-40 md:w-48">
-                      <p className="mb-1 text-xs uppercase tracking-wide text-muted-foreground sm:text-sm">Starting at</p>
-                      <p className="text-4xl font-extrabold text-accent sm:text-5xl">€{basePrice}</p>
-                      <p className="mt-1 text-xs text-muted-foreground sm:text-sm">per person / full day</p>
+                      <p className="mb-1 text-xs uppercase tracking-wide text-muted-foreground sm:text-sm">
+                        Starting at
+                      </p>
+                      <p className="text-4xl font-extrabold text-accent sm:text-5xl">
+                        €{basePrice}
+                      </p>
+                      <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
+                        per person / full day
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
             )}
-            
+
             {/* Primary CTA */}
             <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center sm:gap-4">
               <Button
@@ -262,6 +339,84 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
                 <ArrowRight className="ml-2 h-5 w-5 sm:h-6 sm:w-6" />
               </Button>
             </div>
+
+            {/* Quick Links CTA Cards */}
+            <div className="mx-auto mt-12 max-w-4xl">
+              <p className="mb-4 text-center text-sm text-white/80 sm:text-base">
+                Plan your perfect day in Sintra
+              </p>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
+                {/* Attractions Card */}
+                <Card
+                  className="group cursor-pointer overflow-hidden border-2 border-white/20 bg-white/95 backdrop-blur-sm transition-all hover:scale-105 hover:border-accent hover:shadow-2xl"
+                  onClick={() => onNavigate("attractions")}
+                >
+                  <div className="relative aspect-[16/9] overflow-hidden">
+                    <ImageWithFallback
+                      src="https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=800&h=450&fit=crop"
+                      alt="Pena Palace - Sintra's top attraction"
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5">
+                      <div className="mb-2 flex items-center gap-2">
+                        <MapPin className="h-4 w-4 text-white sm:h-5 sm:w-5" />
+                        <span className="text-xs text-white/90 sm:text-sm">
+                          UNESCO Sites
+                        </span>
+                      </div>
+                      <h3 className="mb-1 text-lg text-white sm:text-xl">
+                        Explore Attractions
+                      </h3>
+                      <p className="text-xs text-white/80 sm:text-sm">
+                        Discover palaces, castles & gardens
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between p-4 sm:p-5">
+                    <span className="text-sm text-primary group-hover:text-accent sm:text-base">
+                      View all stops
+                    </span>
+                    <ArrowRight className="h-4 w-4 text-primary transition-transform group-hover:translate-x-1 group-hover:text-accent sm:h-5 sm:w-5" />
+                  </div>
+                </Card>
+
+                {/* Travel Guide Card */}
+                <Card
+                  className="group cursor-pointer overflow-hidden border-2 border-white/20 bg-white/95 backdrop-blur-sm transition-all hover:scale-105 hover:border-accent hover:shadow-2xl"
+                  onClick={() => onNavigate("blog")}
+                >
+                  <div className="relative aspect-[16/9] overflow-hidden">
+                    <ImageWithFallback
+                      src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&h=450&fit=crop"
+                      alt="Travel tips and guides for Sintra"
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5">
+                      <div className="mb-2 flex items-center gap-2">
+                        <Camera className="h-4 w-4 text-white sm:h-5 sm:w-5" />
+                        <span className="text-xs text-white/90 sm:text-sm">
+                          Insider Tips
+                        </span>
+                      </div>
+                      <h3 className="mb-1 text-lg text-white sm:text-xl">
+                        Travel Guide
+                      </h3>
+                      <p className="text-xs text-white/80 sm:text-sm">
+                        Tips, routes & local secrets
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between p-4 sm:p-5">
+                    <span className="text-sm text-primary group-hover:text-accent sm:text-base">
+                      Read our guides
+                    </span>
+                    <ArrowRight className="h-4 w-4 text-primary transition-transform group-hover:translate-x-1 group-hover:text-accent sm:h-5 sm:w-5" />
+                  </div>
+                </Card>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -272,9 +427,13 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
           <div className="mb-16 text-center">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-accent/10 px-4 py-2">
               <Star className="h-5 w-5 text-accent" />
-              <span className="text-accent">{t.easyAs1234}</span>
+              <span className="text-accent">
+                {t.easyAs1234}
+              </span>
             </div>
-            <h2 className="text-foreground">{t.howItWorksTitle}</h2>
+            <h2 className="text-foreground">
+              {t.howItWorksTitle}
+            </h2>
             <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
               {t.howItWorksSubtitle}
             </p>
@@ -288,7 +447,9 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
                 <div className="flex flex-col gap-3 p-4 sm:gap-6 sm:p-8 md:flex-row md:items-start">
                   <div className="flex-shrink-0">
                     <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-accent to-accent/80 shadow-lg sm:h-16 sm:w-16 sm:rounded-2xl">
-                      <span className="text-xl text-white sm:text-2xl">1</span>
+                      <span className="text-xl text-white sm:text-2xl">
+                        1
+                      </span>
                     </div>
                   </div>
                   <div className="flex-1 space-y-2 sm:space-y-3">
@@ -297,8 +458,12 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
                         <Ticket className="h-5 w-5 text-primary sm:h-6 sm:w-6" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="mb-1.5 text-foreground sm:mb-2">{t.step1Title}</h3>
-                        <p className="text-sm text-muted-foreground sm:text-base">{t.step1Description}</p>
+                        <h3 className="mb-1.5 text-foreground sm:mb-2">
+                          {t.step1Title}
+                        </h3>
+                        <p className="text-sm text-muted-foreground sm:text-base">
+                          {t.step1Description}
+                        </p>
                         <div className="mt-2 inline-flex items-center gap-2 rounded-lg bg-accent/10 px-2.5 py-1 text-xs text-accent sm:mt-3 sm:px-3 sm:py-1.5 sm:text-sm">
                           <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                           {t.step1Badge}
@@ -318,7 +483,9 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
                 <div className="flex flex-col gap-3 p-4 sm:gap-6 sm:p-8 md:flex-row md:items-start">
                   <div className="flex-shrink-0">
                     <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-accent to-accent/80 shadow-lg sm:h-16 sm:w-16 sm:rounded-2xl">
-                      <span className="text-xl text-white sm:text-2xl">2</span>
+                      <span className="text-xl text-white sm:text-2xl">
+                        2
+                      </span>
                     </div>
                   </div>
                   <div className="flex-1 space-y-2 sm:space-y-3">
@@ -327,8 +494,12 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
                         <MapPin className="h-5 w-5 text-primary sm:h-6 sm:w-6" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="mb-1.5 text-foreground sm:mb-2">{t.step2Title}</h3>
-                        <p className="text-sm text-muted-foreground sm:text-base">{t.step2Description}</p>
+                        <h3 className="mb-1.5 text-foreground sm:mb-2">
+                          {t.step2Title}
+                        </h3>
+                        <p className="text-sm text-muted-foreground sm:text-base">
+                          {t.step2Description}
+                        </p>
                         <div className="mt-2 inline-flex items-center gap-2 rounded-lg bg-accent/10 px-2.5 py-1 text-xs text-accent sm:mt-3 sm:px-3 sm:py-1.5 sm:text-sm">
                           <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                           {t.step2Badge}
@@ -348,7 +519,9 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
                 <div className="flex flex-col gap-3 p-4 sm:gap-6 sm:p-8 md:flex-row md:items-start">
                   <div className="flex-shrink-0">
                     <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-accent to-accent/80 shadow-lg sm:h-16 sm:w-16 sm:rounded-2xl">
-                      <span className="text-xl text-white sm:text-2xl">3</span>
+                      <span className="text-xl text-white sm:text-2xl">
+                        3
+                      </span>
                     </div>
                   </div>
                   <div className="flex-1 space-y-2 sm:space-y-3">
@@ -357,8 +530,12 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
                         <Car className="h-5 w-5 text-primary sm:h-6 sm:w-6" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="mb-1.5 text-foreground sm:mb-2">{t.step3Title}</h3>
-                        <p className="text-sm text-muted-foreground sm:text-base">{t.step3Description}</p>
+                        <h3 className="mb-1.5 text-foreground sm:mb-2">
+                          {t.step3Title}
+                        </h3>
+                        <p className="text-sm text-muted-foreground sm:text-base">
+                          {t.step3Description}
+                        </p>
                         <div className="mt-2 inline-flex items-center gap-2 rounded-lg bg-accent/10 px-2.5 py-1 text-xs text-accent sm:mt-3 sm:px-3 sm:py-1.5 sm:text-sm">
                           <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                           {t.step3Badge}
@@ -377,7 +554,9 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
                 <div className="flex flex-col gap-3 p-4 sm:gap-6 sm:p-8 md:flex-row md:items-start">
                   <div className="flex-shrink-0">
                     <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-accent to-accent/80 shadow-lg sm:h-16 sm:w-16 sm:rounded-2xl">
-                      <span className="text-xl text-white sm:text-2xl">4</span>
+                      <span className="text-xl text-white sm:text-2xl">
+                        4
+                      </span>
                     </div>
                   </div>
                   <div className="flex-1 space-y-2 sm:space-y-3">
@@ -386,8 +565,12 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
                         <Bell className="h-5 w-5 text-primary sm:h-6 sm:w-6" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="mb-1.5 text-foreground sm:mb-2">{t.step4Title}</h3>
-                        <p className="text-sm text-muted-foreground sm:text-base">{t.step4Description}</p>
+                        <h3 className="mb-1.5 text-foreground sm:mb-2">
+                          {t.step4Title}
+                        </h3>
+                        <p className="text-sm text-muted-foreground sm:text-base">
+                          {t.step4Description}
+                        </p>
                         <div className="mt-2 inline-flex items-center gap-2 rounded-lg bg-accent/10 px-2.5 py-1 text-xs text-accent sm:mt-3 sm:px-3 sm:py-1.5 sm:text-sm">
                           <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                           {t.step4Badge}
@@ -420,14 +603,16 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
                     <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center self-center rounded-xl bg-gradient-to-br from-accent to-accent/80 shadow-lg sm:h-16 sm:w-16 sm:rounded-2xl sm:self-start">
                       <Smartphone className="h-7 w-7 text-white sm:h-8 sm:w-8" />
                     </div>
-                    
+
                     {/* Content */}
                     <div className="flex-1 text-center sm:text-left">
-                      <h3 className="mb-2 text-foreground">{t.installAppTitle}</h3>
+                      <h3 className="mb-2 text-foreground">
+                        {t.installAppTitle}
+                      </h3>
                       <p className="mb-3 text-sm text-muted-foreground sm:mb-4 sm:text-base">
                         {t.installAppDescription}
                       </p>
-                      
+
                       {/* Benefits Pills - Simplified */}
                       <div className="mb-3 flex flex-wrap justify-center gap-2 sm:mb-4 sm:justify-start">
                         <div className="flex items-center gap-1.5 rounded-full bg-accent/10 px-2.5 py-1 text-xs text-accent sm:px-3 sm:text-sm">
@@ -449,7 +634,9 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
                         isSafari ? (
                           <div className="mb-3 rounded-lg bg-accent/10 p-3 text-left text-xs sm:mb-4 sm:text-sm">
                             <p className="mb-1.5 text-accent sm:mb-2">
-                              <strong>{t.iosInstructions}</strong>
+                              <strong>
+                                {t.iosInstructions}
+                              </strong>
                             </p>
                             <ol className="space-y-0.5 text-muted-foreground sm:space-y-1">
                               <li>{t.iosStep1}</li>
@@ -460,7 +647,9 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
                         ) : (
                           <div className="mb-3 rounded-lg bg-amber-50 border border-amber-200 p-3 text-left text-xs sm:mb-4 sm:text-sm">
                             <p className="mb-1.5 text-amber-800">
-                              <strong>{t.chromeIosWarning}</strong>
+                              <strong>
+                                {t.chromeIosWarning}
+                              </strong>
                             </p>
                             <p className="text-amber-700">
                               {t.chromeIosMessage}
@@ -477,7 +666,11 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
                           className="w-full bg-accent shadow-lg transition-all hover:scale-105 hover:bg-accent/90 sm:w-auto sm:flex-1"
                         >
                           <Download className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                          {deferredPrompt ? t.installAppButton : isIOS ? t.viewInstructions : t.installAppButtonShort}
+                          {deferredPrompt
+                            ? t.installAppButton
+                            : isIOS
+                              ? t.viewInstructions
+                              : t.installAppButtonShort}
                         </Button>
                         <Button
                           onClick={handleDismissInstallCard}
@@ -503,14 +696,19 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
           <div className="mb-12 text-center">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2">
               <Heart className="h-5 w-5 text-primary" />
-              <span className="text-primary">{t.whyYouLoveIt}</span>
+              <span className="text-primary">
+                {t.whyYouLoveIt}
+              </span>
             </div>
-            <h2 className="mb-4 text-foreground">What Makes Us Different</h2>
+            <h2 className="mb-4 text-foreground">
+              What Makes Us Different
+            </h2>
             <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-              This isn't just transportation—it's part of the adventure! ✨
+              This isn't just transportation—it's part of the
+              adventure! ✨
             </p>
           </div>
-          
+
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {/* Feature 1 */}
             <Card className="group relative overflow-hidden border-2 border-border bg-white shadow-md transition-all hover:scale-105 hover:shadow-2xl">
@@ -526,9 +724,13 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
                 <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-accent to-accent/80 shadow-lg transition-transform group-hover:scale-110">
                   <Users className="h-7 w-7 text-white" />
                 </div>
-                <h3 className="mb-2 text-foreground">Intimate Adventures</h3>
+                <h3 className="mb-2 text-foreground">
+                  Intimate Adventures
+                </h3>
                 <p className="text-muted-foreground">
-                  Just 2-6 guests per vehicle means you'll actually enjoy the ride! No tour bus crowds, just cozy exploration.
+                  Just 2-6 guests per vehicle means you'll
+                  actually enjoy the ride! No tour bus crowds,
+                  just cozy exploration.
                 </p>
               </div>
               <div className="absolute inset-0 border-2 border-accent opacity-0 transition-opacity group-hover:opacity-100" />
@@ -548,9 +750,14 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
                 <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 shadow-lg transition-transform group-hover:scale-110">
                   <Car className="h-7 w-7 text-white" />
                 </div>
-                <h3 className="mb-2 text-foreground">Professional Driver-Guides</h3>
+                <h3 className="mb-2 text-foreground">
+                  Professional Driver-Guides
+                </h3>
                 <p className="text-muted-foreground">
-                  Every tuk tuk, vintage jeep, and van is driven by a certified local guide who knows Sintra inside out. Get insights you won't find in any guidebook!
+                  Every tuk tuk, vintage jeep, and van is driven
+                  by a certified local guide who knows Sintra
+                  inside out. Get insights you won't find in any
+                  guidebook!
                 </p>
               </div>
               <div className="absolute inset-0 border-2 border-accent opacity-0 transition-opacity group-hover:opacity-100" />
@@ -570,9 +777,13 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
                 <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-accent to-accent/80 shadow-lg transition-transform group-hover:scale-110">
                   <Camera className="h-7 w-7 text-white" />
                 </div>
-                <h3 className="mb-2 text-foreground">Your Time, Your Way</h3>
+                <h3 className="mb-2 text-foreground">
+                  Your Time, Your Way
+                </h3>
                 <p className="text-muted-foreground">
-                  Spotted something Instagram-worthy? Hop off! Take your time, snap those photos, and catch the next ride when you're ready.
+                  Spotted something Instagram-worthy? Hop off!
+                  Take your time, snap those photos, and catch
+                  the next ride when you're ready.
                 </p>
               </div>
               <div className="absolute inset-0 border-2 border-accent opacity-0 transition-opacity group-hover:opacity-100" />
@@ -592,9 +803,13 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
                 <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 shadow-lg transition-transform group-hover:scale-110">
                   <Clock className="h-7 w-7 text-white" />
                 </div>
-                <h3 className="mb-2 text-foreground">Never Rush Again</h3>
+                <h3 className="mb-2 text-foreground">
+                  Never Rush Again
+                </h3>
                 <p className="text-muted-foreground">
-                  Vehicles pass every 10-15 minutes all day long (9am-8pm). Missed one? No worries, another's coming soon!
+                  Vehicles pass every 10-15 minutes all day long
+                  (9am-8pm). Missed one? No worries, another's
+                  coming soon!
                 </p>
               </div>
               <div className="absolute inset-0 border-2 border-accent opacity-0 transition-opacity group-hover:opacity-100" />
@@ -614,9 +829,13 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
                 <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-accent to-accent/80 shadow-lg transition-transform group-hover:scale-110">
                   <Heart className="h-7 w-7 text-white" />
                 </div>
-                <h3 className="mb-2 text-foreground">Guaranteed Seats</h3>
+                <h3 className="mb-2 text-foreground">
+                  Guaranteed Seats
+                </h3>
                 <p className="text-muted-foreground">
-                  Unlike public transport, your seat is waiting for you. Pre-booked, stress-free, comfortable—the way travel should be!
+                  Unlike public transport, your seat is waiting
+                  for you. Pre-booked, stress-free,
+                  comfortable—the way travel should be!
                 </p>
               </div>
               <div className="absolute inset-0 border-2 border-accent opacity-0 transition-opacity group-hover:opacity-100" />
@@ -636,9 +855,13 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
                 <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 shadow-lg transition-transform group-hover:scale-110">
                   <Zap className="h-7 w-7 text-white" />
                 </div>
-                <h3 className="mb-2 text-foreground">Instant Everything</h3>
+                <h3 className="mb-2 text-foreground">
+                  Instant Everything
+                </h3>
                 <p className="text-muted-foreground">
-                  Book now, ride now! Digital tickets mean no waiting in lines. Just point, scan, and you're on your way to adventure.
+                  Book now, ride now! Digital tickets mean no
+                  waiting in lines. Just point, scan, and you're
+                  on your way to adventure.
                 </p>
               </div>
               <div className="absolute inset-0 border-2 border-accent opacity-0 transition-opacity group-hover:opacity-100" />
@@ -650,8 +873,17 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
       {/* Final CTA - More Exciting */}
       <section className="relative overflow-hidden bg-gradient-to-r from-primary via-primary/95 to-accent py-20 sm:py-28">
         <div className="absolute inset-0 opacity-20">
-          <div className="absolute left-1/4 top-10 h-32 w-32 animate-bounce rounded-full bg-white/30 blur-2xl" style={{ animationDuration: "3s" }} />
-          <div className="absolute bottom-10 right-1/4 h-40 w-40 animate-bounce rounded-full bg-white/30 blur-2xl" style={{ animationDuration: "4s", animationDelay: "1s" }} />
+          <div
+            className="absolute left-1/4 top-10 h-32 w-32 animate-bounce rounded-full bg-white/30 blur-2xl"
+            style={{ animationDuration: "3s" }}
+          />
+          <div
+            className="absolute bottom-10 right-1/4 h-40 w-40 animate-bounce rounded-full bg-white/30 blur-2xl"
+            style={{
+              animationDuration: "4s",
+              animationDelay: "1s",
+            }}
+          />
         </div>
 
         <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
@@ -660,14 +892,14 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
               <Ticket className="h-10 w-10 text-accent" />
             </div>
           </div>
-          
+
           <h2 className="mb-4 text-white drop-shadow-lg">
             Ready for the Best Day Ever?
           </h2>
           <p className="mb-8 text-xl text-white/95 drop-shadow-md">
             Book your full day pass now—adventure awaits! 🚗✨
           </p>
-          
+
           <Button
             size="lg"
             className="bg-accent text-white shadow-2xl transition-all hover:scale-105 hover:bg-accent/90 hover:shadow-accent/50"
@@ -677,17 +909,16 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
             Get Your Day Pass Now - €{basePrice}
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
-          
+
           <p className="mt-4 text-sm text-white/80">
-            ⚡ Instant confirmation • 📱 Mobile-friendly • 💳 Secure payment
+            ⚡ Instant confirmation • 📱 Mobile-friendly • 💳
+            Secure payment
           </p>
         </div>
       </section>
 
       {/* TEMPORARY TESTING ACCESS - REMOVE IN PRODUCTION */}
-      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
-
-      </div>
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2"></div>
     </div>
   );
 }
