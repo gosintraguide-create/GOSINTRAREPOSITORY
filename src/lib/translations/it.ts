@@ -15,7 +15,7 @@ export const it: WebsiteContent = {
     heroCallToAction: "Prenota il Tuo Pass Giornaliero",
     benefitPills: [
       { icon: "Users", text: "Piccoli Gruppi (2-6)" },
-      { icon: "Clock", text: "Ogni 10-15 Min" },
+      { icon: "Shield", text: "Guide Locali" },
       { icon: "MapPin", text: "Tutte le Attrazioni" },
     ],
     sectionOneTitle: "Perché Scegliere Go Sintra?",

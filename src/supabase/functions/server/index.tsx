@@ -1430,11 +1430,13 @@ app.post(
       );
 
       // Create a PaymentIntent with the order amount and currency
+      // Supports card, Apple Pay, Google Pay, and other payment methods
       const paymentIntent = await stripe.paymentIntents.create({
         amount: Math.round(amount * 100), // Stripe uses cents
         currency: currency.toLowerCase(),
         automatic_payment_methods: {
           enabled: true,
+          allow_redirects: 'never', // Improves UX for wallets
         },
         metadata: {
           ...metadata,
@@ -2075,6 +2077,7 @@ app.get(
 app.get("/make-server-3bd0ade8/destinations/stats", async (c) => {
   try {
     const today = new Date().toISOString().split('T')[0];
+    const includeDetails = c.req.query('details') === 'true';
     
     // List of common destinations
     const destinations = [
@@ -2089,11 +2092,47 @@ app.get("/make-server-3bd0ade8/destinations/stats", async (c) => {
     ];
 
     const stats = [];
-    for (const dest of destinations) {
-      const destKey = `destination_${today}_${dest}`;
-      const count = (await kv.get(destKey)) || 0;
-      if (count > 0) {
-        stats.push({ destination: dest, count });
+    
+    if (includeDetails) {
+      // Get detailed passenger information per destination
+      const destLogKey = `destination_log_${today}`;
+      const destLog = (await kv.get(destLogKey)) || [];
+      
+      // Group by destination
+      const grouped: Record<string, any[]> = {};
+      for (const entry of destLog) {
+        if (!grouped[entry.destination]) {
+          grouped[entry.destination] = [];
+        }
+        grouped[entry.destination].push({
+          customerName: entry.customerName,
+          bookingId: entry.bookingId,
+          passengerIndex: entry.passengerIndex,
+          timestamp: entry.timestamp,
+        });
+      }
+      
+      // Build stats with passenger details
+      for (const dest of destinations) {
+        const passengers = grouped[dest] || [];
+        if (passengers.length > 0) {
+          stats.push({ 
+            destination: dest, 
+            count: passengers.length,
+            passengers: passengers.sort((a, b) => 
+              new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+            )
+          });
+        }
+      }
+    } else {
+      // Just counts (faster)
+      for (const dest of destinations) {
+        const destKey = `destination_${today}_${dest}`;
+        const count = (await kv.get(destKey)) || 0;
+        if (count > 0) {
+          stats.push({ destination: dest, count });
+        }
       }
     }
 
@@ -4782,6 +4821,128 @@ app.delete("/make-server-3bd0ade8/images/:fileName", async (c) => {
         error: "Failed to delete image",
       },
       500,
+    );
+  }
+});
+
+// ==========================================
+// SYSTEM RESET ROUTE (ONE-TIME USE FOR PRE-DEPLOYMENT)
+// ==========================================
+
+app.post("/make-server-3bd0ade8/admin/reset-all-data", async (c) => {
+  try {
+    console.log("🔴 SYSTEM RESET INITIATED - Deleting all data...");
+    
+    // Get all keys from the database
+    const allBookings = await kv.getByPrefix("booking_");
+    const allPickups = await kv.getByPrefix("pickup_request:");
+    const allCheckIns = await kv.getByPrefix("checkin_");
+    const allDestinations = await kv.getByPrefix("destination_");
+    const allChats = await kv.getByPrefix("live_chat_");
+    
+    let deletedCount = 0;
+    
+    // Delete all bookings
+    if (allBookings && allBookings.length > 0) {
+      for (const booking of allBookings) {
+        if (booking && booking.id) {
+          await kv.del(`booking_${booking.id}`);
+          deletedCount++;
+        }
+      }
+      console.log(`✅ Deleted ${allBookings.length} bookings`);
+    }
+    
+    // Delete all pickup requests
+    if (allPickups && allPickups.length > 0) {
+      for (const pickup of allPickups) {
+        if (pickup && pickup.id) {
+          await kv.del(`pickup_request:${pickup.id}`);
+          deletedCount++;
+        }
+      }
+      console.log(`✅ Deleted ${allPickups.length} pickup requests`);
+    }
+    
+    // Delete all check-ins and destination data
+    const checkInKeys = await kv.getByPrefix("checkins_");
+    if (checkInKeys) {
+      for (const item of checkInKeys) {
+        // Delete by reconstructing the key
+        const key = `checkins_${item.bookingId || 'unknown'}_${item.passengerIndex || 0}`;
+        try {
+          await kv.del(key);
+          deletedCount++;
+        } catch (e) {
+          console.warn(`Could not delete check-in key: ${key}`);
+        }
+      }
+    }
+    
+    // Delete destination logs and stats
+    const destLogs = await kv.getByPrefix("destination_log_");
+    if (destLogs) {
+      for (let i = 0; i < destLogs.length; i++) {
+        const today = new Date().toISOString().split('T')[0];
+        await kv.del(`destination_log_${today}`);
+      }
+    }
+    
+    const destinations = [
+      "Palácio da Pena",
+      "Castelo dos Mouros", 
+      "Palácio Nacional de Sintra",
+      "Quinta da Regaleira",
+      "Palácio de Monserrate",
+      "Cabo da Roca",
+      "Centro Histórico",
+      "Other"
+    ];
+    
+    const today = new Date().toISOString().split('T')[0];
+    for (const dest of destinations) {
+      await kv.del(`destination_${today}_${dest}`);
+    }
+    
+    // Delete all chat conversations
+    if (allChats && allChats.length > 0) {
+      for (const chat of allChats) {
+        if (chat && chat.id) {
+          await kv.del(`live_chat_${chat.id}`);
+          deletedCount++;
+        }
+      }
+      console.log(`✅ Deleted ${allChats.length} chat conversations`);
+    }
+    
+    // Reset booking prefix counter to AA
+    await kv.set("booking_current_prefix", "AA");
+    console.log("✅ Reset booking prefix to AA");
+    
+    // Clear active pickup requests list
+    await kv.del("active_pickup_requests");
+    
+    console.log(`🔴 SYSTEM RESET COMPLETE - Deleted ${deletedCount} items total`);
+    
+    return c.json({
+      success: true,
+      message: "All data has been reset successfully",
+      deletedCount: deletedCount,
+      details: {
+        bookings: allBookings?.length || 0,
+        pickups: allPickups?.length || 0,
+        chats: allChats?.length || 0,
+      }
+    });
+  } catch (error) {
+    console.error("❌ Error during system reset:", error);
+    return c.json(
+      {
+        success: false,
+        error: "Failed to reset system data",
+        message: error.message
+      },
+      500
     );
   }
 });

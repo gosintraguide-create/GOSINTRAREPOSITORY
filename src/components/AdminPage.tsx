@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import {
   Settings,
   Lock,
+  LogIn,
   Calendar as CalendarIcon,
   DollarSign,
   Users,
@@ -63,6 +64,7 @@ import {
   projectId,
   publicAnonKey,
 } from "../utils/supabase/info";
+import { createClient } from "../utils/supabase/client";
 import { toast } from "sonner@2.0.3";
 import { safeJsonFetch } from "../lib/apiErrorHandler";
 import { ContentEditor } from "./ContentEditor";
@@ -72,6 +74,7 @@ import { DriverManagement } from "./DriverManagementMobile";
 import { PickupRequestsManagement } from "./PickupRequestsManagement";
 import { TagManagement } from "./TagManagement";
 import { ImageManager } from "./ImageManager";
+import { CompactBookingsList } from "./CompactBookingsList";
 import {
   LineChart,
   Line,
@@ -198,6 +201,9 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
   const [loadingConversations, setLoadingConversations] =
     useState(false);
   const [activeTab, setActiveTab] = useState("pickups");
+  const [bookingFilter, setBookingFilter] = useState("all");
+  const [bookingFilterDate, setBookingFilterDate] = useState("");
+  const [expandedBookingId, setExpandedBookingId] = useState(null);
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
 
   // Load settings from database and localStorage
@@ -227,44 +233,103 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                 ...data.pricing.attractions,
               },
             });
-            // Also save to localStorage for offline use
             localStorage.setItem(
               "admin-pricing",
               JSON.stringify(data.pricing),
             );
             console.log("✅ Loaded pricing from database");
-            return;
+          }
+        } else {
+          console.error("Failed to load pricing from database");
+          const cached = localStorage.getItem("admin-pricing");
+          if (cached) {
+            const cachedPricing = JSON.parse(cached);
+            setPricing({
+              ...DEFAULT_PRICING,
+              ...cachedPricing,
+              attractions: {
+                ...DEFAULT_PRICING.attractions,
+                ...cachedPricing.attractions,
+              },
+            });
+            console.log("Loaded pricing from localStorage");
           }
         }
       } catch (error) {
-        // Silently handle error - backend may not be available
-      }
-
-      // Fallback to localStorage if database fetch fails
-      const savedPricing =
-        localStorage.getItem("admin-pricing");
-      if (savedPricing) {
-        try {
-          setPricing(JSON.parse(savedPricing));
-          console.log("ℹ️ Using saved pricing");
-        } catch (e) {
-          console.log("ℹ️ Using default pricing");
+        console.error("Error loading pricing:", error);
+        const cached = localStorage.getItem("admin-pricing");
+        if (cached) {
+          try {
+            const cachedPricing = JSON.parse(cached);
+            setPricing({
+              ...DEFAULT_PRICING,
+              ...cachedPricing,
+              attractions: {
+                ...DEFAULT_PRICING.attractions,
+                ...cachedPricing.attractions,
+              },
+            });
+            console.log("Loaded pricing from localStorage");
+          } catch (e) {
+            console.error("Error parsing cached pricing:", e);
+          }
         }
       }
     }
-
     loadPricingFromDB();
-
-    // Load website content
-    setContent(loadContent());
   }, []);
 
-  // Load availability and bookings from backend when authenticated
+  // Fetch bookings from server
   useEffect(() => {
-    if (isAuthenticated) {
-      loadAvailability();
-      loadBookings();
+    if (!isAuthenticated) return;
+
+    async function fetchBookings() {
+      setLoadingBookings(true);
+      try {
+        const response = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/bookings`,
+          {
+            headers: {
+              Authorization: `Bearer ${publicAnonKey}`,
+            },
+          },
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setBookings(data.bookings || []);
+        }
+      } catch (error) {
+        console.error("Error fetching bookings:", error);
+      } finally {
+        setLoadingBookings(false);
+      }
     }
+
+    fetchBookings();
+
+    // Set up realtime subscription for instant booking updates
+    const supabase = createClient();
+    const channel = supabase
+      .channel('bookings-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'kv_store_3bd0ade8',
+          filter: 'key=like.booking_%'
+        },
+        (payload) => {
+          console.log('Realtime booking change detected:', payload);
+          // Reload bookings when any booking changes
+          fetchBookings();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [isAuthenticated]);
 
   const loadAvailability = async () => {
@@ -285,7 +350,6 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
   };
 
   const handleLogin = () => {
-    // Simple demo password - in production, use proper authentication
     if (password === "gosintra2025") {
       setIsAuthenticated(true);
       localStorage.setItem("admin-session", "authenticated");
@@ -297,13 +361,8 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
 
   const saveSettings = async () => {
     try {
-      // Save to localStorage for backward compatibility
-      localStorage.setItem(
-        "admin-pricing",
-        JSON.stringify(pricing),
-      );
+      localStorage.setItem("admin-pricing", JSON.stringify(pricing));
 
-      // Save to database for persistence across deployments
       const response = await fetch(
         `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/pricing`,
         {
@@ -323,22 +382,15 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
       toast.success("Settings saved successfully to database!");
     } catch (error) {
       console.error("Error saving settings:", error);
-      toast.error(
-        "Failed to save settings to database. Saved locally only.",
-      );
+      toast.error("Failed to save settings to database. Saved locally only.");
     }
   };
 
   const saveAvailability = async () => {
     setSavingAvailability(true);
     try {
-      // Save availability to localStorage for backward compatibility
-      localStorage.setItem(
-        "admin-availability",
-        JSON.stringify(availability),
-      );
+      localStorage.setItem("admin-availability", JSON.stringify(availability));
 
-      // Save each date's availability to backend
       const dates = Object.keys(availability);
       for (const date of dates) {
         const response = await fetch(
@@ -355,10 +407,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
 
         const result = await response.json();
         if (!result.success) {
-          console.error(
-            `Failed to save availability for ${date}:`,
-            result.error,
-          );
+          console.error(`Failed to save availability for ${date}:`, result.error);
         }
       }
 
@@ -376,13 +425,9 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
       const result = await saveContentAsync(content);
 
       if (result.success) {
-        toast.success(
-          "Content saved successfully to database!",
-        );
+        toast.success("Content saved successfully to database!");
       } else {
-        toast.error(
-          `Failed to save to database: ${result.error}. Saved locally only.`,
-        );
+        toast.error(`Failed to save to database: ${result.error}. Saved locally only.`);
       }
     } catch (error) {
       console.error("Error saving content:", error);
@@ -402,19 +447,13 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
         const result = await saveContentAsync(DEFAULT_CONTENT);
 
         if (result.success) {
-          toast.success(
-            "Content reset to defaults and saved to database!",
-          );
+          toast.success("Content reset to defaults and saved to database!");
         } else {
-          toast.error(
-            `Content reset locally but database save failed: ${result.error}`,
-          );
+          toast.error(`Content reset locally but database save failed: ${result.error}`);
         }
       } catch (error) {
         console.error("Error resetting content:", error);
-        toast.error(
-          "Content reset locally but database save failed.",
-        );
+        toast.error("Content reset locally but database save failed.");
       }
     }
   };
@@ -443,11 +482,8 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     }));
   };
 
-  const getAvailability = (
-    date: string,
-    timeSlot: string,
-  ): number => {
-    return availability[date]?.[timeSlot] ?? 50; // Default 50 seats
+  const getAvailability = (date: string, timeSlot: string): number => {
+    return availability[date]?.[timeSlot] ?? 50;
   };
 
   const setAllSlotsForDate = (date: string, seats: number) => {
@@ -476,13 +512,11 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     );
 
     if (result?.success && result.bookings) {
-      // Filter out any null or invalid bookings
       const validBookings = result.bookings.filter(
         (booking: any) =>
           booking && booking.id && booking.selectedDate,
       );
 
-      // Load check-in data for each booking
       const bookingsWithCheckIns = await Promise.all(
         validBookings.map(async (booking: any) => {
           const checkIns = await loadCheckInsForBooking(
@@ -536,7 +570,6 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     return checkIns;
   };
 
-  // Load bookings when component mounts and user is authenticated
   useEffect(() => {
     if (isAuthenticated) {
       loadBookings();
@@ -544,7 +577,6 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     }
   }, [isAuthenticated]);
 
-  // Chat functions
   const loadConversations = async () => {
     setLoadingConversations(true);
 
@@ -566,30 +598,56 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     setLoadingConversations(false);
   };
 
-  const loadConversationMessages = async (
-    conversationId: string,
-  ) => {
-    try {
-      const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/chat/${conversationId}/messages`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${publicAnonKey}`,
-            "Content-Type": "application/json",
-          },
+  const loadConversationMessages = async (conversationId: string) => {
+    const result = await safeJsonFetch<any>(
+      `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/chat/messages/${conversationId}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${publicAnonKey}`,
+          "Content-Type": "application/json",
         },
-      );
+      },
+    );
 
-      const result = await response.json();
-      if (result.success && result.messages) {
-        setConversationMessages(result.messages);
+    if (result?.success && result.messages) {
+      setConversationMessages(result.messages);
+    }
+  };
 
-        // Mark as read
-        await fetch(
-          `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/chat/${conversationId}/mark-read`,
+  const handleSendReply = async () => {
+    if (!selectedConversation || !replyMessage.trim()) return;
+
+    const result = await safeJsonFetch<any>(
+      `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/chat/send`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${publicAnonKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          conversationId: selectedConversation,
+          message: replyMessage,
+          isAdmin: true,
+        }),
+      },
+    );
+
+    if (result?.success) {
+      setReplyMessage("");
+      loadConversationMessages(selectedConversation);
+      loadConversations();
+    }
+  };
+
+  useEffect(() => {
+    async function loadPricingFromDB() {
+      try {
+        const response = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/pricing`,
           {
-            method: "POST",
+            method: "GET",
             headers: {
               Authorization: `Bearer ${publicAnonKey}`,
               "Content-Type": "application/json",
@@ -597,76 +655,69 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
           },
         );
 
-        // Refresh conversations list to update unread count
-        loadConversations();
+        if (response.ok) {
+          const data = await response.json();
+          if (data.pricing) {
+            setPricing({
+              ...DEFAULT_PRICING,
+              ...data.pricing,
+              attractions: {
+                ...DEFAULT_PRICING.attractions,
+                ...data.pricing.attractions,
+              },
+            });
+            localStorage.setItem(
+              "admin-pricing",
+              JSON.stringify(data.pricing),
+            );
+            console.log("✅ Loaded pricing from database");
+            return;
+          }
+        }
+      } catch (error) {
+        // Silently handle error - backend may not be available
       }
-    } catch (error) {
-      console.error(
-        "Error loading conversation messages:",
-        error,
-      );
-    }
-  };
 
-  const sendAdminReply = async () => {
-    if (!replyMessage.trim() || !selectedConversation) return;
-
-    const messageText = replyMessage.trim();
-    setReplyMessage("");
-
-    try {
-      const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/chat/message`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${publicAnonKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            conversationId: selectedConversation,
-            sender: "admin",
-            senderName: "Go Sintra Team",
-            message: messageText,
-          }),
-        },
-      );
-
-      const result = await response.json();
-      if (result.success && result.message) {
-        setConversationMessages((prev) => [
-          ...prev,
-          result.message,
-        ]);
-        toast.success("Reply sent!");
+      const savedPricing = localStorage.getItem("admin-pricing");
+      if (savedPricing) {
+        try {
+          setPricing(JSON.parse(savedPricing));
+          console.log("ℹ️ Using saved pricing");
+        } catch (e) {
+          console.log("ℹ️ Using default pricing");
+        }
       }
-    } catch (error) {
-      console.error("Error sending reply:", error);
-      toast.error("Failed to send reply");
     }
-  };
 
-  const closeConversation = async (conversationId: string) => {
-    try {
-      const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/chat/${conversationId}/close`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${publicAnonKey}`,
-            "Content-Type": "application/json",
-          },
-        },
-      );
+    loadPricingFromDB();
 
-      if (response.ok) {
-        toast.success("Conversation closed");
-        loadConversations();
+    // Load website content
+    setContent(loadContent());
+  }, []);
+
+  // Load bookings when component mounts and user is authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadBookings();
+      loadConversations();
+    }
+  }, [isAuthenticated]);
+
+  // ====== BOOKINGS FILTERING ======
+  const getFilteredBookings = () => {
+    const today = new Date().toISOString().split("T")[0];
+    
+    return bookings.filter((booking) => {
+      if (!booking || !booking.id || !booking.selectedDate) return false;
+      
+      if (bookingFilter === "today") {
+        return booking.selectedDate === today;
+      } else if (bookingFilter === "date" && bookingFilterDate) {
+        return booking.selectedDate === bookingFilterDate;
       }
-    } catch (error) {
-      console.error("Error closing conversation:", error);
-      toast.error("Failed to close conversation");
-    }
+      
+      return true; // "all" filter
+    });
   };
 
   // ====== METRICS & ANALYTICS CALCULATIONS ======
@@ -737,140 +788,100 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
         ? (totalCheckedIn / totalPassengers) * 100
         : 0;
 
-    // Revenue by date (last 30 days)
-    const dateRevenueMap = new Map<string, number>();
-    bookings.forEach((booking) => {
-      const date = booking.selectedDate;
-      dateRevenueMap.set(
-        date,
-        (dateRevenueMap.get(date) || 0) +
-          (booking.totalPrice || 0),
-      );
-    });
-
-    const revenueByDate = Array.from(dateRevenueMap.entries())
-      .map(([date, revenue]) => ({
-        date: new Date(date).toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-        }),
-        revenue: Math.round(revenue * 100) / 100,
-      }))
-      .sort((a, b) => a.date.localeCompare(b.date))
-      .slice(-14); // Last 14 days
-
-    // Revenue by month
-    const monthRevenueMap = new Map<string, number>();
-    bookings.forEach((booking) => {
-      const month = new Date(
-        booking.selectedDate,
-      ).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-      });
-      monthRevenueMap.set(
-        month,
-        (monthRevenueMap.get(month) || 0) +
-          (booking.totalPrice || 0),
-      );
-    });
-
-    const revenueByMonth = Array.from(monthRevenueMap.entries())
-      .map(([month, revenue]) => ({
-        month,
-        revenue: Math.round(revenue * 100) / 100,
-      }))
-      .sort((a, b) => {
-        const dateA = new Date(a.month);
-        const dateB = new Date(b.month);
-        return dateA.getTime() - dateB.getTime();
-      });
-
-    // Bookings by ticket type
-    let guidedCount = 0;
-    let standardCount = 0;
-
-    bookings.forEach((booking) => {
-      if (booking.guidedCommentary) {
-        guidedCount++;
-      } else {
-        standardCount++;
-      }
-    });
-
-    const bookingsByTicketType = [
-      {
-        type: "Standard",
-        count: standardCount,
-        percentage: (standardCount / totalBookings) * 100,
-      },
-      {
-        type: "Guided",
-        count: guidedCount,
-        percentage: (guidedCount / totalBookings) * 100,
-      },
-    ];
-
-    // Popular attractions
-    const attractionCountMap = new Map<string, number>();
-    bookings.forEach((booking) => {
-      if (booking.addons && Array.isArray(booking.addons)) {
-        booking.addons.forEach((addon: string) => {
-          const name =
-            DEFAULT_PRICING.attractions[addon]?.name || addon;
-          attractionCountMap.set(
-            name,
-            (attractionCountMap.get(name) || 0) + 1,
-          );
-        });
-      }
-    });
-
-    const popularAttractions = Array.from(
-      attractionCountMap.entries(),
-    )
-      .map(([name, count]) => ({ name, count }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 5);
-
-    // Today's bookings
+    // Today's stats
     const today = new Date().toISOString().split("T")[0];
     const todaysBookings = bookings.filter(
       (b) => b.selectedDate === today,
     );
+    let todayCheckedIn = 0;
+    let todayTotalPassengers = 0;
+    let todayRevenue = 0;
 
-    // Today's stats
-    const todayTotalPassengers = todaysBookings.reduce(
-      (sum, b) => sum + (b.passengers?.length || 0),
-      0,
-    );
-    const todayCheckedIn = todaysBookings.reduce((sum, b) => {
-      const checked = (b.checkIns || []).filter(
+    todaysBookings.forEach((booking) => {
+      const total = booking.passengers?.length || 0;
+      const checked = (booking.checkIns || []).filter(
         (checkInArray: any[]) =>
           checkInArray && checkInArray.length > 0,
       ).length;
-      return sum + checked;
-    }, 0);
-    const todayRevenue = todaysBookings.reduce(
-      (sum, b) => sum + (b.totalPrice || 0),
-      0,
-    );
+      todayCheckedIn += checked;
+      todayTotalPassengers += total;
+      todayRevenue += booking.totalPrice || 0;
+    });
 
-    // Upcoming bookings (future dates)
+    // Revenue by date (last 30 days)
+    const last30Days: { date: string; revenue: number }[] = [];
+    for (let i = 29; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split("T")[0];
+      const dayRevenue = bookings
+        .filter((b) => b.selectedDate === dateStr)
+        .reduce((sum, b) => sum + (b.totalPrice || 0), 0);
+      last30Days.push({ date: dateStr, revenue: dayRevenue });
+    }
+
+    // Revenue by month (last 12 months)
+    const revenueByMonth: {
+      month: string;
+      revenue: number;
+    }[] = [];
+    for (let i = 11; i >= 0; i--) {
+      const date = new Date();
+      date.setMonth(date.getMonth() - i);
+      const monthStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+      const monthRevenue = bookings
+        .filter((b) => b.selectedDate?.startsWith(monthStr))
+        .reduce((sum, b) => sum + (b.totalPrice || 0), 0);
+      revenueByMonth.push({
+        month: monthStr,
+        revenue: monthRevenue,
+      });
+    }
+
+    // Bookings by ticket type
+    const standardCount = bookings.filter(
+      (b) => !b.isGuidedTour,
+    ).length;
+    const guidedCount = bookings.filter((b) => b.isGuidedTour).length;
+    const bookingsByTicketType = [
+      { type: "Standard", count: standardCount },
+      { type: "Guided", count: guidedCount },
+    ];
+
+    // Popular attractions
+    const attractionCounts: { [key: string]: number } = {};
+    bookings.forEach((booking) => {
+      (booking.attractions || []).forEach((attr: string) => {
+        attractionCounts[attr] = (attractionCounts[attr] || 0) + 1;
+      });
+    });
+    const popularAttractions = Object.entries(attractionCounts)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+
+    // Upcoming bookings (next 7 days)
+    const upcomingDate = new Date();
+    upcomingDate.setDate(upcomingDate.getDate() + 7);
+    const upcomingStr = upcomingDate.toISOString().split("T")[0];
     const upcomingBookings = bookings
-      .filter((b) => b.selectedDate >= today)
-      .sort((a, b) =>
-        a.selectedDate.localeCompare(b.selectedDate),
+      .filter(
+        (b) => b.selectedDate >= today && b.selectedDate <= upcomingStr,
+      )
+      .sort(
+        (a, b) =>
+          new Date(a.selectedDate).getTime() -
+          new Date(b.selectedDate).getTime(),
       )
       .slice(0, 5);
 
-    // Recent bookings (most recent created)
+    // Recent bookings
     const recentBookings = [...bookings]
-      .sort((a, b) => {
-        const timeA = new Date(a.createdAt || 0).getTime();
-        const timeB = new Date(b.createdAt || 0).getTime();
-        return timeB - timeA;
-      })
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt || 0).getTime() -
+          new Date(a.createdAt || 0).getTime(),
+      )
       .slice(0, 5);
 
     return {
@@ -879,7 +890,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
       totalPassengers,
       averageBookingValue,
       checkInRate,
-      revenueByDate,
+      revenueByDate: last30Days,
       bookingsByTicketType,
       popularAttractions,
       revenueByMonth,
@@ -960,26 +971,8 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
               onClick={handleLogin}
               className="w-full bg-primary hover:bg-primary/90"
             >
+              <LogIn className="mr-2 h-4 w-4" />
               Sign In
-            </Button>
-
-            <div className="pt-4 border-t border-border">
-              <p className="text-center text-muted-foreground">
-                Demo password:{" "}
-                <code className="rounded bg-secondary px-2 py-1">
-                  gosintra2025
-                </code>
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-6">
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => onNavigate("home")}
-            >
-              Back to Website
             </Button>
           </div>
         </Card>
@@ -987,7 +980,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     );
   }
 
-  // Admin dashboard
+  // Main admin dashboard
   return (
     <div className="flex-1 bg-secondary/30 py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -1133,29 +1126,14 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                       variant="ghost"
                       className="w-full justify-start gap-3"
                       onClick={() => {
-                        setActiveTab("pricing");
+                        setActiveTab("settings");
                         setMoreMenuOpen(false);
                       }}
                     >
                       <DollarSign className="h-5 w-5" />
                       <div className="flex flex-col items-start">
-                        <span>Pricing</span>
-                        <span className="text-xs text-muted-foreground">Update pass and ticket prices</span>
-                      </div>
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-3"
-                      onClick={() => {
-                        setActiveTab("availability");
-                        setMoreMenuOpen(false);
-                      }}
-                    >
-                      <Users className="h-5 w-5" />
-                      <div className="flex flex-col items-start">
-                        <span>Availability</span>
-                        <span className="text-xs text-muted-foreground">Manage seat capacity</span>
+                        <span>Settings</span>
+                        <span className="text-xs text-muted-foreground">Pricing, availability & system settings</span>
                       </div>
                     </Button>
 
@@ -1202,7 +1180,22 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                       <FileText className="h-5 w-5" />
                       <div className="flex flex-col items-start">
                         <span>Blog</span>
-                        <span className="text-xs text-muted-foreground">Create and edit articles</span>
+                        <span className="text-xs text-muted-foreground">Manage blog articles</span>
+                      </div>
+                    </Button>
+
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-3"
+                      onClick={() => {
+                        setActiveTab("seo");
+                        setMoreMenuOpen(false);
+                      }}
+                    >
+                      <Tag className="h-5 w-5" />
+                      <div className="flex flex-col items-start">
+                        <span>SEO</span>
+                        <span className="text-xs text-muted-foreground">SEO tools and settings</span>
                       </div>
                     </Button>
 
@@ -1220,47 +1213,146 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                         <span className="text-xs text-muted-foreground">Manage blog tags</span>
                       </div>
                     </Button>
-
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-3"
-                      onClick={() => {
-                        setActiveTab("seo");
-                        setMoreMenuOpen(false);
-                      }}
-                    >
-                      <TrendingUp className="h-5 w-5" />
-                      <div className="flex flex-col items-start">
-                        <span>SEO Tools</span>
-                        <span className="text-xs text-muted-foreground">Analyze and optimize SEO</span>
-                      </div>
-                    </Button>
-
-                    <div className="my-4 h-px bg-border" />
-
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-3"
-                      onClick={() => {
-                        onNavigate("analytics");
-                        setMoreMenuOpen(false);
-                      }}
-                    >
-                      <BarChart3 className="h-5 w-5" />
-                      <div className="flex flex-col items-start">
-                        <span>Advanced Analytics</span>
-                        <span className="text-xs text-muted-foreground">Detailed performance reports</span>
-                      </div>
-                    </Button>
                   </div>
                 </SheetContent>
               </Sheet>
             </div>
           </div>
 
-          {/* ====== PICKUP REQUESTS TAB ====== */}
+          {/* ====== PICKUPS TAB ====== */}
           <TabsContent value="pickups" className="space-y-6">
             <PickupRequestsManagement />
+          </TabsContent>
+
+          {/* ====== BOOKINGS TAB ====== */}
+          <TabsContent value="bookings" className="space-y-6">
+            <CompactBookingsList
+              bookings={getFilteredBookings()}
+              onRefresh={loadBookings}
+              loadingBookings={loadingBookings}
+            />
+          </TabsContent>
+
+          {/* ====== MESSAGES TAB ====== */}
+          <TabsContent value="messages" className="space-y-6">
+            <Card className="border-border p-6">
+              <div className="mb-6">
+                <h2 className="mb-2 text-foreground">Customer Messages</h2>
+                <div className="h-1 w-16 rounded-full bg-accent" />
+                <p className="mt-4 text-muted-foreground">
+                  View and respond to customer inquiries from the website chat
+                </p>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-3">
+                <div className="space-y-2">
+                  <h3 className="text-foreground">Conversations</h3>
+                  {loadingConversations ? (
+                    <div className="flex items-center justify-center py-8">
+                      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+                    </div>
+                  ) : conversations.length === 0 ? (
+                    <p className="py-4 text-center text-muted-foreground">
+                      No conversations yet
+                    </p>
+                  ) : (
+                    <div className="space-y-2">
+                      {conversations.map((conv: any) => (
+                        <button
+                          key={conv.id}
+                          onClick={() => {
+                            setSelectedConversation(conv.id);
+                            loadConversationMessages(conv.id);
+                          }}
+                          className={`w-full rounded-lg border p-3 text-left transition-colors ${
+                            selectedConversation === conv.id
+                              ? "border-primary bg-primary/5"
+                              : "border-border hover:border-primary/50"
+                          }`}
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <p className="text-foreground">
+                                {conv.name || "Anonymous"}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {conv.email}
+                              </p>
+                            </div>
+                            {conv.unreadByAdmin > 0 && (
+                              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+                                {conv.unreadByAdmin}
+                              </span>
+                            )}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="md:col-span-2">
+                  {selectedConversation ? (
+                    <div className="space-y-4">
+                      <div className="max-h-96 space-y-3 overflow-y-auto rounded-lg border border-border p-4">
+                        {conversationMessages.map((msg: any) => (
+                          <div
+                            key={msg.id}
+                            className={`flex ${
+                              msg.sender === "admin"
+                                ? "justify-end"
+                                : "justify-start"
+                            }`}
+                          >
+                            <div
+                              className={`max-w-xs rounded-lg p-3 ${
+                                msg.sender === "admin"
+                                  ? "bg-primary text-primary-foreground"
+                                  : "bg-secondary text-foreground"
+                              }`}
+                            >
+                              <p className="text-sm">{msg.message}</p>
+                              <p
+                                className={`mt-1 text-xs ${
+                                  msg.sender === "admin"
+                                    ? "text-primary-foreground/70"
+                                    : "text-muted-foreground"
+                                }`}
+                              >
+                                {new Date(
+                                  msg.createdAt
+                                ).toLocaleTimeString()}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex gap-2">
+                        <Input
+                          value={replyMessage}
+                          onChange={(e) =>
+                            setReplyMessage(e.target.value)
+                          }
+                          placeholder="Type your reply..."
+                          onKeyPress={(e) =>
+                            e.key === "Enter" && handleSendReply()
+                          }
+                        />
+                        <Button onClick={handleSendReply}>
+                          <Send className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex h-full items-center justify-center rounded-lg border border-dashed border-border p-8">
+                      <p className="text-center text-muted-foreground">
+                        Select a conversation to view messages
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </Card>
           </TabsContent>
 
           {/* ====== METRICS TAB ====== */}
@@ -1468,9 +1560,6 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                 </div>
               )}
             </Card>
-
-            {/* Destination Tracker */}
-            <DestinationTracker autoRefresh={true} />
 
             {/* Summary Cards */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -2230,406 +2319,466 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                                   ) || "0.00"}
                                 </p>
                               </div>
-                              {booking.guidedCommentary && (
-                                <div className="rounded-lg bg-accent/10 px-3 py-2">
-                                  <p className="text-accent">
-                                    ✓ Guided Commentary
-                                  </p>
-                                </div>
-                              )}
                             </div>
 
-                            {/* QR Codes Preview */}
-                            <div>
-                              <p className="mb-3 text-muted-foreground">
-                                QR Codes
+                            {/* Passenger Details */}
+                            <div className="space-y-2">
+                              <p className="text-muted-foreground">
+                                Passengers
                               </p>
-                              {!booking.qrCodes ||
-                              booking.qrCodes.length === 0 ? (
-                                <div className="rounded-lg border border-border bg-muted/30 p-4 text-center">
-                                  <p className="text-muted-foreground">
-                                    No QR codes available
-                                  </p>
-                                </div>
-                              ) : (
-                                <div className="grid grid-cols-2 gap-2">
-                                  {booking.qrCodes
-                                    .slice(0, 4)
-                                    .map(
-                                      (
-                                        qrCode: string,
-                                        index: number,
-                                      ) => (
-                                        <div
-                                          key={index}
-                                          className="rounded-lg border border-border bg-white p-2"
-                                        >
-                                          <img
-                                            src={qrCode}
-                                            alt={`QR Code ${index + 1}`}
-                                            className="w-full"
-                                          />
-                                          <p className="mt-1 text-center text-muted-foreground">
-                                            Pass {index + 1}
-                                          </p>
-                                        </div>
-                                      ),
-                                    )}
+                              <div className="space-y-1">
+                                {booking.passengers?.map(
+                                  (
+                                    passenger: any,
+                                    idx: number,
+                                  ) => {
+                                    const isCheckedIn =
+                                      booking.checkIns?.[idx] &&
+                                      booking.checkIns[idx]
+                                        .length > 0;
+                                    return (
+                                      <div
+                                        key={idx}
+                                        className="flex items-center gap-2 text-foreground"
+                                      >
+                                        {isCheckedIn ? (
+                                          <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                        ) : (
+                                          <Clock className="h-4 w-4 text-muted-foreground" />
+                                        )}
+                                        <span>
+                                          {passenger.name ||
+                                            passenger.fullName ||
+                                            `Passenger ${idx + 1}`}
+                                        </span>
+                                      </div>
+                                    );
+                                  },
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Additional Details */}
+                          <div className="mt-4 flex flex-wrap gap-2">
+                            {booking.guidedCommentary && (
+                              <div className="inline-flex items-center gap-1 rounded-full bg-accent/20 px-3 py-1 text-accent">
+                                <MessageCircle className="h-3.5 w-3.5" />
+                                <span>Guided Tour</span>
+                              </div>
+                            )}
+                            {booking.addons &&
+                              booking.addons.length > 0 && (
+                                <div className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-primary">
+                                  <Tag className="h-3.5 w-3.5" />
+                                  <span>
+                                    {booking.addons.length} add-on
+                                    {booking.addons.length > 1
+                                      ? "s"
+                                      : ""}
+                                  </span>
                                 </div>
                               )}
-                            </div>
                           </div>
                         </Card>
                       );
                     })}
-                </div>
-              )}
-            </Card>
-          </TabsContent>
-
-          {/* ====== DRIVERS TAB ====== */}
-          <TabsContent value="drivers" className="space-y-6">
-            <DriverManagement />
-          </TabsContent>
-
-          {/* ====== PRICING TAB ====== */}
-          <TabsContent value="pricing" className="space-y-6">
-            <Card className="border-border p-8">
-              <div className="mb-6">
-                <h2 className="mb-2 text-foreground">
-                  Day Pass Pricing
-                </h2>
-                <div className="h-1 w-16 rounded-full bg-accent" />
-              </div>
-
-              <div className="space-y-6">
-                <div className="grid gap-6 sm:grid-cols-2">
-                  <div>
-                    <Label htmlFor="basePrice">
-                      Base Day Pass Price (€)
-                    </Label>
-                    <Input
-                      id="basePrice"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={pricing.basePrice}
-                      onChange={(e) =>
-                        setPricing({
-                          ...pricing,
-                          basePrice:
-                            parseFloat(e.target.value) || 0,
-                        })
-                      }
-                      className="mt-2 border-border"
-                    />
                   </div>
-
-                  <div>
-                    <Label htmlFor="guidedSurcharge">
-                      Guided Tour Surcharge (€)
-                    </Label>
-                    <Input
-                      id="guidedSurcharge"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={pricing.guidedTourSurcharge}
-                      onChange={(e) =>
-                        setPricing({
-                          ...pricing,
-                          guidedTourSurcharge:
-                            parseFloat(e.target.value) || 0,
-                        })
-                      }
-                      className="mt-2 border-border"
-                    />
-                  </div>
-                </div>
-
-                <div className="rounded-lg bg-secondary/50 p-4">
-                  <p className="text-muted-foreground">
-                    Preview: Day pass will cost{" "}
-                    <strong className="text-foreground">
-                      €{pricing.basePrice.toFixed(2)}
-                    </strong>{" "}
-                    per person. With guided commentary:{" "}
-                    <strong className="text-foreground">
-                      €
-                      {(pricing.basePrice +
-                        pricing.guidedTourSurcharge).toFixed(2)}
-                    </strong>
-                  </p>
-                </div>
-
-                <Button
-                  onClick={saveSettings}
-                  className="bg-primary hover:bg-primary/90"
-                >
-                  <Save className="mr-2 h-4 w-4" />
-                  Save Pricing
-                </Button>
-              </div>
-            </Card>
-
-            <Card className="border-border p-8">
-              <div className="mb-6">
-                <h2 className="mb-2 text-foreground">
-                  Attraction Ticket Prices
-                </h2>
-                <div className="h-1 w-16 rounded-full bg-accent" />
-              </div>
-
-              <div className="space-y-4">
-                {Object.entries(pricing.attractions).map(
-                  ([id, attraction]) => (
-                    <div
-                      key={id}
-                      className="flex items-center gap-4 rounded-lg border border-border bg-white p-4"
-                    >
-                      <div className="flex-1">
-                        <p className="text-foreground">
-                          {attraction.name}
-                        </p>
-                      </div>
-                      <div className="w-32">
-                        <Input
-                          type="number"
-                          min="0"
-                          step="0.01"
-                          value={attraction.price}
-                          onChange={(e) =>
-                            updateAttractionPrice(
-                              id,
-                              parseFloat(e.target.value) || 0,
-                            )
-                          }
-                          className="border-border"
-                          placeholder="Price"
-                        />
-                      </div>
-                      <span className="w-8 text-muted-foreground">
-                        €
-                      </span>
-                    </div>
-                  ),
                 )}
+              </Card>
+            </TabsContent>
+
+            {/* ====== MESSAGES TAB ====== */}
+            <TabsContent value="messages" className="space-y-6">
+              <Card className="border-border p-8">
+                <div className="mb-6">
+                  <h2 className="mb-2 text-foreground">
+                    Customer Messages
+                  </h2>
+                  <div className="h-1 w-16 rounded-full bg-accent" />
+                </div>
+
+                <div className="space-y-4">
+                  {loadingConversations ? (
+                    <div className="flex justify-center py-12">
+                      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+                    </div>
+                  ) : conversations.length === 0 ? (
+                    <div className="rounded-lg border border-border p-8 text-center">
+                      <MessageCircle className="mx-auto h-12 w-12 text-muted-foreground" />
+                      <p className="mt-4 text-muted-foreground">
+                        No messages yet
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {conversations.map((conv) => {
+                        const unreadCount = (conv.messages || []).filter(
+                          (msg: any) =>
+                            !msg.isAdmin && !msg.read,
+                        ).length;
+
+                        return (
+                          <Card
+                            key={conv.id}
+                            className="cursor-pointer border-border p-4 transition-colors hover:bg-secondary/50"
+                            onClick={() => {
+                              setSelectedConversation(conv);
+                              fetchConversationMessages(
+                                conv.id,
+                              );
+                            }}
+                          >
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <div className="mb-1 flex items-center gap-2">
+                                  <p className="text-foreground">
+                                    {conv.name || "Anonymous"}
+                                  </p>
+                                  {unreadCount > 0 && (
+                                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                                      {unreadCount}
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-muted-foreground">
+                                  {conv.email}
+                                </p>
+                                <p className="mt-1 line-clamp-1 text-muted-foreground">
+                                  {(conv.messages && conv.messages.length > 0)
+                                    ? (conv.messages[conv.messages.length - 1]?.message || "No messages")
+                                    : "No messages"}
+                                </p>
+                              </div>
+                              <div className="text-muted-foreground">
+                                {new Date(
+                                  conv.updatedAt,
+                                ).toLocaleDateString()}
+                              </div>
+                            </div>
+                          </Card>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </Card>
+            </TabsContent>
+
+            {/* ====== SETTINGS TAB ====== */}
+            <TabsContent value="settings" className="space-y-6">
+              <Card className="border-border p-8">
+                <div className="mb-6">
+                  <h2 className="mb-2 text-foreground">
+                    Pricing Settings
+                  </h2>
+                  <div className="h-1 w-16 rounded-full bg-accent" />
+                </div>
+
+                <div className="space-y-6">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <Label htmlFor="basePrice">
+                        Base Day Pass Price (€)
+                      </Label>
+                      <Input
+                        id="basePrice"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={pricing.basePrice}
+                        onChange={(e) =>
+                          setPricing({
+                            ...pricing,
+                            basePrice:
+                              parseFloat(e.target.value) || 0,
+                          })
+                        }
+                        className="mt-2 border-border"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="guidedSurcharge">
+                        Guided Tour Surcharge (€)
+                      </Label>
+                      <Input
+                        id="guidedSurcharge"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={pricing.guidedTourSurcharge}
+                        onChange={(e) =>
+                          setPricing({
+                            ...pricing,
+                            guidedTourSurcharge:
+                              parseFloat(e.target.value) || 0,
+                          })
+                        }
+                        className="mt-2 border-border"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="rounded-lg bg-secondary/50 p-4">
+                    <p className="text-muted-foreground">
+                      Preview: Day pass will cost{" "}
+                      <strong className="text-foreground">
+                        €{pricing.basePrice.toFixed(2)}
+                      </strong>{" "}
+                      per person. With guided commentary:{" "}
+                      <strong className="text-foreground">
+                        €
+                        {(pricing.basePrice +
+                          pricing.guidedTourSurcharge).toFixed(2)}
+                      </strong>
+                    </p>
+                  </div>
+
+                  <Button
+                    onClick={saveSettings}
+                    className="bg-primary hover:bg-primary/90"
+                  >
+                    <Save className="mr-2 h-4 w-4" />
+                    Save Pricing
+                  </Button>
+
+                  {/* Wallet Payments Info */}
+                  <div className="mt-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
+                    <div className="flex items-start gap-3">
+                      <AlertCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                      <div className="space-y-2">
+                        <p className="text-sm text-blue-900">
+                          <strong>Enable Apple Pay & Google Pay</strong>
+                        </p>
+                        <p className="text-xs text-blue-800">
+                          To allow customers to pay with Apple Pay and Google Pay, enable these payment methods in your Stripe Dashboard:
+                        </p>
+                        <ol className="text-xs text-blue-800 list-decimal list-inside space-y-1 ml-2">
+                          <li>Go to <a href="https://dashboard.stripe.com/settings/payment_methods" target="_blank" rel="noopener noreferrer" className="underline font-medium">Stripe Dashboard → Settings → Payment methods</a></li>
+                          <li>Enable "Apple Pay" and "Google Pay"</li>
+                          <li>For Apple Pay: Add and verify your domain</li>
+                          <li>Wallet buttons will automatically appear for compatible devices</li>
+                        </ol>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="border-border p-8">
+                <div className="mb-6">
+                  <h2 className="mb-2 text-foreground">
+                    Attraction Ticket Prices
+                  </h2>
+                  <div className="h-1 w-16 rounded-full bg-accent" />
+                </div>
+
+                <div className="space-y-4">
+                  {Object.entries(pricing.attractions).map(
+                    ([id, attraction]) => (
+                      <div
+                        key={id}
+                        className="flex items-center gap-4 rounded-lg border border-border bg-white p-4"
+                      >
+                        <div className="flex-1">
+                          <p className="text-foreground">
+                            {attraction.name}
+                          </p>
+                        </div>
+                        <div className="w-32">
+                          <Input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={attraction.price}
+                            onChange={(e) =>
+                              updateAttractionPrice(
+                                id,
+                                parseFloat(e.target.value) || 0,
+                              )
+                            }
+                            className="border-border"
+                          />
+                        </div>
+                      </div>
+                    ),
+                  )}
+                </div>
 
                 <Button
                   onClick={saveSettings}
-                  className="mt-4 bg-primary hover:bg-primary/90"
+                  className="mt-6 bg-primary hover:bg-primary/90"
                 >
                   <Save className="mr-2 h-4 w-4" />
                   Save Attraction Prices
                 </Button>
-              </div>
-            </Card>
-          </TabsContent>
+              </Card>
 
-          {/* ====== AVAILABILITY TAB ====== */}
-          <TabsContent
-            value="availability"
-            className="space-y-6"
-          >
-            <Card className="border-border p-8">
-              <div className="mb-6 flex items-center justify-between">
-                <div>
+              <Card className="border-border p-8">
+                <div className="mb-6">
                   <h2 className="mb-2 text-foreground">
-                    Seat Availability Management
+                    Availability Management
                   </h2>
                   <div className="h-1 w-16 rounded-full bg-accent" />
-                  <p className="mt-4 text-muted-foreground">
-                    Manage available seats for each departure
-                    time. Default is 50 seats per time slot.
-                  </p>
-                  <div className="mt-3 rounded-lg bg-primary/5 border border-primary/20 p-3">
-                    <p className="text-xs text-primary flex items-center gap-2">
-                      <AlertCircle className="h-4 w-4" />
-                      Availability automatically decrements when
-                      customers book. Bookings are checked
-                      against real-time availability.
-                    </p>
-                  </div>
                 </div>
-                <Button
-                  onClick={loadAvailability}
-                  variant="outline"
-                >
-                  Refresh
-                </Button>
-              </div>
 
-              <div className="space-y-6">
-                <div>
-                  <Label
-                    htmlFor="availabilityDate"
-                    className="text-foreground"
-                  >
-                    Select Date
-                  </Label>
-                  <Popover
-                    open={calendarOpen}
-                    onOpenChange={setCalendarOpen}
-                  >
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="mt-2 w-full max-w-xs justify-start border-border text-left"
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {selectedDate
-                          ? new Date(
-                              selectedDate,
-                            ).toLocaleDateString("en-US", {
-                              weekday: "short",
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric",
-                            })
-                          : "Pick a date"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      className="w-auto p-0"
-                      align="start"
+                <div className="space-y-6">
+                  <div>
+                    <Label>Select Date</Label>
+                    <Popover
+                      open={calendarOpen}
+                      onOpenChange={setCalendarOpen}
                     >
-                      <Calendar
-                        mode="single"
-                        selected={
-                          selectedDate
-                            ? new Date(selectedDate)
-                            : undefined
-                        }
-                        onSelect={(date) => {
-                          if (date) {
-                            setSelectedDate(
-                              date.toISOString().split("T")[0],
-                            );
-                            setCalendarOpen(false);
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="mt-2 w-full justify-start border-border text-left"
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {new Date(
+                            selectedDate,
+                          ).toLocaleDateString("en-US", {
+                            weekday: "long",
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <Calendar
+                          mode="single"
+                          selected={new Date(selectedDate)}
+                          onSelect={(date) => {
+                            if (date) {
+                              setSelectedDate(
+                                date.toISOString().split("T")[0],
+                              );
+                              setCalendarOpen(false);
+                            }
+                          }}
+                          disabled={(date) =>
+                            date <
+                            new Date(
+                              new Date().setHours(0, 0, 0, 0),
+                            )
                           }
-                        }}
-                        disabled={(date) =>
-                          date <
-                          new Date(
-                            new Date().setHours(0, 0, 0, 0),
-                          )
-                        }
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
 
-                <div className="rounded-lg border border-border bg-white p-6">
-                  <div className="mb-4 flex items-center justify-between">
-                    <h3 className="text-foreground">
-                      Time Slots for{" "}
-                      {new Date(
-                        selectedDate,
-                      ).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </h3>
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() =>
-                          setAllSlotsForDate(selectedDate, 50)
-                        }
-                      >
-                        Set All to 50
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() =>
-                          setAllSlotsForDate(selectedDate, 0)
-                        }
-                      >
-                        Set All to 0
-                      </Button>
+                  <div className="rounded-lg border border-border bg-white p-6">
+                    <div className="mb-4 flex items-center justify-between">
+                      <h3 className="text-foreground">
+                        Time Slots for{" "}
+                        {new Date(
+                          selectedDate,
+                        ).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </h3>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() =>
+                            setAllSlotsForDate(selectedDate, 50)
+                          }
+                        >
+                          Set All to 50
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() =>
+                            setAllSlotsForDate(selectedDate, 0)
+                          }
+                        >
+                          Set All to 0
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                      {TIME_SLOTS.map((slot) => (
+                        <div
+                          key={slot}
+                          className="rounded-lg border border-border p-4"
+                        >
+                          <Label
+                            htmlFor={`slot-${slot}`}
+                            className="text-foreground"
+                          >
+                            {slot}
+                          </Label>
+                          <Input
+                            id={`slot-${slot}`}
+                            type="number"
+                            min="0"
+                            value={getAvailability(
+                              selectedDate,
+                              slot,
+                            )}
+                            onChange={(e) =>
+                              updateAvailability(
+                                selectedDate,
+                                slot,
+                                parseInt(e.target.value) || 0,
+                              )
+                            }
+                            className="mt-2 border-border"
+                          />
+                        </div>
+                      ))}
                     </div>
                   </div>
 
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    {TIME_SLOTS.map((slot) => (
-                      <div
-                        key={slot}
-                        className="rounded-lg border border-border p-4"
-                      >
-                        <Label
-                          htmlFor={`slot-${slot}`}
-                          className="text-foreground"
-                        >
-                          {slot}
-                        </Label>
-                        <Input
-                          id={`slot-${slot}`}
-                          type="number"
-                          min="0"
-                          value={getAvailability(
-                            selectedDate,
-                            slot,
-                          )}
-                          onChange={(e) =>
-                            updateAvailability(
-                              selectedDate,
-                              slot,
-                              parseInt(e.target.value) || 0,
-                            )
-                          }
-                          className="mt-2 border-border"
-                        />
-                      </div>
-                    ))}
-                  </div>
+                  <Button
+                    onClick={saveAvailability}
+                    disabled={savingAvailability}
+                    className="bg-primary hover:bg-primary/90"
+                  >
+                    <Save className="mr-2 h-4 w-4" />
+                    {savingAvailability
+                      ? "Saving..."
+                      : "Save Availability"}
+                  </Button>
                 </div>
+              </Card>
+            </TabsContent>
 
-                <Button
-                  onClick={saveAvailability}
-                  disabled={savingAvailability}
-                  className="bg-primary hover:bg-primary/90"
-                >
-                  <Save className="mr-2 h-4 w-4" />
-                  {savingAvailability
-                    ? "Saving..."
-                    : "Save Availability"}
-                </Button>
-              </div>
-            </Card>
-          </TabsContent>
+            {/* ====== IMAGES TAB ====== */}
+            <TabsContent value="images" className="space-y-6">
+              <ImageManager />
+            </TabsContent>
 
-          {/* ====== IMAGES TAB ====== */}
-          <TabsContent value="images" className="space-y-6">
-            <ImageManager />
-          </TabsContent>
+            {/* ====== CONTENT TAB ====== */}
+            <TabsContent value="content" className="space-y-6">
+              <ContentEditor />
+            </TabsContent>
 
-          {/* ====== CONTENT TAB ====== */}
-          <TabsContent value="content" className="space-y-6">
-            <ContentEditor />
-          </TabsContent>
+            {/* ====== BLOG TAB ====== */}
+            <TabsContent value="blog" className="space-y-6">
+              <BlogEditor />
+            </TabsContent>
 
-          {/* ====== BLOG TAB ====== */}
-          <TabsContent value="blog" className="space-y-6">
-            <BlogEditor />
-          </TabsContent>
+            {/* ====== SEO TAB ====== */}
+            <TabsContent value="seo" className="space-y-6">
+              <SEOTools />
+            </TabsContent>
 
-          {/* ====== SEO TAB ====== */}
-          <TabsContent value="seo" className="space-y-6">
-            <SEOTools />
-          </TabsContent>
-
-          {/* ====== TAGS TAB ====== */}
-          <TabsContent value="tags" className="space-y-6">
-            <TagManagement />
-          </TabsContent>
-        </Tabs>
+            {/* ====== TAGS TAB ====== */}
+            <TabsContent value="tags" className="space-y-6">
+              <TagManagement />
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
 export default AdminPage;

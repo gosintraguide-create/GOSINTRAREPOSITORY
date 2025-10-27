@@ -72,11 +72,18 @@ function CheckoutForm({ amount, onSuccess, onError, customerEmail }: Omit<Stripe
       <div className="rounded-lg border border-border/50 p-4 bg-background">
         <PaymentElement 
           options={{
-            layout: "tabs",
-            wallets: {
-              applePay: "auto",
-              googlePay: "auto",
+            layout: {
+              type: "accordion",
+              defaultCollapsed: false,
+              radios: false,
+              spacedAccordionItems: true
             },
+            fields: {
+              billingDetails: {
+                email: customerEmail ? 'never' : 'auto',
+              }
+            },
+            paymentMethodOrder: ['apple_pay', 'google_pay', 'card']
           }}
         />
       </div>

@@ -5,6 +5,7 @@ import { Input } from "./ui/input";
 import { Card } from "./ui/card";
 import { loadContent, type WebsiteContent, DEFAULT_CONTENT } from "../lib/contentManager";
 import { projectId, publicAnonKey } from '../utils/supabase/info';
+import { createClient } from '../utils/supabase/client';
 import { toast } from "sonner@2.0.3";
 
 interface LiveChatProps {
@@ -51,6 +52,34 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Set up realtime subscription for instant message updates
+  useEffect(() => {
+    if (!conversationId) return;
+
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`chat-${conversationId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'kv_store_3bd0ade8',
+          filter: `key=eq.live_chat_${conversationId}`
+        },
+        (payload) => {
+          console.log('Realtime chat message change detected:', payload);
+          // Reload messages when conversation changes
+          loadMessages(conversationId);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [conversationId]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

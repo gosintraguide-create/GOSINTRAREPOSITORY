@@ -5,7 +5,6 @@ import { QrCode, Ticket, Home, Users, Clock, CheckCircle2, MapPin, Car, AlertCir
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { toast } from "sonner@2.0.3";
 import { safeJsonFetch } from '../lib/apiErrorHandler';
-import { DestinationTracker } from './DestinationTracker';
 
 interface OperationsPageProps {
   onNavigate: (page: string) => void;
@@ -439,10 +438,7 @@ export function OperationsPage({ onNavigate }: OperationsPageProps) {
           </Card>
         </div>
 
-        {/* Destination Tracker */}
-        <div className="mt-8">
-          <DestinationTracker autoRefresh={true} />
-        </div>
+
       </div>
     </div>
   );

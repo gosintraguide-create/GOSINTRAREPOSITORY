@@ -17,7 +17,23 @@ interface HomePageProps {
 }
 
 export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
-  const [basePrice, setBasePrice] = useState(25);
+  // Initialize basePrice from localStorage to prevent flash
+  const getInitialPrice = () => {
+    try {
+      const savedPricing = localStorage.getItem("admin-pricing");
+      if (savedPricing) {
+        const pricing = JSON.parse(savedPricing);
+        if (pricing.basePrice) {
+          return pricing.basePrice;
+        }
+      }
+    } catch (e) {
+      // Use default
+    }
+    return 25;
+  };
+  
+  const [basePrice, setBasePrice] = useState(getInitialPrice);
   const [content, setContent] = useState<WebsiteContent>(DEFAULT_CONTENT);
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
@@ -201,7 +217,7 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
               <div className="relative">
                 <div className="relative mx-auto flex h-36 items-center justify-center sm:h-40 md:h-44">
                   {/* Left Photo Card - Almost fully visible */}
-                  <div className="absolute -left-24 top-1/2 z-0 w-32 -translate-y-1/2 scale-[0.85] rotate-[-2deg] transform overflow-hidden rounded-xl shadow-xl transition-all hover:z-20 hover:-left-20 hover:rotate-0 hover:scale-95 sm:-left-32 sm:w-40 md:-left-40 md:w-48">
+                  <div className="absolute -left-24 top-1/2 z-0 w-32 -translate-y-1/2 scale-[0.85] rotate-[-2deg] transform overflow-hidden rounded-xl shadow-xl transition-all hover:z-20 hover:-left-[90px] hover:rotate-[-1deg] hover:scale-[0.88] sm:-left-32 sm:hover:-left-[122px] md:-left-40 md:w-48 md:hover:-left-[154px]">
                     <ImageWithFallback 
                       src="https://images.unsplash.com/photo-1715616130000-375a7e5fac95?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoYXBweSUyMHRvdXJpc3RzJTIwc2lnaHRzZWVpbmclMjBncm91cHxlbnwxfHx8fDE3NjA4MTcwODJ8MA&ixlib=rb-4.1.0&q=80&w=1080"
                       alt="Happy travelers in Sintra"
@@ -210,7 +226,7 @@ export function HomePage({ onNavigate, language = "en" }: HomePageProps) {
                   </div>
                   
                   {/* Right Photo Card - Almost fully visible */}
-                  <div className="absolute -right-24 top-1/2 z-0 w-32 -translate-y-1/2 scale-[0.85] rotate-[-2deg] transform overflow-hidden rounded-xl shadow-xl transition-all hover:z-20 hover:-right-20 hover:rotate-0 hover:scale-95 sm:-right-32 sm:w-40 md:-right-40 md:w-48">
+                  <div className="absolute -right-24 top-1/2 z-0 w-32 -translate-y-1/2 scale-[0.85] rotate-[-2deg] transform overflow-hidden rounded-xl shadow-xl transition-all hover:z-20 hover:-right-[90px] hover:rotate-[-1deg] hover:scale-[0.88] sm:-right-32 sm:w-40 sm:hover:-right-[122px] md:-right-40 md:w-48 md:hover:-right-[154px]">
                     <ImageWithFallback 
                       src="https://images.unsplash.com/photo-1759668558962-23ae91b34bfc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0cmF2ZWxlcnMlMjBmcmllbmRzJTIwdmFjYXRpb24lMjB8ZW58MXx8fHwxNzYwODE3MDgyfDA&ixlib=rb-4.1.0&q=80&w=1080"
                       alt="Friends enjoying their trip"

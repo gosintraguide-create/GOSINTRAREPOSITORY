@@ -15,7 +15,7 @@ export const pt: WebsiteContent = {
     heroCallToAction: "Reserve o Seu Passe",
     benefitPills: [
       { icon: "Users", text: "Grupos Pequenos (2-6)" },
-      { icon: "Clock", text: "A Cada 10-15 Min" },
+      { icon: "Shield", text: "Guias Locais" },
       { icon: "MapPin", text: "Todas as Atrações" },
     ],
     sectionOneTitle: "Porquê Escolher Go Sintra?",

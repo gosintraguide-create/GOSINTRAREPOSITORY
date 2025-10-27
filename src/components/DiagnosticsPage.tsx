@@ -41,6 +41,17 @@ export function DiagnosticsPage({ onNavigate }: DiagnosticsPageProps) {
   const [bookingQueryResult, setBookingQueryResult] = useState<any>(null);
   const [queryingBookings, setQueryingBookings] = useState(false);
   const [bookingIdLookup, setBookingIdLookup] = useState('');
+  const [resetting, setResetting] = useState(false);
+  const [resetUsed, setResetUsed] = useState(false);
+  const [resetResult, setResetResult] = useState<any>(null);
+
+  // Check if reset has been used before
+  useEffect(() => {
+    const hasReset = localStorage.getItem('gosintra_system_reset_used');
+    if (hasReset === 'true') {
+      setResetUsed(true);
+    }
+  }, []);
 
   const testPDFGeneration = async () => {
     setTesting(true);
@@ -387,6 +398,81 @@ export function DiagnosticsPage({ onNavigate }: DiagnosticsPageProps) {
     }
     
     document.body.removeChild(textArea);
+  };
+
+  const resetAllData = async () => {
+    // Confirmation dialog
+    const confirmed = window.confirm(
+      '⚠️ DANGER: This will permanently delete ALL data including:\n\n' +
+      '• All bookings and revenue records\n' +
+      '• All pickup requests\n' +
+      '• All check-ins and destination tracking\n' +
+      '• All chat conversations\n' +
+      '• Reset booking IDs to AA-1000\n\n' +
+      'This action CANNOT be undone!\n\n' +
+      'Are you absolutely sure you want to proceed?'
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    // Second confirmation
+    const doubleConfirm = window.confirm(
+      '🔴 FINAL WARNING: Click OK to permanently delete all data.\n\n' +
+      'This is your last chance to cancel!'
+    );
+
+    if (!doubleConfirm) {
+      return;
+    }
+
+    setResetting(true);
+    setResetResult(null);
+
+    try {
+      console.log('🔴 Initiating system reset...');
+
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/admin/reset-all-data`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${publicAnonKey}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setResetResult({
+          success: true,
+          deletedCount: data.deletedCount,
+          details: data.details,
+        });
+        
+        // Mark reset as used
+        localStorage.setItem('gosintra_system_reset_used', 'true');
+        setResetUsed(true);
+
+        toast.success(`✅ System reset complete! Deleted ${data.deletedCount} items.`);
+        console.log('✅ System reset successful:', data);
+      } else {
+        throw new Error(data.error || 'Failed to reset system');
+      }
+    } catch (error) {
+      console.error('❌ System reset error:', error);
+      const errorMsg = error instanceof Error ? error.message : 'Network error';
+      setResetResult({
+        success: false,
+        error: errorMsg,
+      });
+      toast.error(`Failed to reset system: ${errorMsg}`);
+    } finally {
+      setResetting(false);
+    }
   };
 
   return (
@@ -920,43 +1006,98 @@ export function DiagnosticsPage({ onNavigate }: DiagnosticsPageProps) {
           <DatabaseDiagnostics />
         </div>
 
-        {/* Cache Clear Card */}
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              🧹 Clear All Caches
-            </CardTitle>
-            <CardDescription>
-              Fix PWA icon issues and other cached data problems by clearing all caches and forcing a clean reload
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <ClearCacheButton />
-            
-            <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
-              <h3 className="mb-2 font-medium text-amber-900">When to Use This</h3>
-              <ul className="space-y-1 text-sm text-amber-800">
-                <li>• Seeing "Invalid icon size parameter: undefined" errors</li>
-                <li>• PWA icons not displaying correctly</li>
-                <li>• Old content still showing after updates</li>
-                <li>• Service worker issues</li>
-                <li>• Need a completely fresh start</li>
-              </ul>
-            </div>
+        {/* System Reset Card - One-time use */}
+        {!resetUsed && (
+          <Card className="mt-6 border-red-500">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-red-600">
+                🔴 Pre-Deployment System Reset
+              </CardTitle>
+              <CardDescription>
+                One-time use button to delete all test data before going live. This button will disappear after use.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Button
+                onClick={resetAllData}
+                disabled={resetting}
+                className="w-full bg-red-600 hover:bg-red-700 text-white"
+              >
+                {resetting ? (
+                  <>
+                    <Loader2 className="mr-2 size-4 animate-spin" />
+                    Resetting System...
+                  </>
+                ) : (
+                  <>
+                    🔴 Reset All Data (One-Time Use)
+                  </>
+                )}
+              </Button>
 
-            <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-              <h3 className="mb-2 font-medium text-blue-900">What Gets Cleared</h3>
-              <ul className="space-y-1 text-sm text-blue-800">
-                <li>✅ Service Worker caches</li>
-                <li>✅ localStorage (except language preference)</li>
-                <li>✅ sessionStorage</li>
-                <li>✅ IndexedDB databases</li>
-                <li>✅ Icon/manifest links from DOM</li>
-                <li>✅ Service Worker registrations</li>
-              </ul>
-            </div>
-          </CardContent>
-        </Card>
+              {resetResult && (
+                <div className={`rounded-lg border p-4 ${resetResult.success ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50'}`}>
+                  {resetResult.success ? (
+                    <>
+                      <div className="mb-3 flex items-center gap-2">
+                        <CheckCircle className="size-5 text-green-600" />
+                        <span className="font-medium text-green-900">System Reset Complete!</span>
+                      </div>
+                      
+                      <div className="space-y-2 text-sm text-green-800">
+                        <p><strong>Total Items Deleted:</strong> {resetResult.deletedCount}</p>
+                        {resetResult.details && (
+                          <div className="rounded bg-white/60 p-2">
+                            <p>• Bookings: {resetResult.details.bookings}</p>
+                            <p>• Pickup Requests: {resetResult.details.pickups}</p>
+                            <p>• Chat Conversations: {resetResult.details.chats}</p>
+                          </div>
+                        )}
+                        <p className="mt-3 text-xs">
+                          ✅ System is now ready for production deployment!
+                        </p>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="mb-3 flex items-center gap-2">
+                        <XCircle className="size-5 text-red-600" />
+                        <span className="font-medium text-red-900">Reset Failed</span>
+                      </div>
+                      <p className="text-sm text-red-800">{resetResult.error}</p>
+                    </>
+                  )}
+                </div>
+              )}
+              
+              <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+                <h3 className="mb-2 font-medium text-red-900">⚠️ WARNING - This Will Delete:</h3>
+                <ul className="space-y-1 text-sm text-red-800">
+                  <li>🗑️ All bookings and revenue records</li>
+                  <li>🗑️ All pickup requests</li>
+                  <li>🗑️ All check-ins and destination tracking</li>
+                  <li>🗑️ All chat conversations</li>
+                  <li>🔄 Reset booking ID counter to AA-1000</li>
+                </ul>
+                <p className="mt-3 text-xs font-semibold text-red-900">
+                  ⚠️ This action is PERMANENT and CANNOT be undone!
+                </p>
+              </div>
+
+              <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+                <h3 className="mb-2 font-medium text-blue-900">When to Use This</h3>
+                <p className="text-sm text-blue-800">
+                  Use this button once, right before your real deployment when you start actual operations. 
+                  It will clean up all test bookings, test revenue data, and test conversations from development, 
+                  giving you a fresh start with real customers.
+                </p>
+                <p className="mt-2 text-xs font-semibold text-blue-900">
+                  💡 The button will permanently disappear after use.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Debug Tools */}
         <Card className="mt-6">

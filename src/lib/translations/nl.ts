@@ -15,7 +15,7 @@ export const nl: WebsiteContent = {
     heroCallToAction: "Boek Uw Dagpas",
     benefitPills: [
       { icon: "Users", text: "Kleine Groepen (2-6)" },
-      { icon: "Clock", text: "Elke 10-15 Min" },
+      { icon: "Shield", text: "Lokale Gidsen" },
       { icon: "MapPin", text: "Alle Attracties" },
     ],
     sectionOneTitle: "Waarom Kiezen voor Go Sintra?",

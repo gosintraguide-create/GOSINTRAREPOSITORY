@@ -5,6 +5,7 @@ import { Badge } from "./ui/badge";
 import { Alert, AlertDescription } from "./ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Label } from "./ui/label";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog";
 import { ArrowLeft, Camera, CameraOff, CheckCircle2, XCircle, Clock, Users, Calendar, Ticket, MapPin } from "lucide-react";
 import { toast } from "sonner@2.0.3";
 import { projectId, publicAnonKey } from '../utils/supabase/info';
@@ -49,6 +50,7 @@ const DESTINATIONS = [
 export function QRScannerPage({ onNavigate }: QRScannerPageProps) {
   const [scanning, setScanning] = useState(false);
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
+  const [showDestinationDialog, setShowDestinationDialog] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedDestination, setSelectedDestination] = useState<string>("");
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -142,6 +144,12 @@ export function QRScannerPage({ onNavigate }: QRScannerPageProps) {
 
   const verifyQRCode = async (qrData: string) => {
     try {
+      // Pause scanning while verifying
+      if (scanIntervalRef.current) {
+        clearInterval(scanIntervalRef.current);
+        scanIntervalRef.current = null;
+      }
+      
       const response = await fetch(
         `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/verify-qr`,
         {
@@ -192,6 +200,8 @@ export function QRScannerPage({ onNavigate }: QRScannerPageProps) {
         
         if (!result.booking.alreadyCheckedIn && !result.booking.isExpired) {
           toast.success("Valid pass scanned!");
+          // Show quick destination selector
+          setShowDestinationDialog(true);
         } else if (result.booking.alreadyCheckedIn) {
           toast.warning("Pass already checked in today");
         } else if (result.booking.isExpired) {
@@ -242,18 +252,11 @@ export function QRScannerPage({ onNavigate }: QRScannerPageProps) {
       
       if (result.success) {
         toast.success(`Passenger checked in to ${selectedDestination}!`);
-        setScanResult({
-          ...scanResult,
-          booking: {
-            ...scanResult.booking,
-            alreadyCheckedIn: true,
-            checkIns: [...(scanResult.booking.checkIns || []), {
-              timestamp: new Date().toISOString(),
-              location: "Vehicle Pickup"
-            }]
-          }
-        });
-        setSelectedDestination("");
+        
+        // Auto-reset to scan next passenger after successful check-in
+        setTimeout(() => {
+          resetScanner();
+        }, 1500);
       } else {
         toast.error(result.message || "Check-in failed");
       }
@@ -265,10 +268,62 @@ export function QRScannerPage({ onNavigate }: QRScannerPageProps) {
     }
   };
 
+  const quickCheckIn = async (destination: string) => {
+    if (!scanResult?.booking) return;
+
+    setIsProcessing(true);
+    setShowDestinationDialog(false);
+    
+    try {
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/checkin`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${publicAnonKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            bookingId: scanResult.booking.bookingId,
+            passengerIndex: scanResult.booking.passengerIndex || 0,
+            location: "Vehicle Pickup",
+            destination: destination
+          }),
+        }
+      );
+
+      const result = await response.json();
+      
+      if (result.success) {
+        toast.success(`✅ Checked in to ${destination}!`);
+        
+        // Auto-reset to scan next passenger after successful check-in
+        setTimeout(() => {
+          resetScanner();
+        }, 1000);
+      } else {
+        toast.error(result.message || "Check-in failed");
+        setIsProcessing(false);
+      }
+    } catch (error) {
+      console.error("Check-in error:", error);
+      toast.error("Failed to check in passenger");
+      setIsProcessing(false);
+    }
+  };
+
   const resetScanner = () => {
     setScanResult(null);
     setIsProcessing(false);
     setSelectedDestination("");
+    setShowDestinationDialog(false);
+    
+    // Resume scanning if camera is still active
+    if (scanning && !scanIntervalRef.current && videoRef.current) {
+      scanIntervalRef.current = window.setInterval(() => {
+        captureAndDecodeQR();
+      }, 500);
+    }
   };
 
   return (
@@ -537,13 +592,52 @@ export function QRScannerPage({ onNavigate }: QRScannerPageProps) {
             <CardTitle>How to Use</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-muted-foreground">
-            <p>1. Click "Start Scanning" to activate the camera</p>
+            <p>1. Click "Start Scanning" to activate the camera (one-time permission)</p>
             <p>2. Point the camera at the customer's QR code</p>
-            <p>3. Wait for automatic detection and verification</p>
-            <p>4. Review passenger details and check them in</p>
-            <p>5. Click "Scan Another" to continue with next passenger</p>
+            <p>3. Tap destination in the quick selector popup</p>
+            <p>4. Scanner automatically resets for next passenger</p>
+            <p className="text-xs text-accent pt-2">💡 Camera stays on for faster scanning!</p>
           </CardContent>
         </Card>
+
+        {/* Quick Destination Selector Dialog */}
+        <Dialog open={showDestinationDialog} onOpenChange={setShowDestinationDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <MapPin className="h-5 w-5 text-accent" />
+                Select Destination
+              </DialogTitle>
+              <DialogDescription>
+                {scanResult?.booking?.customerName} - Where are they going?
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid grid-cols-2 gap-3 py-4">
+              {DESTINATIONS.map((dest) => (
+                <Button
+                  key={dest}
+                  onClick={() => quickCheckIn(dest)}
+                  disabled={isProcessing}
+                  size="lg"
+                  variant="outline"
+                  className="h-20 text-base hover:bg-primary hover:text-primary-foreground transition-all"
+                >
+                  {dest}
+                </Button>
+              ))}
+            </div>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setShowDestinationDialog(false);
+                setTimeout(resetScanner, 300);
+              }}
+              className="w-full"
+            >
+              Cancel
+            </Button>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

@@ -33,6 +33,7 @@
           "@radix-ui/react-tooltip": "^1.1.8",
           "@stripe/react-stripe-js": "*",
           "@stripe/stripe-js": "*",
+          "@supabase/supabase-js": "*",
           "@tailwindcss/vite": "*",
           "@vercel/analytics": "*",
           "@vitejs/plugin-react": "*",

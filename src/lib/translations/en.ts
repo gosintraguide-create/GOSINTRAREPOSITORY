@@ -15,7 +15,7 @@ export const en: WebsiteContent = {
     heroCallToAction: "Book Your Day Pass",
     benefitPills: [
       { icon: "Users", text: "Small Groups (2-6)" },
-      { icon: "Clock", text: "Every 10-15 Min" },
+      { icon: "Shield", text: "Local Guides" },
       { icon: "MapPin", text: "All Attractions" },
     ],
     sectionOneTitle: "Why Choose Go Sintra?",

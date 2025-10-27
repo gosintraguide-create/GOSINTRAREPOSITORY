@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
+import { createClient } from '../utils/supabase/client';
 
 interface DriverDashboardProps {
   driver: any;

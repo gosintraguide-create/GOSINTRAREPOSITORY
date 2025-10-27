@@ -253,7 +253,7 @@ export const DEFAULT_CONTENT: WebsiteContent = {
     heroCallToAction: "Book Your Day Pass",
     benefitPills: [
       { icon: "Users", text: "Small Groups (2-6)" },
-      { icon: "Shield", text: "Professional Guides" },
+      { icon: "Shield", text: "Local Guides" },
       { icon: "MapPin", text: "All Attractions" },
     ],
     sectionOneTitle: "Why Choose Go Sintra?",

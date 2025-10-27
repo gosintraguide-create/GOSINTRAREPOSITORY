@@ -14,7 +14,9 @@ import {
   Navigation
 } from 'lucide-react';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
+import { createClient } from '../utils/supabase/client';
 import { Alert, AlertDescription } from './ui/alert';
+import { DestinationTracker } from './DestinationTracker';
 
 interface PickupRequest {
   id: string;
@@ -39,9 +41,30 @@ export function PickupRequestsManagement() {
 
   useEffect(() => {
     loadRequests();
-    // Refresh every 15 seconds
-    const interval = setInterval(loadRequests, 15000);
-    return () => clearInterval(interval);
+    
+    // Set up realtime subscription for instant updates
+    const supabase = createClient();
+    const channel = supabase
+      .channel('pickup-requests-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'kv_store_3bd0ade8',
+          filter: 'key=like.pickup_request_%'
+        },
+        (payload) => {
+          console.log('Realtime pickup request change detected:', payload);
+          // Reload requests when any pickup request changes
+          loadRequests();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const loadRequests = async () => {
@@ -142,6 +165,9 @@ export function PickupRequestsManagement() {
 
   return (
     <div className="space-y-6">
+      {/* Destination Tracker */}
+      <DestinationTracker autoRefresh={true} showDetails={true} />
+      
       {/* Header Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className={pendingCount > 0 ? 'border-yellow-500 border-2' : ''}>

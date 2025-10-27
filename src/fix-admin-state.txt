@@ -1,0 +1,7 @@
+Lines 202-206 should be:
+
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const [bookingFilter, setBookingFilter] = useState("all");
+  const [bookingFilterDate, setBookingFilterDate] = useState("");
+  const [expandedBookingId, setExpandedBookingId] = useState(null);
+
