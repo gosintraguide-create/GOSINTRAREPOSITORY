@@ -18,6 +18,7 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
 
   const navItems = [
     { id: "attractions", label: t.attractions },
+    { id: "private-tours", label: "Private Tours" },
     { id: "blog", label: "Travel Guide" },
     { id: "manage-booking", label: t.manageBooking || "My Booking" },
     { id: "about", label: t.about },

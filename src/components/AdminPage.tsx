@@ -75,6 +75,7 @@ import { PickupRequestsManagement } from "./PickupRequestsManagement";
 import { TagManagement } from "./TagManagement";
 import { ImageManager } from "./ImageManager";
 import { CompactBookingsList } from "./CompactBookingsList";
+import { FeatureFlagManager } from "./FeatureFlagManager";
 import {
   LineChart,
   Line,
@@ -2749,6 +2750,11 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                   </Button>
                 </div>
               </Card>
+            </TabsContent>
+
+            {/* ====== SETTINGS TAB ====== */}
+            <TabsContent value="settings" className="space-y-6">
+              <FeatureFlagManager />
             </TabsContent>
 
             {/* ====== IMAGES TAB ====== */}

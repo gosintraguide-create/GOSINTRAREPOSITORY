@@ -21,6 +21,7 @@ import {
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { SunsetSpecialCarousel } from "./SunsetSpecialCarousel";
 import { useState, useEffect } from "react";
 import {
   loadContentWithLanguage,
@@ -341,11 +342,11 @@ export function HomePage({
             </div>
 
             {/* Compact Quick Links */}
-            <div className="mx-auto mt-8 flex max-w-lg flex-col items-center gap-3 sm:flex-row sm:gap-4">
+            <div className="mx-auto mt-8 flex max-w-4xl flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-4">
               {/* Attractions Link */}
               <button
                 onClick={() => onNavigate("attractions")}
-                className="group flex w-full items-center gap-3 rounded-xl border border-white/30 bg-white/10 px-4 py-3 backdrop-blur-sm transition-all hover:scale-105 hover:border-white/50 hover:bg-white/20 sm:w-auto"
+                className="group flex w-full items-center gap-3 rounded-xl border border-white/30 bg-white/10 px-4 py-3 backdrop-blur-sm transition-all hover:scale-105 hover:border-white/50 hover:bg-white/20 sm:w-auto sm:min-w-[240px]"
               >
                 <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
                   <ImageWithFallback
@@ -368,7 +369,7 @@ export function HomePage({
               {/* Travel Guide Link */}
               <button
                 onClick={() => onNavigate("blog")}
-                className="group flex w-full items-center gap-3 rounded-xl border border-white/30 bg-white/10 px-4 py-3 backdrop-blur-sm transition-all hover:scale-105 hover:border-white/50 hover:bg-white/20 sm:w-auto"
+                className="group flex w-full items-center gap-3 rounded-xl border border-white/30 bg-white/10 px-4 py-3 backdrop-blur-sm transition-all hover:scale-105 hover:border-white/50 hover:bg-white/20 sm:w-auto sm:min-w-[240px]"
               >
                 <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
                   <ImageWithFallback
@@ -387,10 +388,36 @@ export function HomePage({
                 </div>
                 <ArrowRight className="h-4 w-4 flex-shrink-0 text-white/70 transition-transform group-hover:translate-x-1 group-hover:text-white" />
               </button>
+
+              {/* Private Tours Link */}
+              <button
+                onClick={() => onNavigate("private-tours")}
+                className="group flex w-full items-center gap-3 rounded-xl border border-accent/50 bg-accent/20 px-4 py-3 backdrop-blur-sm transition-all hover:scale-105 hover:border-accent hover:bg-accent/30 sm:w-auto sm:min-w-[240px]"
+              >
+                <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
+                  <ImageWithFallback
+                    src="https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?w=200&h=200&fit=crop"
+                    alt="Private Tours"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div className="flex-1 text-left">
+                  <p className="text-sm text-white">
+                    Prefer a Private Tour?
+                  </p>
+                  <p className="text-xs text-white/70">
+                    Exclusive personalized experience
+                  </p>
+                </div>
+                <ArrowRight className="h-4 w-4 flex-shrink-0 text-white/70 transition-transform group-hover:translate-x-1 group-hover:text-white" />
+              </button>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Today's Special: Sunset Drive Carousel */}
+      <SunsetSpecialCarousel onNavigate={onNavigate} language={language} />
 
       {/* Steps Section - Detailed & Engaging */}
       <section className="relative bg-gradient-to-b from-white via-secondary/20 to-white py-20 sm:py-28">

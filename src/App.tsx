@@ -116,6 +116,12 @@ const BlogArticlePage = lazy(() =>
   })),
 );
 
+const PrivateToursPage = lazy(() =>
+  import("./components/PrivateToursPage").then((m) => ({
+    default: m.PrivateToursPage,
+  })),
+);
+
 // Loading fallback component
 function PageLoader() {
   return (
@@ -405,6 +411,15 @@ export default function App() {
             "Sintra, travel guide",
           path: `/blog/${pageData?.slug || ""}`,
         };
+      case "private-tours":
+        return {
+          title: "Private Tours of Sintra - Personalized Guided Experiences",
+          description:
+            "Experience Sintra your way with a private tour. Expert local guides, custom itineraries, and flexible schedules. Perfect for families, couples, and groups seeking a personalized adventure.",
+          keywords:
+            "Sintra private tours, private Sintra guide, custom Sintra tour, personalized Sintra experience, private guide Sintra",
+          path: "/private-tours",
+        };
       default:
         return { ...websiteContent.seo.home, path: "/" };
     }
@@ -463,6 +478,13 @@ export default function App() {
           <BlogArticlePage
             onNavigate={handleNavigate}
             slug={pageData?.slug || ""}
+            language={language}
+          />
+        );
+      case "private-tours":
+        return (
+          <PrivateToursPage
+            onNavigate={handleNavigate}
             language={language}
           />
         );

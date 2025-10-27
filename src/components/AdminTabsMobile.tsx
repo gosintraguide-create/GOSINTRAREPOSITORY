@@ -25,6 +25,7 @@ export function AdminTabsMobile({ children, conversations }: AdminTabsMobileProp
     { value: "drivers", icon: UserCog, label: "Drivers" },
     { value: "pricing", icon: DollarSign, label: "Pricing" },
     { value: "availability", icon: Users, label: "Availability" },
+    { value: "settings", icon: Settings, label: "Settings" },
     { value: "content", icon: Settings, label: "Content" },
     { value: "blog", icon: Package, label: "Blog" },
     { value: "seo", icon: Settings, label: "SEO" },
@@ -33,7 +34,7 @@ export function AdminTabsMobile({ children, conversations }: AdminTabsMobileProp
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
       <div className="overflow-x-auto mb-8 -mx-4 px-4 sm:mx-0 sm:px-0">
-        <TabsList className="inline-flex w-auto min-w-full sm:grid sm:w-full sm:grid-cols-9">
+        <TabsList className="inline-flex w-auto min-w-full sm:grid sm:w-full sm:grid-cols-10">
           {tabs.map(({ value, icon: Icon, label, unread }) => (
             <TabsTrigger key={value} value={value} className="flex items-center gap-2 relative">
               <Icon className="h-4 w-4 flex-shrink-0" />
