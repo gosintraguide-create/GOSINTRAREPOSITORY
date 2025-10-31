@@ -76,6 +76,7 @@ import { TagManagement } from "./TagManagement";
 import { ImageManager } from "./ImageManager";
 import { CompactBookingsList } from "./CompactBookingsList";
 import { FeatureFlagManager } from "./FeatureFlagManager";
+import { SunsetSpecialManager } from "./SunsetSpecialManager";
 import {
   LineChart,
   Line,
@@ -2468,6 +2469,13 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
 
             {/* ====== SETTINGS TAB ====== */}
             <TabsContent value="settings" className="space-y-6">
+              {/* Feature Flags */}
+              <FeatureFlagManager />
+              
+              {/* Sunset Special Manager */}
+              <SunsetSpecialManager />
+              
+              {/* Pricing & Availability - moved from old location */}
               <Card className="border-border p-8">
                 <div className="mb-6">
                   <h2 className="mb-2 text-foreground">
@@ -2498,6 +2506,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                         className="mt-2 border-border"
                       />
                     </div>
+
                     <div>
                       <Label htmlFor="guidedSurcharge">
                         Guided Tour Surcharge (€)
@@ -2566,6 +2575,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                 </div>
               </Card>
 
+              {/* Attraction Ticket Prices */}
               <Card className="border-border p-8">
                 <div className="mb-6">
                   <h2 className="mb-2 text-foreground">
@@ -2606,15 +2616,18 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                   )}
                 </div>
 
-                <Button
-                  onClick={saveSettings}
-                  className="mt-6 bg-primary hover:bg-primary/90"
-                >
-                  <Save className="mr-2 h-4 w-4" />
-                  Save Attraction Prices
-                </Button>
+                <div className="mt-6">
+                  <Button
+                    onClick={saveSettings}
+                    className="bg-primary hover:bg-primary/90"
+                  >
+                    <Save className="mr-2 h-4 w-4" />
+                    Save Attraction Prices
+                  </Button>
+                </div>
               </Card>
 
+              {/* Availability Management */}
               <Card className="border-border p-8">
                 <div className="mb-6">
                   <h2 className="mb-2 text-foreground">
@@ -2720,10 +2733,10 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                             id={`slot-${slot}`}
                             type="number"
                             min="0"
-                            value={getAvailability(
-                              selectedDate,
-                              slot,
-                            )}
+                            max="50"
+                            value={
+                              availability[selectedDate]?.[slot] ?? 50
+                            }
                             onChange={(e) =>
                               updateAvailability(
                                 selectedDate,
@@ -2736,25 +2749,24 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                         </div>
                       ))}
                     </div>
-                  </div>
 
-                  <Button
-                    onClick={saveAvailability}
-                    disabled={savingAvailability}
-                    className="bg-primary hover:bg-primary/90"
-                  >
-                    <Save className="mr-2 h-4 w-4" />
-                    {savingAvailability
-                      ? "Saving..."
-                      : "Save Availability"}
-                  </Button>
+                    <div className="mt-6">
+                      <Button
+                        onClick={saveSettings}
+                        className="bg-primary hover:bg-primary/90"
+                      >
+                        <Save className="mr-2 h-4 w-4" />
+                        Save Availability
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </Card>
             </TabsContent>
 
-            {/* ====== SETTINGS TAB ====== */}
-            <TabsContent value="settings" className="space-y-6">
-              <FeatureFlagManager />
+            {/* ====== DRIVERS TAB ====== */}
+            <TabsContent value="drivers" className="space-y-6">
+              <DriverManagement />
             </TabsContent>
 
             {/* ====== IMAGES TAB ====== */}

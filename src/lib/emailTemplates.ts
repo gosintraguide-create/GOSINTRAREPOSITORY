@@ -404,8 +404,8 @@ export function generateBookingConfirmationEmail(data: BookingEmailData): string
         <h3>📱 How It Works</h3>
         <ul>
           <li><strong>Show Your QR Code</strong> to board at any stop</li>
-          <li><strong>Unlimited Rides</strong> from 9 AM to 8 PM with professional guides</li>
-          <li><strong>Vehicles Every 10-15 Minutes</strong> at all major attractions</li>
+          <li><strong>Unlimited Rides</strong> from 9 AM to 7 PM with professional guides</li>
+          <li><strong>Vehicles Every 30 Minutes</strong> at all major attractions</li>
         </ul>
       </div>
 
@@ -522,8 +522,8 @@ Total Paid: €${totalPrice.toFixed(2)}
 HOW IT WORKS
 ============
 1. Show your QR code to board at any stop
-2. Unlimited rides from 9 AM to 8 PM with professional guides
-3. Vehicles every 10-15 minutes at all major attractions
+2. Unlimited rides from 9 AM to 7 PM with professional guides
+3. Vehicles every 30 minutes at all major attractions
 
 Need help? Contact us:
 Email: info@gosintra.com

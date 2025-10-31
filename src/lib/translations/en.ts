@@ -11,7 +11,7 @@ export const en: WebsiteContent = {
   },
   homepage: {
     heroTitle: "Discover Sintra Your Way",
-    heroSubtitle: "Hop-on, hop-off day pass with guaranteed seats. Unlimited rides in small tuk tuks and vintage jeeps. New departure every 10-15 minutes.",
+    heroSubtitle: "Hop-on, hop-off day pass with guaranteed seats. Unlimited rides in small tuk tuks and vintage jeeps. New departure every 30 minutes.",
     heroCallToAction: "Book Your Day Pass",
     benefitPills: [
       { icon: "Users", text: "Small Groups (2-6)" },
@@ -27,7 +27,7 @@ export const en: WebsiteContent = {
     story: [
       "Go Sintra was born from a simple observation: visitors to this UNESCO World Heritage site deserved better than crowded buses and rigid schedules.",
       "We created a flexible, premium alternative that combines the intimacy of small vehicles with the freedom of hop-on/hop-off convenience.",
-      "Today, thousands of visitors choose Go Sintra for guaranteed seating, regular departures every 10-15 minutes, and an authentic, intimate way to explore this magical destination.",
+      "Today, thousands of visitors choose Go Sintra for guaranteed seating, regular departures every 30 minutes, and an authentic, intimate way to explore this magical destination.",
     ],
     mission: "Our mission is to provide the most convenient, comfortable, and authentic way to explore Sintra's palaces, castles, and gardens.",
     values: [
@@ -156,7 +156,7 @@ export const en: WebsiteContent = {
   seo: {
     home: {
       title: "Go Sintra - Premium Hop-On/Hop-Off Day Pass | Small Vehicle Tours",
-      description: "Explore Sintra's UNESCO World Heritage sites with guaranteed seating in small vehicles. Unlimited rides every 10-15 minutes. Book your flexible day pass online now.",
+      description: "Explore Sintra's UNESCO World Heritage sites with guaranteed seating in small vehicles. Unlimited rides every 30 minutes. Book your flexible day pass online now.",
       keywords: "Sintra tours, hop on hop off Sintra, Sintra transport, small group tours Sintra, Pena Palace tours, Sintra day pass",
     },
     attractions: {
@@ -176,7 +176,7 @@ export const en: WebsiteContent = {
     },
     about: {
       title: "About Go Sintra - Premium Small Vehicle Tour Service",
-      description: "Go Sintra offers premium hop-on/hop-off service with guaranteed seating in small vehicles. Regular departures every 10-15 minutes throughout Sintra.",
+      description: "Go Sintra offers premium hop-on/hop-off service with guaranteed seating in small vehicles. Regular departures every 30 minutes throughout Sintra.",
       keywords: "about Go Sintra, Sintra tour company, premium Sintra tours, small group Sintra",
     },
   },

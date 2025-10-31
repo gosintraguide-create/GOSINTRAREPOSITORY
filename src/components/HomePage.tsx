@@ -44,6 +44,27 @@ export function HomePage({
   onNavigate,
   language = "en",
 }: HomePageProps) {
+  // Check feature flags
+  const [sunsetSpecialEnabled, setSunsetSpecialEnabled] = useState(true);
+
+  useEffect(() => {
+    const checkFlags = () => {
+      try {
+        const flags = localStorage.getItem("feature-flags");
+        if (flags) {
+          const parsed = JSON.parse(flags);
+          setSunsetSpecialEnabled(parsed.sunsetSpecialEnabled !== false);
+        }
+      } catch (e) {
+        console.error("Failed to parse feature flags:", e);
+      }
+    };
+
+    checkFlags();
+    window.addEventListener("storage", checkFlags);
+    return () => window.removeEventListener("storage", checkFlags);
+  }, []);
+
   // Initialize basePrice from localStorage to prevent flash
   const getInitialPrice = () => {
     try {
@@ -417,7 +438,9 @@ export function HomePage({
       </section>
 
       {/* Today's Special: Sunset Drive Carousel */}
-      <SunsetSpecialCarousel onNavigate={onNavigate} language={language} />
+      {sunsetSpecialEnabled && (
+        <SunsetSpecialCarousel onNavigate={onNavigate} language={language} />
+      )}
 
       {/* Steps Section - Detailed & Engaging */}
       <section className="relative bg-gradient-to-b from-white via-secondary/20 to-white py-20 sm:py-28">
@@ -805,8 +828,8 @@ export function HomePage({
                   Never Rush Again
                 </h3>
                 <p className="text-muted-foreground">
-                  Vehicles pass every 10-15 minutes all day long
-                  (9am-8pm). Missed one? No worries, another's
+                  Vehicles pass every 30 minutes all day long
+                  (9am-7pm). Missed one? No worries, another's
                   coming soon!
                 </p>
               </div>

@@ -122,6 +122,12 @@ const PrivateToursPage = lazy(() =>
   })),
 );
 
+const SunsetSpecialPurchasePage = lazy(() =>
+  import("./components/SunsetSpecialPurchasePage").then((m) => ({
+    default: m.SunsetSpecialPurchasePage,
+  })),
+);
+
 // Loading fallback component
 function PageLoader() {
   return (
@@ -420,6 +426,15 @@ export default function App() {
             "Sintra private tours, private Sintra guide, custom Sintra tour, personalized Sintra experience, private guide Sintra",
           path: "/private-tours",
         };
+      case "sunset-special-purchase":
+        return {
+          title: "Add Sunset Special - Exclusive Sunset Drive to Cabo da Roca",
+          description:
+            "Add an exclusive sunset drive to Cabo da Roca to your Go Sintra booking. Experience the breathtaking sunset at Europe's westernmost point.",
+          keywords:
+            "Sintra sunset tour, Cabo da Roca sunset, sunset drive Sintra, exclusive Sintra experience",
+          path: "/sunset-special-purchase",
+        };
       default:
         return { ...websiteContent.seo.home, path: "/" };
     }
@@ -484,6 +499,13 @@ export default function App() {
       case "private-tours":
         return (
           <PrivateToursPage
+            onNavigate={handleNavigate}
+            language={language}
+          />
+        );
+      case "sunset-special-purchase":
+        return (
+          <SunsetSpecialPurchasePage
             onNavigate={handleNavigate}
             language={language}
           />

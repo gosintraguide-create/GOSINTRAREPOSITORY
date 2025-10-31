@@ -11,7 +11,7 @@ export const fr: WebsiteContent = {
   },
   homepage: {
     heroTitle: "Découvrez Sintra à Votre Façon",
-    heroSubtitle: "Pass journalier hop-on, hop-off avec sièges garantis. Trajets illimités en petits tuk tuks et jeeps vintage. Nouveau départ toutes les 10-15 minutes.",
+    heroSubtitle: "Pass journalier hop-on, hop-off avec sièges garantis. Trajets illimités en petits tuk tuks et jeeps vintage. Nouveau départ toutes les 30 minutes.",
     heroCallToAction: "Réservez Votre Pass",
     benefitPills: [
       { icon: "Users", text: "Petits Groupes (2-6)" },
@@ -27,7 +27,7 @@ export const fr: WebsiteContent = {
     story: [
       "Go Sintra est né d'une observation simple : les visiteurs de ce site du patrimoine mondial de l'UNESCO méritaient mieux que des bus bondés et des horaires rigides.",
       "Nous avons créé une alternative flexible et premium qui combine l'intimité des petits véhicules avec la liberté de la commodité hop-on/hop-off.",
-      "Aujourd'hui, des milliers de visiteurs choisissent Go Sintra pour les sièges garantis, les départs réguliers toutes les 10-15 minutes et une façon authentique et intime d'explorer cette destination magique.",
+      "Aujourd'hui, des milliers de visiteurs choisissent Go Sintra pour les sièges garantis, les départs réguliers toutes les 30 minutes et une façon authentique et intime d'explorer cette destination magique.",
     ],
     mission: "Notre mission est de fournir le moyen le plus pratique, confortable et authentique d'explorer les palais, châteaux et jardins de Sintra.",
     values: [
@@ -156,7 +156,7 @@ export const fr: WebsiteContent = {
   seo: {
     home: {
       title: "Go Sintra - Pass Premium Hop-On/Hop-Off | Tours en Petits Véhicules",
-      description: "Explorez les sites du patrimoine mondial de l'UNESCO de Sintra avec des sièges garantis dans de petits véhicules. Trajets illimités toutes les 10-15 minutes. Réservez votre pass flexible en ligne maintenant.",
+      description: "Explorez les sites du patrimoine mondial de l'UNESCO de Sintra avec des sièges garantis dans de petits véhicules. Trajets illimités toutes les 30 minutes. Réservez votre pass flexible en ligne maintenant.",
       keywords: "tours Sintra, hop on hop off Sintra, transport Sintra, tours petits groupes Sintra, tours Palais Pena, pass journée Sintra",
     },
     attractions: {
@@ -176,7 +176,7 @@ export const fr: WebsiteContent = {
     },
     about: {
       title: "À Propos de Go Sintra - Service Premium de Tours en Petits Véhicules",
-      description: "Go Sintra offre un service premium hop-on/hop-off avec sièges garantis dans de petits véhicules. Départs réguliers toutes les 10-15 minutes dans tout Sintra.",
+      description: "Go Sintra offre un service premium hop-on/hop-off avec sièges garantis dans de petits véhicules. Départs réguliers toutes les 30 minutes dans tout Sintra.",
       keywords: "à propos Go Sintra, entreprise tours Sintra, tours premium Sintra, petits groupes Sintra",
     },
   },

@@ -40,8 +40,8 @@ export const termsTranslations: { [key: string]: TermsContent } = {
         items: [
           "Unlimited rides on tuk tuks, UMM jeeps, and other small private vehicles throughout Sintra",
           "Guaranteed seating in groups of 2-6 passengers",
-          "Regular service every 10-15 minutes at major attractions",
-          "Operating hours: 9:00 AM - 8:00 PM daily",
+          "Regular service every 30 minutes at major attractions",
+          "Operating hours: 9:00 AM - 7:00 PM daily",
           "Optional guided tours at 10:00 AM and 2:00 PM departures",
           "Optional attraction ticket bundles",
           "Live GPS tracking and pickup request service"

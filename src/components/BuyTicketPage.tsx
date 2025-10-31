@@ -20,10 +20,6 @@ import { format } from "date-fns";
 import { StripePaymentForm } from "./StripePaymentForm";
 import { getTranslation } from "../lib/translations";
 
-// FEATURE FLAG: Set to false to disable attraction ticket sales
-// To re-enable in the future, simply change this to true
-const ENABLE_ATTRACTION_TICKETS = false;
-
 interface BuyTicketPageProps {
   onNavigate: (page: string) => void;
   onBookingComplete: (booking: any) => void;
@@ -81,6 +77,9 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
     { value: "sintra-palace", label: t.buyTicket.pickupLocations.sintraPalace },
     { value: "other", label: t.buyTicket.pickupLocations.other },
   ];
+  // Feature flag for monument tickets
+  const [monumentTicketsEnabled, setMonumentTicketsEnabled] = useState(false);
+
   const [currentStep, setCurrentStep] = useState(1);
   const [bookingComplete, setBookingComplete] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -101,6 +100,25 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
     quantity: 1,
     pickupLocation: "sintra-train-station" as string,
   });
+
+  // Load feature flag from localStorage
+  useEffect(() => {
+    const checkFlags = () => {
+      try {
+        const flags = localStorage.getItem("feature-flags");
+        if (flags) {
+          const parsed = JSON.parse(flags);
+          setMonumentTicketsEnabled(parsed.monumentTicketsEnabled === true);
+        }
+      } catch (e) {
+        console.error("Failed to parse feature flags:", e);
+      }
+    };
+
+    checkFlags();
+    window.addEventListener("storage", checkFlags);
+    return () => window.removeEventListener("storage", checkFlags);
+  }, []);
 
   // Load pricing from database and fallback to localStorage
   useEffect(() => {
@@ -674,7 +692,7 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                     <h2 className="text-foreground">Add Attraction Tickets?</h2>
                   </div>
                   <div className="h-1 w-16 rounded-full bg-accent" />
-                  {ENABLE_ATTRACTION_TICKETS ? (
+                  {monumentTicketsEnabled ? (
                     <p className="mt-4 text-muted-foreground">
                       Skip the ticket lines! Add entrance tickets to popular attractions. {formData.quantity > 1 ? `Prices shown for ${formData.quantity} guests.` : ''}
                     </p>
@@ -685,7 +703,7 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                   )}
                 </div>
 
-                {ENABLE_ATTRACTION_TICKETS ? (
+                {monumentTicketsEnabled ? (
                   <>
                     <div className="space-y-3">
                       {attractions.map((attraction) => (

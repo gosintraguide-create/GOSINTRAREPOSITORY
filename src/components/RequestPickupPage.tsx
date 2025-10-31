@@ -548,8 +548,8 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
                   <span>Service Hours</span>
                 </div>
                 <p className="text-muted-foreground">
-                  Our vehicles run every 10-15 minutes from 9:00 AM to 8:00 PM daily. 
-                  Average wait time is 3-5 minutes.
+                  Our vehicles run every 30 minutes from 9:00 AM to 7:00 PM daily. 
+                  Average wait time is 5-10 minutes.
                 </p>
               </div>
 

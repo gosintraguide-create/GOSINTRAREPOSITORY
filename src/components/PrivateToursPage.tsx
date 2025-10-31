@@ -12,7 +12,20 @@ interface PrivateToursPageProps {
 
 export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPageProps) {
   // Check if Private Tours feature is enabled
-  if (!featureFlags.privateToursEnabled) {
+  const getFeatureFlag = () => {
+    try {
+      const flags = localStorage.getItem("feature-flags");
+      if (flags) {
+        const parsed = JSON.parse(flags);
+        return parsed.privateToursEnabled === true;
+      }
+    } catch (e) {
+      console.error("Failed to parse feature flags:", e);
+    }
+    return featureFlags.privateToursEnabled;
+  };
+
+  if (!getFeatureFlag()) {
     return (
       <div className="flex-1">
         {/* Coming Soon Hero */}
@@ -106,7 +119,7 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
                 </div>
                 <h3 className="mb-2">Flexible Schedule</h3>
                 <p className="text-sm text-muted-foreground">
-                  Hop on and off at your own pace, 9am to 8pm daily
+                  Hop on and off at your own pace, 9am to 7pm daily
                 </p>
               </Card>
               <Card className="p-6">

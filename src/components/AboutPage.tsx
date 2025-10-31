@@ -329,7 +329,7 @@ export function AboutPage({ language = "en" }: AboutPageProps) {
               },
               {
                 q: "How often do vehicles depart?",
-                a: "Vehicles with professional driver-guides depart every 10-15 minutes from all major attractions during operating hours (9:00 AM - 8:00 PM)."
+                a: "Vehicles with professional driver-guides depart every 30 minutes from all major attractions during operating hours (9:00 AM - 7:00 PM)."
               }
             ].map((faq, index) => (
               <motion.div

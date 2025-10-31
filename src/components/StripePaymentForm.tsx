@@ -18,6 +18,7 @@ interface StripePaymentFormProps {
   onSuccess: (paymentIntentId: string) => void;
   onError: (error: string) => void;
   customerEmail?: string;
+  metadata?: Record<string, string>;
 }
 
 function CheckoutForm({ amount, onSuccess, onError, customerEmail }: Omit<StripePaymentFormProps, 'clientSecret'>) {

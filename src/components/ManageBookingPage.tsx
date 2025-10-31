@@ -480,7 +480,7 @@ export function ManageBookingPage({ onNavigate }: ManageBookingPageProps) {
               <div>
                 <p className="mb-1 text-foreground">Service Hours</p>
                 <p className="text-sm text-muted-foreground">
-                  9:00 AM - 8:00 PM daily. Pickups every 10-15 minutes.
+                  9:00 AM - 7:00 PM daily. Pickups every 30 minutes.
                 </p>
               </div>
             </div>

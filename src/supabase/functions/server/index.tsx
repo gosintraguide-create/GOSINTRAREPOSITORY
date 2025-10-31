@@ -1694,6 +1694,143 @@ app.post("/make-server-3bd0ade8/bookings/lookup", async (c) => {
   }
 });
 
+// Get booking by ID only (for sunset special verification)
+app.get("/make-server-3bd0ade8/bookings/:bookingId", async (c) => {
+  try {
+    const bookingId = c.req.param("bookingId");
+
+    if (!bookingId) {
+      return c.json(
+        {
+          success: false,
+          error: "Booking ID is required",
+        },
+        400,
+      );
+    }
+
+    console.log(
+      `🔍 Verifying booking exists: ${bookingId}`,
+    );
+
+    // Try to get booking directly (handles AA-####, AB-####, etc.)
+    let booking = await kv.get(bookingId);
+
+    // Backwards compatibility: try old formats
+    if (!booking) {
+      // Try GS-#### format (old system)
+      if (!bookingId.includes("-")) {
+        booking = await kv.get(`GS-${bookingId}`);
+      }
+
+      // Try booking_* format (very old system)
+      if (!booking) {
+        booking = await kv.get(`booking_${bookingId}`);
+      }
+    }
+
+    if (!booking) {
+      console.log(`❌ Booking not found: ${bookingId}`);
+      return c.json(
+        {
+          success: false,
+          error: "Booking not found",
+        },
+        404,
+      );
+    }
+
+    console.log(`✅ Booking verified: ${bookingId}`);
+
+    // Return minimal booking data (just confirmation that it exists)
+    return c.json({
+      success: true,
+      booking: {
+        id: booking.id,
+        selectedDate: booking.selectedDate,
+        exists: true,
+      },
+    });
+  } catch (error) {
+    console.error("Error verifying booking:", error);
+    return c.json(
+      {
+        success: false,
+        error: "Failed to verify booking",
+      },
+      500,
+    );
+  }
+});
+
+// Get full booking details (for sunset special purchase page)
+app.get("/make-server-3bd0ade8/bookings/:bookingId/full", async (c) => {
+  try {
+    const bookingId = c.req.param("bookingId");
+
+    if (!bookingId) {
+      return c.json(
+        {
+          success: false,
+          error: "Booking ID is required",
+        },
+        400,
+      );
+    }
+
+    console.log(
+      `🔍 Fetching full booking details: ${bookingId}`,
+    );
+
+    // Try to get booking directly (handles AA-####, AB-####, etc.)
+    let booking = await kv.get(bookingId);
+
+    // Backwards compatibility: try old formats
+    if (!booking) {
+      // Try GS-#### format (old system)
+      if (!bookingId.includes("-")) {
+        booking = await kv.get(`GS-${bookingId}`);
+      }
+
+      // Try booking_* format (very old system)
+      if (!booking) {
+        booking = await kv.get(`booking_${bookingId}`);
+      }
+    }
+
+    if (!booking) {
+      console.log(`❌ Booking not found: ${bookingId}`);
+      return c.json(
+        {
+          success: false,
+          error: "Booking not found",
+        },
+        404,
+      );
+    }
+
+    console.log(`✅ Full booking data retrieved: ${bookingId}`);
+
+    // Return full booking data (excluding sensitive payment info)
+    return c.json({
+      success: true,
+      booking: {
+        ...booking,
+        paymentIntentId: undefined, // Don't expose payment intent
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching booking:", error);
+    return c.json(
+      {
+        success: false,
+        error: "Failed to fetch booking",
+      },
+      500,
+    );
+  }
+});
+
 // Create a new booking
 app.post("/make-server-3bd0ade8/bookings", async (c) => {
   try {
@@ -1964,6 +2101,125 @@ app.post("/make-server-3bd0ade8/verify-qr", async (c) => {
     console.error("Error verifying QR code:", error);
     return c.json(
       { success: false, message: "Failed to verify QR code" },
+      500,
+    );
+  }
+});
+
+// Add sunset special to existing booking
+app.post("/make-server-3bd0ade8/bookings/:bookingId/add-sunset-special", async (c) => {
+  try {
+    const bookingId = c.req.param("bookingId");
+    const body = await c.req.json();
+    const { paymentIntentId, sunsetSpecialPrice, participants } = body;
+
+    console.log(
+      `🌅 Adding sunset special to booking ${bookingId}`,
+    );
+
+    // Verify payment if Stripe is configured
+    if (stripe && paymentIntentId) {
+      console.log(
+        `🔐 Verifying payment for sunset special: ${paymentIntentId}`,
+      );
+
+      try {
+        const paymentIntent =
+          await stripe.paymentIntents.retrieve(paymentIntentId);
+
+        if (paymentIntent.status !== "succeeded") {
+          console.error(
+            `❌ Payment not successful: ${paymentIntent.status}`,
+          );
+          return c.json(
+            {
+              success: false,
+              error:
+                "Payment verification failed. Please try again.",
+            },
+            400,
+          );
+        }
+
+        console.log(
+          `✅ Payment verified: €${paymentIntent.amount / 100}`,
+        );
+      } catch (error) {
+        console.error("Payment verification error:", error);
+        return c.json(
+          {
+            success: false,
+            error: "Payment verification failed",
+          },
+          400,
+        );
+      }
+    }
+
+    // Get the existing booking
+    let booking = await kv.get(bookingId);
+
+    // Backwards compatibility: try old formats
+    if (!booking) {
+      // Try GS-#### format (old system)
+      if (!bookingId.includes("-")) {
+        booking = await kv.get(`GS-${bookingId}`);
+      }
+
+      // Try booking_* format (very old system)
+      if (!booking) {
+        booking = await kv.get(`booking_${bookingId}`);
+      }
+    }
+
+    if (!booking) {
+      console.log(`❌ Booking not found: ${bookingId}`);
+      return c.json(
+        {
+          success: false,
+          error: "Booking not found",
+        },
+        404,
+      );
+    }
+
+    // Update booking with sunset special
+    booking.sunsetSpecial = {
+      added: true,
+      addedAt: new Date().toISOString(),
+      price: sunsetSpecialPrice,
+      participants: participants,
+      paymentIntentId: paymentIntentId,
+    };
+
+    // Update total price
+    booking.totalPrice = (booking.totalPrice || 0) + sunsetSpecialPrice;
+
+    // Save updated booking
+    await kv.set(booking.id, booking);
+
+    console.log(
+      `✅ Sunset special added to booking ${booking.id}`,
+    );
+
+    // TODO: Send confirmation email about the sunset special add-on
+    // For now, we'll just return success
+
+    return c.json({
+      success: true,
+      booking: {
+        ...booking,
+        paymentIntentId: undefined, // Don't expose payment intent
+      },
+      message: "Sunset special added successfully",
+    });
+  } catch (error) {
+    console.error("Error adding sunset special:", error);
+    return c.json(
+      {
+        success: false,
+        error: "Failed to add sunset special to booking",
+      },
       500,
     );
   }

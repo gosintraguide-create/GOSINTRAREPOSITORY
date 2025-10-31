@@ -157,7 +157,7 @@ export function BookingConfirmationPage({ onNavigate, booking }: BookingConfirma
               <div>
                 <p className="font-medium">Date</p>
                 <p className="text-muted-foreground">{formattedDate}</p>
-                <p className="text-muted-foreground">9:00 AM - 8:00 PM</p>
+                <p className="text-muted-foreground">9:00 AM - 7:00 PM</p>
               </div>
             </div>
 
@@ -271,7 +271,7 @@ export function BookingConfirmationPage({ onNavigate, booking }: BookingConfirma
                 3
               </div>
               <p>
-                <strong>Regular Service:</strong> New vehicles depart every 10-15 minutes from all major attractions
+                <strong>Regular Service:</strong> New vehicles depart every 30 minutes from all major attractions
               </p>
             </div>
             <div className="flex gap-3">
