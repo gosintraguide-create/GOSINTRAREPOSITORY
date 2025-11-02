@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Save, RefreshCw, Eye, FileText, Home, Info, MapPin, ShoppingCart, User, Phone, Settings, Trash2, Plus, ToggleLeft, ToggleRight } from "lucide-react";
+import { Save, RefreshCw, Eye, FileText, Home, Info, MapPin, ShoppingCart, User, Phone, Settings, Trash2, Plus, ToggleLeft, ToggleRight, Languages, Check, Loader2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
@@ -14,6 +14,8 @@ import {
   loadComprehensiveContent,
   saveComprehensiveContent,
   saveComprehensiveContentAsync,
+  saveTranslatedContent,
+  getTranslationStatus,
   DEFAULT_COMPREHENSIVE_CONTENT,
   type ComprehensiveContent,
 } from "../lib/comprehensiveContent";
@@ -29,12 +31,20 @@ import {
   AccordionTrigger,
 } from "./ui/accordion";
 import { ImageSelector } from "./ImageSelector";
+import { SUPPORTED_LANGUAGES } from "../lib/autoTranslate";
 
 export function ContentEditor() {
   const [content, setContent] = useState<ComprehensiveContent>(DEFAULT_COMPREHENSIVE_CONTENT);
   const [mainContent, setMainContent] = useState<WebsiteContent>(loadMainContent());
   const [hasChanges, setHasChanges] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [translationProgress, setTranslationProgress] = useState<{
+    language: string;
+    progress: number;
+  } | null>(null);
+  const [autoTranslateEnabled, setAutoTranslateEnabled] = useState(true);
+  const [translationStatus, setTranslationStatus] = useState(getTranslationStatus());
 
   useEffect(() => {
     setContent(loadComprehensiveContent());
@@ -43,21 +53,80 @@ export function ContentEditor() {
 
   const handleSave = async () => {
     try {
-      const result = await saveComprehensiveContentAsync(content);
+      // Save main content first
       const mainResult = await saveMainContentAsync(mainContent);
       
-      if (result.success && mainResult.success) {
-        setHasChanges(false);
-        toast.success("All content saved successfully to database!");
+      // Decide whether to auto-translate
+      if (autoTranslateEnabled) {
+        setIsTranslating(true);
+        toast.info("Saving content and translating to all languages...");
+        
+        const result = await saveTranslatedContent(content, 'en', (language, progress) => {
+          setTranslationProgress({ language, progress });
+        });
+        
+        setIsTranslating(false);
+        setTranslationProgress(null);
+        
+        if (result.success && mainResult.success) {
+          setHasChanges(false);
+          setTranslationStatus(getTranslationStatus());
+          toast.success("Content saved and translated to all languages!");
+          window.dispatchEvent(new Event('content-updated'));
+        } else {
+          const errors = [];
+          if (!result.success) errors.push(result.error);
+          if (!mainResult.success) errors.push(mainResult.error);
+          toast.error(`Some errors occurred: ${errors.join(', ')}`);
+        }
       } else {
-        const errors = [];
-        if (!result.success) errors.push(result.error);
-        if (!mainResult.success) errors.push(mainResult.error);
-        toast.error(`Failed to save to database: ${errors.join(', ')}. Saved locally only.`);
+        // Save without translation
+        const result = await saveComprehensiveContentAsync(content);
+        
+        if (result.success && mainResult.success) {
+          setHasChanges(false);
+          toast.success("All content saved successfully!");
+          window.dispatchEvent(new Event('content-updated'));
+        } else {
+          const errors = [];
+          if (!result.success) errors.push(result.error);
+          if (!mainResult.success) errors.push(mainResult.error);
+          toast.error(`Failed to save: ${errors.join(', ')}`);
+        }
       }
     } catch (error) {
       console.error('Error saving content:', error);
+      setIsTranslating(false);
+      setTranslationProgress(null);
       toast.error("Failed to save content. Please try again.");
+    }
+  };
+
+  const handleTranslateNow = async () => {
+    if (confirm("This will translate all current content to all supported languages. This may take a few minutes. Continue?")) {
+      try {
+        setIsTranslating(true);
+        toast.info("Translating content to all languages...");
+        
+        const result = await saveTranslatedContent(content, 'en', (language, progress) => {
+          setTranslationProgress({ language, progress });
+        });
+        
+        setIsTranslating(false);
+        setTranslationProgress(null);
+        
+        if (result.success) {
+          setTranslationStatus(getTranslationStatus());
+          toast.success("All content translated successfully!");
+        } else {
+          toast.error(`Translation failed: ${result.error}`);
+        }
+      } catch (error) {
+        console.error('Translation error:', error);
+        setIsTranslating(false);
+        setTranslationProgress(null);
+        toast.error("Translation failed. Please try again.");
+      }
     }
   };
 
@@ -179,9 +248,22 @@ export function ContentEditor() {
             <RefreshCw className="h-4 w-4" />
             Reset to Defaults
           </Button>
-          <Button onClick={handleSave} className="gap-2" disabled={!hasChanges}>
-            <Save className="h-4 w-4" />
-            Save All Changes
+          <Button 
+            onClick={handleSave} 
+            className="gap-2" 
+            disabled={!hasChanges || isTranslating}
+          >
+            {isTranslating ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Translating...
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4" />
+                Save {autoTranslateEnabled && "& Translate"}
+              </>
+            )}
           </Button>
         </div>
       </div>
@@ -190,6 +272,16 @@ export function ContentEditor() {
         <Alert>
           <AlertDescription>
             You have unsaved changes. Don't forget to save before leaving this page.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Translation Progress */}
+      {isTranslating && translationProgress && (
+        <Alert>
+          <AlertDescription className="flex items-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Translating to {translationProgress.language}... {Math.round(translationProgress.progress)}%
           </AlertDescription>
         </Alert>
       )}
@@ -203,6 +295,103 @@ export function ContentEditor() {
           className="max-w-md"
         />
       </div>
+
+      {/* Auto-Translation Settings */}
+      <Card className="border-border p-6">
+        <div className="mb-4">
+          <h3 className="mb-2 flex items-center gap-2 text-foreground">
+            <Languages className="h-5 w-5 text-primary" />
+            Automatic Translation
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            Automatically translate content to all 7 supported languages when you save
+          </p>
+        </div>
+        
+        <div className="space-y-4">
+          {/* Auto-translate toggle */}
+          <div className="flex items-center justify-between rounded-lg border border-border bg-secondary/30 p-4">
+            <div className="flex-1">
+              <Label htmlFor="auto-translate" className="cursor-pointer text-base text-foreground">
+                Auto-Translate on Save
+              </Label>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Automatically translate content when clicking "Save & Translate"
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <Badge variant={autoTranslateEnabled ? "default" : "outline"}>
+                {autoTranslateEnabled ? "Enabled" : "Disabled"}
+              </Badge>
+              <Switch
+                id="auto-translate"
+                checked={autoTranslateEnabled}
+                onCheckedChange={setAutoTranslateEnabled}
+              />
+            </div>
+          </div>
+
+          {/* Translation Status */}
+          <div className="rounded-lg border border-border bg-secondary/10 p-4">
+            <h4 className="mb-3 text-sm font-medium text-foreground">Translation Status</h4>
+            <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+              {SUPPORTED_LANGUAGES.map(lang => {
+                const exists = translationStatus.exists[lang];
+                const languageNames: { [key: string]: string } = {
+                  en: 'English',
+                  pt: 'Portuguese',
+                  es: 'Spanish',
+                  fr: 'French',
+                  de: 'German',
+                  nl: 'Dutch',
+                  it: 'Italian',
+                };
+                
+                return (
+                  <div
+                    key={lang}
+                    className="flex items-center gap-2 rounded border border-border bg-background p-2"
+                  >
+                    {exists ? (
+                      <Check className="h-4 w-4 text-green-500" />
+                    ) : (
+                      <div className="h-4 w-4 rounded-full border-2 border-muted" />
+                    )}
+                    <span className="text-sm">
+                      {languageNames[lang]}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+            {translationStatus.lastTranslated && (
+              <p className="mt-3 text-xs text-muted-foreground">
+                Last translated: {new Date(translationStatus.lastTranslated).toLocaleString()}
+              </p>
+            )}
+          </div>
+
+          {/* Manual translation button */}
+          <Button
+            variant="outline"
+            onClick={handleTranslateNow}
+            className="w-full gap-2"
+            disabled={isTranslating}
+          >
+            {isTranslating ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Translating...
+              </>
+            ) : (
+              <>
+                <Languages className="h-4 w-4" />
+                Translate All Content Now
+              </>
+            )}
+          </Button>
+        </div>
+      </Card>
 
       {/* Feature Flags */}
       <Card className="border-border p-6">

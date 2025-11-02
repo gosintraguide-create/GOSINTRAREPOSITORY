@@ -29,6 +29,7 @@ import {
   DEFAULT_CONTENT,
 } from "../lib/contentManager";
 import { getUITranslation } from "../lib/translations";
+import { useEditableContent } from "../lib/useEditableContent";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -84,7 +85,7 @@ export function HomePage({
 
   const [basePrice, setBasePrice] = useState(getInitialPrice);
   const [priceLoaded, setPriceLoaded] = useState(false);
-  const [content, setContent] =
+  const [legacyContent, setLegacyContent] =
     useState<WebsiteContent>(DEFAULT_CONTENT);
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
@@ -93,6 +94,8 @@ export function HomePage({
   const [isSafari, setIsSafari] = useState(false);
   const [showInstallCard, setShowInstallCard] = useState(false);
   const t = getUITranslation(language);
+  // Use editable content from admin panel
+  const content = useEditableContent();
 
   useEffect(() => {
     async function loadPricingFromDB() {
@@ -147,8 +150,8 @@ export function HomePage({
 
     loadPricingFromDB();
 
-    // Load website content with language
-    setContent(loadContentWithLanguage(language));
+    // Load legacy content for compatibility
+    setLegacyContent(loadContentWithLanguage(language));
   }, [language]);
 
   // Listen for PWA install prompt
@@ -275,16 +278,16 @@ export function HomePage({
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="mb-4 text-white text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight drop-shadow-[0_4px_12px_rgba(0,0,0,0.4)]">
-              {content.homepage.heroTitle}
+              {content.homepage.hero.title}
             </h1>
 
             <p className="mx-auto mb-6 max-w-2xl text-base sm:text-xl text-white/90">
-              {content.homepage.heroSubtitle}
+              {content.homepage.hero.subtitle}
             </p>
 
             {/* Key Benefits Pills */}
             <div className="mb-10 flex flex-wrap justify-center gap-2 sm:gap-3">
-              {content.homepage.benefitPills.map(
+              {content.homepage.hero.benefitPills.map(
                 (benefit, index) => {
                   const IconComponent =
                     benefit.icon === "Users"

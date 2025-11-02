@@ -1179,6 +1179,7 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
 
 // Import API functions
 import { saveComprehensiveContent as saveComprehensiveContentToAPI, getComprehensiveContent as getComprehensiveContentFromAPI } from './api';
+import { translateContentToAllLanguages, SUPPORTED_LANGUAGES } from './autoTranslate';
 
 // Save and load functions
 export function saveComprehensiveContent(content: ComprehensiveContent): void {
@@ -1260,4 +1261,118 @@ function deepMerge(target: any, source: any): any {
   }
   
   return result;
+}
+
+// ===== MULTILINGUAL SUPPORT =====
+
+/**
+ * Save translated content for all languages
+ * @param content Content in base language (typically English)
+ * @param baseLanguage Base language code (default: 'en')
+ */
+export async function saveTranslatedContent(
+  content: ComprehensiveContent,
+  baseLanguage: string = 'en',
+  onProgress?: (language: string, progress: number) => void
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    console.log('🌍 Starting automatic translation to all languages...');
+    
+    // Translate content to all supported languages
+    const translations = await translateContentToAllLanguages(content, baseLanguage, onProgress);
+    
+    // Save each translation to localStorage with language suffix
+    for (const [lang, translatedContent] of Object.entries(translations)) {
+      const storageKey = lang === 'en' 
+        ? 'comprehensive-content' 
+        : `comprehensive-content-${lang}`;
+      
+      localStorage.setItem(storageKey, JSON.stringify(translatedContent));
+      console.log(`✅ Saved ${lang} translation to localStorage`);
+    }
+    
+    // Save all translations to database
+    const result = await saveComprehensiveContentToAPI({
+      ...content,
+      _translations: translations,
+      _lastTranslated: new Date().toISOString(),
+    });
+    
+    if (result.success) {
+      console.log('✅ All translations saved to database successfully');
+      return { success: true };
+    } else {
+      console.error('❌ Failed to save translations to database:', result.error);
+      return { success: false, error: result.error };
+    }
+  } catch (error) {
+    console.error('❌ Error during translation:', error);
+    return { success: false, error: String(error) };
+  }
+}
+
+/**
+ * Load content for a specific language
+ * Falls back to English if translation not available
+ * @param languageCode Language code (e.g., 'pt', 'es')
+ */
+export function loadComprehensiveContentForLanguage(languageCode: string = 'en'): ComprehensiveContent {
+  // Try to load translated content for the specific language
+  if (languageCode !== 'en') {
+    const storageKey = `comprehensive-content-${languageCode}`;
+    const saved = localStorage.getItem(storageKey);
+    
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return deepMerge(DEFAULT_COMPREHENSIVE_CONTENT, parsed);
+      } catch (error) {
+        console.error(`Error parsing saved ${languageCode} content:`, error);
+      }
+    }
+  }
+  
+  // Fall back to English (default)
+  return loadComprehensiveContent();
+}
+
+/**
+ * Check if translations exist for all languages
+ */
+export function checkTranslationsExist(): { [lang: string]: boolean } {
+  const status: { [lang: string]: boolean } = {};
+  
+  for (const lang of SUPPORTED_LANGUAGES) {
+    const storageKey = lang === 'en' 
+      ? 'comprehensive-content' 
+      : `comprehensive-content-${lang}`;
+    status[lang] = localStorage.getItem(storageKey) !== null;
+  }
+  
+  return status;
+}
+
+/**
+ * Get translation status and timestamps
+ */
+export function getTranslationStatus(): {
+  exists: { [lang: string]: boolean };
+  lastTranslated?: string;
+} {
+  const exists = checkTranslationsExist();
+  
+  // Try to get last translation date from English content
+  const saved = localStorage.getItem('comprehensive-content');
+  let lastTranslated: string | undefined;
+  
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      lastTranslated = parsed._lastTranslated;
+    } catch (error) {
+      // Ignore parsing errors
+    }
+  }
+  
+  return { exists, lastTranslated };
 }

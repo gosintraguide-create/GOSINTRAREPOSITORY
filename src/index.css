@@ -2050,6 +2050,10 @@
     border-color: var(--input);
   }
 
+  .border-muted {
+    border-color: var(--muted);
+  }
+
   .border-orange-200 {
     border-color: var(--color-orange-200);
   }
@@ -2468,6 +2472,16 @@
 
   .bg-secondary {
     background-color: var(--secondary);
+  }
+
+  .bg-secondary\/10 {
+    background-color: var(--secondary);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .bg-secondary\/10 {
+      background-color: color-mix(in oklab, var(--secondary) 10%, transparent);
+    }
   }
 
   .bg-secondary\/20 {
