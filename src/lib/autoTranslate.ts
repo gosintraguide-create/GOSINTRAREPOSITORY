@@ -14,16 +14,27 @@ export const SUPPORTED_LANGUAGES = ['en', 'pt', 'es', 'fr', 'de', 'nl', 'it'];
 // You can use the free public instance or host your own
 const LIBRE_TRANSLATE_API = 'https://libretranslate.com/translate';
 
+// Get API key from localStorage if available
+function getApiKey(): string | null {
+  try {
+    return localStorage.getItem('libretranslate-api-key');
+  } catch {
+    return null;
+  }
+}
+
 /**
- * Translate text from one language to another
+ * Translate text from one language to another with retry logic
  * @param text Text to translate
  * @param sourceLang Source language code (e.g., 'en')
  * @param targetLang Target language code (e.g., 'pt')
+ * @param retries Number of retry attempts (default: 2)
  */
 export async function translateText(
   text: string,
   sourceLang: string = 'en',
-  targetLang: string
+  targetLang: string,
+  retries: number = 2
 ): Promise<TranslationResult> {
   // Don't translate if source and target are the same
   if (sourceLang === targetLang) {
@@ -41,38 +52,99 @@ export async function translateText(
     };
   }
 
-  try {
-    const response = await fetch(LIBRE_TRANSLATE_API, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+  // Skip translation for very short text (likely codes or symbols)
+  if (text.length < 2) {
+    return {
+      success: true,
+      translatedText: text,
+    };
+  }
+
+  let lastError: Error | null = null;
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const apiKey = getApiKey();
+      const requestBody: any = {
         q: text,
         source: sourceLang,
         target: targetLang,
         format: 'text',
-      }),
-    });
+      };
 
-    if (!response.ok) {
-      throw new Error(`Translation API error: ${response.statusText}`);
+      // Add API key if available
+      if (apiKey) {
+        requestBody.api_key = apiKey;
+      }
+
+      const response = await fetch(LIBRE_TRANSLATE_API, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      // Get response text for better error logging
+      const responseText = await response.text();
+      
+      if (!response.ok) {
+        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        
+        // Try to parse error details
+        try {
+          const errorData = JSON.parse(responseText);
+          if (errorData.error) {
+            errorMessage = errorData.error;
+          }
+        } catch {
+          // If not JSON, use response text
+          if (responseText) {
+            errorMessage += ` - ${responseText.substring(0, 200)}`;
+          }
+        }
+        
+        throw new Error(errorMessage);
+      }
+
+      const data = JSON.parse(responseText);
+      
+      if (!data.translatedText) {
+        throw new Error('No translated text in response');
+      }
+      
+      return {
+        success: true,
+        translatedText: data.translatedText,
+      };
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      
+      // Don't retry on certain errors
+      if (lastError.message.includes('429') || lastError.message.includes('rate limit')) {
+        console.warn(`⚠️ Rate limit hit for ${sourceLang} -> ${targetLang}, waiting...`);
+        await new Promise(resolve => setTimeout(resolve, 2000 * (attempt + 1)));
+      } else if (lastError.message.includes('403') || lastError.message.includes('API key')) {
+        console.error(`❌ API key required or invalid for translation service`);
+        break; // Don't retry auth errors
+      } else {
+        // Wait before retry for other errors
+        if (attempt < retries) {
+          await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+        }
+      }
     }
-
-    const data = await response.json();
-    
-    return {
-      success: true,
-      translatedText: data.translatedText,
-    };
-  } catch (error) {
-    console.error(`Translation error (${sourceLang} -> ${targetLang}):`, error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Translation failed',
-      translatedText: text, // Fallback to original text
-    };
   }
+
+  // All retries failed
+  const errorMsg = lastError?.message || 'Translation failed';
+  console.error(`❌ Translation error (${sourceLang} -> ${targetLang}) after ${retries + 1} attempts:`, errorMsg);
+  
+  return {
+    success: false,
+    error: errorMsg,
+    translatedText: text, // Fallback to original text
+  };
 }
 
 /**
@@ -97,7 +169,7 @@ export async function translateBatch(
  * Deep translate an object recursively
  * This handles nested objects and arrays
  */
-async function translateObject(
+export async function translateObject(
   obj: any,
   sourceLang: string,
   targetLang: string
@@ -192,23 +264,66 @@ export async function translateFields(
 /**
  * Check if translation service is available
  */
-export async function checkTranslationService(): Promise<boolean> {
+export async function checkTranslationService(): Promise<{ available: boolean; needsApiKey: boolean; error?: string }> {
   try {
+    const apiKey = getApiKey();
+    const requestBody: any = {
+      q: 'test',
+      source: 'en',
+      target: 'pt',
+      format: 'text',
+    };
+
+    if (apiKey) {
+      requestBody.api_key = apiKey;
+    }
+
     const response = await fetch(LIBRE_TRANSLATE_API, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        q: 'test',
-        source: 'en',
-        target: 'pt',
-        format: 'text',
-      }),
+      body: JSON.stringify(requestBody),
     });
-    return response.ok;
+
+    const responseText = await response.text();
+
+    if (response.ok) {
+      return { available: true, needsApiKey: false };
+    }
+
+    // Check if it's an API key error
+    if (response.status === 403 || responseText.includes('API key')) {
+      return { available: false, needsApiKey: true, error: 'API key required' };
+    }
+
+    return { available: false, needsApiKey: false, error: `HTTP ${response.status}: ${responseText.substring(0, 100)}` };
   } catch (error) {
     console.error('Translation service check failed:', error);
-    return false;
+    return { available: false, needsApiKey: false, error: error instanceof Error ? error.message : 'Unknown error' };
   }
+}
+
+/**
+ * Set the LibreTranslate API key
+ */
+export function setApiKey(apiKey: string): void {
+  try {
+    if (apiKey && apiKey.trim()) {
+      localStorage.setItem('libretranslate-api-key', apiKey.trim());
+      console.log('✅ LibreTranslate API key saved');
+    } else {
+      localStorage.removeItem('libretranslate-api-key');
+      console.log('🗑️ LibreTranslate API key removed');
+    }
+  } catch (error) {
+    console.error('Failed to save API key:', error);
+  }
+}
+
+/**
+ * Get current API key status
+ */
+export function hasApiKey(): boolean {
+  return !!getApiKey();
 }

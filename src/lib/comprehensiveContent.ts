@@ -1179,7 +1179,7 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
 
 // Import API functions
 import { saveComprehensiveContent as saveComprehensiveContentToAPI, getComprehensiveContent as getComprehensiveContentFromAPI } from './api';
-import { translateContentToAllLanguages, SUPPORTED_LANGUAGES } from './autoTranslate';
+import { translateContentToAllLanguages, translateText, translateObject, SUPPORTED_LANGUAGES } from './autoTranslate';
 
 // Save and load functions
 export function saveComprehensiveContent(content: ComprehensiveContent): void {
@@ -1266,7 +1266,227 @@ function deepMerge(target: any, source: any): any {
 // ===== MULTILINGUAL SUPPORT =====
 
 /**
- * Save translated content for all languages
+ * Deep compare two objects and get changed paths
+ */
+function getChangedPaths(oldObj: any, newObj: any, basePath: string[] = []): string[][] {
+  const changedPaths: string[][] = [];
+  
+  // Handle different types
+  if (typeof oldObj !== typeof newObj) {
+    return [basePath];
+  }
+  
+  if (typeof newObj !== 'object' || newObj === null) {
+    if (oldObj !== newObj) {
+      return [basePath];
+    }
+    return [];
+  }
+  
+  // Handle arrays
+  if (Array.isArray(newObj)) {
+    if (!Array.isArray(oldObj) || oldObj.length !== newObj.length) {
+      return [basePath];
+    }
+    
+    for (let i = 0; i < newObj.length; i++) {
+      changedPaths.push(...getChangedPaths(oldObj[i], newObj[i], [...basePath, String(i)]));
+    }
+    return changedPaths;
+  }
+  
+  // Handle objects
+  const allKeys = new Set([...Object.keys(oldObj || {}), ...Object.keys(newObj)]);
+  
+  for (const key of allKeys) {
+    if (!(key in oldObj)) {
+      changedPaths.push([...basePath, key]);
+    } else if (!(key in newObj)) {
+      // Key was removed
+      continue;
+    } else {
+      changedPaths.push(...getChangedPaths(oldObj[key], newObj[key], [...basePath, key]));
+    }
+  }
+  
+  return changedPaths;
+}
+
+/**
+ * Update specific paths in an object with translated values
+ */
+async function updateTranslatedPaths(
+  existingContent: any,
+  newContent: any,
+  changedPaths: string[][],
+  sourceLang: string,
+  targetLang: string
+): Promise<any> {
+  const updated = JSON.parse(JSON.stringify(existingContent));
+  
+  for (const path of changedPaths) {
+    try {
+      // Get the new value from source content
+      let sourceValue: any = newContent;
+      for (const key of path) {
+        if (sourceValue && typeof sourceValue === 'object') {
+          sourceValue = sourceValue[key];
+        }
+      }
+      
+      // Only translate if it's a string
+      if (typeof sourceValue === 'string') {
+        const result = await translateText(sourceValue, sourceLang, targetLang);
+        
+        // Update the value at this path
+        let current = updated;
+        for (let i = 0; i < path.length - 1; i++) {
+          if (!current[path[i]]) {
+            current[path[i]] = {};
+          }
+          current = current[path[i]];
+        }
+        current[path[path.length - 1]] = result.translatedText || sourceValue;
+      } else if (typeof sourceValue === 'object') {
+        // For objects/arrays, translate recursively
+        const translated = await translateObject(sourceValue, sourceLang, targetLang);
+        
+        let current = updated;
+        for (let i = 0; i < path.length - 1; i++) {
+          if (!current[path[i]]) {
+            current[path[i]] = Array.isArray(sourceValue) ? [] : {};
+          }
+          current = current[path[i]];
+        }
+        current[path[path.length - 1]] = translated;
+      }
+    } catch (error) {
+      console.error(`Error translating path ${path.join('.')}:`, error);
+    }
+  }
+  
+  return updated;
+}
+
+/**
+ * Save content with incremental translation (only translate changed content)
+ * @param content New content in base language
+ * @param baseLanguage Base language code (default: 'en')
+ */
+export async function saveIncrementalTranslation(
+  content: ComprehensiveContent,
+  baseLanguage: string = 'en',
+  onProgress?: (language: string, progress: number) => void
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    console.log('🔄 Starting incremental translation...');
+    
+    // Check translation service availability first
+    const { checkTranslationService } = await import('./autoTranslate');
+    const serviceStatus = await checkTranslationService();
+    
+    if (!serviceStatus.available) {
+      console.warn('⚠️ Translation service not available:', serviceStatus.error);
+      console.log('💡 Saving content without translation');
+      
+      // Save English content only
+      const result = await saveComprehensiveContentAsync(content);
+      
+      if (result.success) {
+        return { 
+          success: true, 
+          error: serviceStatus.needsApiKey 
+            ? 'Content saved. Translation skipped: LibreTranslate API key required. Get a free API key at https://libretranslate.com' 
+            : `Content saved. Translation skipped: ${serviceStatus.error || 'Service unavailable'}` 
+        };
+      }
+      return result;
+    }
+    
+    // Load old content to compare
+    const oldContent = loadComprehensiveContent();
+    
+    // Find what changed
+    const changedPaths = getChangedPaths(oldContent, content);
+    console.log(`📝 Found ${changedPaths.length} changed paths`);
+    
+    if (changedPaths.length === 0) {
+      console.log('✅ No changes detected, skipping translation');
+      // Still save the English content
+      const result = await saveComprehensiveContentAsync(content);
+      return result;
+    }
+    
+    // Save English content first
+    localStorage.setItem('comprehensive-content', JSON.stringify(content));
+    
+    // Update each language's translation incrementally
+    const targetLanguages = SUPPORTED_LANGUAGES.filter(lang => lang !== baseLanguage);
+    
+    for (let i = 0; i < targetLanguages.length; i++) {
+      const targetLang = targetLanguages[i];
+      
+      if (onProgress) {
+        onProgress(targetLang, (i / targetLanguages.length) * 100);
+      }
+      
+      console.log(`🌍 Updating ${targetLang} translation (${changedPaths.length} changes)...`);
+      
+      // Load existing translation
+      const storageKey = `comprehensive-content-${targetLang}`;
+      let existingTranslation = oldContent; // Default to old English content
+      
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        try {
+          existingTranslation = JSON.parse(saved);
+        } catch (error) {
+          console.error(`Error loading existing ${targetLang} translation:`, error);
+        }
+      }
+      
+      // Update only changed paths
+      const updatedTranslation = await updateTranslatedPaths(
+        existingTranslation,
+        content,
+        changedPaths,
+        baseLanguage,
+        targetLang
+      );
+      
+      // Save updated translation
+      localStorage.setItem(storageKey, JSON.stringify(updatedTranslation));
+      console.log(`✅ Updated ${targetLang} translation`);
+      
+      // Small delay to avoid rate limiting
+      await new Promise(resolve => setTimeout(resolve, 300));
+    }
+    
+    if (onProgress) {
+      onProgress('complete', 100);
+    }
+    
+    // Save to database
+    const result = await saveComprehensiveContentToAPI({
+      ...content,
+      _lastTranslated: new Date().toISOString(),
+    });
+    
+    if (result.success) {
+      console.log('✅ All translations saved successfully');
+      return { success: true };
+    } else {
+      console.error('❌ Failed to save to database:', result.error);
+      return { success: false, error: result.error };
+    }
+  } catch (error) {
+    console.error('❌ Error during incremental translation:', error);
+    return { success: false, error: String(error) };
+  }
+}
+
+/**
+ * Save translated content for all languages (full translation)
  * @param content Content in base language (typically English)
  * @param baseLanguage Base language code (default: 'en')
  */
@@ -1276,7 +1496,19 @@ export async function saveTranslatedContent(
   onProgress?: (language: string, progress: number) => void
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    console.log('🌍 Starting automatic translation to all languages...');
+    console.log('🌍 Starting full translation to all languages...');
+    
+    // Check translation service availability first
+    const { checkTranslationService } = await import('./autoTranslate');
+    const serviceStatus = await checkTranslationService();
+    
+    if (!serviceStatus.available) {
+      console.warn('⚠️ Translation service not available:', serviceStatus.error);
+      const errorMsg = serviceStatus.needsApiKey 
+        ? 'Translation failed: LibreTranslate API key required. Get a free API key at https://libretranslate.com' 
+        : `Translation failed: ${serviceStatus.error || 'Service unavailable'}`;
+      return { success: false, error: errorMsg };
+    }
     
     // Translate content to all supported languages
     const translations = await translateContentToAllLanguages(content, baseLanguage, onProgress);

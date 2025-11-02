@@ -15,6 +15,7 @@ import {
   saveComprehensiveContent,
   saveComprehensiveContentAsync,
   saveTranslatedContent,
+  saveIncrementalTranslation,
   getTranslationStatus,
   DEFAULT_COMPREHENSIVE_CONTENT,
   type ComprehensiveContent,
@@ -59,9 +60,10 @@ export function ContentEditor() {
       // Decide whether to auto-translate
       if (autoTranslateEnabled) {
         setIsTranslating(true);
-        toast.info("Saving content and translating to all languages...");
+        toast.info("Saving content and updating translations...");
         
-        const result = await saveTranslatedContent(content, 'en', (language, progress) => {
+        // Use incremental translation (only translate changed content)
+        const result = await saveIncrementalTranslation(content, 'en', (language, progress) => {
           setTranslationProgress({ language, progress });
         });
         
@@ -71,7 +73,7 @@ export function ContentEditor() {
         if (result.success && mainResult.success) {
           setHasChanges(false);
           setTranslationStatus(getTranslationStatus());
-          toast.success("Content saved and translated to all languages!");
+          toast.success("Content saved and translations updated!");
           window.dispatchEvent(new Event('content-updated'));
         } else {
           const errors = [];

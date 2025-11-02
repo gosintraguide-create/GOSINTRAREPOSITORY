@@ -360,7 +360,7 @@ export function HomePage({
                 className="h-12 w-full bg-accent px-8 text-base shadow-2xl hover:scale-105 hover:bg-accent/90 sm:h-16 sm:w-auto sm:px-12 sm:text-xl"
                 onClick={() => onNavigate("buy-ticket")}
               >
-                {content.homepage.heroCallToAction}
+                {content.homepage.hero.ctaButton}
                 <ArrowRight className="ml-2 h-5 w-5 sm:h-6 sm:w-6" />
               </Button>
             </div>
