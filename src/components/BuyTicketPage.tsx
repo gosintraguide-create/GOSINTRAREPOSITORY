@@ -1,24 +1,20 @@
 import { useState, useEffect } from "react";
-import { createBooking, createPaymentIntent } from "../lib/api";
-import { toast } from "sonner@2.0.3";
-import { projectId, publicAnonKey } from '../utils/supabase/info';
-import { safeJsonFetch } from '../lib/apiErrorHandler';
-import { Card } from "./ui/card";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Checkbox } from "./ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
-import { Progress } from "./ui/progress";
-import { Alert, AlertDescription } from "./ui/alert";
-import { Badge } from "./ui/badge";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Calendar as CalendarComponent } from "./ui/calendar";
-import { Calendar as CalendarIcon, Calendar, Users, MapPin, Phone, Mail, CheckCircle, Loader2, Check, ChevronLeft, ChevronRight, RefreshCw, Car, ArrowRight, User, CreditCard, Ticket, Receipt, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { StripePaymentForm } from "./StripePaymentForm";
 import { getTranslation } from "../lib/translations";
+import { PickupLocationMap } from "./PickupLocationMap";
+import { Button } from "./ui/button";
+import { Card } from "./ui/card";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Calendar as CalendarComponent } from "./ui/calendar";
+import { Badge } from "./ui/badge";
+import { CalendarIcon, Check, ChevronLeft, ArrowRight, User, Mail, Ticket, CreditCard, Receipt, Calendar, MapPin, Users, Car, AlertCircle, Loader2, RefreshCw } from "lucide-react";
+import { toast } from "sonner@2.0.3";
+import { createBooking, createPaymentIntent } from "../lib/api";
+import { projectId, publicAnonKey } from "../utils/supabase/info";
 
 interface BuyTicketPageProps {
   onNavigate: (page: string) => void;
@@ -196,22 +192,29 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
   const loadAvailabilityForDate = async (date: string) => {
     setLoadingAvailability(true);
     
-    const result = await safeJsonFetch<any>(
-      `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/availability/${date}`,
-      {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${publicAnonKey}`,
-          'Content-Type': 'application/json',
-        },
+    try {
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/availability/${date}`,
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${publicAnonKey}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.availability) {
+          setAvailability(prev => ({
+            ...prev,
+            [date]: data.availability
+          }));
+        }
       }
-    );
-    
-    if (result?.success && result.availability) {
-      setAvailability(prev => ({
-        ...prev,
-        [date]: result.availability
-      }));
+    } catch (error) {
+      console.error('Error loading availability:', error);
     }
     
     setLoadingAvailability(false);
@@ -224,7 +227,13 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
   }));
 
   const handleInputChange = (field: string, value: string | boolean | number) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData((prev) => {
+      // If changing pickup location to "other", clear timeSlot
+      if (field === "pickupLocation" && value === "other") {
+        return { ...prev, [field]: value, timeSlot: "" };
+      }
+      return { ...prev, [field]: value };
+    });
   };
 
   const getAvailability = (date: string, timeSlot: string): number => {
@@ -398,7 +407,7 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
     setIsSubmitting(false);
   };
 
-  const canProceedStep1 = formData.date && formData.timeSlot && formData.pickupLocation && formData.quantity >= 1;
+  const canProceedStep1 = formData.date && formData.pickupLocation && formData.quantity >= 1 && (formData.pickupLocation === "other" || formData.timeSlot);
   const canProceedStep3 = formData.fullName && formData.email && formData.confirmEmail && formData.email === formData.confirmEmail;
 
   return (
@@ -504,60 +513,69 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                           {t.buyTicket.dateSelection.checkingAvailability}
                         </p>
                       )}
-                      <Select
-                        value={formData.timeSlot}
-                        onValueChange={(value) => {
-                          handleInputChange("timeSlot", value);
-                        }}
-                        disabled={!formData.date || loadingAvailability}
-                      >
-                        <SelectTrigger className="mt-2 border-border">
-                          <SelectValue placeholder={t.buyTicket.dateSelection.selectTime} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {TIME_SLOTS.map((slot) => {
-                            const seats = formData.date ? getAvailability(formData.date, slot.value) : 50;
-                            const isLowAvailability = seats < 10 && seats > 0;
-                            const isSoldOut = seats === 0;
-                            
-                            return (
-                              <SelectItem 
-                                key={slot.value} 
-                                value={slot.value}
-                                disabled={isSoldOut}
-                              >
-                                <div className="flex items-center gap-2 w-full">
-                                  <span>{slot.label}</span>
-                                  {formData.date && (
-                                    <span className={`text-xs ${
-                                      isSoldOut ? 'text-destructive' : 
-                                      isLowAvailability ? 'text-accent' : 
-                                      'text-muted-foreground'
-                                    }`}>
-                                      {isSoldOut ? t.buyTicket.dateSelection.soldOut : isLowAvailability ? t.buyTicket.dateSelection.limited : t.buyTicket.dateSelection.available}
-                                    </span>
-                                  )}
-                                  {slot.isGuided && (
-                                    <span className="text-xs text-accent">
-                                      {t.buyTicket.timeSlots.guidedTourLabel}
-                                    </span>
-                                  )}
-                                </div>
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectContent>
-                      </Select>
-                      <p className="mt-1 text-muted-foreground">{t.buyTicket.dateSelection.passValidFullDay}</p>
-                      {formData.date && formData.timeSlot && (
-                        <p className={`mt-1 ${
-                          getAvailability(formData.date, formData.timeSlot) === 0 ? 'text-destructive' :
-                          getAvailability(formData.date, formData.timeSlot) < 10 ? 'text-accent' :
-                          'text-primary'
-                        }`}>
-                          {getAvailability(formData.date, formData.timeSlot) === 0 ? t.buyTicket.dateSelection.soldOutForTime :
-                           getAvailability(formData.date, formData.timeSlot) < 10 ? t.buyTicket.dateSelection.limitedAvailability :
-                           t.buyTicket.dateSelection.goodAvailability}
+                      {formData.pickupLocation !== "other" && (
+                        <>
+                          <Select
+                            value={formData.timeSlot}
+                            onValueChange={(value) => {
+                              handleInputChange("timeSlot", value);
+                            }}
+                            disabled={!formData.date || loadingAvailability}
+                          >
+                            <SelectTrigger className="mt-2 border-border">
+                              <SelectValue placeholder={t.buyTicket.dateSelection.selectTime} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {TIME_SLOTS.map((slot) => {
+                                const seats = formData.date ? getAvailability(formData.date, slot.value) : 50;
+                                const isLowAvailability = seats < 10 && seats > 0;
+                                const isSoldOut = seats === 0;
+                                
+                                return (
+                                  <SelectItem 
+                                    key={slot.value} 
+                                    value={slot.value}
+                                    disabled={isSoldOut}
+                                  >
+                                    <div className="flex items-center gap-2 w-full">
+                                      <span>{slot.label}</span>
+                                      {formData.date && (
+                                        <span className={`text-xs ${
+                                          isSoldOut ? 'text-destructive' : 
+                                          isLowAvailability ? 'text-accent' : 
+                                          'text-muted-foreground'
+                                        }`}>
+                                          {isSoldOut ? t.buyTicket.dateSelection.soldOut : isLowAvailability ? t.buyTicket.dateSelection.limited : t.buyTicket.dateSelection.available}
+                                        </span>
+                                      )}
+                                      {slot.isGuided && (
+                                        <span className="text-xs text-accent">
+                                          {t.buyTicket.timeSlots.guidedTourLabel}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </SelectItem>
+                                );
+                              })}
+                            </SelectContent>
+                          </Select>
+                          <p className="mt-1 text-muted-foreground">{t.buyTicket.dateSelection.passValidFullDay}</p>
+                          {formData.date && formData.timeSlot && (
+                            <p className={`mt-1 ${
+                              getAvailability(formData.date, formData.timeSlot) === 0 ? 'text-destructive' :
+                              getAvailability(formData.date, formData.timeSlot) < 10 ? 'text-accent' :
+                              'text-primary'
+                            }`}>
+                              {getAvailability(formData.date, formData.timeSlot) === 0 ? t.buyTicket.dateSelection.soldOutForTime :
+                               getAvailability(formData.date, formData.timeSlot) < 10 ? t.buyTicket.dateSelection.limitedAvailability :
+                               t.buyTicket.dateSelection.goodAvailability}
+                            </p>
+                          )}
+                        </>
+                      )}
+                      {formData.pickupLocation === "other" && (
+                        <p className="mt-2 text-sm text-muted-foreground italic">
+                          No specific time needed - hop on at any time during operating hours (9 AM - 7 PM)
                         </p>
                       )}
                     </div>
@@ -565,6 +583,15 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
 
                   <div>
                     <Label htmlFor="pickupLocation" className="text-foreground">{t.buyTicket.dateSelection.preferredPickupSpot}</Label>
+                    
+                    {/* Interactive Map */}
+                    <div className="mt-4 mb-4">
+                      <PickupLocationMap 
+                        selectedLocation={formData.pickupLocation}
+                        onLocationSelect={(location) => handleInputChange("pickupLocation", location)}
+                      />
+                    </div>
+                    
                     <Select
                       value={formData.pickupLocation}
                       onValueChange={(value) => handleInputChange("pickupLocation", value)}
@@ -777,7 +804,7 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                       </p>
                       <div className="rounded-lg bg-primary/5 p-4">
                         <p className="text-sm text-muted-foreground">
-                          💡 Your Go Sintra day pass gets you unlimited transport to all attractions. Tickets are available for purchase when you arrive!
+                          💡 Your Hop On Sintra day pass gets you unlimited transport to all attractions. Tickets are available for purchase when you arrive!
                         </p>
                       </div>
                     </div>

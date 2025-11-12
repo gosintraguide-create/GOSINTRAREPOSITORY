@@ -328,7 +328,7 @@ export const en: WebsiteContent = {
       moorishCastle: "Moorish Castle",
       monserratePalace: "Monserrate Palace",
       sintraPalace: "Sintra National Palace",
-      other: "Other / Will Decide Later",
+      other: "Will Decide Later",
     },
     timeSlots: {
       guidedTourLabel: "Guided Tour",

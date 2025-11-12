@@ -328,7 +328,7 @@ export const fr: WebsiteContent = {
       moorishCastle: "Château Maure",
       monserratePalace: "Palais de Monserrate",
       sintraPalace: "Palais National de Sintra",
-      other: "Autre / Décider Plus Tard",
+      other: "Décider Plus Tard",
     },
     timeSlots: {
       guidedTourLabel: "Visite Guidée",

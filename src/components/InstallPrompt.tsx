@@ -104,7 +104,7 @@ export function InstallPrompt() {
             <Smartphone className="h-6 w-6 text-primary" />
           </div>
           <div className="flex-1 pr-6">
-            <h3 className="text-foreground mb-1">Install Go Sintra</h3>
+            <h3 className="text-foreground mb-1">Install Hop On Sintra</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Get quick access and work offline. Perfect for drivers!
             </p>

@@ -323,12 +323,12 @@ export const de: WebsiteContent = {
     pickupLocations: {
       sintraTrainStation: "Bahnhof Sintra",
       sintraTownCenter: "Stadtzentrum Sintra",
-      penaPalace: "Pena-Palast",
+      penaPalace: "Palast Pena",
       quintaRegaleira: "Quinta da Regaleira",
       moorishCastle: "Maurische Burg",
       monserratePalace: "Palast Monserrate",
       sintraPalace: "Nationalpalast Sintra",
-      other: "Andere / Später Entscheiden",
+      other: "Später Entscheiden",
     },
     timeSlots: {
       guidedTourLabel: "Geführte Tour",

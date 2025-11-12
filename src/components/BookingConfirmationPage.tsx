@@ -114,7 +114,7 @@ export function BookingConfirmationPage({ onNavigate, booking }: BookingConfirma
           </div>
           <h1 className="mb-2">Booking Confirmed!</h1>
           <p className="mb-4 text-muted-foreground">
-            Your Go Sintra day pass is ready. Check your email for confirmation and QR codes.
+            Your Hop On Sintra day pass is ready. Check your email for confirmation and QR codes.
           </p>
           
           {/* Booking ID Badge */}

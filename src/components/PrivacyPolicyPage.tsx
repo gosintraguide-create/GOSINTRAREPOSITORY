@@ -152,7 +152,7 @@ export function PrivacyPolicyPage({ onNavigate, language }: PrivacyPolicyPagePro
               <div className="space-y-4 text-muted-foreground">
                 <p>{content.sections.contact.intro}</p>
                 <div className="rounded-lg bg-white p-4">
-                  <p><strong className="text-foreground">Go Sintra</strong></p>
+                  <p><strong className="text-foreground">Hop On Sintra</strong></p>
                   <p>Sintra, Portugal</p>
                   <p>Email: privacy@gosintra.com</p>
                   <p>WhatsApp: +351 932 967 279</p>

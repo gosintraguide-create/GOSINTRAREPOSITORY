@@ -9,7 +9,7 @@ interface SEOHeadProps {
 }
 
 export function SEOHead({
-  title = "Go Sintra - Premium Hop-On/Hop-Off Day Pass",
+  title = "Hop On Sintra - Premium Hop-On/Hop-Off Day Pass",
   description = "Explore Sintra's palaces and attractions with guaranteed seating in small vehicles. Unlimited rides, every 30 minutes. Book your day pass online.",
   keywords = "Sintra tours, Sintra transport, hop on hop off Sintra, Pena Palace, Quinta da Regaleira, Sintra day pass, Portugal tours",
   ogImage = "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop",
@@ -37,7 +37,7 @@ export function SEOHead({
     updateMetaTag("description", description);
     updateMetaTag("keywords", keywords);
     updateMetaTag("robots", "index, follow");
-    updateMetaTag("author", "Go Sintra");
+    updateMetaTag("author", "Hop On Sintra");
     updateMetaTag("viewport", "width=device-width, initial-scale=1.0");
     
     // Open Graph tags
@@ -48,7 +48,7 @@ export function SEOHead({
     updateMetaTag("og:image:height", "630", true);
     updateMetaTag("og:type", "website", true);
     updateMetaTag("og:url", `https://gosintra.pt${canonicalPath}`, true);
-    updateMetaTag("og:site_name", "Go Sintra", true);
+    updateMetaTag("og:site_name", "Hop On Sintra", true);
     updateMetaTag("og:locale", "en_US", true);
     
     // Twitter Card tags
@@ -77,7 +77,7 @@ export function SEOHead({
     const schema = {
       "@context": "https://schema.org",
       "@type": "TouristAttraction",
-      "name": "Go Sintra",
+      "name": "Hop On Sintra",
       "description": description,
       "url": `https://gosintra.pt${canonicalPath}`,
       "image": ogImage,

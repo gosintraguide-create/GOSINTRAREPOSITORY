@@ -594,6 +594,52 @@ export function ContentEditor() {
           </Card>
 
           <Card className="p-6">
+            <h3 className="mb-4 text-foreground">Hero Images</h3>
+            <div className="space-y-4">
+              <div>
+                <Label>Main Hero Background Image</Label>
+                <p className="mb-2 text-sm text-muted-foreground">
+                  Large hero image shown at the top (e.g., tuk tuk with palace)
+                </p>
+                <Input
+                  value={content.homepage.hero.heroImage || ""}
+                  onChange={(e) => updateContent(["homepage", "hero", "heroImage"], e.target.value)}
+                  placeholder="Enter Unsplash image URL"
+                />
+                {content.homepage.hero.heroImage && (
+                  <div className="mt-2 overflow-hidden rounded-lg border border-border">
+                    <img 
+                      src={content.homepage.hero.heroImage} 
+                      alt="Hero preview" 
+                      className="h-32 w-full object-cover"
+                    />
+                  </div>
+                )}
+              </div>
+              <div>
+                <Label>Explainer Section Image</Label>
+                <p className="mb-2 text-sm text-muted-foreground">
+                  Image shown in the "What Is Hop On Sintra" section (e.g., palace view)
+                </p>
+                <Input
+                  value={content.homepage.hero.explainerImage || ""}
+                  onChange={(e) => updateContent(["homepage", "hero", "explainerImage"], e.target.value)}
+                  placeholder="Enter Unsplash image URL"
+                />
+                {content.homepage.hero.explainerImage && (
+                  <div className="mt-2 overflow-hidden rounded-lg border border-border">
+                    <img 
+                      src={content.homepage.hero.explainerImage} 
+                      alt="Explainer preview" 
+                      className="h-32 w-full object-cover"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
             <h3 className="mb-4 text-foreground">Benefit Pills</h3>
             <div className="space-y-4">
               {content.homepage.hero.benefitPills.map((pill, index) => (
@@ -635,6 +681,70 @@ export function ContentEditor() {
                 <Plus className="mr-2 h-4 w-4" />
                 Add Benefit Pill
               </Button>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <h3 className="mb-4 text-foreground">Quick Links Section</h3>
+            <div className="space-y-4">
+              <div>
+                <Label>Section Title</Label>
+                <Input
+                  value={content.homepage.quickLinks.title}
+                  onChange={(e) => updateContent(["homepage", "quickLinks", "title"], e.target.value)}
+                />
+              </div>
+              <div>
+                <Label>Section Subtitle</Label>
+                <Input
+                  value={content.homepage.quickLinks.subtitle}
+                  onChange={(e) => updateContent(["homepage", "quickLinks", "subtitle"], e.target.value)}
+                />
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <Label>Attractions - Title</Label>
+                  <Input
+                    value={content.homepage.quickLinks.attractions.title}
+                    onChange={(e) => updateContent(["homepage", "quickLinks", "attractions", "title"], e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label>Attractions - Subtitle</Label>
+                  <Input
+                    value={content.homepage.quickLinks.attractions.subtitle}
+                    onChange={(e) => updateContent(["homepage", "quickLinks", "attractions", "subtitle"], e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label>Travel Guide - Title</Label>
+                  <Input
+                    value={content.homepage.quickLinks.travelGuide.title}
+                    onChange={(e) => updateContent(["homepage", "quickLinks", "travelGuide", "title"], e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label>Travel Guide - Subtitle</Label>
+                  <Input
+                    value={content.homepage.quickLinks.travelGuide.subtitle}
+                    onChange={(e) => updateContent(["homepage", "quickLinks", "travelGuide", "subtitle"], e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label>Private Tours - Title</Label>
+                  <Input
+                    value={content.homepage.quickLinks.privateTours.title}
+                    onChange={(e) => updateContent(["homepage", "quickLinks", "privateTours", "title"], e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label>Private Tours - Subtitle</Label>
+                  <Input
+                    value={content.homepage.quickLinks.privateTours.subtitle}
+                    onChange={(e) => updateContent(["homepage", "quickLinks", "privateTours", "subtitle"], e.target.value)}
+                  />
+                </div>
+              </div>
             </div>
           </Card>
 

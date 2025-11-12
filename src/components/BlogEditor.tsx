@@ -61,7 +61,7 @@ export function BlogEditor() {
       slug: "",
       excerpt: "",
       content: "",
-      author: "Go Sintra Team",
+      author: "Hop On Sintra Team",
       publishDate: new Date().toISOString().split('T')[0],
       lastModified: new Date().toISOString().split('T')[0],
       featuredImage: "",

@@ -275,7 +275,7 @@ export function AttractionDetailPage({ onNavigate, attractionId }: AttractionDet
                     💡 Get There Easily!
                   </h4>
                   <p className="mb-3 text-sm text-muted-foreground">
-                    Book a Go Sintra day pass for unlimited transport between all attractions with professional driver-guides!
+                    Book a Hop On Sintra day pass for unlimited transport between all attractions with professional driver-guides!
                   </p>
                   <Button
                     size="lg"

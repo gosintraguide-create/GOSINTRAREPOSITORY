@@ -338,7 +338,7 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
               Verify Your Booking
             </DialogTitle>
             <DialogDescription>
-              This exclusive sunset experience is available only to existing Go Sintra customers. Please enter your booking ID to continue.
+              This exclusive sunset experience is available only to existing Hop On Sintra customers. Please enter your booking ID to continue.
             </DialogDescription>
           </DialogHeader>
 
@@ -398,14 +398,14 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
 
             <div className="rounded-lg bg-blue-50 border border-blue-200 p-3 space-y-2">
               <p className="text-xs text-blue-900">
-                <strong>Don't have a booking yet?</strong> You need to book a Go Sintra day pass first to access this exclusive experience.
+                <strong>Don't have a booking yet?</strong> You need to book a Hop On Sintra day pass first to access this exclusive experience.
               </p>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => {
                   setShowBookingDialog(false);
-                  onNavigate("home");
+                  onNavigate("buy-ticket");
                 }}
                 className="w-full text-xs bg-white hover:bg-blue-50 border-blue-300"
               >

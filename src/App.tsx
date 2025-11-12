@@ -387,7 +387,7 @@ export default function App() {
         return { ...websiteContent.seo.about, path: "/about" };
       case "request-pickup":
         return {
-          title: "Request Pickup - Go Sintra Live Tracking",
+          title: "Request Pickup - Hop On Sintra Live Tracking",
           description:
             "Request a pickup at your current location. Track your vehicle in real-time and get estimated arrival times.",
           keywords:
@@ -407,8 +407,8 @@ export default function App() {
       case "blog-article":
         return {
           title: pageData?.title
-            ? `${pageData.title} - Go Sintra Blog`
-            : "Article - Go Sintra Blog",
+            ? `${pageData.title} - Hop On Sintra Blog`
+            : "Article - Hop On Sintra Blog",
           description:
             pageData?.excerpt ||
             "Read our comprehensive guide about visiting Sintra.",
@@ -430,7 +430,7 @@ export default function App() {
         return {
           title: "Add Sunset Special - Exclusive Sunset Drive to Cabo da Roca",
           description:
-            "Add an exclusive sunset drive to Cabo da Roca to your Go Sintra booking. Experience the breathtaking sunset at Europe's westernmost point.",
+            "Add an exclusive sunset drive to Cabo da Roca to your Hop On Sintra booking. Experience the breathtaking sunset at Europe's westernmost point.",
           keywords:
             "Sintra sunset tour, Cabo da Roca sunset, sunset drive Sintra, exclusive Sintra experience",
           path: "/sunset-special-purchase",

@@ -161,7 +161,7 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
   const handleWhatsApp = () => {
     // Remove all non-digit characters from the WhatsApp number
     const whatsappNumber = content.company.whatsappNumber.replace(/\D/g, '');
-    const message = encodeURIComponent("Hi! I'd like to know more about Go Sintra day passes.");
+    const message = encodeURIComponent("Hi! I'd like to know more about Hop On Sintra day passes.");
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
     
     console.log('Opening WhatsApp:', whatsappUrl);
@@ -263,7 +263,7 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
               <div className="space-y-4">
                 <div className="rounded-lg bg-secondary p-3">
                   <p className="text-foreground">
-                    Hi! 👋 Welcome to Go Sintra. How can we help you today?
+                    Hi! 👋 Welcome to Hop On Sintra. How can we help you today?
                   </p>
                 </div>
 

@@ -9,7 +9,7 @@ interface BlogSEOProps {
 export function BlogSEO({ article, categoryName }: BlogSEOProps) {
   useEffect(() => {
     // Update title
-    document.title = article.seo.title || `${article.title} - Go Sintra Blog`;
+    document.title = article.seo.title || `${article.title} - Hop On Sintra Blog`;
 
     // Update or create meta tags
     const updateMetaTag = (name: string, content: string, property = false) => {
@@ -47,7 +47,7 @@ export function BlogSEO({ article, categoryName }: BlogSEOProps) {
     updateMetaTag("og:description", article.seo.description || article.excerpt, true);
     updateMetaTag("og:type", "article", true);
     updateMetaTag("og:url", `https://gosintra.pt/blog/${article.slug}`, true);
-    updateMetaTag("og:site_name", "Go Sintra Travel Guide", true);
+    updateMetaTag("og:site_name", "Hop On Sintra Travel Guide", true);
     updateMetaTag("og:locale", "en_US", true);
     
     if (article.featuredImage) {
@@ -107,7 +107,7 @@ export function BlogSEO({ article, categoryName }: BlogSEOProps) {
       },
       "publisher": {
         "@type": "Organization",
-        "name": "Go Sintra",
+        "name": "Hop On Sintra",
         "url": "https://gosintra.pt",
         "logo": {
           "@type": "ImageObject",

@@ -30,6 +30,15 @@ export interface ComprehensiveContent {
       subtitle: string;
       ctaButton: string;
       benefitPills: Array<{ icon: string; text: string }>;
+      heroImage?: string;
+      explainerImage?: string;
+    };
+    quickLinks: {
+      title: string;
+      subtitle: string;
+      attractions: { title: string; subtitle: string };
+      travelGuide: { title: string; subtitle: string };
+      privateTours: { title: string; subtitle: string };
     };
     whyChoose: {
       title: string;
@@ -491,7 +500,17 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
         { icon: "Users", text: "Small Groups (2-6)" },
         { icon: "Clock", text: "Every 10-15 Min" },
         { icon: "MapPin", text: "All Attractions" },
+        { icon: "Smartphone", text: "Request Pickups" },
       ],
+      heroImage: "https://images.unsplash.com/photo-1704312230001-8d9adfc76d39?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0dWslMjB0dWslMjBzaW50cmElMjBwb3J0dWdhbCUyMGNvbG9yZnVsJTIwcGFsYWNlfGVufDF8fHx8MTc2MjM2MTE4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      explainerImage: "https://images.unsplash.com/photo-1730911454981-545ef4ebdef9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzaW50cmElMjBwZW5hJTIwcGFsYWNlJTIwc2NlbmljJTIwdmlld3xlbnwxfHx8fDE3NjIzNjExODZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    },
+    quickLinks: {
+      title: "Explore More",
+      subtitle: "Discover attractions, tips, and personalized tours",
+      attractions: { title: "Explore Attractions", subtitle: "UNESCO sites & palaces" },
+      travelGuide: { title: "Travel Guide", subtitle: "Tips & local secrets" },
+      privateTours: { title: "Prefer a Private Tour?", subtitle: "Exclusive personalized experience" },
     },
     whyChoose: {
       title: "Why Choose Go Sintra?",

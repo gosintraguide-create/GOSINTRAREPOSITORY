@@ -81,7 +81,7 @@ export function DriverLoginPage({ onLoginSuccess }: DriverLoginPageProps) {
           </div>
           <CardTitle className="text-2xl text-center">Driver Login</CardTitle>
           <CardDescription className="text-center">
-            Access your Go Sintra driver dashboard
+            Access your Hop On Sintra driver dashboard
           </CardDescription>
         </CardHeader>
         <CardContent>

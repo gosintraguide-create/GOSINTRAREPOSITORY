@@ -17,11 +17,13 @@ import {
   RefreshCw,
   Download,
   Smartphone,
+  Phone,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { SunsetSpecialCarousel } from "./SunsetSpecialCarousel";
+import { RouteOverview } from "./RouteOverview";
 import { useState, useEffect } from "react";
 import {
   loadContentWithLanguage,
@@ -268,174 +270,259 @@ export function HomePage({
 
   return (
     <div className="flex-1">
-      {/* Hero Section - Clear and Direct */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary/95 to-primary/90 py-12 sm:py-20 lg:py-32">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute left-10 top-10 h-64 w-64 rounded-full bg-white blur-3xl" />
-          <div className="absolute bottom-10 right-10 h-96 w-96 rounded-full bg-accent blur-3xl" />
-        </div>
-
-        <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="mb-4 text-white text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight drop-shadow-[0_4px_12px_rgba(0,0,0,0.4)]">
-              {content.homepage.hero.title}
-            </h1>
-
-            <p className="mx-auto mb-6 max-w-2xl text-base sm:text-xl text-white/90">
-              {content.homepage.hero.subtitle}
-            </p>
-
-            {/* Key Benefits Pills */}
-            <div className="mb-10 flex flex-wrap justify-center gap-2 sm:gap-3">
-              {content.homepage.hero.benefitPills.map(
-                (benefit, index) => {
-                  const IconComponent =
-                    benefit.icon === "Users"
-                      ? Users
-                      : benefit.icon === "Clock"
-                        ? Clock
-                        : benefit.icon === "MapPin"
-                          ? MapPin
-                          : Shield;
-
-                  return (
-                    <div
-                      key={index}
-                      className="flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-2 backdrop-blur-sm sm:gap-2 sm:px-5 sm:py-3"
-                    >
-                      <IconComponent className="h-4 w-4 text-white sm:h-5 sm:w-5" />
-                      <span className="text-sm text-white sm:text-base">
-                        {benefit.text}
-                      </span>
-                    </div>
-                  );
-                },
-              )}
+      {/* Hero Section - Visual Impact with Large Image */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary/95 to-primary/90">
+        {/* Large Hero Image Section */}
+        <div className="relative">
+          {/* Hero Image with Overlay */}
+          <div className="relative min-h-[550px] sm:min-h-[600px] lg:min-h-[650px]">
+            <div className="absolute inset-0">
+              <ImageWithFallback
+                src={content.homepage.hero.heroImage || "https://images.unsplash.com/photo-1704312230001-8d9adfc76d39?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0dWslMjB0dWslMjBzaW50cmElMjBwb3J0dWdhbCUyMGNvbG9yZnVsJTIwcGFsYWNlfGVufDF8fHx8MTc2MjM2MTE4Nnww&ixlib=rb-4.1.0&q=80&w=1080"}
+                alt="Tuk tuk sightseeing in Sintra with colorful Pena Palace"
+                className="h-full w-full object-cover object-center"
+              />
+              {/* Top-to-bottom gradient overlay - lighter to show more image, darker where text appears */}
+              <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/25 to-black/65" />
             </div>
 
-            {/* Tilted Price Card */}
-            {priceLoaded && (
-              <div className="mb-8 flex justify-center sm:mb-10">
-                <div className="relative">
-                  <div className="relative mx-auto flex h-36 items-center justify-center sm:h-40 md:h-44">
-                    {/* Left Photo Card - Almost fully visible */}
-                    <div className="absolute -left-24 top-1/2 z-0 w-32 -translate-y-1/2 scale-[0.85] rotate-[-2deg] transform overflow-hidden rounded-xl shadow-xl transition-all hover:z-20 hover:-left-[90px] hover:rotate-[-1deg] hover:scale-[0.88] sm:-left-32 sm:hover:-left-[122px] md:-left-40 md:w-48 md:hover:-left-[154px]">
-                      <ImageWithFallback
-                        src="https://images.unsplash.com/photo-1715616130000-375a7e5fac95?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoYXBweSUyMHRvdXJpc3RzJTIwc2lnaHRzZWVpbmclMjBncm91cHxlbnwxfHx8fDE3NjA4MTcwODJ8MA&ixlib=rb-4.1.0&q=80&w=1080"
-                        alt="Happy travelers in Sintra"
-                        className="h-32 w-full object-cover sm:h-36 md:h-40"
-                      />
-                    </div>
+            {/* Hero Content Overlay */}
+            <div className="absolute inset-0 flex items-center py-12 sm:py-16">
+              <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div className="mx-auto max-w-4xl text-center lg:mx-0 lg:text-left">
+                  {/* Main Heading */}
+                  <h1 className="mb-4 text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight drop-shadow-[0_8px_32px_rgba(0,0,0,1)] sm:mb-6">
+                    {content.homepage.hero.title}
+                  </h1>
 
-                    {/* Right Photo Card - Almost fully visible */}
-                    <div className="absolute -right-24 top-1/2 z-0 w-32 -translate-y-1/2 scale-[0.85] rotate-[-2deg] transform overflow-hidden rounded-xl shadow-xl transition-all hover:z-20 hover:-right-[90px] hover:rotate-[-1deg] hover:scale-[0.88] sm:-right-32 sm:w-40 sm:hover:-right-[122px] md:-right-40 md:w-48 md:hover:-right-[154px]">
-                      <ImageWithFallback
-                        src="https://images.unsplash.com/photo-1759668558962-23ae91b34bfc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0cmF2ZWxlcnMlMjBmcmllbmRzJTIwdmFjYXRpb24lMjB8ZW58MXx8fHwxNzYwODE3MDgyfDA&ixlib=rb-4.1.0&q=80&w=1080"
-                        alt="Friends enjoying their trip"
-                        className="h-32 w-full object-cover sm:h-36 md:h-40"
-                      />
-                    </div>
+                  {/* Subtitle with stronger contrast */}
+                  <p className="mb-6 text-base sm:text-lg md:text-xl text-white drop-shadow-[0_6px_20px_rgba(0,0,0,1)] sm:mb-8">
+                    {content.homepage.hero.subtitle}
+                  </p>
 
-                    {/* Center Price Card - Front and center */}
-                    <div className="relative z-10 flex h-32 w-32 flex-col items-center justify-center rotate-[-2deg] transform rounded-2xl bg-white shadow-2xl transition-transform hover:rotate-0 hover:scale-105 sm:h-36 sm:w-40 md:h-40 md:w-48">
-                      <p className="mb-1 text-xs uppercase tracking-wide text-muted-foreground sm:text-sm">
-                        Starting at
-                      </p>
-                      <p className="text-4xl font-extrabold text-accent sm:text-5xl">
-                        €{basePrice}
-                      </p>
-                      <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
-                        per person / full day
-                      </p>
+                  {/* Key Benefits Pills */}
+                  <div className="mb-6 flex flex-wrap justify-center gap-2 sm:mb-8 sm:gap-3 lg:justify-start">
+                    {content.homepage.hero.benefitPills.map(
+                      (benefit, index) => {
+                        const IconComponent =
+                          benefit.icon === "Users"
+                            ? Users
+                            : benefit.icon === "Clock"
+                              ? Clock
+                              : benefit.icon === "MapPin"
+                                ? MapPin
+                                : benefit.icon === "Smartphone"
+                                  ? Smartphone
+                                  : Shield;
+
+                        return (
+                          <div
+                            key={index}
+                            className="flex items-center gap-1.5 rounded-full bg-white px-3 py-2 shadow-[0_6px_16px_rgba(0,0,0,0.4)] sm:gap-2 sm:px-4 sm:py-2.5"
+                          >
+                            <IconComponent className="h-4 w-4 text-primary sm:h-5 sm:w-5" />
+                            <span className="text-xs text-gray-900 sm:text-sm">
+                              {benefit.text}
+                            </span>
+                          </div>
+                        );
+                      },
+                    )}
+                  </div>
+
+                  {/* Price Badge and CTA */}
+                  <div className="flex flex-col items-center gap-3 sm:gap-4 lg:flex-row lg:items-center lg:justify-start">
+                    {/* Price Badge - more compact on mobile */}
+                    {priceLoaded && (
+                      <div className="inline-flex items-center gap-2.5 rounded-xl bg-white px-5 py-3 shadow-2xl sm:gap-3 sm:rounded-2xl sm:px-6 sm:py-4">
+                        <div>
+                          <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                            From
+                          </p>
+                          <p className="text-2xl font-extrabold text-accent sm:text-3xl">
+                            €{basePrice}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            per person
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Primary CTA */}
+                    <Button
+                      size="lg"
+                      className="h-12 w-full bg-accent px-6 shadow-2xl hover:scale-105 hover:bg-accent/90 sm:h-14 sm:w-auto sm:px-10 sm:text-lg"
+                      onClick={() => onNavigate("buy-ticket")}
+                    >
+                      {content.homepage.hero.ctaButton}
+                      <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* What Is Hop On Sintra - Explainer Section */}
+        <div className="relative bg-white py-12 sm:py-16">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
+              {/* Left: Text Content */}
+              <div>
+                <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2">
+                  <Car className="h-5 w-5 text-primary" />
+                  <span className="text-primary">Hop-On/Hop-Off Day Pass</span>
+                </div>
+                <h2 className="mb-4 text-foreground">
+                  Your Unlimited Sintra Adventure
+                </h2>
+                <p className="mb-4 text-lg text-muted-foreground">
+                  Hop On Sintra is a flexible hop-on/hop-off day pass service using small, intimate vehicles like tuk tuks and vintage UMM jeeps. With service every 10-15 minutes from 9am-7pm, you get guaranteed seating and unlimited rides to all major attractions.
+                </p>
+                <p className="mb-6 text-lg text-muted-foreground">
+                  Unlike crowded tour buses, our small groups (2-6 passengers) with professional local guides give you the freedom to explore Sintra at your own pace while enjoying personalized attention.
+                </p>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="mt-1 h-5 w-5 flex-shrink-0 text-accent" />
+                    <div>
+                      <p className="text-foreground">Unlimited Rides All Day</p>
+                      <p className="text-sm text-muted-foreground">One pass, all attractions</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="mt-1 h-5 w-5 flex-shrink-0 text-accent" />
+                    <div>
+                      <p className="text-foreground">Every 10-15 Minutes</p>
+                      <p className="text-sm text-muted-foreground">Never wait long</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="mt-1 h-5 w-5 flex-shrink-0 text-accent" />
+                    <div>
+                      <p className="text-foreground">Small Intimate Groups</p>
+                      <p className="text-sm text-muted-foreground">2-6 passengers max</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="mt-1 h-5 w-5 flex-shrink-0 text-accent" />
+                    <div>
+                      <p className="text-foreground">Professional Guides</p>
+                      <p className="text-sm text-muted-foreground">Local experts</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="mt-1 h-5 w-5 flex-shrink-0 text-accent" />
+                    <div>
+                      <p className="text-foreground">Request On-Demand Pickups</p>
+                      <p className="text-sm text-muted-foreground">Call a vehicle to you anytime</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="mt-1 h-5 w-5 flex-shrink-0 text-accent" />
+                    <div>
+                      <p className="text-foreground">Real-Time Vehicle Tracking</p>
+                      <p className="text-sm text-muted-foreground">See your ride arriving</p>
                     </div>
                   </div>
                 </div>
               </div>
-            )}
 
-            {/* Primary CTA */}
-            <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center sm:gap-4">
-              <Button
-                size="lg"
-                className="h-12 w-full bg-accent px-8 text-base shadow-2xl hover:scale-105 hover:bg-accent/90 sm:h-16 sm:w-auto sm:px-12 sm:text-xl"
-                onClick={() => onNavigate("buy-ticket")}
-              >
-                {content.homepage.hero.ctaButton}
-                <ArrowRight className="ml-2 h-5 w-5 sm:h-6 sm:w-6" />
-              </Button>
+              {/* Right: Supporting Image */}
+              <div className="relative h-[400px] overflow-hidden rounded-2xl shadow-2xl lg:h-[500px]">
+                <ImageWithFallback
+                  src={content.homepage.hero.explainerImage || "https://images.unsplash.com/photo-1730911454981-545ef4ebdef9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzaW50cmElMjBwZW5hJTIwcGFsYWNlJTIwc2NlbmljJTIwdmlld3xlbnwxfHx8fDE3NjIzNjExODZ8MA&ixlib=rb-4.1.0&q=80&w=1080"}
+                  alt="Scenic view of Pena Palace and Sintra attractions"
+                  className="h-full w-full object-cover"
+                />
+              </div>
             </div>
+          </div>
+        </div>
 
-            {/* Compact Quick Links */}
-            <div className="mx-auto mt-8 flex max-w-4xl flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-4">
-              {/* Attractions Link */}
-              <button
-                onClick={() => onNavigate("attractions")}
-                className="group flex w-full items-center gap-3 rounded-xl border border-white/30 bg-white/10 px-4 py-3 backdrop-blur-sm transition-all hover:scale-105 hover:border-white/50 hover:bg-white/20 sm:w-auto sm:min-w-[240px]"
-              >
-                <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
-                  <ImageWithFallback
-                    src="https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=200&h=200&fit=crop"
-                    alt="Attractions"
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <div className="flex-1 text-left">
-                  <p className="text-sm text-white">
-                    Explore Attractions
-                  </p>
-                  <p className="text-xs text-white/70">
-                    UNESCO sites & palaces
-                  </p>
-                </div>
-                <ArrowRight className="h-4 w-4 flex-shrink-0 text-white/70 transition-transform group-hover:translate-x-1 group-hover:text-white" />
-              </button>
+      </section>
 
-              {/* Travel Guide Link */}
-              <button
-                onClick={() => onNavigate("blog")}
-                className="group flex w-full items-center gap-3 rounded-xl border border-white/30 bg-white/10 px-4 py-3 backdrop-blur-sm transition-all hover:scale-105 hover:border-white/50 hover:bg-white/20 sm:w-auto sm:min-w-[240px]"
-              >
-                <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
-                  <ImageWithFallback
-                    src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=200&h=200&fit=crop"
-                    alt="Travel Guide"
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <div className="flex-1 text-left">
-                  <p className="text-sm text-white">
-                    Travel Guide
-                  </p>
-                  <p className="text-xs text-white/70">
-                    Tips & local secrets
-                  </p>
-                </div>
-                <ArrowRight className="h-4 w-4 flex-shrink-0 text-white/70 transition-transform group-hover:translate-x-1 group-hover:text-white" />
-              </button>
+      {/* Route Overview Section */}
+      <RouteOverview />
 
-              {/* Private Tours Link */}
-              <button
-                onClick={() => onNavigate("private-tours")}
-                className="group flex w-full items-center gap-3 rounded-xl border border-accent/50 bg-accent/20 px-4 py-3 backdrop-blur-sm transition-all hover:scale-105 hover:border-accent hover:bg-accent/30 sm:w-auto sm:min-w-[240px]"
-              >
-                <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
-                  <ImageWithFallback
-                    src="https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?w=200&h=200&fit=crop"
-                    alt="Private Tours"
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <div className="flex-1 text-left">
-                  <p className="text-sm text-white">
-                    Prefer a Private Tour?
-                  </p>
-                  <p className="text-xs text-white/70">
-                    Exclusive personalized experience
-                  </p>
-                </div>
-                <ArrowRight className="h-4 w-4 flex-shrink-0 text-white/70 transition-transform group-hover:translate-x-1 group-hover:text-white" />
-              </button>
-            </div>
+      {/* Quick Links Section */}
+      <section className="bg-gradient-to-br from-primary via-primary/95 to-primary/90 py-12 sm:py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-8 text-center">
+            <h2 className="mb-2 text-white">{content.homepage.quickLinks.title}</h2>
+            <p className="text-white/90">{content.homepage.quickLinks.subtitle}</p>
+          </div>
+          <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+            {/* Attractions Link */}
+            <button
+              onClick={() => onNavigate("attractions")}
+              className="group flex items-center gap-4 rounded-2xl border-2 border-white/30 bg-white/10 px-6 py-5 backdrop-blur-sm transition-all hover:scale-105 hover:border-white/60 hover:bg-white/20 hover:shadow-2xl"
+            >
+              <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl sm:h-20 sm:w-20">
+                <ImageWithFallback
+                  src="https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=200&h=200&fit=crop"
+                  alt="Attractions"
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="mb-1 text-white">
+                  {content.homepage.quickLinks.attractions.title}
+                </p>
+                <p className="text-sm text-white/80">
+                  {content.homepage.quickLinks.attractions.subtitle}
+                </p>
+              </div>
+              <ArrowRight className="h-5 w-5 flex-shrink-0 text-white/70 transition-transform group-hover:translate-x-1 group-hover:text-white" />
+            </button>
+
+            {/* Travel Guide Link */}
+            <button
+              onClick={() => onNavigate("blog")}
+              className="group flex items-center gap-4 rounded-2xl border-2 border-white/30 bg-white/10 px-6 py-5 backdrop-blur-sm transition-all hover:scale-105 hover:border-white/60 hover:bg-white/20 hover:shadow-2xl"
+            >
+              <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl sm:h-20 sm:w-20">
+                <ImageWithFallback
+                  src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=200&h=200&fit=crop"
+                  alt="Travel Guide"
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="mb-1 text-white">
+                  {content.homepage.quickLinks.travelGuide.title}
+                </p>
+                <p className="text-sm text-white/80">
+                  {content.homepage.quickLinks.travelGuide.subtitle}
+                </p>
+              </div>
+              <ArrowRight className="h-5 w-5 flex-shrink-0 text-white/70 transition-transform group-hover:translate-x-1 group-hover:text-white" />
+            </button>
+
+            {/* Private Tours Link */}
+            <button
+              onClick={() => onNavigate("private-tours")}
+              className="group flex items-center gap-4 rounded-2xl border-2 border-accent bg-accent/20 px-6 py-5 backdrop-blur-sm transition-all hover:scale-105 hover:border-accent hover:bg-accent/30 hover:shadow-2xl sm:col-span-2 lg:col-span-1"
+            >
+              <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl sm:h-20 sm:w-20">
+                <ImageWithFallback
+                  src="https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?w=200&h=200&fit=crop"
+                  alt="Private Tours"
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="mb-1 text-white">
+                  {content.homepage.quickLinks.privateTours.title}
+                </p>
+                <p className="text-sm text-white/80">
+                  {content.homepage.quickLinks.privateTours.subtitle}
+                </p>
+              </div>
+              <ArrowRight className="h-5 w-5 flex-shrink-0 text-white/70 transition-transform group-hover:translate-x-1 group-hover:text-white" />
+            </button>
           </div>
         </div>
       </section>
@@ -604,6 +691,25 @@ export function HomePage({
                   </div>
                 </div>
                 <div className="absolute right-0 top-0 h-16 w-16 bg-gradient-to-bl from-accent/5 to-transparent sm:h-24 sm:w-24" />
+              </Card>
+            </div>
+
+            {/* Pro Tip: Request a Ride - Small Info Card */}
+            <div className="mt-6 sm:mt-8">
+              <Card className="border border-accent/20 bg-accent/5 p-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-accent/10">
+                    <Smartphone className="h-4 w-4 text-accent" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="mb-1 flex items-center gap-2">
+                      <span className="rounded-full bg-accent/15 px-2 py-0.5 text-xs text-accent">💡 Tip</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      <strong className="text-foreground">Can't see a vehicle nearby?</strong> Request an on-demand pickup from your booking confirmation. We'll send one to your location with live tracking—no extra charge!
+                    </p>
+                  </div>
+                </div>
               </Card>
             </div>
           </div>
@@ -865,27 +971,25 @@ export function HomePage({
               <div className="absolute inset-0 border-2 border-accent opacity-0 transition-opacity group-hover:opacity-100" />
             </Card>
 
-            {/* Feature 6 */}
+            {/* Feature 6 - Request a Ride */}
             <Card className="group relative overflow-hidden border-2 border-border bg-white shadow-md transition-all hover:scale-105 hover:shadow-2xl">
               <div className="absolute inset-0 transition-transform duration-500 group-hover:scale-110">
                 <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1697394494123-c6c1323a14f7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzaW50cmElMjBwb3J0dWdhbCUyMGNvbG9yZnVsJTIwcGFsYWNlfGVufDF8fHx8MTc2MDgyNDI0MXww&ixlib=rb-4.1.0&q=80&w=1080"
-                  alt="Instant Everything"
+                  src="https://images.unsplash.com/photo-1556742044-3c52d6e88c62?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2JpbGUlMjBhcHAlMjByZXF1ZXN0JTIwdHJhbnNwb3J0fGVufDF8fHx8MTc2MDgyNDI0MXww&ixlib=rb-4.1.0&q=80&w=1080"
+                  alt="Request a Ride On Demand"
                   className="h-full w-full object-cover opacity-20"
                 />
                 <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-white/90 to-white/85" />
               </div>
               <div className="relative p-6">
-                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 shadow-lg transition-transform group-hover:scale-110">
-                  <Zap className="h-7 w-7 text-white" />
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-accent to-accent/80 shadow-lg transition-transform group-hover:scale-110">
+                  <Smartphone className="h-7 w-7 text-white" />
                 </div>
                 <h3 className="mb-2 text-foreground">
-                  Instant Everything
+                  On-Demand Pickup Service
                 </h3>
                 <p className="text-muted-foreground">
-                  Book now, ride now! Digital tickets mean no
-                  waiting in lines. Just point, scan, and you're
-                  on your way to adventure.
+                  Can't see a vehicle nearby? Request an on-demand pickup from your booking confirmation. We'll send one to your exact location with live tracking—included in your pass!
                 </p>
               </div>
               <div className="absolute inset-0 border-2 border-accent opacity-0 transition-opacity group-hover:opacity-100" />

@@ -325,10 +325,10 @@ export const nl: WebsiteContent = {
       sintraTownCenter: "Centrum Sintra",
       penaPalace: "Pena Paleis",
       quintaRegaleira: "Quinta da Regaleira",
-      moorishCastle: "Moorse Kasteel",
+      moorishCastle: "Moors Kasteel",
       monserratePalace: "Monserrate Paleis",
       sintraPalace: "Nationaal Paleis Sintra",
-      other: "Anders / Later Beslissen",
+      other: "Later Beslissen",
     },
     timeSlots: {
       guidedTourLabel: "Begeleide Rondleiding",

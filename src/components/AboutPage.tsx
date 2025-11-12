@@ -81,7 +81,7 @@ export function AboutPage({ language = "en" }: AboutPageProps) {
               viewport={{ once: true }}
             >
               <Badge className="mb-4">Our Journey</Badge>
-              <h2 className="mb-6 text-foreground">How Go Sintra Was Born</h2>
+              <h2 className="mb-6 text-foreground">How Hop On Sintra Was Born</h2>
               <div className="space-y-4 text-muted-foreground">
                 {content.about.story.map((paragraph, index) => (
                   <p key={index}>{paragraph}</p>
@@ -122,7 +122,7 @@ export function AboutPage({ language = "en" }: AboutPageProps) {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-12 text-center">
             <Badge className="mb-4">What Makes Us Special</Badge>
-            <h2 className="mb-4 text-foreground">The Go Sintra Difference</h2>
+            <h2 className="mb-4 text-foreground">The Hop On Sintra Difference</h2>
             <p className="mx-auto max-w-2xl text-muted-foreground">
               We've reimagined how you explore Sintra—no crowded buses, no rigid schedules!
             </p>
@@ -306,7 +306,7 @@ export function AboutPage({ language = "en" }: AboutPageProps) {
           <div className="mb-12 text-center">
             <Badge className="mb-4">FAQ</Badge>
             <h2 className="mb-4 text-foreground">Common Questions</h2>
-            <p className="text-muted-foreground">Everything you need to know about Go Sintra</p>
+            <p className="text-muted-foreground">Everything you need to know about Hop On Sintra</p>
           </div>
 
           <div className="space-y-4">
@@ -325,7 +325,7 @@ export function AboutPage({ language = "en" }: AboutPageProps) {
               },
               {
                 q: "How do I use my QR code?",
-                a: "Simply show your QR code (sent via email) to any Go Sintra driver before boarding. They'll scan it to verify your pass."
+                a: "Simply show your QR code (sent via email) to any Hop On Sintra driver before boarding. They'll scan it to verify your pass."
               },
               {
                 q: "How often do vehicles depart?",
