@@ -352,7 +352,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
   };
 
   const handleLogin = () => {
-    if (password === "gosintra2025") {
+    if (password === "Sintra2025") {
       setIsAuthenticated(true);
       localStorage.setItem("admin-session", "authenticated");
       setError("");
@@ -640,6 +640,26 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
       setReplyMessage("");
       loadConversationMessages(selectedConversation);
       loadConversations();
+    }
+  };
+
+  const handleCloseConversation = async (conversationId: string) => {
+    const result = await safeJsonFetch<any>(
+      `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/chat/${conversationId}/close`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${publicAnonKey}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    if (result?.success) {
+      loadConversations();
+      if (selectedConversation === conversationId) {
+        setSelectedConversation(null);
+      }
     }
   };
 
@@ -2049,7 +2069,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                       </div>
                       <Button
                         onClick={() =>
-                          closeConversation(
+                          handleCloseConversation(
                             selectedConversation,
                           )
                         }
@@ -2125,11 +2145,11 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                           className="flex-1 border-border"
                           onKeyPress={(e) =>
                             e.key === "Enter" &&
-                            sendAdminReply()
+                            handleSendReply()
                           }
                         />
                         <Button
-                          onClick={sendAdminReply}
+                          onClick={handleSendReply}
                           disabled={!replyMessage.trim()}
                           className="bg-primary text-primary-foreground hover:bg-primary/90"
                         >
@@ -2426,7 +2446,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                             className="cursor-pointer border-border p-4 transition-colors hover:bg-secondary/50"
                             onClick={() => {
                               setSelectedConversation(conv);
-                              fetchConversationMessages(
+                              loadConversationMessages(
                                 conv.id,
                               );
                             }}
