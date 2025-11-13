@@ -3682,26 +3682,26 @@ app.post("/make-server-3bd0ade8/drivers/create", async (c) => {
     const body = await c.req.json();
     const {
       name,
-      email,
+      username,
       password,
       phoneNumber,
       vehicleType,
       licenseNumber,
     } = body;
 
-    if (!name || !email || !password) {
+    if (!name || !username || !password) {
       return c.json(
-        { error: "Name, email, and password are required" },
+        { error: "Name, username, and password are required" },
         400,
       );
     }
 
     const existingDriver = await kv.get(
-      `driver:credentials:${email}`,
+      `driver:credentials:${username}`,
     );
     if (existingDriver) {
       return c.json(
-        { error: "Driver with this email already exists" },
+        { error: "Driver with this username already exists" },
         400,
       );
     }
@@ -3709,9 +3709,9 @@ app.post("/make-server-3bd0ade8/drivers/create", async (c) => {
     const driverId = `driver_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
     const hashedPassword = btoa(password);
 
-    await kv.set(`driver:credentials:${email}`, {
+    await kv.set(`driver:credentials:${username}`, {
       driverId,
-      email,
+      username,
       password: hashedPassword,
       createdAt: new Date().toISOString(),
     });
@@ -3719,7 +3719,7 @@ app.post("/make-server-3bd0ade8/drivers/create", async (c) => {
     const driverProfile = {
       id: driverId,
       name,
-      email,
+      username,
       phoneNumber: phoneNumber || "",
       vehicleType: vehicleType || "",
       licenseNumber: licenseNumber || "",
@@ -3738,7 +3738,7 @@ app.post("/make-server-3bd0ade8/drivers/create", async (c) => {
     await kv.set("drivers:list", driversList);
 
     console.log(
-      `✅ Driver account created: ${driverId} (${email})`,
+      `✅ Driver account created: ${driverId} (${username})`,
     );
 
     return c.json({
@@ -3758,21 +3758,21 @@ app.post("/make-server-3bd0ade8/drivers/create", async (c) => {
 app.post("/make-server-3bd0ade8/drivers/login", async (c) => {
   try {
     const body = await c.req.json();
-    const { email, password } = body;
+    const { username, password } = body;
 
-    if (!email || !password) {
+    if (!username || !password) {
       return c.json(
-        { error: "Email and password are required" },
+        { error: "Username and password are required" },
         400,
       );
     }
 
     const credentials = await kv.get(
-      `driver:credentials:${email}`,
+      `driver:credentials:${username}`,
     );
     if (!credentials) {
       return c.json(
-        { error: "Invalid email or password" },
+        { error: "Invalid username or password" },
         401,
       );
     }
@@ -3780,7 +3780,7 @@ app.post("/make-server-3bd0ade8/drivers/login", async (c) => {
     const hashedPassword = btoa(password);
     if (credentials.password !== hashedPassword) {
       return c.json(
-        { error: "Invalid email or password" },
+        { error: "Invalid username or password" },
         401,
       );
     }
@@ -3811,7 +3811,7 @@ app.post("/make-server-3bd0ade8/drivers/login", async (c) => {
     );
 
     console.log(
-      `✅ Driver logged in: ${credentials.driverId} (${email})`,
+      `✅ Driver logged in: ${credentials.driverId} (${username})`,
     );
 
     return c.json({
