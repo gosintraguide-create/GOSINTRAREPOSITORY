@@ -88,7 +88,7 @@ export function HomePage({
   const [basePrice, setBasePrice] = useState(getInitialPrice);
   const [priceLoaded, setPriceLoaded] = useState(false);
   const [legacyContent, setLegacyContent] =
-    useState<WebsiteContent>(DEFAULT_CONTENT);
+    useState<WebsiteContent>(() => loadContentWithLanguage(language));
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
