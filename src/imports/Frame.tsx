@@ -2,10 +2,10 @@ import svgPaths from "./svg-e6wkjc1bb5";
 
 export default function Frame() {
   return (
-    <svg 
-      className="block h-full w-auto" 
-      fill="none" 
-      preserveAspectRatio="xMinYMid meet" 
+    <svg
+      className="block h-full w-auto"
+      fill="none"
+      preserveAspectRatio="xMinYMid meet"
       viewBox="0 0 916 136"
     >
       <g>

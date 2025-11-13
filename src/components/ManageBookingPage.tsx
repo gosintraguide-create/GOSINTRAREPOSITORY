@@ -8,12 +8,15 @@ import { Calendar, Download, MapPin, Users, Clock, CheckCircle2, QrCode, Car, Ma
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { toast } from "sonner@2.0.3";
 import { TicketCard } from "./TicketCard";
+import { getTranslation } from "../lib/translations";
 
 interface ManageBookingPageProps {
   onNavigate: (page: string) => void;
+  language?: string;
 }
 
-export function ManageBookingPage({ onNavigate }: ManageBookingPageProps) {
+export function ManageBookingPage({ onNavigate, language = "en" }: ManageBookingPageProps) {
+  const content = getTranslation(language);
   const [bookingId, setBookingId] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -155,19 +158,19 @@ export function ManageBookingPage({ onNavigate }: ManageBookingPageProps) {
               <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
                 <QrCode className="h-8 w-8 text-primary" />
               </div>
-              <h1 className="mb-2 text-foreground">Manage Your Booking</h1>
+              <h1 className="mb-2 text-foreground">{content.manageBooking.pageTitle}</h1>
               <p className="text-muted-foreground">
-                Enter your booking details to view tickets and manage your reservation
+                {content.manageBooking.pageSubtitle}
               </p>
             </div>
 
             <div className="space-y-4">
               <div>
-                <Label htmlFor="bookingId">Booking ID</Label>
+                <Label htmlFor="bookingId">{content.manageBooking.bookingIdLabel}</Label>
                 <Input
                   id="bookingId"
                   type="text"
-                  placeholder="AA-1234"
+                  placeholder={content.manageBooking.bookingIdPlaceholder}
                   value={bookingId}
                   onChange={(e) => setBookingId(e.target.value.toUpperCase())}
                   className="mt-1 border-border"
@@ -177,19 +180,16 @@ export function ManageBookingPage({ onNavigate }: ManageBookingPageProps) {
               </div>
 
               <div>
-                <Label htmlFor="email">Email Address</Label>
+                <Label htmlFor="email">{content.manageBooking.lastNameLabel}</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="your@email.com"
+                  placeholder={content.manageBooking.lastNamePlaceholder}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="mt-1 border-border"
                   onKeyPress={(e) => e.key === "Enter" && handleLookup()}
                 />
-                <p className="mt-1 text-xs text-muted-foreground">
-                  The email used when booking
-                </p>
               </div>
 
               <Button
@@ -200,20 +200,20 @@ export function ManageBookingPage({ onNavigate }: ManageBookingPageProps) {
                 {loading ? (
                   <>
                     <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                    Looking up...
+                    {content.manageBooking.findBookingButton}...
                   </>
                 ) : (
-                  "View My Booking"
+                  content.manageBooking.findBookingButton
                 )}
               </Button>
             </div>
 
             <div className="mt-6 rounded-lg bg-secondary/50 p-4">
-              <h3 className="mb-2 text-sm text-foreground">Where to find your Booking ID?</h3>
+              <h3 className="mb-2 text-sm text-foreground">{content.manageBooking.whereToFindBookingId}</h3>
               <ul className="space-y-1 text-xs text-muted-foreground">
-                <li>• In your booking confirmation email</li>
-                <li>• At the top of your PDF tickets</li>
-                <li>• In the booking confirmation page</li>
+                <li>• {content.manageBooking.inConfirmationEmail}</li>
+                <li>• {content.manageBooking.subjectLine}</li>
+                <li>• {content.manageBooking.lookFor}</li>
               </ul>
             </div>
 
@@ -221,12 +221,12 @@ export function ManageBookingPage({ onNavigate }: ManageBookingPageProps) {
 
             <div className="text-center">
               <p className="text-sm text-muted-foreground">
-                Need help?{" "}
+                {content.manageBooking.needHelp}{" "}
                 <button
                   onClick={() => onNavigate("about")}
                   className="text-primary hover:underline"
                 >
-                  Contact Support
+                  {content.manageBooking.contactSupport}
                 </button>
               </p>
             </div>
@@ -243,9 +243,9 @@ export function ManageBookingPage({ onNavigate }: ManageBookingPageProps) {
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="mb-2 text-foreground">Your Booking</h1>
+            <h1 className="mb-2 text-foreground">{content.manageBooking.yourBooking}</h1>
             <p className="text-muted-foreground">
-              Booking ID: <span className="font-mono text-lg text-primary">{booking.id}</span>
+              {content.manageBooking.bookingId} <span className="font-mono text-lg text-primary">{booking.id}</span>
             </p>
           </div>
           <Button
@@ -254,7 +254,7 @@ export function ManageBookingPage({ onNavigate }: ManageBookingPageProps) {
             className="gap-2"
           >
             <ArrowLeft className="h-4 w-4" />
-            Logout
+            {content.manageBooking.backToSearch}
           </Button>
         </div>
 
@@ -264,8 +264,8 @@ export function ManageBookingPage({ onNavigate }: ManageBookingPageProps) {
             <div className="flex items-center gap-3">
               <CheckCircle2 className="h-6 w-6 text-green-600" />
               <div>
-                <p className="text-green-900">Your pass is valid TODAY!</p>
-                <p className="text-sm text-green-700">Enjoy your day exploring Sintra</p>
+                <p className="text-green-900">{content.manageBooking.validToday}</p>
+                <p className="text-sm text-green-700">{content.manageBooking.enjoyYourDay}</p>
               </div>
             </div>
           </Card>

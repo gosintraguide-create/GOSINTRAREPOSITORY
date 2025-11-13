@@ -63,7 +63,18 @@ export function BlogPage({ onNavigate, language }: BlogPageProps) {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
+    // Map language codes to locale strings
+    const localeMap: Record<string, string> = {
+      en: 'en-US',
+      pt: 'pt-PT',
+      es: 'es-ES',
+      fr: 'fr-FR',
+      de: 'de-DE',
+      nl: 'nl-NL',
+      it: 'it-IT',
+    };
+    const locale = localeMap[language] || 'en-US';
+    return date.toLocaleDateString(locale, { 
       month: 'long', 
       day: 'numeric', 
       year: 'numeric' 
@@ -80,10 +91,12 @@ export function BlogPage({ onNavigate, language }: BlogPageProps) {
   return (
     <div className="flex-1">
       <SEOHead
-        title="Sintra Travel Guide & Blog - Expert Tips, Guides & Itineraries"
-        description="Comprehensive travel guides for visiting Sintra, Portugal. Expert tips on transportation, attractions, planning your trip, and making the most of your Sintra adventure."
-        keywords="Sintra travel guide, Sintra blog, visit Sintra, Sintra tips, Pena Palace guide, Sintra itinerary, how to visit Sintra, Sintra Portugal"
+        title={content.seo?.blog?.title || "Sintra Travel Guide & Blog - Expert Tips, Guides & Itineraries"}
+        description={content.seo?.blog?.description || "Comprehensive travel guides for visiting Sintra, Portugal. Expert tips on transportation, attractions, planning your trip, and making the most of your Sintra adventure."}
+        keywords={content.seo?.blog?.keywords || "Sintra travel guide, Sintra blog, visit Sintra, Sintra tips, Pena Palace guide, Sintra itinerary, how to visit Sintra, Sintra Portugal"}
         canonicalPath="/blog"
+        language={language}
+        structuredDataType="article"
         ogImage="https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop"
       />
 

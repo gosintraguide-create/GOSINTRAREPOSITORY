@@ -149,8 +149,8 @@ export function BlogArticlePage({ onNavigate, slug, language }: BlogArticlePageP
           {/* Breadcrumbs */}
           <Breadcrumbs
             items={[
-              { label: "Home", onClick: () => onNavigate("home") },
-              { label: "Travel Guide", onClick: () => onNavigate("blog") },
+              { label: content.blog.breadcrumbHome, onClick: () => onNavigate("home") },
+              { label: content.blog.breadcrumbTravelGuide, onClick: () => onNavigate("blog") },
               { label: categoryName, onClick: () => onNavigate("blog", { category: article.category }) },
               { label: article.title }
             ]}
@@ -181,7 +181,7 @@ export function BlogArticlePage({ onNavigate, slug, language }: BlogArticlePageP
             </div>
             {article.author && (
               <div className="flex items-center gap-1.5">
-                By {article.author}
+                {content.blog.byAuthor} {article.author}
               </div>
             )}
           </div>
@@ -295,13 +295,13 @@ export function BlogArticlePage({ onNavigate, slug, language }: BlogArticlePageP
           {/* Sidebar - Desktop Only */}
           <aside className="hidden space-y-6 lg:block">
             <div className="sticky top-24 space-y-6">
-              <TableOfContents content={article.content} />
+              <TableOfContents content={article.content} language={language} />
               
               {/* Other Articles Card - Desktop */}
               {otherArticles.length > 0 && (
                 <Card className="overflow-hidden border-border">
                   <div className="border-b border-border bg-gradient-to-br from-primary/5 to-accent/5 p-4">
-                    <h3 className="text-foreground">More from Travel Guide</h3>
+                    <h3 className="text-foreground">{content.blog.moreFromTravelGuide}</h3>
                   </div>
                   <div className="divide-y divide-border">
                     {otherArticles.slice(0, 3).map((otherArticle) => (
@@ -350,7 +350,7 @@ export function BlogArticlePage({ onNavigate, slug, language }: BlogArticlePageP
                       onClick={() => onNavigate("blog")}
                       className="w-full"
                     >
-                      View All Articles
+                      {content.blog.viewAllArticles}
                     </Button>
                   </div>
                 </Card>
@@ -362,7 +362,7 @@ export function BlogArticlePage({ onNavigate, slug, language }: BlogArticlePageP
 
       {/* Mobile Table of Contents */}
       <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:hidden">
-        <TableOfContents content={article.content} />
+        <TableOfContents content={article.content} language={language} />
       </div>
 
       <Separator className="mx-auto max-w-6xl" />
@@ -370,7 +370,7 @@ export function BlogArticlePage({ onNavigate, slug, language }: BlogArticlePageP
       {/* Mobile - More from Travel Guide */}
       {otherArticles.length > 0 && (
         <section className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:hidden">
-          <h2 className="mb-6 text-foreground">More from Travel Guide</h2>
+          <h2 className="mb-6 text-foreground">{content.blog.moreFromTravelGuide}</h2>
           <div className="grid gap-6 sm:grid-cols-2">
             {otherArticles.slice(0, 4).map((otherArticle) => (
               <Card
@@ -393,7 +393,7 @@ export function BlogArticlePage({ onNavigate, slug, language }: BlogArticlePageP
                   </h3>
                   <div className="flex items-center gap-1 text-sm text-muted-foreground">
                     <Clock className="h-4 w-4" />
-                    {otherArticle.readTimeMinutes} min read
+                    {otherArticle.readTimeMinutes} {content.blog.minRead}
                   </div>
                 </div>
               </Card>
@@ -404,7 +404,7 @@ export function BlogArticlePage({ onNavigate, slug, language }: BlogArticlePageP
               variant="outline"
               onClick={() => onNavigate("blog")}
             >
-              View All Articles
+              {content.blog.viewAllArticles}
             </Button>
           </div>
         </section>
@@ -424,16 +424,16 @@ export function BlogArticlePage({ onNavigate, slug, language }: BlogArticlePageP
       {/* CTA Section */}
       <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
         <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5 p-8 text-center">
-          <h3 className="mb-3 text-foreground">Ready to Experience Sintra?</h3>
+          <h3 className="mb-3 text-foreground">{content.blog.readyToExperience}</h3>
           <p className="mb-6 text-muted-foreground">
-            Book your flexible day pass and start exploring Sintra's magnificent palaces and gardens
+            {content.blog.bookFlexibleDayPass}
           </p>
           <Button
             size="lg"
             onClick={() => onNavigate("buy-ticket")}
             className="gap-2"
           >
-            Book Your Day Pass Now
+            {content.blog.bookDayPassNow}
           </Button>
         </Card>
       </section>
@@ -442,7 +442,7 @@ export function BlogArticlePage({ onNavigate, slug, language }: BlogArticlePageP
       {relatedArticles.length > 0 && (
         <section className="border-t border-border bg-secondary/30 py-16">
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-            <h2 className="mb-8 text-center text-foreground">Related Articles</h2>
+            <h2 className="mb-8 text-center text-foreground">{content.blog.relatedArticles}</h2>
             <div className="grid gap-8 md:grid-cols-3">
               {relatedArticles.map((relatedArticle) => (
                 <Card
@@ -462,7 +462,7 @@ export function BlogArticlePage({ onNavigate, slug, language }: BlogArticlePageP
                   <div className="p-6">
                     <div className="mb-2 flex items-center gap-2 text-sm text-muted-foreground">
                       <Clock className="h-4 w-4" />
-                      {relatedArticle.readTimeMinutes} min read
+                      {relatedArticle.readTimeMinutes} {content.blog.minRead}
                     </div>
                     <h3 className="text-foreground transition-colors group-hover:text-primary">
                       {relatedArticle.title}

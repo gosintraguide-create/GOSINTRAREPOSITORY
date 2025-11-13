@@ -124,6 +124,16 @@ export interface UITranslations {
   // Features section
   whyYouLoveIt: string;
   startingAt: string;
+  
+  // AttractionsPage specific
+  attractionsPageTitle: string;
+  attractionsPageSubtitle: string;
+  searchTravelGuidesPlaceholder: string;
+  travelGuideRecommendations: string;
+  noArticlesFoundTryDifferent: string;
+  planningYourVisit: string;
+  browseTravelGuidesDescription: string;
+  readTravelGuides: string;
 }
 
 export const uiTranslations: { [key: string]: UITranslations } = {
@@ -221,6 +231,16 @@ export const uiTranslations: { [key: string]: UITranslations } = {
     // Features section
     whyYouLoveIt: "Why You'll Love It",
     startingAt: "Starting at",
+    
+    // AttractionsPage specific
+    attractionsPageTitle: "Sintra's UNESCO Attractions",
+    attractionsPageSubtitle: "World Heritage palaces, castles, and gardens",
+    searchTravelGuidesPlaceholder: "Search travel guides... (e.g. 'planning', 'pena palace', 'tips')",
+    travelGuideRecommendations: "Travel Guide Recommendations",
+    noArticlesFoundTryDifferent: "No articles found. Try different keywords!",
+    planningYourVisit: "Planning Your Visit?",
+    browseTravelGuidesDescription: "Browse our travel guides for tips, itineraries, and insider advice",
+    readTravelGuides: "Read Travel Guides",
   },
   pt: {
     home: "Início",
@@ -316,6 +336,16 @@ export const uiTranslations: { [key: string]: UITranslations } = {
     // Features section
     whyYouLoveIt: "Por Que Vai Adorar",
     startingAt: "A partir de",
+    
+    // AttractionsPage specific
+    attractionsPageTitle: "Atrações UNESCO de Sintra",
+    attractionsPageSubtitle: "Palácios, castelos e jardins Património Mundial",
+    searchTravelGuidesPlaceholder: "Pesquisar guias de viagem... (ex. 'planeamento', 'palácio da pena', 'dicas')",
+    travelGuideRecommendations: "Recomendações de Guias de Viagem",
+    noArticlesFoundTryDifferent: "Nenhum artigo encontrado. Tente palavras-chave diferentes!",
+    planningYourVisit: "A Planear a Sua Visita?",
+    browseTravelGuidesDescription: "Explore os nossos guias de viagem com dicas, itinerários e conselhos especializados",
+    readTravelGuides: "Ler Guias de Viagem",
   },
   es: {
     home: "Inicio",
@@ -411,6 +441,16 @@ export const uiTranslations: { [key: string]: UITranslations } = {
     // Features section
     whyYouLoveIt: "Por Qué Te Encantará",
     startingAt: "Desde",
+    
+    // AttractionsPage specific
+    attractionsPageTitle: "Atracciones UNESCO de Sintra",
+    attractionsPageSubtitle: "Palacios, castillos y jardines Patrimonio Mundial",
+    searchTravelGuidesPlaceholder: "Buscar guías de viaje... (ej. 'planificación', 'palacio da pena', 'consejos')",
+    travelGuideRecommendations: "Recomendaciones de Guías de Viaje",
+    noArticlesFoundTryDifferent: "No se encontraron artículos. ¡Prueba con diferentes palabras clave!",
+    planningYourVisit: "¿Planificando Tu Visita?",
+    browseTravelGuidesDescription: "Explora nuestras guías de viaje con consejos, itinerarios y recomendaciones expertas",
+    readTravelGuides: "Leer Guías de Viaje",
   },
   fr: {
     home: "Accueil",
@@ -506,6 +546,16 @@ export const uiTranslations: { [key: string]: UITranslations } = {
     // Features section
     whyYouLoveIt: "Pourquoi Vous Allez Adorer",
     startingAt: "À partir de",
+    
+    // AttractionsPage specific
+    attractionsPageTitle: "Attractions UNESCO de Sintra",
+    attractionsPageSubtitle: "Palais, châteaux et jardins du patrimoine mondial",
+    searchTravelGuidesPlaceholder: "Rechercher des guides... (ex. 'planification', 'palais de pena', 'conseils')",
+    travelGuideRecommendations: "Recommandations de Guides de Voyage",
+    noArticlesFoundTryDifferent: "Aucun article trouvé. Essayez d'autres mots-clés!",
+    planningYourVisit: "Vous Planifiez Votre Visite?",
+    browseTravelGuidesDescription: "Parcourez nos guides de voyage avec conseils, itinéraires et recommandations d'experts",
+    readTravelGuides: "Lire les Guides de Voyage",
   },
   de: {
     home: "Startseite",
@@ -601,6 +651,16 @@ export const uiTranslations: { [key: string]: UITranslations } = {
     // Features section
     whyYouLoveIt: "Warum Sie Es Lieben Werden",
     startingAt: "Ab",
+    
+    // AttractionsPage specific
+    attractionsPageTitle: "Sintras UNESCO-Attraktionen",
+    attractionsPageSubtitle: "Welterbe-Paläste, Burgen und Gärten",
+    searchTravelGuidesPlaceholder: "Reiseführer durchsuchen... (z.B. 'Planung', 'Pena-Palast', 'Tipps')",
+    travelGuideRecommendations: "Reiseführer-Empfehlungen",
+    noArticlesFoundTryDifferent: "Keine Artikel gefunden. Versuchen Sie andere Suchbegriffe!",
+    planningYourVisit: "Planen Sie Ihren Besuch?",
+    browseTravelGuidesDescription: "Durchstöbern Sie unsere Reiseführer mit Tipps, Reiserouten und Expertenrat",
+    readTravelGuides: "Reiseführer Lesen",
   },
   nl: {
     home: "Home",
@@ -696,6 +756,16 @@ export const uiTranslations: { [key: string]: UITranslations } = {
     // Features section
     whyYouLoveIt: "Waarom Je Het Geweldig Vindt",
     startingAt: "Vanaf",
+    
+    // AttractionsPage specific
+    attractionsPageTitle: "UNESCO Attracties van Sintra",
+    attractionsPageSubtitle: "Werelderfgoed paleizen, kastelen en tuinen",
+    searchTravelGuidesPlaceholder: "Zoek reisgidsen... (bijv. 'planning', 'pena paleis', 'tips')",
+    travelGuideRecommendations: "Reisgids Aanbevelingen",
+    noArticlesFoundTryDifferent: "Geen artikelen gevonden. Probeer andere zoekwoorden!",
+    planningYourVisit: "Plan Je Bezoek?",
+    browseTravelGuidesDescription: "Bekijk onze reisgidsen met tips, routes en deskundig advies",
+    readTravelGuides: "Lees Reisgidsen",
   },
   it: {
     home: "Home",
@@ -791,6 +861,16 @@ export const uiTranslations: { [key: string]: UITranslations } = {
     // Features section
     whyYouLoveIt: "Perché Ti Piacerà",
     startingAt: "A partire da",
+    
+    // AttractionsPage specific
+    attractionsPageTitle: "Attrazioni UNESCO di Sintra",
+    attractionsPageSubtitle: "Palazzi, castelli e giardini Patrimonio Mondiale",
+    searchTravelGuidesPlaceholder: "Cerca guide di viaggio... (es. 'pianificazione', 'palazzo da pena', 'consigli')",
+    travelGuideRecommendations: "Raccomandazioni Guide di Viaggio",
+    noArticlesFoundTryDifferent: "Nessun articolo trovato. Prova parole chiave diverse!",
+    planningYourVisit: "Pianifica la Tua Visita?",
+    browseTravelGuidesDescription: "Sfoglia le nostre guide di viaggio con consigli, itinerari e suggerimenti esperti",
+    readTravelGuides: "Leggi le Guide di Viaggio",
   },
 };
 

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { LanguageSelector } from "./LanguageSelector";
 import Frame from "../imports/Frame";
-import { getUITranslation } from "../lib/translations";
+import { getUITranslation, getTranslation } from "../lib/translations";
 
 interface HeaderProps {
   currentPage: string;
@@ -15,11 +15,12 @@ interface HeaderProps {
 export function Header({ currentPage, onNavigate, language, onLanguageChange }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const t = getUITranslation(language);
+  const content = getTranslation(language);
 
   const navItems = [
     { id: "attractions", label: t.attractions },
-    { id: "private-tours", label: "Private Tours" },
-    { id: "blog", label: "Travel Guide" },
+    { id: "private-tours", label: content.header.privateTours },
+    { id: "blog", label: content.header.travelGuide },
     { id: "manage-booking", label: t.manageBooking || "My Booking" },
     { id: "about", label: t.about },
   ];

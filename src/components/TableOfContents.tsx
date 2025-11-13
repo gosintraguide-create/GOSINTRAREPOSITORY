@@ -11,12 +11,26 @@ interface Heading {
 
 interface TableOfContentsProps {
   content: string;
+  language?: string;
 }
 
-export function TableOfContents({ content }: TableOfContentsProps) {
+export function TableOfContents({ content, language = "en" }: TableOfContentsProps) {
   const [headings, setHeadings] = useState<Heading[]>([]);
   const [activeId, setActiveId] = useState<string>("");
   const [isOpen, setIsOpen] = useState(true);
+  
+  // Import translations
+  const translations = {
+    en: "Table of Contents",
+    pt: "Índice",
+    es: "Tabla de Contenidos",
+    fr: "Table des Matières",
+    de: "Inhaltsverzeichnis",
+    nl: "Inhoudsopgave",
+    it: "Sommario",
+  };
+  
+  const tableOfContentsLabel = translations[language as keyof typeof translations] || translations.en;
 
   useEffect(() => {
     // Extract headings from markdown content
@@ -90,7 +104,7 @@ export function TableOfContents({ content }: TableOfContentsProps) {
         >
           <div className="flex items-center gap-2">
             <BookOpen className="h-5 w-5 text-primary" />
-            <h3 className="text-foreground">Table of Contents</h3>
+            <h3 className="text-foreground">{tableOfContentsLabel}</h3>
           </div>
           {isOpen ? (
             <ChevronUp className="h-4 w-4" />

@@ -8,6 +8,67 @@ import { PDFDocument, rgb } from "npm:pdf-lib@1.17.1";
 import Stripe from "npm:stripe@17.3.1";
 import { generateBookingConfirmationHTML } from "./email_template.tsx";
 
+// Retry wrapper for KV store operations to handle transient connection errors
+async function withRetry<T>(
+  operation: () => Promise<T>,
+  operationName: string,
+  maxRetries = 3,
+  delayMs = 100
+): Promise<T> {
+  let lastError: Error | undefined;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      lastError = error as Error;
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      
+      // Only retry on connection errors
+      const isConnectionError = 
+        errorMessage.includes('Connection reset') ||
+        errorMessage.includes('ECONNRESET') ||
+        errorMessage.includes('network') ||
+        errorMessage.includes('timeout') ||
+        errorMessage.includes('ETIMEDOUT');
+      
+      if (!isConnectionError || attempt === maxRetries) {
+        console.error(`❌ ${operationName} failed after ${attempt} attempts:`, errorMessage);
+        throw error;
+      }
+      
+      console.warn(`⚠️ ${operationName} failed (attempt ${attempt}/${maxRetries}), retrying in ${delayMs}ms...`);
+      await new Promise(resolve => setTimeout(resolve, delayMs * attempt)); // Exponential backoff
+    }
+  }
+  
+  throw lastError;
+}
+
+// Wrapped KV operations with retry logic
+const kvWithRetry = {
+  get: <T>(key: string): Promise<T> => 
+    withRetry(() => kv.get(key), `KV get(${key})`),
+  
+  set: (key: string, value: any): Promise<void> => 
+    withRetry(() => kv.set(key, value), `KV set(${key})`),
+  
+  del: (key: string): Promise<void> => 
+    withRetry(() => kv.del(key), `KV del(${key})`),
+  
+  mget: <T>(keys: string[]): Promise<T[]> => 
+    withRetry(() => kv.mget(keys), `KV mget([${keys.length} keys])`),
+  
+  mset: (keys: string[], values: any[]): Promise<void> => 
+    withRetry(() => kv.mset(keys, values), `KV mset([${keys.length} keys])`),
+  
+  mdel: (keys: string[]): Promise<void> => 
+    withRetry(() => kv.mdel(keys), `KV mdel([${keys.length} keys])`),
+  
+  getByPrefix: <T>(prefix: string): Promise<T[]> => 
+    withRetry(() => kv.getByPrefix(prefix), `KV getByPrefix(${prefix})`),
+};
+
 const app = new Hono();
 
 // Middleware - Allow all origins for development
@@ -61,7 +122,7 @@ const stripe = stripeSecretKey
 
 async function getNextAvailablePrefix(): Promise<string> {
   // Get current prefix from storage (defaults to "AA")
-  const currentPrefixData = await kv.get(
+  const currentPrefixData = await kvWithRetry.get(
     "booking_current_prefix",
   );
   let currentPrefix = currentPrefixData || "AA";
@@ -69,7 +130,7 @@ async function getNextAvailablePrefix(): Promise<string> {
   // Check if current prefix still has available numbers
   for (let num = 1000; num <= 9999; num++) {
     const testId = `${currentPrefix}-${num}`;
-    const exists = await kv.get(testId);
+    const exists = await kvWithRetry.get(testId);
     if (!exists) {
       // Found available ID in current prefix
       return currentPrefix;
@@ -84,7 +145,7 @@ async function getNextAvailablePrefix(): Promise<string> {
   const nextPrefix = getNextPrefix(currentPrefix);
 
   // Save new prefix
-  await kv.set("booking_current_prefix", nextPrefix);
+  await kvWithRetry.set("booking_current_prefix", nextPrefix);
 
   console.log(`✅ New prefix: ${nextPrefix}`);
   return nextPrefix;
@@ -135,7 +196,7 @@ async function generateBookingId(): Promise<string> {
       const bookingId = `${prefix}-${number}`;
 
       // Check if this specific ID exists
-      const existing = await kv.get(bookingId);
+      const existing = await kvWithRetry.get(bookingId);
       if (!existing) {
         console.log(`🎫 Generated booking ID: ${bookingId}`);
         return bookingId;
@@ -162,7 +223,7 @@ async function generateBookingId(): Promise<string> {
 async function initializeDatabase() {
   try {
     // Check if database has already been initialized
-    const dbInitialized = await kv.get("db_initialized");
+    const dbInitialized = await kvWithRetry.get("db_initialized");
 
     if (dbInitialized) {
       console.log(
@@ -174,14 +235,14 @@ async function initializeDatabase() {
     console.log("🔧 First-time database initialization...");
 
     // Initialize default content
-    await kv.set("website_content", {
+    await kvWithRetry.set("website_content", {
       initialized: true,
       lastUpdated: new Date().toISOString(),
     });
     console.log("✅ Default content initialized");
 
     // Initialize default pricing
-    await kv.set("pricing_config", {
+    await kvWithRetry.set("pricing_config", {
       dayPass: {
         adult: 25,
         child: 15,
@@ -195,7 +256,7 @@ async function initializeDatabase() {
     console.log("✅ Default pricing initialized");
 
     // Mark database as initialized
-    await kv.set("db_initialized", {
+    await kvWithRetry.set("db_initialized", {
       initialized: true,
       timestamp: new Date().toISOString(),
       version: "1.0",
@@ -1198,7 +1259,7 @@ app.post(
 app.get("/make-server-3bd0ade8/pricing", async (c) => {
   try {
     console.log("💰 Fetching pricing from database...");
-    const pricing = await kv.get("pricing_config");
+    const pricing = await kvWithRetry.get("pricing_config");
 
     if (pricing) {
       console.log("✅ Pricing found in database");
@@ -1229,7 +1290,7 @@ app.post("/make-server-3bd0ade8/pricing", async (c) => {
     console.log("💰 Saving pricing to database...");
     console.log("Pricing data:", JSON.stringify(body, null, 2));
 
-    await kv.set("pricing_config", body);
+    await kvWithRetry.set("pricing_config", body);
     console.log("✅ Pricing saved successfully to database");
 
     return c.json({ success: true });

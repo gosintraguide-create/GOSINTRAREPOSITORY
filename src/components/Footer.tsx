@@ -2,7 +2,7 @@ import { Mail, MapPin, Clock } from "lucide-react";
 import { useEffect, useState } from "react";
 import { loadContent, type WebsiteContent, DEFAULT_CONTENT } from "../lib/contentManager";
 import Frame from "../imports/Frame";
-import { getUITranslation } from "../lib/translations";
+import { getUITranslation, getTranslation } from "../lib/translations";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +18,7 @@ interface FooterProps {
 export function Footer({ onNavigate, language = "en" }: FooterProps) {
   const [content, setContent] = useState<WebsiteContent>(DEFAULT_CONTENT);
   const t = getUITranslation(language);
+  const legacyContent = getTranslation(language);
 
   useEffect(() => {
     setContent(loadContent());
@@ -38,21 +39,21 @@ export function Footer({ onNavigate, language = "en" }: FooterProps) {
           </div>
 
           <div>
-            <h3 className="mb-4 text-foreground">Quick Links</h3>
+            <h3 className="mb-4 text-foreground">{legacyContent.footer.quickLinks}</h3>
             <ul className="space-y-2 text-muted-foreground">
               <li>
                 <a href="#" className="transition-colors hover:text-primary" onClick={(e) => { e.preventDefault(); onNavigate?.('attractions'); }}>
-                  Attractions
+                  {legacyContent.footer.attractions}
                 </a>
               </li>
               <li>
                 <a href="#" className="transition-colors hover:text-primary" onClick={(e) => { e.preventDefault(); onNavigate?.('blog'); }}>
-                  Travel Guide
+                  {legacyContent.footer.travelGuide}
                 </a>
               </li>
               <li>
                 <a href="#" className="transition-colors hover:text-primary" onClick={(e) => { e.preventDefault(); onNavigate?.('buy-ticket'); }}>
-                  Buy Day Pass
+                  {legacyContent.footer.buyDayPass}
                 </a>
               </li>
               <li>
@@ -84,31 +85,31 @@ export function Footer({ onNavigate, language = "en" }: FooterProps) {
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 md:flex-row">
           <p className="text-muted-foreground">
-            © {new Date().getFullYear()} {content.company.name}. All rights reserved. Made with ❤️ for travelers.
+            {legacyContent.footer.allRightsReserved}
           </p>
           <div className="flex gap-6">
             <button 
-              onClick={() => onNavigate("privacy-policy")} 
+              onClick={() => onNavigate?.("privacy-policy")} 
               className="text-muted-foreground hover:text-accent transition-colors"
             >
-              Privacy Policy
+              {legacyContent.footer.privacyPolicy}
             </button>
             <button 
-              onClick={() => onNavigate("terms-of-service")} 
+              onClick={() => onNavigate?.("terms-of-service")} 
               className="text-muted-foreground hover:text-accent transition-colors"
             >
-              Terms
+              {legacyContent.footer.terms}
             </button>
             <DropdownMenu>
               <DropdownMenuTrigger className="text-muted-foreground hover:text-accent transition-colors text-sm">
-                Reserved Area
+                {legacyContent.footer.reservedArea}
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => onNavigate?.("admin")}>
-                  Admin Portal
+                  {legacyContent.footer.adminPortal}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onNavigate?.("operations")}>
-                  Driver Portal
+                  {legacyContent.footer.driverPortal}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

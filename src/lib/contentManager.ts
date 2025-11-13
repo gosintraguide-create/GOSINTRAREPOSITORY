@@ -12,12 +12,161 @@ export interface WebsiteContent {
     whatsappNumber: string;
   };
   homepage: {
+    // Hero Section
+    hero: {
+      title: string;
+      subtitle: string;
+      ctaButton: string;
+      benefitPills: Array<{ icon: string; text: string }>;
+    };
+    // Quick Links Section
+    quickLinks: {
+      title: string;
+      subtitle: string;
+      attractions: { title: string; subtitle: string };
+      travelGuide: { title: string; subtitle: string };
+      privateTours: { title: string; subtitle: string };
+    };
     heroTitle: string;
     heroSubtitle: string;
     heroCallToAction: string;
     benefitPills: Array<{ icon: string; text: string }>;
     sectionOneTitle: string;
     sectionOneDescription: string;
+    // What Is Hop On Sintra Section
+    hopOnHopOffDayPass: string;
+    unlimitedAdventureTitle: string;
+    serviceDescription: string;
+    serviceDescription2: string;
+    // Feature benefits
+    unlimitedRidesTitle: string;
+    unlimitedRidesSubtitle: string;
+    frequentServiceTitle: string;
+    frequentServiceSubtitle: string;
+    smallGroupsTitle: string;
+    smallGroupsSubtitle: string;
+    professionalGuidesTitle: string;
+    professionalGuidesSubtitle: string;
+    requestPickupTitle: string;
+    requestPickupSubtitle: string;
+    realTimeTrackingTitle: string;
+    realTimeTrackingSubtitle: string;
+    // Why You'll Love It section
+    whatMakesDifferentTitle: string;
+    whatMakesDifferentSubtitle: string;
+    intimateAdventuresTitle: string;
+    intimateAdventuresDescription: string;
+    professionalDriverGuidesTitle: string;
+    professionalDriverGuidesDescription: string;
+    yourTimeYourWayTitle: string;
+    yourTimeYourWayDescription: string;
+    neverRushTitle: string;
+    neverRushDescription: string;
+    guaranteedSeatsTitle: string;
+    guaranteedSeatsDescription: string;
+    // Pro tip
+    proTipTitle: string;
+    proTipNoVehicle: string;
+    proTipDescription: string;
+    // Price badge
+    priceFrom: string;
+    pricePerPerson: string;
+    // On-demand pickup tip (Step 4)
+    cantSeeVehicle: string;
+    requestPickupTip: string;
+    // On-Demand Pickup Feature (Feature 6)
+    onDemandPickupTitle: string;
+    onDemandPickupDescription: string;
+    // Final CTA Section
+    finalCtaTitle: string;
+    finalCtaSubtitle: string;
+    finalCtaButton: string;
+    finalCtaSubtext: string;
+  };
+  routes: {
+    title: string;
+    subtitle: string;
+    route1: string;
+    route2: string;
+    bothRoutes: string;
+    loopsBack: string;
+    onePassBothRoutes: string;
+    onePassDescription: string;
+    stops: {
+      trainStation: string;
+      historicalCenterNorth: string;
+      historicalCenterSouth: string;
+      moorishCastle: string;
+      penaPalace: string;
+      quintaRegaleira: string;
+      seteais: string;
+      monserratePalace: string;
+    };
+  };
+  header: {
+    privateTours: string;
+    travelGuide: string;
+  };
+  footer: {
+    quickLinks: string;
+    attractions: string;
+    travelGuide: string;
+    buyDayPass: string;
+    privacyPolicy: string;
+    terms: string;
+    reservedArea: string;
+    adminPortal: string;
+    driverPortal: string;
+    allRightsReserved: string;
+  };
+  manageBooking: {
+    pageTitle: string;
+    pageSubtitle: string;
+    bookingIdLabel: string;
+    bookingIdPlaceholder: string;
+    lastNameLabel: string;
+    lastNamePlaceholder: string;
+    findBookingButton: string;
+    whereToFindBookingId: string;
+    inConfirmationEmail: string;
+    subjectLine: string;
+    lookFor: string;
+    needHelp: string;
+    contactSupport: string;
+    yourBooking: string;
+    bookingId: string;
+    validToday: string;
+    enjoyYourDay: string;
+    startsIn: string;
+    days: string;
+    validOn: string;
+    expired: string;
+    passDate: string;
+    pickupTime: string;
+    operatingHours: string;
+    operatingHoursValue: string;
+    contactDetails: string;
+    bookingDetails: string;
+    passengers: string;
+    guidedCommentary: string;
+    attractionTickets: string;
+    totalPaid: string;
+    importantInformation: string;
+    serviceHours: string;
+    serviceHoursDescription: string;
+    digitalTickets: string;
+    digitalTicketsDescription: string;
+    guaranteedSeating: string;
+    guaranteedSeatingDescription: string;
+    hopOnOff: string;
+    hopOnOffDescription: string;
+    downloadTickets: string;
+    downloadQRCodes: string;
+    bookingNotFound: string;
+    bookingNotFoundDescription: string;
+    checkDetails: string;
+    tryAgain: string;
+    backToSearch: string;
   };
   about: {
     title: string;
@@ -48,6 +197,7 @@ export interface WebsiteContent {
     howItWorks: { title: string; description: string; keywords: string };
     buyTicket: { title: string; description: string; keywords: string };
     about: { title: string; description: string; keywords: string };
+    blog: { title: string; description: string; keywords: string };
   };
   blog: {
     pageTitle: string;
@@ -77,6 +227,21 @@ export interface WebsiteContent {
     updated: string;
     relatedArticles: string;
     moreArticles: string;
+    
+    // Blog Article Page specific
+    breadcrumbHome: string;
+    breadcrumbTravelGuide: string;
+    byAuthor: string;
+    shareViaFacebook: string;
+    shareViaTwitter: string;
+    shareViaEmail: string;
+    moreFromTravelGuide: string;
+    viewAllArticles: string;
+    tableOfContents: string;
+    readyToExperience: string;
+    bookFlexibleDayPass: string;
+    bookDayPassNow: string;
+    
     categories: {
       planning: string;
       "getting-there": string;
@@ -251,6 +416,25 @@ export const DEFAULT_CONTENT: WebsiteContent = {
     whatsappNumber: "+351932967279",
   },
   homepage: {
+    // Hero Section
+    hero: {
+      title: "Discover Sintra Your Way",
+      subtitle: "Hop-on, hop-off day pass with guaranteed seats and professional driver-guides. Unlimited rides in small tuk tuks and vintage jeeps. New departure every 30 minutes.",
+      ctaButton: "Book Your Day Pass",
+      benefitPills: [
+        { icon: "Users", text: "Small Groups (2-6)" },
+        { icon: "Shield", text: "Local Guides" },
+        { icon: "MapPin", text: "All Attractions" },
+      ],
+    },
+    // Quick Links Section
+    quickLinks: {
+      title: "Quick Links",
+      subtitle: "Explore Sintra's magical landscapes with our hop-on/hop-off service",
+      attractions: { title: "Attractions", subtitle: "Discover Pena Palace, Quinta da Regaleira, Moorish Castle, and more" },
+      travelGuide: { title: "Travel Guide", subtitle: "Expert tips, insider secrets, and everything you need for a magical Sintra adventure" },
+      privateTours: { title: "Private Tours", subtitle: "Book a private tour for a personalized experience" },
+    },
     heroTitle: "Discover Sintra Your Way",
     heroSubtitle: "Hop-on, hop-off day pass with guaranteed seats and professional driver-guides. Unlimited rides in small tuk tuks and vintage jeeps. New departure every 30 minutes.",
     heroCallToAction: "Book Your Day Pass",
@@ -261,6 +445,140 @@ export const DEFAULT_CONTENT: WebsiteContent = {
     ],
     sectionOneTitle: "Why Choose Go Sintra?",
     sectionOneDescription: "Skip the crowded tour buses and experience Sintra the way it's meant to be discovered",
+    // What Is Hop On Sintra Section
+    hopOnHopOffDayPass: "Hop-On/Hop-Off Day Pass",
+    unlimitedAdventureTitle: "Unlimited Adventure",
+    serviceDescription: "Explore Sintra's UNESCO World Heritage sites with guaranteed seating in small vehicles. Unlimited rides every 30 minutes. Book your flexible day pass online now.",
+    serviceDescription2: "Experience Sintra's magical landscapes with our premium hop-on/hop-off service. Enjoy unlimited rides in small, intimate vehicles with professional driver-guides.",
+    // Feature benefits
+    unlimitedRidesTitle: "Unlimited Rides",
+    unlimitedRidesSubtitle: "Explore Sintra's attractions at your own pace with unlimited rides.",
+    frequentServiceTitle: "Frequent Service",
+    frequentServiceSubtitle: "Regular departures every 30 minutes, ensuring you never wait long.",
+    smallGroupsTitle: "Small Groups",
+    smallGroupsSubtitle: "Enjoy intimate tours with small groups (2-6 people).",
+    professionalGuidesTitle: "Professional Guides",
+    professionalGuidesSubtitle: "Learn from certified guides with deep local knowledge.",
+    requestPickupTitle: "Request Pickup",
+    requestPickupSubtitle: "Choose your preferred pickup location and time.",
+    realTimeTrackingTitle: "Real-Time Tracking",
+    realTimeTrackingSubtitle: "Track your vehicle in real-time and know exactly where it is.",
+    // Why You'll Love It section
+    whatMakesDifferentTitle: "What Makes Us Different",
+    whatMakesDifferentSubtitle: "Experience Sintra like never before with our premium service.",
+    intimateAdventuresTitle: "Intimate Adventures",
+    intimateAdventuresDescription: "Skip the crowds and enjoy small, intimate tours with professional guides.",
+    professionalDriverGuidesTitle: "Professional Driver-Guides",
+    professionalDriverGuidesDescription: "Every vehicle is driven by a certified professional guide with deep local knowledge and years of experience showing visitors the best of Sintra.",
+    yourTimeYourWayTitle: "Your Time, Your Way",
+    yourTimeYourWayDescription: "Hop off at any attraction, spend as long as you want, then hop back on. Your day, your pace.",
+    neverRushTitle: "Never Rush",
+    neverRushDescription: "Enjoy a relaxed and stress-free experience with our flexible service.",
+    guaranteedSeatsTitle: "Guaranteed Seats",
+    guaranteedSeatsDescription: "Every guest has a guaranteed seat in a small, intimate vehicle. No standing, no overcrowding.",
+    // Pro tip
+    proTipTitle: "Pro Tip",
+    proTipNoVehicle: "No vehicle needed!",
+    proTipDescription: "Our service includes transportation to all major Sintra attractions, so you don't need to worry about renting a vehicle.",
+    // Price badge
+    priceFrom: "From",
+    pricePerPerson: "per person",
+    // On-demand pickup tip (Step 4)
+    cantSeeVehicle: "Can't see your vehicle?",
+    requestPickupTip: "Request pickup to have a vehicle dispatched to your location.",
+    // On-Demand Pickup Feature (Feature 6)
+    onDemandPickupTitle: "On-Demand Pickup",
+    onDemandPickupDescription: "Request a vehicle to be dispatched to your location for a seamless start to your adventure.",
+    // Final CTA Section
+    finalCtaTitle: "Ready to Start Your Adventure?",
+    finalCtaSubtitle: "Now that you're armed with insider knowledge, book your flexible day pass with professional driver-guides! 🎉",
+    finalCtaButton: "Book Your Day Pass",
+    finalCtaSubtext: "Experience Sintra's magical landscapes like never before.",
+  },
+  routes: {
+    title: "Routes",
+    subtitle: "Explore Sintra's magical landscapes with our hop-on/hop-off service",
+    route1: "Route 1",
+    route2: "Route 2",
+    bothRoutes: "Both Routes",
+    loopsBack: "Loops Back",
+    onePassBothRoutes: "One Pass for Both Routes",
+    onePassDescription: "Enjoy both routes with a single day pass. Perfect for a full day of exploration.",
+    stops: {
+      trainStation: "Sintra Train Station",
+      historicalCenterNorth: "Historical Center North",
+      historicalCenterSouth: "Historical Center South",
+      moorishCastle: "Moorish Castle",
+      penaPalace: "Pena Palace",
+      quintaRegaleira: "Quinta da Regaleira",
+      seteais: "Seteais",
+      monserratePalace: "Monserrate Palace",
+    },
+  },
+  header: {
+    privateTours: "Private Tours",
+    travelGuide: "Travel Guide",
+  },
+  footer: {
+    quickLinks: "Quick Links",
+    attractions: "Attractions",
+    travelGuide: "Travel Guide",
+    buyDayPass: "Buy Day Pass",
+    privacyPolicy: "Privacy Policy",
+    terms: "Terms & Conditions",
+    reservedArea: "Reserved Area",
+    adminPortal: "Admin Portal",
+    driverPortal: "Driver Portal",
+    allRightsReserved: "All rights reserved",
+  },
+  manageBooking: {
+    pageTitle: "Manage Your Booking",
+    pageSubtitle: "Enter your booking details to find and manage your Sintra day pass",
+    bookingIdLabel: "Booking ID",
+    bookingIdPlaceholder: "Enter your booking ID",
+    lastNameLabel: "Last Name",
+    lastNamePlaceholder: "Enter your last name",
+    findBookingButton: "Find Booking",
+    whereToFindBookingId: "Where to find your booking ID?",
+    inConfirmationEmail: "In the confirmation email",
+    subjectLine: "Subject line: Sintra Day Pass Booking Confirmation",
+    lookFor: "Look for a line that says 'Your booking ID is:'",
+    needHelp: "Need help?",
+    contactSupport: "Contact support",
+    yourBooking: "Your Booking",
+    bookingId: "Booking ID",
+    validToday: "Valid Today",
+    enjoyYourDay: "Enjoy Your Day!",
+    startsIn: "Starts in",
+    days: "days",
+    validOn: "Valid on",
+    expired: "Expired",
+    passDate: "Pass Date",
+    pickupTime: "Pickup Time",
+    operatingHours: "Operating Hours",
+    operatingHoursValue: "9 AM - 8 PM Daily",
+    contactDetails: "Contact Details",
+    bookingDetails: "Booking Details",
+    passengers: "Passengers",
+    guidedCommentary: "Guided Commentary",
+    attractionTickets: "Attraction Tickets",
+    totalPaid: "Total Paid",
+    importantInformation: "Important Information",
+    serviceHours: "Service Hours",
+    serviceHoursDescription: "Our service operates from 9 AM to 8 PM daily. Please arrive at your pickup location 15 minutes before your scheduled pickup time.",
+    digitalTickets: "Digital Tickets",
+    digitalTicketsDescription: "You will receive digital tickets via email along with your day pass QR code(s).",
+    guaranteedSeating: "Guaranteed Seating",
+    guaranteedSeatingDescription: "Every guest has a guaranteed seat in a small, intimate vehicle. No standing, no overcrowding.",
+    hopOnOff: "Hop-On/Hop-Off",
+    hopOnOffDescription: "Explore Sintra's attractions at your own pace with unlimited rides in small, intimate vehicles with professional driver-guides.",
+    downloadTickets: "Download Tickets",
+    downloadQRCodes: "Download QR Codes",
+    bookingNotFound: "Booking Not Found",
+    bookingNotFoundDescription: "We couldn't find a booking with the provided details. Please check the details and try again.",
+    checkDetails: "Check Details",
+    tryAgain: "Try Again",
+    backToSearch: "Back to Search",
   },
   about: {
     title: "About Go Sintra",
@@ -420,6 +738,11 @@ export const DEFAULT_CONTENT: WebsiteContent = {
       description: "Go Sintra offers premium hop-on/hop-off service with guaranteed seating in small vehicles. Regular departures every 30 minutes throughout Sintra.",
       keywords: "about Go Sintra, Sintra tour company, premium Sintra tours, small group Sintra",
     },
+    blog: {
+      title: "Your Ultimate Sintra Travel Guide",
+      description: "Expert tips, insider secrets, and everything you need for a magical Sintra adventure ✨",
+      keywords: "Sintra travel guide, Sintra tips, Sintra attractions, Sintra day pass, Sintra tours",
+    },
   },
   blog: {
     pageTitle: "Your Ultimate Sintra Travel Guide",
@@ -449,6 +772,21 @@ export const DEFAULT_CONTENT: WebsiteContent = {
     updated: "Updated",
     relatedArticles: "Related Articles",
     moreArticles: "More Articles",
+    
+    // Blog Article Page specific
+    breadcrumbHome: "Home",
+    breadcrumbTravelGuide: "Travel Guide",
+    byAuthor: "By",
+    shareViaFacebook: "Facebook",
+    shareViaTwitter: "Twitter",
+    shareViaEmail: "Email",
+    moreFromTravelGuide: "More from Travel Guide",
+    viewAllArticles: "View All Articles",
+    tableOfContents: "Table of Contents",
+    readyToExperience: "Ready to Experience Sintra?",
+    bookFlexibleDayPass: "Book your flexible day pass and start exploring Sintra's magnificent palaces and gardens",
+    bookDayPassNow: "Book Your Day Pass Now",
+    
     categories: {
       planning: "Planning Your Visit",
       "getting-there": "Getting There",

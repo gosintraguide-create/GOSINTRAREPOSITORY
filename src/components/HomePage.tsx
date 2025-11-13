@@ -241,23 +241,45 @@ export function HomePage({
             "To install this app, please open this site in Safari. Chrome on iOS doesn't support installing web apps.",
           );
         }
+      } else {
+        // Android or other platforms without prompt
+        console.log('[HomePage] No install prompt available on this device');
+        alert(
+          'To install: Open your browser menu and look for "Add to Home screen" or "Install app"',
+        );
       }
       return;
     }
 
-    // Show the install prompt
-    deferredPrompt.prompt();
+    try {
+      console.log('[HomePage] Showing install prompt...');
+      
+      // Show the install prompt
+      await deferredPrompt.prompt();
+      
+      console.log('[HomePage] Prompt shown, waiting for user choice...');
 
-    // Wait for the user's response
-    const { outcome } = await deferredPrompt.userChoice;
+      // Wait for the user's response
+      const { outcome } = await deferredPrompt.userChoice;
 
-    if (outcome === "accepted") {
-      console.log("User accepted the install prompt");
+      console.log('[HomePage] User choice:', outcome);
+
+      if (outcome === "accepted") {
+        console.log("[HomePage] User accepted the install prompt");
+      } else {
+        console.log("[HomePage] User dismissed the install prompt");
+      }
+
+      // Clear the deferred prompt
+      setDeferredPrompt(null);
+      setShowInstallCard(false);
+    } catch (error) {
+      console.error('[HomePage] Error during installation:', error);
+      // Show a helpful message
+      alert(
+        'Unable to show install prompt. Try opening your browser menu and selecting "Add to Home screen".',
+      );
     }
-
-    // Clear the deferred prompt
-    setDeferredPrompt(null);
-    setShowInstallCard(false);
   };
 
   const handleDismissInstallCard = () => {
@@ -292,17 +314,17 @@ export function HomePage({
                 <div className="mx-auto max-w-4xl text-center lg:mx-0 lg:text-left">
                   {/* Main Heading */}
                   <h1 className="mb-4 text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight drop-shadow-[0_8px_32px_rgba(0,0,0,1)] sm:mb-6">
-                    {content.homepage.hero.title}
+                    {legacyContent.homepage.hero.title}
                   </h1>
 
                   {/* Subtitle with stronger contrast */}
                   <p className="mb-6 text-base sm:text-lg md:text-xl text-white drop-shadow-[0_6px_20px_rgba(0,0,0,1)] sm:mb-8">
-                    {content.homepage.hero.subtitle}
+                    {legacyContent.homepage.hero.subtitle}
                   </p>
 
                   {/* Key Benefits Pills */}
                   <div className="mb-6 flex flex-wrap justify-center gap-2 sm:mb-8 sm:gap-3 lg:justify-start">
-                    {content.homepage.hero.benefitPills.map(
+                    {legacyContent.homepage.hero.benefitPills.map(
                       (benefit, index) => {
                         const IconComponent =
                           benefit.icon === "Users"
@@ -334,16 +356,16 @@ export function HomePage({
                   <div className="flex flex-col items-center gap-3 sm:gap-4 lg:flex-row lg:items-center lg:justify-start">
                     {/* Price Badge - more compact on mobile */}
                     {priceLoaded && (
-                      <div className="inline-flex items-center gap-2.5 rounded-xl bg-white px-5 py-3 shadow-2xl sm:gap-3 sm:rounded-2xl sm:px-6 sm:py-4">
-                        <div>
-                          <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                            From
+                      <div className="inline-flex items-center gap-2.5 rounded-xl bg-white px-5 py-3 shadow-2xl sm:gap-3 sm:rounded-2xl sm:px-6 sm:py-4 lg:px-8 lg:py-5">
+                        <div className="flex flex-col gap-0.5">
+                          <p className="whitespace-nowrap text-xs text-primary/70 sm:text-sm">
+                            {legacyContent.homepage.priceFrom}
                           </p>
-                          <p className="text-2xl font-extrabold text-accent sm:text-3xl">
+                          <p className="whitespace-nowrap text-2xl font-extrabold text-accent sm:text-3xl lg:text-4xl">
                             €{basePrice}
                           </p>
-                          <p className="text-xs text-muted-foreground">
-                            per person
+                          <p className="whitespace-nowrap text-xs text-primary/70 sm:text-sm">
+                            {legacyContent.homepage.pricePerPerson}
                           </p>
                         </div>
                       </div>
@@ -355,7 +377,7 @@ export function HomePage({
                       className="h-12 w-full bg-accent px-6 shadow-2xl hover:scale-105 hover:bg-accent/90 sm:h-14 sm:w-auto sm:px-10 sm:text-lg"
                       onClick={() => onNavigate("buy-ticket")}
                     >
-                      {content.homepage.hero.ctaButton}
+                      {legacyContent.homepage.hero.ctaButton}
                       <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
                     </Button>
                   </div>
@@ -373,58 +395,58 @@ export function HomePage({
               <div>
                 <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2">
                   <Car className="h-5 w-5 text-primary" />
-                  <span className="text-primary">Hop-On/Hop-Off Day Pass</span>
+                  <span className="text-primary">{legacyContent.homepage.hopOnHopOffDayPass}</span>
                 </div>
                 <h2 className="mb-4 text-foreground">
-                  Your Unlimited Sintra Adventure
+                  {legacyContent.homepage.unlimitedAdventureTitle}
                 </h2>
                 <p className="mb-4 text-lg text-muted-foreground">
-                  Hop On Sintra is a flexible hop-on/hop-off day pass service using small, intimate vehicles like tuk tuks and vintage UMM jeeps. With service every 10-15 minutes from 9am-7pm, you get guaranteed seating and unlimited rides to all major attractions.
+                  {legacyContent.homepage.serviceDescription}
                 </p>
                 <p className="mb-6 text-lg text-muted-foreground">
-                  Unlike crowded tour buses, our small groups (2-6 passengers) with professional local guides give you the freedom to explore Sintra at your own pace while enjoying personalized attention.
+                  {legacyContent.homepage.serviceDescription2}
                 </p>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="flex items-start gap-3">
                     <CheckCircle className="mt-1 h-5 w-5 flex-shrink-0 text-accent" />
                     <div>
-                      <p className="text-foreground">Unlimited Rides All Day</p>
-                      <p className="text-sm text-muted-foreground">One pass, all attractions</p>
+                      <p className="text-foreground">{legacyContent.homepage.unlimitedRidesTitle}</p>
+                      <p className="text-sm text-muted-foreground">{legacyContent.homepage.unlimitedRidesSubtitle}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <CheckCircle className="mt-1 h-5 w-5 flex-shrink-0 text-accent" />
                     <div>
-                      <p className="text-foreground">Every 10-15 Minutes</p>
-                      <p className="text-sm text-muted-foreground">Never wait long</p>
+                      <p className="text-foreground">{legacyContent.homepage.frequentServiceTitle}</p>
+                      <p className="text-sm text-muted-foreground">{legacyContent.homepage.frequentServiceSubtitle}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <CheckCircle className="mt-1 h-5 w-5 flex-shrink-0 text-accent" />
                     <div>
-                      <p className="text-foreground">Small Intimate Groups</p>
-                      <p className="text-sm text-muted-foreground">2-6 passengers max</p>
+                      <p className="text-foreground">{legacyContent.homepage.smallGroupsTitle}</p>
+                      <p className="text-sm text-muted-foreground">{legacyContent.homepage.smallGroupsSubtitle}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <CheckCircle className="mt-1 h-5 w-5 flex-shrink-0 text-accent" />
                     <div>
-                      <p className="text-foreground">Professional Guides</p>
-                      <p className="text-sm text-muted-foreground">Local experts</p>
+                      <p className="text-foreground">{legacyContent.homepage.professionalGuidesTitle}</p>
+                      <p className="text-sm text-muted-foreground">{legacyContent.homepage.professionalGuidesSubtitle}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <CheckCircle className="mt-1 h-5 w-5 flex-shrink-0 text-accent" />
                     <div>
-                      <p className="text-foreground">Request On-Demand Pickups</p>
-                      <p className="text-sm text-muted-foreground">Call a vehicle to you anytime</p>
+                      <p className="text-foreground">{legacyContent.homepage.requestPickupTitle}</p>
+                      <p className="text-sm text-muted-foreground">{legacyContent.homepage.requestPickupSubtitle}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <CheckCircle className="mt-1 h-5 w-5 flex-shrink-0 text-accent" />
                     <div>
-                      <p className="text-foreground">Real-Time Vehicle Tracking</p>
-                      <p className="text-sm text-muted-foreground">See your ride arriving</p>
+                      <p className="text-foreground">{legacyContent.homepage.realTimeTrackingTitle}</p>
+                      <p className="text-sm text-muted-foreground">{legacyContent.homepage.realTimeTrackingSubtitle}</p>
                     </div>
                   </div>
                 </div>
@@ -445,14 +467,14 @@ export function HomePage({
       </section>
 
       {/* Route Overview Section */}
-      <RouteOverview />
+      <RouteOverview language={language} />
 
       {/* Quick Links Section */}
       <section className="bg-gradient-to-br from-primary via-primary/95 to-primary/90 py-12 sm:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-8 text-center">
-            <h2 className="mb-2 text-white">{content.homepage.quickLinks.title}</h2>
-            <p className="text-white/90">{content.homepage.quickLinks.subtitle}</p>
+            <h2 className="mb-2 text-white">{legacyContent.homepage.quickLinks.title}</h2>
+            <p className="text-white/90">{legacyContent.homepage.quickLinks.subtitle}</p>
           </div>
           <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
             {/* Attractions Link */}
@@ -469,10 +491,10 @@ export function HomePage({
               </div>
               <div className="flex-1 text-left">
                 <p className="mb-1 text-white">
-                  {content.homepage.quickLinks.attractions.title}
+                  {legacyContent.homepage.quickLinks.attractions.title}
                 </p>
                 <p className="text-sm text-white/80">
-                  {content.homepage.quickLinks.attractions.subtitle}
+                  {legacyContent.homepage.quickLinks.attractions.subtitle}
                 </p>
               </div>
               <ArrowRight className="h-5 w-5 flex-shrink-0 text-white/70 transition-transform group-hover:translate-x-1 group-hover:text-white" />
@@ -492,10 +514,10 @@ export function HomePage({
               </div>
               <div className="flex-1 text-left">
                 <p className="mb-1 text-white">
-                  {content.homepage.quickLinks.travelGuide.title}
+                  {legacyContent.homepage.quickLinks.travelGuide.title}
                 </p>
                 <p className="text-sm text-white/80">
-                  {content.homepage.quickLinks.travelGuide.subtitle}
+                  {legacyContent.homepage.quickLinks.travelGuide.subtitle}
                 </p>
               </div>
               <ArrowRight className="h-5 w-5 flex-shrink-0 text-white/70 transition-transform group-hover:translate-x-1 group-hover:text-white" />
@@ -515,10 +537,10 @@ export function HomePage({
               </div>
               <div className="flex-1 text-left">
                 <p className="mb-1 text-white">
-                  {content.homepage.quickLinks.privateTours.title}
+                  {legacyContent.homepage.quickLinks.privateTours.title}
                 </p>
                 <p className="text-sm text-white/80">
-                  {content.homepage.quickLinks.privateTours.subtitle}
+                  {legacyContent.homepage.quickLinks.privateTours.subtitle}
                 </p>
               </div>
               <ArrowRight className="h-5 w-5 flex-shrink-0 text-white/70 transition-transform group-hover:translate-x-1 group-hover:text-white" />
@@ -706,7 +728,7 @@ export function HomePage({
                       <span className="rounded-full bg-accent/15 px-2 py-0.5 text-xs text-accent">💡 Tip</span>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      <strong className="text-foreground">Can't see a vehicle nearby?</strong> Request an on-demand pickup from your booking confirmation. We'll send one to your location with live tracking—no extra charge!
+                      <strong className="text-foreground">{legacyContent.homepage.cantSeeVehicle}</strong> {legacyContent.homepage.requestPickupTip}
                     </p>
                   </div>
                 </div>
@@ -831,11 +853,10 @@ export function HomePage({
               </span>
             </div>
             <h2 className="mb-4 text-foreground">
-              What Makes Us Different
+              {legacyContent.homepage.whatMakesDifferentTitle}
             </h2>
             <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-              This isn't just transportation—it's part of the
-              adventure! ✨
+              {legacyContent.homepage.whatMakesDifferentSubtitle}
             </p>
           </div>
 
@@ -855,12 +876,10 @@ export function HomePage({
                   <Users className="h-7 w-7 text-white" />
                 </div>
                 <h3 className="mb-2 text-foreground">
-                  Intimate Adventures
+                  {legacyContent.homepage.intimateAdventuresTitle}
                 </h3>
                 <p className="text-muted-foreground">
-                  Just 2-6 guests per vehicle means you'll
-                  actually enjoy the ride! No tour bus crowds,
-                  just cozy exploration.
+                  {legacyContent.homepage.intimateAdventuresDescription}
                 </p>
               </div>
               <div className="absolute inset-0 border-2 border-accent opacity-0 transition-opacity group-hover:opacity-100" />
@@ -881,13 +900,10 @@ export function HomePage({
                   <Car className="h-7 w-7 text-white" />
                 </div>
                 <h3 className="mb-2 text-foreground">
-                  Professional Driver-Guides
+                  {legacyContent.homepage.professionalDriverGuidesTitle}
                 </h3>
                 <p className="text-muted-foreground">
-                  Every tuk tuk, vintage jeep, and van is driven
-                  by a certified local guide who knows Sintra
-                  inside out. Get insights you won't find in any
-                  guidebook!
+                  {legacyContent.homepage.professionalDriverGuidesDescription}
                 </p>
               </div>
               <div className="absolute inset-0 border-2 border-accent opacity-0 transition-opacity group-hover:opacity-100" />
@@ -908,12 +924,10 @@ export function HomePage({
                   <Camera className="h-7 w-7 text-white" />
                 </div>
                 <h3 className="mb-2 text-foreground">
-                  Your Time, Your Way
+                  {legacyContent.homepage.yourTimeYourWayTitle}
                 </h3>
                 <p className="text-muted-foreground">
-                  Spotted something Instagram-worthy? Hop off!
-                  Take your time, snap those photos, and catch
-                  the next ride when you're ready.
+                  {legacyContent.homepage.yourTimeYourWayDescription}
                 </p>
               </div>
               <div className="absolute inset-0 border-2 border-accent opacity-0 transition-opacity group-hover:opacity-100" />
@@ -934,12 +948,10 @@ export function HomePage({
                   <Clock className="h-7 w-7 text-white" />
                 </div>
                 <h3 className="mb-2 text-foreground">
-                  Never Rush Again
+                  {legacyContent.homepage.neverRushTitle}
                 </h3>
                 <p className="text-muted-foreground">
-                  Vehicles pass every 30 minutes all day long
-                  (9am-7pm). Missed one? No worries, another's
-                  coming soon!
+                  {legacyContent.homepage.neverRushDescription}
                 </p>
               </div>
               <div className="absolute inset-0 border-2 border-accent opacity-0 transition-opacity group-hover:opacity-100" />
@@ -960,12 +972,10 @@ export function HomePage({
                   <Heart className="h-7 w-7 text-white" />
                 </div>
                 <h3 className="mb-2 text-foreground">
-                  Guaranteed Seats
+                  {legacyContent.homepage.guaranteedSeatsTitle}
                 </h3>
                 <p className="text-muted-foreground">
-                  Unlike public transport, your seat is waiting
-                  for you. Pre-booked, stress-free,
-                  comfortable—the way travel should be!
+                  {legacyContent.homepage.guaranteedSeatsDescription}
                 </p>
               </div>
               <div className="absolute inset-0 border-2 border-accent opacity-0 transition-opacity group-hover:opacity-100" />
@@ -986,10 +996,10 @@ export function HomePage({
                   <Smartphone className="h-7 w-7 text-white" />
                 </div>
                 <h3 className="mb-2 text-foreground">
-                  On-Demand Pickup Service
+                  {legacyContent.homepage.onDemandPickupTitle}
                 </h3>
                 <p className="text-muted-foreground">
-                  Can't see a vehicle nearby? Request an on-demand pickup from your booking confirmation. We'll send one to your exact location with live tracking—included in your pass!
+                  {legacyContent.homepage.onDemandPickupDescription}
                 </p>
               </div>
               <div className="absolute inset-0 border-2 border-accent opacity-0 transition-opacity group-hover:opacity-100" />
@@ -1022,10 +1032,10 @@ export function HomePage({
           </div>
 
           <h2 className="mb-4 text-white drop-shadow-lg">
-            Ready for the Best Day Ever?
+            {legacyContent.homepage.finalCtaTitle}
           </h2>
           <p className="mb-8 text-xl text-white/95 drop-shadow-md">
-            Book your full day pass now—adventure awaits! 🚗✨
+            {legacyContent.homepage.finalCtaSubtitle}
           </p>
 
           <Button
@@ -1034,13 +1044,12 @@ export function HomePage({
             onClick={() => onNavigate("buy-ticket")}
           >
             <Ticket className="mr-2 h-5 w-5" />
-            Get Your Day Pass Now - €{basePrice}
+            {legacyContent.homepage.finalCtaButton} - €{basePrice}
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
 
           <p className="mt-4 text-sm text-white/80">
-            ⚡ Instant confirmation • 📱 Mobile-friendly • 💳
-            Secure payment
+            {legacyContent.homepage.finalCtaSubtext}
           </p>
         </div>
       </section>

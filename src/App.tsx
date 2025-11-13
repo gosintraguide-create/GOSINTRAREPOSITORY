@@ -139,7 +139,7 @@ function PageLoader() {
 
 // Detect user's browser language and map to supported languages
 function detectBrowserLanguage(): string {
-  const supportedLanguages = ["en", "es", "fr", "de", "pt"];
+  const supportedLanguages = ["en", "es", "fr", "de", "pt", "nl", "it"];
 
   // Get browser language (e.g., "en-US", "pt-BR", "es")
   const browserLang =
@@ -372,19 +372,21 @@ export default function App() {
   const getSeoConfig = () => {
     switch (currentPage) {
       case "home":
-        return { ...websiteContent.seo.home, path: "/" };
+        return { ...websiteContent.seo.home, path: "/", type: "service" as const };
       case "attractions":
         return {
           ...websiteContent.seo.attractions,
           path: "/attractions",
+          type: "attraction" as const,
         };
       case "buy-ticket":
         return {
           ...websiteContent.seo.buyTicket,
           path: "/buy-ticket",
+          type: "product" as const,
         };
       case "about":
-        return { ...websiteContent.seo.about, path: "/about" };
+        return { ...websiteContent.seo.about, path: "/about", type: "service" as const };
       case "request-pickup":
         return {
           title: "Request Pickup - Hop On Sintra Live Tracking",
@@ -393,6 +395,7 @@ export default function App() {
           keywords:
             "Sintra pickup, live vehicle tracking, request Sintra transport",
           path: "/request-pickup",
+          type: "service" as const,
         };
       case "blog":
         return {
@@ -403,6 +406,7 @@ export default function App() {
           keywords:
             "Sintra travel guide, Sintra blog, Sintra tips, how to visit Sintra, Sintra planning",
           path: "/blog",
+          type: "article" as const,
         };
       case "blog-article":
         return {
@@ -416,6 +420,7 @@ export default function App() {
             pageData?.tags?.join(", ") ||
             "Sintra, travel guide",
           path: `/blog/${pageData?.slug || ""}`,
+          type: "article" as const,
         };
       case "private-tours":
         return {
@@ -425,6 +430,7 @@ export default function App() {
           keywords:
             "Sintra private tours, private Sintra guide, custom Sintra tour, personalized Sintra experience, private guide Sintra",
           path: "/private-tours",
+          type: "product" as const,
         };
       case "sunset-special-purchase":
         return {
@@ -434,9 +440,10 @@ export default function App() {
           keywords:
             "Sintra sunset tour, Cabo da Roca sunset, sunset drive Sintra, exclusive Sintra experience",
           path: "/sunset-special-purchase",
+          type: "product" as const,
         };
       default:
-        return { ...websiteContent.seo.home, path: "/" };
+        return { ...websiteContent.seo.home, path: "/", type: "service" as const };
     }
   };
 
@@ -540,7 +547,7 @@ export default function App() {
         );
       case "manage-booking":
         return (
-          <ManageBookingPage onNavigate={handleNavigate} />
+          <ManageBookingPage onNavigate={handleNavigate} language={language} />
         );
       case "driver-login":
         return (
@@ -600,6 +607,8 @@ export default function App() {
             description={seoConfig.description}
             keywords={seoConfig.keywords}
             canonicalPath={seoConfig.path}
+            language={language}
+            structuredDataType={seoConfig.type}
           />
         )}
 

@@ -16,6 +16,7 @@ export function InstallPrompt() {
   useEffect(() => {
     // Check if already installed
     if (window.matchMedia('(display-mode: standalone)').matches) {
+      console.log('[InstallPrompt] App already installed');
       setIsInstalled(true);
       return;
     }
@@ -26,18 +27,24 @@ export function InstallPrompt() {
       const dismissedTime = parseInt(dismissed);
       const daysSinceDismissed = (Date.now() - dismissedTime) / (1000 * 60 * 60 * 24);
       if (daysSinceDismissed < 7) {
+        console.log('[InstallPrompt] User dismissed prompt recently, not showing again');
         // Don't show again for 7 days
         return;
       }
     }
 
+    console.log('[InstallPrompt] Registering beforeinstallprompt listener');
+
     // Listen for beforeinstallprompt event
     const handleBeforeInstallPrompt = (e: Event) => {
+      console.log('[InstallPrompt] beforeinstallprompt event fired!');
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       
       // Show prompt after 10 seconds
+      console.log('[InstallPrompt] Will show prompt in 10 seconds');
       setTimeout(() => {
+        console.log('[InstallPrompt] Showing prompt now');
         setShowPrompt(true);
       }, 10000);
     };
@@ -46,6 +53,7 @@ export function InstallPrompt() {
 
     // Listen for app installed event
     const handleAppInstalled = () => {
+      console.log('[InstallPrompt] App installed successfully!');
       setIsInstalled(true);
       setShowPrompt(false);
       setDeferredPrompt(null);
@@ -53,7 +61,15 @@ export function InstallPrompt() {
 
     window.addEventListener('appinstalled', handleAppInstalled);
 
+    // Log current state
+    console.log('[InstallPrompt] Listeners registered. Current state:', {
+      isInstalled,
+      showPrompt,
+      hasDeferredPrompt: !!deferredPrompt
+    });
+
     return () => {
+      console.log('[InstallPrompt] Removing event listeners');
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       window.removeEventListener('appinstalled', handleAppInstalled);
     };
@@ -62,21 +78,32 @@ export function InstallPrompt() {
   const handleInstallClick = async () => {
     if (!deferredPrompt) return;
 
-    // Show the install prompt
-    deferredPrompt.prompt();
+    try {
+      console.log('[InstallPrompt] Showing install prompt...');
+      
+      // Show the install prompt
+      await deferredPrompt.prompt();
+      
+      console.log('[InstallPrompt] Prompt shown, waiting for user choice...');
 
-    // Wait for the user's response
-    const { outcome } = await deferredPrompt.userChoice;
-    
-    if (outcome === 'accepted') {
-      console.log('User accepted the install prompt');
-    } else {
-      console.log('User dismissed the install prompt');
+      // Wait for the user's response
+      const { outcome } = await deferredPrompt.userChoice;
+      
+      console.log('[InstallPrompt] User choice:', outcome);
+      
+      if (outcome === 'accepted') {
+        console.log('[InstallPrompt] User accepted the install prompt');
+      } else {
+        console.log('[InstallPrompt] User dismissed the install prompt');
+      }
+
+      // Clear the deferred prompt
+      setDeferredPrompt(null);
+      setShowPrompt(false);
+    } catch (error) {
+      console.error('[InstallPrompt] Error during installation:', error);
+      // Don't clear the prompt if there was an error - user can try again
     }
-
-    // Clear the deferred prompt
-    setDeferredPrompt(null);
-    setShowPrompt(false);
   };
 
   const handleDismiss = () => {

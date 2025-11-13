@@ -1,30 +1,37 @@
 import { MapPin } from "lucide-react";
+import { getTranslation } from "../lib/translations";
 
-const ROUTE_1_STOPS = [
-  "Train Station",
-  "Historical Center North",
-  "Moorish Castle",
-  "Pena Palace",
-  "Historical Center South",
-];
+interface RouteOverviewProps {
+  language?: string;
+}
 
-const ROUTE_2_STOPS = [
-  "Quinta da Regaleira",
-  "Seteais",
-  "Monserrate Palace",
-  "Train Station",
-  "Historical Center North",
-];
+export function RouteOverview({ language = "en" }: RouteOverviewProps) {
+  const content = getTranslation(language);
 
-export function RouteOverview() {
+  const ROUTE_1_STOPS = [
+    content.routes.stops.trainStation,
+    content.routes.stops.historicalCenterNorth,
+    content.routes.stops.moorishCastle,
+    content.routes.stops.penaPalace,
+    content.routes.stops.historicalCenterSouth,
+  ];
+
+  const ROUTE_2_STOPS = [
+    content.routes.stops.quintaRegaleira,
+    content.routes.stops.seteais,
+    content.routes.stops.monserratePalace,
+    content.routes.stops.trainStation,
+    content.routes.stops.historicalCenterNorth,
+  ];
+
   return (
     <section className="bg-gradient-to-b from-white to-gray-50 py-12 sm:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="mb-8 text-center">
-          <h2 className="mb-2">Our Two Circular Routes</h2>
+          <h2 className="mb-2">{content.routes.title}</h2>
           <p className="text-muted-foreground">
-            All stops served every 30 minutes • No need to change vehicles
+            {content.routes.subtitle}
           </p>
         </div>
 
@@ -36,7 +43,7 @@ export function RouteOverview() {
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
                 <span className="text-sm text-white">1</span>
               </div>
-              <h3 className="text-primary">Route 1</h3>
+              <h3 className="text-primary">{content.routes.route1}</h3>
             </div>
 
             {/* Route Visualization */}
@@ -46,7 +53,7 @@ export function RouteOverview() {
               
               <div className="space-y-3">
                 {ROUTE_1_STOPS.map((stop, index) => {
-                  const isShared = stop === "Train Station" || stop === "Historical Center North";
+                  const isShared = stop === content.routes.stops.trainStation || stop === content.routes.stops.historicalCenterNorth;
                   
                   return (
                     <div key={index} className="relative flex items-center gap-3">
@@ -65,7 +72,7 @@ export function RouteOverview() {
                       <div className="flex-1">
                         <p className="text-sm text-foreground">{stop}</p>
                         {isShared && (
-                          <p className="text-xs text-muted-foreground">Both routes</p>
+                          <p className="text-xs text-muted-foreground">{content.routes.bothRoutes}</p>
                         )}
                       </div>
                     </div>
@@ -75,7 +82,7 @@ export function RouteOverview() {
                 <div className="relative flex items-center gap-3 pl-6">
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <div className="h-px w-8 bg-primary/30" />
-                    <span>loops back</span>
+                    <span>{content.routes.loopsBack}</span>
                   </div>
                 </div>
               </div>
@@ -88,7 +95,7 @@ export function RouteOverview() {
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent">
                 <span className="text-sm text-white">2</span>
               </div>
-              <h3 className="text-accent">Route 2</h3>
+              <h3 className="text-accent">{content.routes.route2}</h3>
             </div>
 
             {/* Route Visualization */}
@@ -98,7 +105,7 @@ export function RouteOverview() {
               
               <div className="space-y-3">
                 {ROUTE_2_STOPS.map((stop, index) => {
-                  const isShared = stop === "Train Station" || stop === "Historical Center North";
+                  const isShared = stop === content.routes.stops.trainStation || stop === content.routes.stops.historicalCenterNorth;
                   
                   return (
                     <div key={index} className="relative flex items-center gap-3">
@@ -117,7 +124,7 @@ export function RouteOverview() {
                       <div className="flex-1">
                         <p className="text-sm text-foreground">{stop}</p>
                         {isShared && (
-                          <p className="text-xs text-muted-foreground">Both routes</p>
+                          <p className="text-xs text-muted-foreground">{content.routes.bothRoutes}</p>
                         )}
                       </div>
                     </div>
@@ -127,7 +134,7 @@ export function RouteOverview() {
                 <div className="relative flex items-center gap-3 pl-6">
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <div className="h-px w-8 bg-accent/30" />
-                    <span>loops back</span>
+                    <span>{content.routes.loopsBack}</span>
                   </div>
                 </div>
               </div>
@@ -143,10 +150,10 @@ export function RouteOverview() {
             </div>
             <div className="flex-1">
               <p className="mb-1 text-sm text-foreground">
-                <strong>One Pass, Both Routes</strong>
+                <strong>{content.routes.onePassBothRoutes}</strong>
               </p>
               <p className="text-sm text-muted-foreground">
-                Your day pass gives you unlimited access to both routes. Our vehicles visit all stops every 30 minutes from 9 AM to 7 PM, and you never need to change vehicles - stay on board as routes connect at Train Station and Historical Center North.
+                {content.routes.onePassDescription}
               </p>
             </div>
           </div>

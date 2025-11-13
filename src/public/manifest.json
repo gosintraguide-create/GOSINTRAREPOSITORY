@@ -1,12 +1,12 @@
 {
-  "name": "Go Sintra - Operations & Booking",
-  "short_name": "Go Sintra",
-  "description": "Hop-on hop-off sightseeing service in Sintra, Portugal. Operations portal and booking system.",
-  "start_url": "/",
+  "name": "Hop On Sintra - Day Pass Booking",
+  "short_name": "Hop On Sintra",
+  "description": "Hop-on hop-off sightseeing day pass service in Sintra, Portugal. Book your unlimited rides day pass with guaranteed seating.",
+  "start_url": "/?source=pwa",
   "display": "standalone",
   "background_color": "#fffbf7",
   "theme_color": "#0A4D5C",
-  "orientation": "any",
+  "orientation": "portrait-primary",
   "scope": "/",
   "categories": ["travel", "tourism", "transportation"],
   "icons": [
@@ -61,24 +61,24 @@
   ],
   "shortcuts": [
     {
-      "name": "QR Scanner",
-      "short_name": "Scanner",
-      "description": "Scan customer tickets",
-      "url": "/?page=qr-scanner",
+      "name": "Book Day Pass",
+      "short_name": "Book",
+      "description": "Book your hop-on hop-off day pass",
+      "url": "/?page=buy-ticket",
       "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
     },
     {
-      "name": "Quick Sale",
-      "short_name": "Sale",
-      "description": "Create new booking",
-      "url": "/?page=manual-booking",
+      "name": "Track Vehicle",
+      "short_name": "Track",
+      "description": "See where vehicles are in real-time",
+      "url": "/?page=home",
       "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
     },
     {
-      "name": "Operations",
-      "short_name": "Operations",
-      "description": "Driver portal",
-      "url": "/?page=operations",
+      "name": "Attractions",
+      "short_name": "Attractions",
+      "description": "Explore Sintra attractions",
+      "url": "/?page=attractions",
       "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
     }
   ],

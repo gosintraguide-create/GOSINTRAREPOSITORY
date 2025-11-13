@@ -3727,6 +3727,16 @@
     }
   }
 
+  .text-primary\/70 {
+    color: var(--primary);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .text-primary\/70 {
+      color: color-mix(in oklab, var(--primary) 70%, transparent);
+    }
+  }
+
   .text-purple-600 {
     color: var(--color-purple-600);
   }
@@ -5988,8 +5998,21 @@
   }
 
   @media (width >= 64rem) {
+    .lg\:py-5 {
+      padding-block: calc(var(--spacing) * 5);
+    }
+  }
+
+  @media (width >= 64rem) {
     .lg\:text-left {
       text-align: left;
+    }
+  }
+
+  @media (width >= 64rem) {
+    .lg\:text-4xl {
+      font-size: var(--text-4xl);
+      line-height: var(--tw-leading, var(--text-4xl--line-height));
     }
   }
 
