@@ -41,11 +41,13 @@ interface BeforeInstallPromptEvent extends Event {
 interface HomePageProps {
   onNavigate: (page: string) => void;
   language?: string;
+  websiteContent?: WebsiteContent;
 }
 
 export function HomePage({
   onNavigate,
   language = "en",
+  websiteContent,
 }: HomePageProps) {
   // Check feature flags
   const [sunsetSpecialEnabled, setSunsetSpecialEnabled] = useState(true);
@@ -152,9 +154,13 @@ export function HomePage({
 
     loadPricingFromDB();
 
-    // Load legacy content for compatibility
-    setLegacyContent(loadContentWithLanguage(language));
-  }, [language]);
+    // Update legacy content when language or websiteContent changes
+    if (websiteContent) {
+      setLegacyContent(websiteContent);
+    } else {
+      setLegacyContent(loadContentWithLanguage(language));
+    }
+  }, [language, websiteContent]);
 
   // Listen for PWA install prompt
   useEffect(() => {
@@ -297,33 +303,33 @@ export function HomePage({
         {/* Large Hero Image Section */}
         <div className="relative">
           {/* Hero Image with Overlay */}
-          <div className="relative min-h-[450px] sm:min-h-[500px] lg:min-h-[550px]">
+          <div className="relative min-h-[550px] sm:min-h-[620px] lg:min-h-[680px]">
             <div className="absolute inset-0">
               <ImageWithFallback
                 src={content.homepage.hero.heroImage || "https://images.unsplash.com/photo-1704312230001-8d9adfc76d39?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0dWslMjB0dWslMjBzaW50cmElMjBwb3J0dWdhbCUyMGNvbG9yZnVsJTIwcGFsYWNlfGVufDF8fHx8MTc2MjM2MTE4Nnww&ixlib=rb-4.1.0&q=80&w=1080"}
                 alt="Tuk tuk sightseeing in Sintra with colorful Pena Palace"
                 className="h-full w-full object-cover object-center"
               />
-              {/* Top-to-bottom gradient overlay - lighter to show more image, darker where text appears */}
-              <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/25 to-black/65" />
+              {/* Gradient overlay - stronger at top and bottom, lighter in middle */}
+              <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/70" />
             </div>
 
             {/* Hero Content Overlay */}
-            <div className="absolute inset-0 flex items-center py-8 sm:py-12">
-              <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="absolute inset-0 flex flex-col justify-center px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+              <div className="mx-auto w-full max-w-7xl">
                 <div className="mx-auto max-w-4xl text-center lg:mx-0 lg:text-left">
                   {/* Main Heading */}
-                  <h1 className="mb-4 text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight drop-shadow-[0_8px_32px_rgba(0,0,0,1)] sm:mb-6">
+                  <h1 className="mb-5 text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight drop-shadow-[0_8px_32px_rgba(0,0,0,1)] sm:mb-6 lg:mb-7">
                     {legacyContent.homepage.hero.title}
                   </h1>
 
                   {/* Subtitle with stronger contrast */}
-                  <p className="mb-6 text-base sm:text-lg md:text-xl text-white drop-shadow-[0_6px_20px_rgba(0,0,0,1)] sm:mb-8">
+                  <p className="mb-7 text-base sm:text-lg md:text-xl text-white drop-shadow-[0_6px_20px_rgba(0,0,0,1)] sm:mb-8 lg:mb-10">
                     {legacyContent.homepage.hero.subtitle}
                   </p>
 
                   {/* Key Benefits Pills */}
-                  <div className="mb-6 flex flex-wrap justify-center gap-2 sm:mb-8 sm:gap-3 lg:justify-start">
+                  <div className="mb-8 flex flex-wrap justify-center gap-2 sm:mb-10 sm:gap-3 lg:justify-start lg:mb-12">
                     {legacyContent.homepage.hero.benefitPills.map(
                       (benefit, index) => {
                         const IconComponent =
@@ -353,7 +359,7 @@ export function HomePage({
                   </div>
 
                   {/* Price Badge and CTA */}
-                  <div className="flex flex-col items-center gap-3 sm:gap-4 lg:flex-row lg:items-center lg:justify-start">
+                  <div className="flex flex-col items-center gap-4 sm:gap-5 lg:flex-row lg:items-center lg:justify-start">
                     {/* Price Badge - more compact on mobile */}
                     {priceLoaded && (
                       <div className="inline-flex items-center gap-2.5 rounded-xl bg-white px-5 py-3 shadow-2xl sm:gap-3 sm:rounded-2xl sm:px-6 sm:py-4 lg:px-8 lg:py-5">

@@ -456,6 +456,7 @@ export default function App() {
           <HomePage
             onNavigate={handleNavigate}
             language={language}
+            websiteContent={websiteContent}
           />
         );
       case "attractions":
@@ -586,6 +587,7 @@ export default function App() {
           <HomePage
             onNavigate={handleNavigate}
             language={language}
+            websiteContent={websiteContent}
           />
         );
     }

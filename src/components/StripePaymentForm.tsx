@@ -43,6 +43,11 @@ function CheckoutForm({ amount, onSuccess, onError, customerEmail }: Omit<Stripe
         confirmParams: {
           return_url: window.location.href,
           receipt_email: customerEmail,
+          payment_method_data: customerEmail ? {
+            billing_details: {
+              email: customerEmail,
+            },
+          } : undefined,
         },
         redirect: "if_required",
       });

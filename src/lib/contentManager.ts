@@ -401,6 +401,165 @@ export interface WebsiteContent {
       bookingFailed: string;
     };
   };
+  privateTours: {
+    // Coming Soon section (when disabled)
+    comingSoon: {
+      badge: string;
+      title: string;
+      subtitle: string;
+      stayTunedText: string;
+      feature1: string;
+      feature2: string;
+      feature3: string;
+      notifyButton: string;
+      exploreDayPassButton: string;
+      footerText: string;
+    };
+    // Why Wait section
+    whyWait: {
+      title: string;
+      subtitle: string;
+      card1Title: string;
+      card1Description: string;
+      card2Title: string;
+      card2Description: string;
+      card3Title: string;
+      card3Description: string;
+      bookDayPassButton: string;
+    };
+    // Main Private Tours Page (when enabled)
+    hero: {
+      badge: string;
+      title: string;
+      subtitle: string;
+      pill1: string;
+      pill2: string;
+      pill3: string;
+      requestQuoteButton: string;
+      viewPackagesButton: string;
+    };
+    packages: {
+      title: string;
+      subtitle: string;
+      // Half Day
+      halfDay: {
+        title: string;
+        description: string;
+        price: string;
+        priceSubtext: string;
+        duration: string;
+        feature1: string;
+        feature2: string;
+        feature3: string;
+        feature4: string;
+        feature5: string;
+        bookButton: string;
+      };
+      // Full Day
+      fullDay: {
+        badge: string;
+        title: string;
+        description: string;
+        price: string;
+        priceSubtext: string;
+        duration: string;
+        feature1: string;
+        feature2: string;
+        feature3: string;
+        feature4: string;
+        feature5: string;
+        feature6: string;
+        bookButton: string;
+      };
+      // Custom
+      custom: {
+        title: string;
+        description: string;
+        price: string;
+        duration: string;
+        feature1: string;
+        feature2: string;
+        feature3: string;
+        feature4: string;
+        feature5: string;
+        contactButton: string;
+      };
+      disclaimer: string;
+    };
+    whyChoose: {
+      title: string;
+      subtitle: string;
+      benefit1Title: string;
+      benefit1Description: string;
+      benefit2Title: string;
+      benefit2Description: string;
+      benefit3Title: string;
+      benefit3Description: string;
+    };
+    whatsIncluded: {
+      title: string;
+      item1Title: string;
+      item1Description: string;
+      item2Title: string;
+      item2Description: string;
+      item3Title: string;
+      item3Description: string;
+      item4Title: string;
+      item4Description: string;
+    };
+    sampleItineraries: {
+      title: string;
+      subtitle: string;
+      // Half Day Sample
+      halfDay: {
+        title: string;
+        duration: string;
+        badge: string;
+        stop1Title: string;
+        stop1Description: string;
+        stop2Title: string;
+        stop2Description: string;
+        stop3Title: string;
+        stop3Description: string;
+      };
+      // Full Day Sample
+      fullDay: {
+        title: string;
+        duration: string;
+        badge: string;
+        stop1Title: string;
+        stop1Description: string;
+        stop2Title: string;
+        stop2Description: string;
+        stop3Title: string;
+        stop3Description: string;
+        stop4Title: string;
+        stop4Description: string;
+        stop5Title: string;
+        stop5Description: string;
+      };
+    };
+    faq: {
+      title: string;
+      subtitle: string;
+      question1: string;
+      answer1: string;
+      question2: string;
+      answer2: string;
+      question3: string;
+      answer3: string;
+      question4: string;
+      answer4: string;
+      question5: string;
+      answer5: string;
+    };
+    finalCta: {
+      title: string;
+      subtitle: string;
+      requestQuoteButton: string;
+      chatButton: string;
+    };
+  };
   featureFlags?: {
     enableAttractionTickets?: boolean;
   };
@@ -800,6 +959,165 @@ export const DEFAULT_CONTENT: WebsiteContent = {
       attractions: "In-depth guides to Sintra's palaces, castles, and gardens",
       tips: "Insider tips and local advice for exploring Sintra",
       history: "Learn about Sintra's rich history and cultural heritage",
+    },
+  },
+  privateTours: {
+    // Coming Soon section (when disabled)
+    comingSoon: {
+      badge: "Coming Soon",
+      title: "Private Tours",
+      subtitle: "Experience Sintra like never before with our exclusive private tours.",
+      stayTunedText: "Stay tuned for updates on our private tour offerings!",
+      feature1: "Personalized Itineraries",
+      feature2: "Exclusive Access",
+      feature3: "Private Vehicles",
+      notifyButton: "Notify Me",
+      exploreDayPassButton: "Explore Day Pass",
+      footerText: "Don't miss out on the ultimate Sintra adventure!",
+    },
+    // Why Wait section
+    whyWait: {
+      title: "Why Wait?",
+      subtitle: "Upgrade your Sintra experience with our private tours.",
+      card1Title: "Personalized Itineraries",
+      card1Description: "Tailored tours to suit your interests and preferences.",
+      card2Title: "Exclusive Access",
+      card2Description: "Skip the crowds and enjoy private access to top attractions.",
+      card3Title: "Private Vehicles",
+      card3Description: "Travel in comfort with your own private vehicle.",
+      bookDayPassButton: "Book Day Pass",
+    },
+    // Main Private Tours Page (when enabled)
+    hero: {
+      badge: "Exclusive",
+      title: "Private Tours",
+      subtitle: "Experience Sintra like never before with our exclusive private tours.",
+      pill1: "Personalized Itineraries",
+      pill2: "Exclusive Access",
+      pill3: "Private Vehicles",
+      requestQuoteButton: "Request Quote",
+      viewPackagesButton: "View Packages",
+    },
+    packages: {
+      title: "Private Tour Packages",
+      subtitle: "Choose the perfect package for your Sintra adventure.",
+      // Half Day
+      halfDay: {
+        title: "Half Day Tour",
+        description: "Explore Sintra's top attractions in a half-day tour.",
+        price: "€150",
+        priceSubtext: "per person",
+        duration: "4 hours",
+        feature1: "Personalized Itinerary",
+        feature2: "Exclusive Access",
+        feature3: "Private Vehicle",
+        feature4: "Professional Guide",
+        feature5: "Skip-the-Line Entry",
+        bookButton: "Book Now",
+      },
+      // Full Day
+      fullDay: {
+        badge: "Best Value",
+        title: "Full Day Tour",
+        description: "Discover Sintra's magical landscapes in a full-day tour.",
+        price: "€250",
+        priceSubtext: "per person",
+        duration: "8 hours",
+        feature1: "Personalized Itinerary",
+        feature2: "Exclusive Access",
+        feature3: "Private Vehicle",
+        feature4: "Professional Guide",
+        feature5: "Skip-the-Line Entry",
+        feature6: "Lunch Included",
+        bookButton: "Book Now",
+      },
+      // Custom
+      custom: {
+        title: "Custom Tour",
+        description: "Create your own Sintra adventure with a custom tour.",
+        price: "€300+",
+        duration: "Custom",
+        feature1: "Personalized Itinerary",
+        feature2: "Exclusive Access",
+        feature3: "Private Vehicle",
+        feature4: "Professional Guide",
+        feature5: "Skip-the-Line Entry",
+        contactButton: "Contact Us",
+      },
+      disclaimer: "Prices are per person and may vary based on group size and season.",
+    },
+    whyChoose: {
+      title: "Why Choose Go Sintra Private Tours?",
+      subtitle: "Experience Sintra like never before with our exclusive private tours.",
+      benefit1Title: "Personalized Itineraries",
+      benefit1Description: "Tailored tours to suit your interests and preferences.",
+      benefit2Title: "Exclusive Access",
+      benefit2Description: "Skip the crowds and enjoy private access to top attractions.",
+      benefit3Title: "Private Vehicles",
+      benefit3Description: "Travel in comfort with your own private vehicle.",
+    },
+    whatsIncluded: {
+      title: "What's Included in Our Private Tours?",
+      item1Title: "Personalized Itinerary",
+      item1Description: "Tailored tours to suit your interests and preferences.",
+      item2Title: "Exclusive Access",
+      item2Description: "Skip the crowds and enjoy private access to top attractions.",
+      item3Title: "Private Vehicle",
+      item3Description: "Travel in comfort with your own private vehicle.",
+      item4Title: "Professional Guide",
+      item4Description: "Learn from certified guides with deep local knowledge.",
+    },
+    sampleItineraries: {
+      title: "Sample Itineraries",
+      subtitle: "Discover Sintra's magical landscapes with our exclusive private tours.",
+      // Half Day Sample
+      halfDay: {
+        title: "Half Day Tour",
+        duration: "4 hours",
+        badge: "Popular",
+        stop1Title: "Pena Palace",
+        stop1Description: "Discover the crown jewel of Sintra with a private tour.",
+        stop2Title: "Quinta da Regaleira",
+        stop2Description: "Explore the mystical estate with a private guide.",
+        stop3Title: "Moorish Castle",
+        stop3Description: "Walk along the ancient ramparts with a private tour.",
+      },
+      // Full Day Sample
+      fullDay: {
+        title: "Full Day Tour",
+        duration: "8 hours",
+        badge: "Best Value",
+        stop1Title: "Pena Palace",
+        stop1Description: "Discover the crown jewel of Sintra with a private tour.",
+        stop2Title: "Quinta da Regaleira",
+        stop2Description: "Explore the mystical estate with a private guide.",
+        stop3Title: "Moorish Castle",
+        stop3Description: "Walk along the ancient ramparts with a private tour.",
+        stop4Title: "Monserrate Palace",
+        stop4Description: "Enjoy the exotic palace with a private guide.",
+        stop5Title: "Sintra National Palace",
+        stop5Description: "Discover the best-preserved medieval royal palace with a private tour.",
+      },
+    },
+    faq: {
+      title: "Frequently Asked Questions",
+      subtitle: "Get answers to your questions about our private tours.",
+      question1: "What is included in a private tour?",
+      answer1: "Our private tours include a personalized itinerary, exclusive access to top attractions, a private vehicle, a professional guide, and skip-the-line entry.",
+      question2: "How many people can join a private tour?",
+      answer2: "Private tours are available for groups of up to 6 people. Larger groups can be accommodated with multiple vehicles.",
+      question3: "Can I customize my private tour?",
+      answer3: "Absolutely! We offer custom tour packages to suit your interests and preferences. Contact us to create your own Sintra adventure.",
+      question4: "What languages are spoken by the guides?",
+      answer4: "Our guides speak English, Portuguese, and Spanish. We can also provide guides in other languages upon request.",
+      question5: "What should I wear for a private tour?",
+      answer5: "Comfortable shoes and clothing are recommended for walking and exploring Sintra's attractions. Bring water and sun protection for outdoor tours.",
+    },
+    finalCta: {
+      title: "Ready to Start Your Adventure?",
+      subtitle: "Experience Sintra like never before with our exclusive private tours.",
+      requestQuoteButton: "Request Quote",
+      chatButton: "Chat with Us",
     },
   },
   featureFlags: {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { loadComprehensiveContent, type ComprehensiveContent, DEFAULT_COMPREHENSIVE_CONTENT } from './comprehensiveContent';
+import { loadComprehensiveContent, syncComprehensiveContentFromDatabase, type ComprehensiveContent, DEFAULT_COMPREHENSIVE_CONTENT } from './comprehensiveContent';
 
 /**
  * Hook to use editable content that automatically refreshes when content is saved in admin panel
@@ -7,6 +7,25 @@ import { loadComprehensiveContent, type ComprehensiveContent, DEFAULT_COMPREHENS
  */
 export function useEditableContent(): ComprehensiveContent {
   const [content, setContent] = useState<ComprehensiveContent>(() => loadComprehensiveContent());
+
+  // Sync from database on mount
+  useEffect(() => {
+    async function syncFromDatabase() {
+      try {
+        const freshContent = await syncComprehensiveContentFromDatabase();
+        setContent(freshContent);
+        console.log('✅ Synced comprehensive content from database on mount');
+      } catch (error) {
+        console.log('ℹ️ Using local comprehensive content (backend unavailable)');
+        // Silently fail and use local content
+      }
+    }
+    
+    // Delay sync slightly to not block initial render
+    const timer = setTimeout(syncFromDatabase, 100);
+    
+    return () => clearTimeout(timer);
+  }, []); // Only run once on mount
 
   useEffect(() => {
     // Listen for content updates from admin panel (same window)

@@ -4,6 +4,7 @@ import { Card } from "./ui/card";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { Badge } from "./ui/badge";
 import { featureFlags } from "../lib/featureFlags";
+import { getTranslation } from "../lib/translations";
 
 interface PrivateToursPageProps {
   onNavigate: (page: string) => void;
@@ -11,6 +12,9 @@ interface PrivateToursPageProps {
 }
 
 export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPageProps) {
+  const content = getTranslation(language);
+  const t = content.privateTours;
+  
   // Check if Private Tours feature is enabled
   const getFeatureFlag = () => {
     try {
@@ -38,34 +42,33 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
           <div className="relative mx-auto max-w-4xl px-4 py-16 text-center sm:px-6 lg:px-8">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-accent/20 px-6 py-3 backdrop-blur-sm">
               <Rocket className="h-6 w-6 text-accent" />
-              <span className="text-white">Coming Soon</span>
+              <span className="text-white">{t.comingSoon.badge}</span>
             </div>
             
             <h1 className="mb-6 text-white">
-              Private Tours of Sintra
+              {t.comingSoon.title}
             </h1>
             
             <p className="mx-auto mb-8 max-w-2xl text-xl text-white/90 sm:text-2xl">
-              We're preparing something special for those seeking an exclusive, 
-              personalized Sintra experience.
+              {t.comingSoon.subtitle}
             </p>
             
             <div className="mb-12 space-y-4">
               <p className="text-lg text-white/80">
-                Stay tuned for our premium private tour service featuring:
+                {t.comingSoon.stayTunedText}
               </p>
               <div className="mx-auto max-w-2xl space-y-3">
                 <div className="flex items-center justify-center gap-3 text-white/90">
                   <Check className="h-5 w-5 text-accent" />
-                  <span>Dedicated expert local guides</span>
+                  <span>{t.comingSoon.feature1}</span>
                 </div>
                 <div className="flex items-center justify-center gap-3 text-white/90">
                   <Check className="h-5 w-5 text-accent" />
-                  <span>Custom itineraries tailored to your interests</span>
+                  <span>{t.comingSoon.feature2}</span>
                 </div>
                 <div className="flex items-center justify-center gap-3 text-white/90">
                   <Check className="h-5 w-5 text-accent" />
-                  <span>Flexible scheduling and exclusive experiences</span>
+                  <span>{t.comingSoon.feature3}</span>
                 </div>
               </div>
             </div>
@@ -77,7 +80,7 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
                 onClick={() => onNavigate("live-chat")}
               >
                 <MessageCircle className="mr-2 h-5 w-5" />
-                Get Notified When We Launch
+                {t.comingSoon.notifyButton}
               </Button>
               <Button
                 size="lg"
@@ -85,13 +88,13 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
                 className="h-14 w-full border-2 border-white bg-white/10 px-10 text-lg text-white backdrop-blur-sm hover:bg-white/20 sm:w-auto"
                 onClick={() => onNavigate("buy-ticket")}
               >
-                Explore Our Day Pass
+                {t.comingSoon.exploreDayPassButton}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
 
             <p className="text-sm text-white/70">
-              In the meantime, check out our hop-on/hop-off day pass for exploring Sintra at your own pace
+              {t.comingSoon.footerText}
             </p>
           </div>
         </section>
@@ -99,36 +102,36 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
         {/* Why Wait Section */}
         <section className="bg-white py-16 sm:py-24">
           <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-            <h2 className="mb-6 text-foreground">Want to Explore Sintra Today?</h2>
+            <h2 className="mb-6 text-foreground">{t.whyWait.title}</h2>
             <p className="mb-8 text-lg text-muted-foreground">
-              Our hop-on/hop-off day pass is already available and perfect for independent travelers!
+              {t.whyWait.subtitle}
             </p>
             <div className="grid gap-6 md:grid-cols-3">
               <Card className="p-6">
                 <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                   <Users className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="mb-2">Professional Guides</h3>
+                <h3 className="mb-2">{t.whyWait.card1Title}</h3>
                 <p className="text-sm text-muted-foreground">
-                  All our vehicles are driven by expert local guides
+                  {t.whyWait.card1Description}
                 </p>
               </Card>
               <Card className="p-6">
                 <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                   <Clock className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="mb-2">Flexible Schedule</h3>
+                <h3 className="mb-2">{t.whyWait.card2Title}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Hop on and off at your own pace, 9am to 7pm daily
+                  {t.whyWait.card2Description}
                 </p>
               </Card>
               <Card className="p-6">
                 <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                   <Sparkles className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="mb-2">Great Value</h3>
+                <h3 className="mb-2">{t.whyWait.card3Title}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Unlimited rides for a full day at an affordable price
+                  {t.whyWait.card3Description}
                 </p>
               </Card>
             </div>
@@ -138,7 +141,7 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
                 className="bg-primary hover:bg-primary/90"
                 onClick={() => onNavigate("buy-ticket")}
               >
-                Book Your Day Pass Now
+                {t.whyWait.bookDayPassButton}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
@@ -162,30 +165,29 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
           <div className="text-center">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-accent/20 px-4 py-2 backdrop-blur-sm">
               <Sparkles className="h-5 w-5 text-accent" />
-              <span className="text-sm text-white">Premium Experience</span>
+              <span className="text-sm text-white">{t.hero.badge}</span>
             </div>
             
             <h1 className="mb-6 text-white">
-              Private Tours of Sintra
+              {t.hero.title}
             </h1>
             
             <p className="mx-auto mb-8 max-w-3xl text-lg text-white/90 sm:text-xl">
-              Experience the magic of Sintra at your own pace with a dedicated professional guide and private vehicle. 
-              Perfect for families, couples, and anyone seeking a personalized adventure.
+              {t.hero.subtitle}
             </p>
             
             <div className="mb-10 flex flex-wrap justify-center gap-3">
               <div className="flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 backdrop-blur-sm">
                 <Users className="h-5 w-5 text-white" />
-                <span className="text-sm text-white">Up to 8 guests</span>
+                <span className="text-sm text-white">{t.hero.pill1}</span>
               </div>
               <div className="flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 backdrop-blur-sm">
                 <Clock className="h-5 w-5 text-white" />
-                <span className="text-sm text-white">Flexible duration</span>
+                <span className="text-sm text-white">{t.hero.pill2}</span>
               </div>
               <div className="flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 backdrop-blur-sm">
                 <MapPin className="h-5 w-5 text-white" />
-                <span className="text-sm text-white">Custom itinerary</span>
+                <span className="text-sm text-white">{t.hero.pill3}</span>
               </div>
             </div>
             
@@ -195,7 +197,7 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
                 className="h-14 w-full bg-accent px-10 text-lg shadow-2xl hover:scale-105 hover:bg-accent/90 sm:w-auto"
                 onClick={() => onNavigate("live-chat")}
               >
-                Request a Quote
+                {t.hero.requestQuoteButton}
                 <MessageCircle className="ml-2 h-5 w-5" />
               </Button>
               <Button
@@ -207,7 +209,7 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
                   element?.scrollIntoView({ behavior: "smooth" });
                 }}
               >
-                View Packages
+                {t.hero.viewPackagesButton}
               </Button>
             </div>
           </div>
@@ -218,9 +220,9 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
       <section id="packages" className="bg-secondary/30 py-16 sm:py-24">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="mb-12 text-center">
-            <h2 className="mb-4 text-foreground">Private Tour Packages</h2>
+            <h2 className="mb-4 text-foreground">{t.packages.title}</h2>
             <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-              Choose the package that best fits your needs, or let us create a custom itinerary just for you.
+              {t.packages.subtitle}
             </p>
           </div>
 
@@ -229,38 +231,38 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
             <Card className="relative overflow-hidden border-2 transition-all hover:border-primary hover:shadow-xl">
               <div className="p-6 sm:p-8">
                 <div className="mb-4">
-                  <h3 className="mb-2">Half Day Highlights</h3>
-                  <p className="text-muted-foreground">Perfect introduction to Sintra's wonders</p>
+                  <h3 className="mb-2">{t.packages.halfDay.title}</h3>
+                  <p className="text-muted-foreground">{t.packages.halfDay.description}</p>
                 </div>
                 
                 <div className="mb-6">
                   <div className="flex items-baseline gap-2">
-                    <span className="text-4xl text-primary">€200</span>
-                    <span className="text-muted-foreground">for up to 4 people</span>
+                    <span className="text-4xl text-primary">{t.packages.halfDay.price}</span>
+                    <span className="text-muted-foreground">{t.packages.halfDay.priceSubtext}</span>
                   </div>
-                  <p className="mt-1 text-sm text-muted-foreground">4 hours • +€50 per extra person</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{t.packages.halfDay.duration}</p>
                 </div>
 
                 <ul className="mb-8 space-y-3">
                   <li className="flex items-start gap-3">
                     <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
-                    <span className="text-sm">2-3 major attractions</span>
+                    <span className="text-sm">{t.packages.halfDay.feature1}</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
-                    <span className="text-sm">Professional guide</span>
+                    <span className="text-sm">{t.packages.halfDay.feature2}</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
-                    <span className="text-sm">Private vehicle</span>
+                    <span className="text-sm">{t.packages.halfDay.feature3}</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
-                    <span className="text-sm">Hotel pickup & drop-off</span>
+                    <span className="text-sm">{t.packages.halfDay.feature4}</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
-                    <span className="text-sm">Bottled water included</span>
+                    <span className="text-sm">{t.packages.halfDay.feature5}</span>
                   </li>
                 </ul>
 
@@ -269,7 +271,7 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
                   variant="outline"
                   onClick={() => onNavigate("live-chat")}
                 >
-                  Book This Tour
+                  {t.packages.halfDay.bookButton}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </div>
@@ -278,47 +280,47 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
             {/* Full Day Tour - Popular */}
             <Card className="relative overflow-hidden border-2 border-accent shadow-xl">
               <div className="absolute right-4 top-4">
-                <Badge className="bg-accent">Most Popular</Badge>
+                <Badge className="bg-accent">{t.packages.fullDay.badge}</Badge>
               </div>
               
               <div className="p-6 sm:p-8">
                 <div className="mb-4">
-                  <h3 className="mb-2">Full Day Experience</h3>
-                  <p className="text-muted-foreground">Comprehensive tour of Sintra's treasures</p>
+                  <h3 className="mb-2">{t.packages.fullDay.title}</h3>
+                  <p className="text-muted-foreground">{t.packages.fullDay.description}</p>
                 </div>
                 
                 <div className="mb-6">
                   <div className="flex items-baseline gap-2">
-                    <span className="text-4xl text-accent">€350</span>
-                    <span className="text-muted-foreground">for up to 4 people</span>
+                    <span className="text-4xl text-accent">{t.packages.fullDay.price}</span>
+                    <span className="text-muted-foreground">{t.packages.fullDay.priceSubtext}</span>
                   </div>
-                  <p className="mt-1 text-sm text-muted-foreground">8 hours • +€75 per extra person</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{t.packages.fullDay.duration}</p>
                 </div>
 
                 <ul className="mb-8 space-y-3">
                   <li className="flex items-start gap-3">
                     <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-accent" />
-                    <span className="text-sm">4-5 major attractions</span>
+                    <span className="text-sm">{t.packages.fullDay.feature1}</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-accent" />
-                    <span className="text-sm">Expert local guide</span>
+                    <span className="text-sm">{t.packages.fullDay.feature2}</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-accent" />
-                    <span className="text-sm">Premium vehicle</span>
+                    <span className="text-sm">{t.packages.fullDay.feature3}</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-accent" />
-                    <span className="text-sm">Hotel pickup & drop-off</span>
+                    <span className="text-sm">{t.packages.fullDay.feature4}</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-accent" />
-                    <span className="text-sm">Lunch recommendations</span>
+                    <span className="text-sm">{t.packages.fullDay.feature5}</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-accent" />
-                    <span className="text-sm">Photo stops at hidden viewpoints</span>
+                    <span className="text-sm">{t.packages.fullDay.feature6}</span>
                   </li>
                 </ul>
 
@@ -326,7 +328,7 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
                   className="w-full bg-accent hover:bg-accent/90"
                   onClick={() => onNavigate("live-chat")}
                 >
-                  Book This Tour
+                  {t.packages.fullDay.bookButton}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </div>
@@ -336,37 +338,37 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
             <Card className="relative overflow-hidden border-2 transition-all hover:border-primary hover:shadow-xl">
               <div className="p-6 sm:p-8">
                 <div className="mb-4">
-                  <h3 className="mb-2">Custom Experience</h3>
-                  <p className="text-muted-foreground">Tailored entirely to your preferences</p>
+                  <h3 className="mb-2">{t.packages.custom.title}</h3>
+                  <p className="text-muted-foreground">{t.packages.custom.description}</p>
                 </div>
                 
                 <div className="mb-6">
                   <div className="flex items-baseline gap-2">
-                    <span className="text-4xl text-primary">Custom</span>
+                    <span className="text-4xl text-primary">{t.packages.custom.price}</span>
                   </div>
-                  <p className="mt-1 text-sm text-muted-foreground">Flexible duration • Your choice</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{t.packages.custom.duration}</p>
                 </div>
 
                 <ul className="mb-8 space-y-3">
                   <li className="flex items-start gap-3">
                     <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
-                    <span className="text-sm">Personalized itinerary</span>
+                    <span className="text-sm">{t.packages.custom.feature1}</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
-                    <span className="text-sm">Duration of your choice</span>
+                    <span className="text-sm">{t.packages.custom.feature2}</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
-                    <span className="text-sm">Specialized themes available</span>
+                    <span className="text-sm">{t.packages.custom.feature3}</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
-                    <span className="text-sm">Multi-day tours possible</span>
+                    <span className="text-sm">{t.packages.custom.feature4}</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
-                    <span className="text-sm">Special occasions welcome</span>
+                    <span className="text-sm">{t.packages.custom.feature5}</span>
                   </li>
                 </ul>
 
@@ -375,7 +377,7 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
                   variant="outline"
                   onClick={() => onNavigate("live-chat")}
                 >
-                  Contact Us
+                  {t.packages.custom.contactButton}
                   <MessageCircle className="ml-2 h-4 w-4" />
                 </Button>
               </div>
@@ -384,20 +386,19 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
 
           <div className="mt-8 text-center">
             <p className="text-sm text-muted-foreground">
-              * Attraction entrance fees not included • All prices in EUR • Group discounts available for 8+ people
+              {t.packages.disclaimer}
             </p>
           </div>
         </div>
       </section>
 
-      {/* Why Choose Private Tours - Compact */}
+      {/* Why Choose Private Tours */}
       <section className="bg-white py-12 sm:py-16">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <div className="mb-8 text-center">
-            <h2 className="mb-4 text-foreground">Why Choose a Private Tour?</h2>
+            <h2 className="mb-4 text-foreground">{t.whyChoose.title}</h2>
             <p className="mx-auto max-w-2xl text-muted-foreground">
-              While our hop-on/hop-off service is perfect for independent explorers, 
-              a private tour offers an unmatched personalized experience.
+              {t.whyChoose.subtitle}
             </p>
           </div>
 
@@ -407,9 +408,9 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
                 <Heart className="h-5 w-5 text-accent" />
               </div>
               <div>
-                <h3 className="mb-1 text-base">Your Own Schedule</h3>
+                <h3 className="mb-1 text-base">{t.whyChoose.benefit1Title}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Spend as much time as you want at each attraction
+                  {t.whyChoose.benefit1Description}
                 </p>
               </div>
             </div>
@@ -419,9 +420,9 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
                 <Award className="h-5 w-5 text-accent" />
               </div>
               <div>
-                <h3 className="mb-1 text-base">Expert Local Guide</h3>
+                <h3 className="mb-1 text-base">{t.whyChoose.benefit2Title}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Insider knowledge and personalized recommendations
+                  {t.whyChoose.benefit2Description}
                 </p>
               </div>
             </div>
@@ -431,9 +432,9 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
                 <MapPin className="h-5 w-5 text-accent" />
               </div>
               <div>
-                <h3 className="mb-1 text-base">Custom Itinerary</h3>
+                <h3 className="mb-1 text-base">{t.whyChoose.benefit3Title}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Visit the places that interest you most
+                  {t.whyChoose.benefit3Description}
                 </p>
               </div>
             </div>
@@ -445,7 +446,7 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
       <section className="bg-white py-16 sm:py-24">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="mb-12 text-center">
-            <h2 className="mb-4 text-foreground">What's Included in Every Tour</h2>
+            <h2 className="mb-4 text-foreground">{t.whatsIncluded.title}</h2>
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -453,9 +454,9 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
               <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
                 <Users className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="mb-2 text-lg">Expert Guide</h3>
+              <h3 className="mb-2 text-lg">{t.whatsIncluded.item1Title}</h3>
               <p className="text-sm text-muted-foreground">
-                Licensed professional with deep local knowledge
+                {t.whatsIncluded.item1Description}
               </p>
             </div>
 
@@ -463,9 +464,9 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
               <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
                 <Car className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="mb-2 text-lg">Private Vehicle</h3>
+              <h3 className="mb-2 text-lg">{t.whatsIncluded.item2Title}</h3>
               <p className="text-sm text-muted-foreground">
-                Clean, air-conditioned, and comfortable
+                {t.whatsIncluded.item2Description}
               </p>
             </div>
 
@@ -473,9 +474,9 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
               <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
                 <MapPin className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="mb-2 text-lg">Hotel Pickup</h3>
+              <h3 className="mb-2 text-lg">{t.whatsIncluded.item3Title}</h3>
               <p className="text-sm text-muted-foreground">
-                Convenient pickup from anywhere in Sintra
+                {t.whatsIncluded.item3Description}
               </p>
             </div>
 
@@ -483,9 +484,9 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
               <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
                 <Shield className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="mb-2 text-lg">Insurance</h3>
+              <h3 className="mb-2 text-lg">{t.whatsIncluded.item4Title}</h3>
               <p className="text-sm text-muted-foreground">
-                Fully insured vehicles and professional drivers
+                {t.whatsIncluded.item4Description}
               </p>
             </div>
           </div>
@@ -496,9 +497,9 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
       <section className="bg-secondary/30 py-16 sm:py-24">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <div className="mb-12 text-center">
-            <h2 className="mb-4 text-foreground">Sample Itineraries</h2>
+            <h2 className="mb-4 text-foreground">{t.sampleItineraries.title}</h2>
             <p className="text-lg text-muted-foreground">
-              Get inspired by our most popular routes (fully customizable)
+              {t.sampleItineraries.subtitle}
             </p>
           </div>
 
@@ -507,31 +508,31 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
             <Card className="p-6">
               <div className="mb-4 flex items-start justify-between">
                 <div>
-                  <h3 className="mb-1">Half Day: Royal Palaces</h3>
-                  <p className="text-sm text-muted-foreground">4 hours • Perfect for first-time visitors</p>
+                  <h3 className="mb-1">{t.sampleItineraries.halfDay.title}</h3>
+                  <p className="text-sm text-muted-foreground">{t.sampleItineraries.halfDay.duration}</p>
                 </div>
-                <Badge variant="outline">Popular</Badge>
+                <Badge variant="outline">{t.sampleItineraries.halfDay.badge}</Badge>
               </div>
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
                   <div className="mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary/20 text-xs text-primary">1</div>
                   <div>
-                    <p className="text-sm">Pena Palace (90 min)</p>
-                    <p className="text-xs text-muted-foreground">Sintra's most iconic landmark</p>
+                    <p className="text-sm">{t.sampleItineraries.halfDay.stop1Title}</p>
+                    <p className="text-xs text-muted-foreground">{t.sampleItineraries.halfDay.stop1Description}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary/20 text-xs text-primary">2</div>
                   <div>
-                    <p className="text-sm">Sintra Historic Center (45 min)</p>
-                    <p className="text-xs text-muted-foreground">Charming streets and local pastries</p>
+                    <p className="text-sm">{t.sampleItineraries.halfDay.stop2Title}</p>
+                    <p className="text-xs text-muted-foreground">{t.sampleItineraries.halfDay.stop2Description}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary/20 text-xs text-primary">3</div>
                   <div>
-                    <p className="text-sm">Quinta da Regaleira (60 min)</p>
-                    <p className="text-xs text-muted-foreground">Mystical gardens and initiation well</p>
+                    <p className="text-sm">{t.sampleItineraries.halfDay.stop3Title}</p>
+                    <p className="text-xs text-muted-foreground">{t.sampleItineraries.halfDay.stop3Description}</p>
                   </div>
                 </div>
               </div>
@@ -541,106 +542,47 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
             <Card className="border-2 border-accent/50 p-6">
               <div className="mb-4 flex items-start justify-between">
                 <div>
-                  <h3 className="mb-1">Full Day: Complete Sintra</h3>
-                  <p className="text-sm text-muted-foreground">8 hours • The ultimate Sintra experience</p>
+                  <h3 className="mb-1">{t.sampleItineraries.fullDay.title}</h3>
+                  <p className="text-sm text-muted-foreground">{t.sampleItineraries.fullDay.duration}</p>
                 </div>
-                <Badge className="bg-accent">Recommended</Badge>
+                <Badge className="bg-accent">{t.sampleItineraries.fullDay.badge}</Badge>
               </div>
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
                   <div className="mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-accent/20 text-xs text-accent">1</div>
                   <div>
-                    <p className="text-sm">Pena Palace & Park (2 hours)</p>
-                    <p className="text-xs text-muted-foreground">UNESCO World Heritage Site</p>
+                    <p className="text-sm">{t.sampleItineraries.fullDay.stop1Title}</p>
+                    <p className="text-xs text-muted-foreground">{t.sampleItineraries.fullDay.stop1Description}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-accent/20 text-xs text-accent">2</div>
                   <div>
-                    <p className="text-sm">Moorish Castle (45 min)</p>
-                    <p className="text-xs text-muted-foreground">Stunning panoramic views</p>
+                    <p className="text-sm">{t.sampleItineraries.fullDay.stop2Title}</p>
+                    <p className="text-xs text-muted-foreground">{t.sampleItineraries.fullDay.stop2Description}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-accent/20 text-xs text-accent">3</div>
                   <div>
-                    <p className="text-sm">Lunch Break in Sintra (90 min)</p>
-                    <p className="text-xs text-muted-foreground">Authentic Portuguese cuisine recommendations</p>
+                    <p className="text-sm">{t.sampleItineraries.fullDay.stop3Title}</p>
+                    <p className="text-xs text-muted-foreground">{t.sampleItineraries.fullDay.stop3Description}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-accent/20 text-xs text-accent">4</div>
                   <div>
-                    <p className="text-sm">Quinta da Regaleira (90 min)</p>
-                    <p className="text-xs text-muted-foreground">Explore mystical gardens and tunnels</p>
+                    <p className="text-sm">{t.sampleItineraries.fullDay.stop4Title}</p>
+                    <p className="text-xs text-muted-foreground">{t.sampleItineraries.fullDay.stop4Description}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-accent/20 text-xs text-accent">5</div>
                   <div>
-                    <p className="text-sm">Cabo da Roca (30 min)</p>
-                    <p className="text-xs text-muted-foreground">Westernmost point of continental Europe</p>
+                    <p className="text-sm">{t.sampleItineraries.fullDay.stop5Title}</p>
+                    <p className="text-xs text-muted-foreground">{t.sampleItineraries.fullDay.stop5Description}</p>
                   </div>
                 </div>
-              </div>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="bg-white py-16 sm:py-24">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-12 text-center">
-            <h2 className="mb-4 text-foreground">What Our Guests Say</h2>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-3">
-            <Card className="p-6">
-              <div className="mb-4 flex gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-accent text-accent" />
-                ))}
-              </div>
-              <p className="mb-4 text-sm text-muted-foreground">
-                "Our guide Manuel was incredible! He took us to spots we never would have found on our own. 
-                The private tour was worth every euro."
-              </p>
-              <div>
-                <p className="text-sm">Sarah & John</p>
-                <p className="text-xs text-muted-foreground">United Kingdom • September 2024</p>
-              </div>
-            </Card>
-
-            <Card className="p-6">
-              <div className="mb-4 flex gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-accent text-accent" />
-                ))}
-              </div>
-              <p className="mb-4 text-sm text-muted-foreground">
-                "Perfect for our family with young kids. We could go at our own pace and the guide was 
-                so patient and knowledgeable."
-              </p>
-              <div>
-                <p className="text-sm">The Martinez Family</p>
-                <p className="text-xs text-muted-foreground">Spain • October 2024</p>
-              </div>
-            </Card>
-
-            <Card className="p-6">
-              <div className="mb-4 flex gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-accent text-accent" />
-                ))}
-              </div>
-              <p className="mb-4 text-sm text-muted-foreground">
-                "Celebrating our anniversary with a private tour was the best decision. Romantic, 
-                personalized, and absolutely unforgettable."
-              </p>
-              <div>
-                <p className="text-sm">Emma & Luca</p>
-                <p className="text-xs text-muted-foreground">Italy • August 2024</p>
               </div>
             </Card>
           </div>
@@ -651,47 +593,43 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
       <section className="bg-secondary/30 py-16 sm:py-24">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <div className="mb-12 text-center">
-            <h2 className="mb-4 text-foreground">Frequently Asked Questions</h2>
+            <h2 className="mb-4 text-foreground">{t.faq.title}</h2>
+            <p className="mx-auto max-w-2xl text-muted-foreground">{t.faq.subtitle}</p>
           </div>
 
           <div className="space-y-4">
             <Card className="p-6">
-              <h3 className="mb-2">How do I book a private tour?</h3>
+              <h3 className="mb-2">{t.faq.question1}</h3>
               <p className="text-sm text-muted-foreground">
-                Contact us via live chat or WhatsApp to discuss your preferences. We'll create a custom 
-                quote and confirm your booking with a deposit.
+                {t.faq.answer1}
               </p>
             </Card>
 
             <Card className="p-6">
-              <h3 className="mb-2">What languages are available?</h3>
+              <h3 className="mb-2">{t.faq.question2}</h3>
               <p className="text-sm text-muted-foreground">
-                Our guides speak English, Portuguese, Spanish, French, German, Italian, and Dutch. 
-                Let us know your preference when booking.
+                {t.faq.answer2}
               </p>
             </Card>
 
             <Card className="p-6">
-              <h3 className="mb-2">Are entrance fees included?</h3>
+              <h3 className="mb-2">{t.faq.question3}</h3>
               <p className="text-sm text-muted-foreground">
-                Entrance fees to attractions are not included in the tour price. Your guide will 
-                help you purchase tickets and can often skip-the-line.
+                {t.faq.answer3}
               </p>
             </Card>
 
             <Card className="p-6">
-              <h3 className="mb-2">What's your cancellation policy?</h3>
+              <h3 className="mb-2">{t.faq.question4}</h3>
               <p className="text-sm text-muted-foreground">
-                Free cancellation up to 48 hours before the tour. Within 48 hours, a 50% fee applies. 
-                No refunds for same-day cancellations.
+                {t.faq.answer4}
               </p>
             </Card>
 
             <Card className="p-6">
-              <h3 className="mb-2">Can you accommodate special needs?</h3>
+              <h3 className="mb-2">{t.faq.question5}</h3>
               <p className="text-sm text-muted-foreground">
-                Yes! We have wheelchair-accessible vehicles and can adapt itineraries for mobility 
-                issues, dietary requirements, or any special needs. Just let us know in advance.
+                {t.faq.answer5}
               </p>
             </Card>
           </div>
@@ -701,9 +639,9 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
       {/* Final CTA */}
       <section className="bg-gradient-to-br from-primary to-primary/90 py-16 sm:py-20">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-          <h2 className="mb-4 text-white">Ready for Your Private Sintra Experience?</h2>
+          <h2 className="mb-4 text-white">{t.finalCta.title}</h2>
           <p className="mb-8 text-lg text-white/90">
-            Let us create the perfect personalized tour for you and your loved ones.
+            {t.finalCta.subtitle}
           </p>
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <Button
@@ -711,7 +649,7 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
               className="h-14 w-full bg-accent px-10 text-lg shadow-2xl hover:scale-105 hover:bg-accent/90 sm:w-auto"
               onClick={() => onNavigate("live-chat")}
             >
-              Get Your Free Quote
+              {t.finalCta.requestQuoteButton}
               <MessageCircle className="ml-2 h-5 w-5" />
             </Button>
             <Button
@@ -720,7 +658,7 @@ export function PrivateToursPage({ onNavigate, language = "en" }: PrivateToursPa
               className="h-14 w-full border-2 border-white bg-white/10 px-10 text-lg text-white backdrop-blur-sm hover:bg-white/20 sm:w-auto"
               onClick={() => onNavigate("buy-ticket")}
             >
-              Or Try Our Day Pass
+              {t.finalCta.chatButton}
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </div>
