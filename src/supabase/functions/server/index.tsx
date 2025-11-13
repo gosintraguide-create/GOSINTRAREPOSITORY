@@ -4556,34 +4556,34 @@ app.get("/make-server-3bd0ade8/drivers", async (c) => {
 app.post("/make-server-3bd0ade8/drivers/create", async (c) => {
   try {
     const body = await c.req.json();
-    const { name, email, password, phoneNumber, vehicleType, licenseNumber, status } = body;
+    const { name, username, password, phoneNumber, vehicleType, licenseNumber, status } = body;
 
-    if (!name || !email || !password) {
+    if (!name || !username || !password) {
       return c.json(
         {
           success: false,
-          error: "Name, email, and password are required",
+          error: "Name, username, and password are required",
         },
         400,
       );
     }
 
-    console.log(`👤 Creating driver account: ${email}`);
+    console.log(`👤 Creating driver account: ${username}`);
 
     // Get existing drivers
     const driversData = await kv.get("drivers_list");
     const drivers = driversData || [];
 
-    // Check if email already exists
+    // Check if username already exists
     const existingDriver = drivers.find(
-      (d: any) => d.email.toLowerCase() === email.toLowerCase(),
+      (d: any) => d.username && d.username.toLowerCase() === username.toLowerCase(),
     );
 
     if (existingDriver) {
       return c.json(
         {
           success: false,
-          error: "A driver with this email already exists",
+          error: "A driver with this username already exists",
         },
         400,
       );
@@ -4596,7 +4596,7 @@ app.post("/make-server-3bd0ade8/drivers/create", async (c) => {
     const newDriver = {
       id: crypto.randomUUID(),
       name,
-      email: email.toLowerCase(),
+      username: username.toLowerCase(),
       passwordHash,
       password: password, // Store plaintext password for admin access
       phoneNumber: phoneNumber || "",
@@ -4617,7 +4617,7 @@ app.post("/make-server-3bd0ade8/drivers/create", async (c) => {
     drivers.push(newDriver);
     await kv.set("drivers_list", drivers);
 
-    console.log(`✅ Driver created: ${email}`);
+    console.log(`✅ Driver created: ${username}`);
 
     // Remove password hash before sending response
     const { passwordHash: _, ...safeDriver } = newDriver;
@@ -4642,35 +4642,35 @@ app.post("/make-server-3bd0ade8/drivers/create", async (c) => {
 app.post("/make-server-3bd0ade8/drivers/login", async (c) => {
   try {
     const body = await c.req.json();
-    const { email, password } = body;
+    const { username, password } = body;
 
-    if (!email || !password) {
+    if (!username || !password) {
       return c.json(
         {
           success: false,
-          error: "Email and password are required",
+          error: "Username and password are required",
         },
         400,
       );
     }
 
-    console.log(`🔐 Driver login attempt: ${email}`);
+    console.log(`🔐 Driver login attempt: ${username}`);
 
     // Get all drivers
     const driversData = await kv.get("drivers_list");
     const drivers = driversData || [];
 
-    // Find driver by email
+    // Find driver by username
     const driver = drivers.find(
-      (d: any) => d.email.toLowerCase() === email.toLowerCase(),
+      (d: any) => d.username && d.username.toLowerCase() === username.toLowerCase(),
     );
 
     if (!driver) {
-      console.log(`❌ Driver not found: ${email}`);
+      console.log(`❌ Driver not found: ${username}`);
       return c.json(
         {
           success: false,
-          error: "Invalid email or password",
+          error: "Invalid username or password",
         },
         401,
       );
@@ -4678,7 +4678,7 @@ app.post("/make-server-3bd0ade8/drivers/login", async (c) => {
 
     // Check if driver is active
     if (driver.status !== "active") {
-      console.log(`❌ Driver account inactive: ${email}`);
+      console.log(`❌ Driver account inactive: ${username}`);
       return c.json(
         {
           success: false,
@@ -4691,11 +4691,11 @@ app.post("/make-server-3bd0ade8/drivers/login", async (c) => {
     // Verify password
     const passwordHash = await hashPassword(password);
     if (passwordHash !== driver.passwordHash) {
-      console.log(`❌ Invalid password for: ${email}`);
+      console.log(`❌ Invalid password for: ${username}`);
       return c.json(
         {
           success: false,
-          error: "Invalid email or password",
+          error: "Invalid username or password",
         },
         401,
       );
@@ -4712,13 +4712,13 @@ app.post("/make-server-3bd0ade8/drivers/login", async (c) => {
     const sessions = (await kv.get("driver_sessions")) || {};
     sessions[token] = {
       driverId: driver.id,
-      email: driver.email,
+      username: driver.username,
       loginTime: new Date().toISOString(),
       expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days
     };
     await kv.set("driver_sessions", sessions);
 
-    console.log(`✅ Driver logged in successfully: ${email}`);
+    console.log(`✅ Driver logged in successfully: ${username}`);
 
     // Remove password hash before sending response
     const { passwordHash: _, ...safeDriver } = driver;

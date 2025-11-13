@@ -54,7 +54,7 @@ export function DriverManagement() {
   const [editingDriver, setEditingDriver] = useState<any>(null);
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
+    username: '',
     password: '',
     phoneNumber: '',
     vehicleType: '',
@@ -90,8 +90,8 @@ export function DriverManagement() {
   };
 
   const handleCreateDriver = async () => {
-    if (!formData.name || !formData.email || !formData.password) {
-      toast.error('Name, email, and password are required');
+    if (!formData.name || !formData.username || !formData.password) {
+      toast.error('Name, username, and password are required');
       return;
     }
 
@@ -185,7 +185,7 @@ export function DriverManagement() {
     setEditingDriver(driver);
     setFormData({
       name: driver.name,
-      email: driver.email,
+      username: driver.username || driver.email, // Fallback to email if old data
       password: driver.password || '', // Load existing password
       phoneNumber: driver.phoneNumber || '',
       vehicleType: driver.vehicleType || '',
@@ -197,7 +197,7 @@ export function DriverManagement() {
   const resetForm = () => {
     setFormData({
       name: '',
-      email: '',
+      username: '',
       password: '',
       phoneNumber: '',
       vehicleType: '',
@@ -257,13 +257,13 @@ export function DriverManagement() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email *</Label>
+                <Label htmlFor="username">Username *</Label>
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="driver@gosintra.com"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  id="username"
+                  type="text"
+                  placeholder="johndoe"
+                  value={formData.username}
+                  onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                 />
               </div>
 
@@ -389,7 +389,7 @@ export function DriverManagement() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
+                    <TableHead>Username</TableHead>
                     <TableHead>Password</TableHead>
                     <TableHead>Vehicle</TableHead>
                     <TableHead>Status</TableHead>
@@ -410,7 +410,7 @@ export function DriverManagement() {
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell>{driver.email}</TableCell>
+                      <TableCell>{driver.username || driver.email}</TableCell>
                       <TableCell>
                         <code className="text-sm bg-gray-100 px-2 py-1 rounded">
                           {driver.password || '••••••••'}
@@ -475,15 +475,15 @@ export function DriverManagement() {
                                 </div>
 
                                 <div className="space-y-2">
-                                  <Label htmlFor="edit-email">Email</Label>
+                                  <Label htmlFor="edit-username">Username</Label>
                                   <Input
-                                    id="edit-email"
-                                    type="email"
-                                    value={formData.email}
+                                    id="edit-username"
+                                    type="text"
+                                    value={formData.username}
                                     disabled
                                     className="bg-gray-50 text-gray-500"
                                   />
-                                  <p className="text-xs text-gray-500">Email cannot be changed</p>
+                                  <p className="text-xs text-gray-500">Username cannot be changed</p>
                                 </div>
 
                                 <div className="space-y-2">

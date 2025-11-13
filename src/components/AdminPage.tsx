@@ -1680,7 +1680,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                           border: "1px solid #f0e9e3",
                         }}
                         formatter={(value: number) =>
-                          `€${value.toFixed(2)}`
+                          `€${(value || 0).toFixed(2)}`
                         }
                       />
                       <Line
@@ -1749,7 +1749,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                           name: string,
                           props: any,
                         ) => [
-                          `${value} bookings (${props.payload.percentage.toFixed(1)}%)`,
+                          `${value} bookings (${props.payload?.percentage?.toFixed(1) || '0.0'}%)`,
                           name,
                         ]}
                       />
@@ -1906,7 +1906,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                         border: "1px solid #f0e9e3",
                       }}
                       formatter={(value: number) =>
-                        `€${value.toFixed(2)}`
+                        `€${(value || 0).toFixed(2)}`
                       }
                     />
                     <Bar dataKey="revenue" fill="#0A4D5C" />

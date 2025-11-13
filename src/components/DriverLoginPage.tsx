@@ -26,7 +26,7 @@ export function DriverLoginPage({ onLoginSuccess }: DriverLoginPageProps) {
     document.title = 'Driver Login - Access Restricted';
   }, []);
 
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -45,7 +45,7 @@ export function DriverLoginPage({ onLoginSuccess }: DriverLoginPageProps) {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${publicAnonKey}`
           },
-          body: JSON.stringify({ email, password })
+          body: JSON.stringify({ username, password })
         }
       );
 
@@ -94,17 +94,18 @@ export function DriverLoginPage({ onLoginSuccess }: DriverLoginPageProps) {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email / Username</Label>
+              <Label htmlFor="username">Username</Label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="your.email@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  id="username"
+                  type="text"
+                  placeholder="Enter your username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   className="pl-10"
                   required
+                  autoComplete="username"
                 />
               </div>
             </div>
