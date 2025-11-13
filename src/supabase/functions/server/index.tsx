@@ -757,10 +757,10 @@ async function sendBookingEmail(
       booking.id.split("_")[1] || booking.id;
 
     // Send email via Resend with PDF attachment
-    // NOTE: Using onboarding@resend.dev for free tier (no domain verification needed)
-    // To use your own domain (e.g., bookings@gosintra.com), verify it at https://resend.com/domains
+    // NOTE: Using bookings@hoponsintra.com as the sender email
+    // To use this email, verify hoponsintra.com domain at https://resend.com/domains
     const emailPayload: any = {
-      from: "Go Sintra <onboarding@resend.dev>",
+      from: "Hop On Sintra <bookings@hoponsintra.com>",
       to: [recipientEmail],
       subject: `🎉 Your Go Sintra Booking Confirmed - ${formattedDate}`,
       html: htmlContent,
@@ -830,11 +830,12 @@ async function sendBookingEmail(
         console.error(
           "To send to customers, verify your domain at: https://resend.com/domains",
         );
+        // Return success=true but with a warning flag - don't block the booking
         return {
-          success: false,
-          error:
-            "Domain verification required. See server logs for details.",
+          success: true,
           requiresDomainVerification: true,
+          warning: "Email not sent - domain verification required",
+          message: result.message,
         };
       }
 
@@ -846,7 +847,7 @@ async function sendBookingEmail(
 
     console.log("Email sent successfully:", result);
     console.log(
-      `📧 Booking confirmation email sent to ${recipientEmail} from onboarding@resend.dev`,
+      `📧 Booking confirmation email sent to ${recipientEmail} from bookings@hoponsintra.com`,
     );
     if (pdfBase64) {
       console.log(
@@ -2036,6 +2037,34 @@ app.post("/make-server-3bd0ade8/bookings", async (c) => {
       `✅ Updated availability for ${date} at ${timeSlot}: ${availableSeats} -> ${availabilitySlots[timeSlot]}`,
     );
 
+    // Auto check-in for manual bookings created by drivers
+    if (booking.manualBooking === true || booking.createdBy === "operations") {
+      console.log(`🎫 Auto-checking in manual booking ${bookingId} (${booking.passengers.length} passengers)`);
+      
+      for (let i = 0; i < booking.passengers.length; i++) {
+        const checkInKey = `checkin_${bookingId}_${i}_${booking.selectedDate}`;
+        const checkInRecord = {
+          bookingId,
+          passengerIndex: i,
+          timestamp: new Date().toISOString(),
+          location: "Manual Booking",
+          destination: "On Location",
+          date: booking.selectedDate,
+          autoCheckedIn: true,
+        };
+
+        await kv.set(checkInKey, checkInRecord);
+
+        // Add to check-ins history
+        const checkInsKey = `checkins_${bookingId}_${i}`;
+        const checkIns = (await kv.get(checkInsKey)) || [];
+        checkIns.push(checkInRecord);
+        await kv.set(checkInsKey, checkIns);
+      }
+      
+      console.log(`✅ Auto-checked in ${booking.passengers.length} passengers for manual booking ${bookingId}`);
+    }
+
     // Send confirmation email with QR codes (unless skipEmail is true)
     let emailResult = { success: true, skipped: false };
     
@@ -2053,15 +2082,23 @@ app.post("/make-server-3bd0ade8/bookings", async (c) => {
           "Failed to send email, but booking was created:",
           emailResult.error,
         );
+      } else if (emailResult.requiresDomainVerification) {
+        console.warn(
+          "⚠️  Email not sent - domain verification required. Booking created successfully.",
+        );
       }
     }
 
     return c.json({
       success: true,
       booking,
-      emailSent: emailResult.success && !emailResult.skipped,
+      emailSent: emailResult.success && !emailResult.skipped && !emailResult.requiresDomainVerification,
       emailSkipped: emailResult.skipped,
-      emailError: emailResult.success ? undefined : emailResult.error,
+      emailError: (!emailResult.success || emailResult.requiresDomainVerification) 
+        ? (emailResult.warning || emailResult.error) 
+        : undefined,
+      requiresDomainVerification: emailResult.requiresDomainVerification,
+      autoCheckedIn: booking.manualBooking === true || booking.createdBy === "operations",
     });
   } catch (error) {
     console.error("Error creating booking:", error);
@@ -2181,7 +2218,7 @@ app.post("/make-server-3bd0ade8/bookings/:bookingId/add-sunset-special", async (
     // Verify payment if Stripe is configured
     if (stripe && paymentIntentId) {
       console.log(
-        `🔐 Verifying payment for sunset special: ${paymentIntentId}`,
+        `�� Verifying payment for sunset special: ${paymentIntentId}`,
       );
 
       try {

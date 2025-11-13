@@ -230,6 +230,11 @@ export function ManualBookingPage({ onNavigate }: ManualBookingPageProps) {
           // Don't fail the booking if driver recording fails
           console.error('Failed to record driver sale:', error);
         }
+        
+        // Auto-reset form after 1.5 seconds to allow driver to make another sale immediately
+        setTimeout(() => {
+          resetForm();
+        }, 1500);
       } else {
         toast.error(response.error || "Failed to create booking");
       }
@@ -322,6 +327,12 @@ export function ManualBookingPage({ onNavigate }: ManualBookingPageProps) {
             <div className="mb-6 rounded-lg bg-blue-50 p-4 border border-blue-200">
               <p className="text-sm text-blue-900">
                 ✓ Tickets sent to {completedBooking.email}
+              </p>
+            </div>
+
+            <div className="mb-6 rounded-lg bg-green-50 p-4 border border-green-200">
+              <p className="text-sm text-green-900">
+                ✓ Passengers automatically checked in
               </p>
             </div>
 

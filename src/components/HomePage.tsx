@@ -297,7 +297,7 @@ export function HomePage({
         {/* Large Hero Image Section */}
         <div className="relative">
           {/* Hero Image with Overlay */}
-          <div className="relative min-h-[550px] sm:min-h-[600px] lg:min-h-[650px]">
+          <div className="relative min-h-[450px] sm:min-h-[500px] lg:min-h-[550px]">
             <div className="absolute inset-0">
               <ImageWithFallback
                 src={content.homepage.hero.heroImage || "https://images.unsplash.com/photo-1704312230001-8d9adfc76d39?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0dWslMjB0dWslMjBzaW50cmElMjBwb3J0dWdhbCUyMGNvbG9yZnVsJTIwcGFsYWNlfGVufDF8fHx8MTc2MjM2MTE4Nnww&ixlib=rb-4.1.0&q=80&w=1080"}
@@ -309,7 +309,7 @@ export function HomePage({
             </div>
 
             {/* Hero Content Overlay */}
-            <div className="absolute inset-0 flex items-center py-12 sm:py-16">
+            <div className="absolute inset-0 flex items-center py-8 sm:py-12">
               <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="mx-auto max-w-4xl text-center lg:mx-0 lg:text-left">
                   {/* Main Heading */}
@@ -388,25 +388,25 @@ export function HomePage({
         </div>
 
         {/* What Is Hop On Sintra - Explainer Section */}
-        <div className="relative bg-white py-12 sm:py-16">
+        <div className="relative bg-white py-10 sm:py-12">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
+            <div className="grid items-center gap-6 lg:grid-cols-2 lg:gap-10">
               {/* Left: Text Content */}
               <div>
-                <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2">
+                <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2">
                   <Car className="h-5 w-5 text-primary" />
                   <span className="text-primary">{legacyContent.homepage.hopOnHopOffDayPass}</span>
                 </div>
-                <h2 className="mb-4 text-foreground">
+                <h2 className="mb-3 text-foreground">
                   {legacyContent.homepage.unlimitedAdventureTitle}
                 </h2>
-                <p className="mb-4 text-lg text-muted-foreground">
+                <p className="mb-3 text-lg text-muted-foreground">
                   {legacyContent.homepage.serviceDescription}
                 </p>
-                <p className="mb-6 text-lg text-muted-foreground">
+                <p className="mb-5 text-lg text-muted-foreground">
                   {legacyContent.homepage.serviceDescription2}
                 </p>
-                <div className="grid gap-3 sm:grid-cols-2">
+                <div className="grid gap-2.5 sm:grid-cols-2">
                   <div className="flex items-start gap-3">
                     <CheckCircle className="mt-1 h-5 w-5 flex-shrink-0 text-accent" />
                     <div>
@@ -453,7 +453,7 @@ export function HomePage({
               </div>
 
               {/* Right: Supporting Image */}
-              <div className="relative h-[400px] overflow-hidden rounded-2xl shadow-2xl lg:h-[500px]">
+              <div className="relative h-[350px] overflow-hidden rounded-2xl shadow-2xl lg:h-[450px]">
                 <ImageWithFallback
                   src={content.homepage.hero.explainerImage || "https://images.unsplash.com/photo-1730911454981-545ef4ebdef9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzaW50cmElMjBwZW5hJTIwcGFsYWNlJTIwc2NlbmljJTIwdmlld3xlbnwxfHx8fDE3NjIzNjExODZ8MA&ixlib=rb-4.1.0&q=80&w=1080"}
                   alt="Scenic view of Pena Palace and Sintra attractions"
@@ -469,95 +469,15 @@ export function HomePage({
       {/* Route Overview Section */}
       <RouteOverview language={language} />
 
-      {/* Quick Links Section */}
-      <section className="bg-gradient-to-br from-primary via-primary/95 to-primary/90 py-12 sm:py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-8 text-center">
-            <h2 className="mb-2 text-white">{legacyContent.homepage.quickLinks.title}</h2>
-            <p className="text-white/90">{legacyContent.homepage.quickLinks.subtitle}</p>
-          </div>
-          <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
-            {/* Attractions Link */}
-            <button
-              onClick={() => onNavigate("attractions")}
-              className="group flex items-center gap-4 rounded-2xl border-2 border-white/30 bg-white/10 px-6 py-5 backdrop-blur-sm transition-all hover:scale-105 hover:border-white/60 hover:bg-white/20 hover:shadow-2xl"
-            >
-              <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl sm:h-20 sm:w-20">
-                <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=200&h=200&fit=crop"
-                  alt="Attractions"
-                  className="h-full w-full object-cover"
-                />
-              </div>
-              <div className="flex-1 text-left">
-                <p className="mb-1 text-white">
-                  {legacyContent.homepage.quickLinks.attractions.title}
-                </p>
-                <p className="text-sm text-white/80">
-                  {legacyContent.homepage.quickLinks.attractions.subtitle}
-                </p>
-              </div>
-              <ArrowRight className="h-5 w-5 flex-shrink-0 text-white/70 transition-transform group-hover:translate-x-1 group-hover:text-white" />
-            </button>
-
-            {/* Travel Guide Link */}
-            <button
-              onClick={() => onNavigate("blog")}
-              className="group flex items-center gap-4 rounded-2xl border-2 border-white/30 bg-white/10 px-6 py-5 backdrop-blur-sm transition-all hover:scale-105 hover:border-white/60 hover:bg-white/20 hover:shadow-2xl"
-            >
-              <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl sm:h-20 sm:w-20">
-                <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=200&h=200&fit=crop"
-                  alt="Travel Guide"
-                  className="h-full w-full object-cover"
-                />
-              </div>
-              <div className="flex-1 text-left">
-                <p className="mb-1 text-white">
-                  {legacyContent.homepage.quickLinks.travelGuide.title}
-                </p>
-                <p className="text-sm text-white/80">
-                  {legacyContent.homepage.quickLinks.travelGuide.subtitle}
-                </p>
-              </div>
-              <ArrowRight className="h-5 w-5 flex-shrink-0 text-white/70 transition-transform group-hover:translate-x-1 group-hover:text-white" />
-            </button>
-
-            {/* Private Tours Link */}
-            <button
-              onClick={() => onNavigate("private-tours")}
-              className="group flex items-center gap-4 rounded-2xl border-2 border-accent bg-accent/20 px-6 py-5 backdrop-blur-sm transition-all hover:scale-105 hover:border-accent hover:bg-accent/30 hover:shadow-2xl sm:col-span-2 lg:col-span-1"
-            >
-              <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl sm:h-20 sm:w-20">
-                <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?w=200&h=200&fit=crop"
-                  alt="Private Tours"
-                  className="h-full w-full object-cover"
-                />
-              </div>
-              <div className="flex-1 text-left">
-                <p className="mb-1 text-white">
-                  {legacyContent.homepage.quickLinks.privateTours.title}
-                </p>
-                <p className="text-sm text-white/80">
-                  {legacyContent.homepage.quickLinks.privateTours.subtitle}
-                </p>
-              </div>
-              <ArrowRight className="h-5 w-5 flex-shrink-0 text-white/70 transition-transform group-hover:translate-x-1 group-hover:text-white" />
-            </button>
-          </div>
-        </div>
-      </section>
-
       {/* Today's Special: Sunset Drive Carousel */}
       {sunsetSpecialEnabled && (
         <SunsetSpecialCarousel onNavigate={onNavigate} language={language} />
       )}
 
       {/* Steps Section - Detailed & Engaging */}
-      <section className="relative bg-gradient-to-b from-white via-secondary/20 to-white py-20 sm:py-28">
+      <section className="relative bg-gradient-to-b from-white via-secondary/20 to-white py-10 sm:py-14">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-16 text-center">
+          <div className="mb-8 text-center">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-accent/10 px-4 py-2">
               <Star className="h-5 w-5 text-accent" />
               <span className="text-accent">
@@ -843,9 +763,9 @@ export function HomePage({
       </section>
 
       {/* Features Grid - Why You'll Love It */}
-      <section className="border-y border-border bg-gradient-to-br from-secondary/30 via-white to-primary/5 py-16 sm:py-20">
+      <section className="border-y border-border bg-gradient-to-br from-secondary/30 via-white to-primary/5 py-10 sm:py-14">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-12 text-center">
+          <div className="mb-8 text-center">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2">
               <Heart className="h-5 w-5 text-primary" />
               <span className="text-primary">
@@ -860,7 +780,7 @@ export function HomePage({
             </p>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 sm:gap-5">
             {/* Feature 1 */}
             <Card className="group relative overflow-hidden border-2 border-border bg-white shadow-md transition-all hover:scale-105 hover:shadow-2xl">
               <div className="absolute inset-0 transition-transform duration-500 group-hover:scale-110">
@@ -1008,8 +928,88 @@ export function HomePage({
         </div>
       </section>
 
+      {/* Quick Links Section */}
+      <section className="bg-gradient-to-br from-primary via-primary/95 to-primary/90 py-8 sm:py-12">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-6 text-center">
+            <h2 className="mb-2 text-white">{legacyContent.homepage.quickLinks.title}</h2>
+            <p className="text-white/90">{legacyContent.homepage.quickLinks.subtitle}</p>
+          </div>
+          <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+            {/* Attractions Link */}
+            <button
+              onClick={() => onNavigate("attractions")}
+              className="group flex items-center gap-4 rounded-2xl border-2 border-white/30 bg-white/10 px-6 py-5 backdrop-blur-sm transition-all hover:scale-105 hover:border-white/60 hover:bg-white/20 hover:shadow-2xl"
+            >
+              <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl sm:h-20 sm:w-20">
+                <ImageWithFallback
+                  src="https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=200&h=200&fit=crop"
+                  alt="Attractions"
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="mb-1 text-white">
+                  {legacyContent.homepage.quickLinks.attractions.title}
+                </p>
+                <p className="text-sm text-white/80">
+                  {legacyContent.homepage.quickLinks.attractions.subtitle}
+                </p>
+              </div>
+              <ArrowRight className="h-5 w-5 flex-shrink-0 text-white/70 transition-transform group-hover:translate-x-1 group-hover:text-white" />
+            </button>
+
+            {/* Travel Guide Link */}
+            <button
+              onClick={() => onNavigate("blog")}
+              className="group flex items-center gap-4 rounded-2xl border-2 border-white/30 bg-white/10 px-6 py-5 backdrop-blur-sm transition-all hover:scale-105 hover:border-white/60 hover:bg-white/20 hover:shadow-2xl"
+            >
+              <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl sm:h-20 sm:w-20">
+                <ImageWithFallback
+                  src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=200&h=200&fit=crop"
+                  alt="Travel Guide"
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="mb-1 text-white">
+                  {legacyContent.homepage.quickLinks.travelGuide.title}
+                </p>
+                <p className="text-sm text-white/80">
+                  {legacyContent.homepage.quickLinks.travelGuide.subtitle}
+                </p>
+              </div>
+              <ArrowRight className="h-5 w-5 flex-shrink-0 text-white/70 transition-transform group-hover:translate-x-1 group-hover:text-white" />
+            </button>
+
+            {/* Private Tours Link */}
+            <button
+              onClick={() => onNavigate("private-tours")}
+              className="group flex items-center gap-4 rounded-2xl border-2 border-accent bg-accent/20 px-6 py-5 backdrop-blur-sm transition-all hover:scale-105 hover:border-accent hover:bg-accent/30 hover:shadow-2xl sm:col-span-2 lg:col-span-1"
+            >
+              <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl sm:h-20 sm:w-20">
+                <ImageWithFallback
+                  src="https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?w=200&h=200&fit=crop"
+                  alt="Private Tours"
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="mb-1 text-white">
+                  {legacyContent.homepage.quickLinks.privateTours.title}
+                </p>
+                <p className="text-sm text-white/80">
+                  {legacyContent.homepage.quickLinks.privateTours.subtitle}
+                </p>
+              </div>
+              <ArrowRight className="h-5 w-5 flex-shrink-0 text-white/70 transition-transform group-hover:translate-x-1 group-hover:text-white" />
+            </button>
+          </div>
+        </div>
+      </section>
+
       {/* Final CTA - More Exciting */}
-      <section className="relative overflow-hidden bg-gradient-to-r from-primary via-primary/95 to-accent py-20 sm:py-28">
+      <section className="relative overflow-hidden bg-gradient-to-r from-primary via-primary/95 to-accent py-14 sm:py-20">
         <div className="absolute inset-0 opacity-20">
           <div
             className="absolute left-1/4 top-10 h-32 w-32 animate-bounce rounded-full bg-white/30 blur-2xl"
