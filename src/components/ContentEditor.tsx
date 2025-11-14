@@ -188,6 +188,27 @@ export function ContentEditor() {
       setHasChanges(true);
       return newContent;
     });
+    
+    // Also update mainContent for fields that exist in both
+    setMainContent(prev => {
+      const newMainContent = JSON.parse(JSON.stringify(prev));
+      let current: any = newMainContent;
+      let exists = true;
+      
+      for (let i = 0; i < path.length - 1; i++) {
+        if (current[path[i]] === undefined) {
+          exists = false;
+          break;
+        }
+        current = current[path[i]];
+      }
+      
+      if (exists && current[path[path.length - 1]] !== undefined) {
+        current[path[path.length - 1]] = value;
+      }
+      
+      return newMainContent;
+    });
   };
 
   const updateArrayItem = (path: string[], index: number, field: string, value: any) => {

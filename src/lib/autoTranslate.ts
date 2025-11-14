@@ -299,7 +299,7 @@ export async function checkTranslationService(): Promise<{ available: boolean; n
 
     return { available: false, needsApiKey: false, error: `HTTP ${response.status}: ${responseText.substring(0, 100)}` };
   } catch (error) {
-    console.error('Translation service check failed:', error);
+    // Silently fail - this is just a background check
     return { available: false, needsApiKey: false, error: error instanceof Error ? error.message : 'Unknown error' };
   }
 }

@@ -293,16 +293,19 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
   const handleNext = () => {
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   const handlePaymentSuccess = async (confirmedPaymentIntentId: string) => {
+    console.log(`🎉 Payment succeeded! Payment Intent ID: ${confirmedPaymentIntentId}`);
     setIsSubmitting(true);
     
     try {
@@ -339,10 +342,22 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
         paymentIntentId: confirmedPaymentIntentId,
       };
 
+      console.log(`📤 Attempting to create booking with payment intent: ${confirmedPaymentIntentId}`);
+      
       // Create booking via API
       const response = await createBooking(bookingData);
       
-      if (response.success && response.data?.booking) {
+      console.log("📥 Full booking response:", response);
+      console.log("📥 Response structure check:", {
+        hasSuccess: !!response.success,
+        hasData: !!response.data,
+        dataSuccess: response.data?.success,
+        hasBooking: !!response.data?.booking,
+        bookingId: response.data?.booking?.id,
+      });
+      
+      // Check both outer and inner success flags
+      if (response.success && response.data?.success && response.data?.booking) {
         // Navigate to confirmation page with booking data
         onBookingComplete(response.data.booking);
         
@@ -381,7 +396,9 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
           }
         }
       } else {
-        throw new Error(response.error || "Failed to create booking");
+        // Check if inner response has error
+        const errorMsg = response.data?.error || response.error || "Failed to create booking";
+        throw new Error(errorMsg);
       }
     } catch (error) {
       console.error("Booking error:", error);

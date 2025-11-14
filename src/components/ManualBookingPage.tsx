@@ -426,7 +426,10 @@ export function ManualBookingPage({ onNavigate }: ManualBookingPageProps) {
             </div>
 
             <Button
-              onClick={() => setStep(2)}
+              onClick={() => {
+                setStep(2);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
               disabled={!canProceedFromStep(1)}
               className="w-full"
               size="lg"
@@ -555,11 +558,17 @@ export function ManualBookingPage({ onNavigate }: ManualBookingPageProps) {
             </div>
 
             <div className="flex gap-3">
-              <Button variant="outline" onClick={() => setStep(1)} className="flex-1" size="lg">
+              <Button variant="outline" onClick={() => {
+                setStep(1);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }} className="flex-1" size="lg">
                 Back
               </Button>
               <Button
-                onClick={() => setStep(3)}
+                onClick={() => {
+                  setStep(3);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
                 disabled={!canProceedFromStep(2)}
                 className="flex-1"
                 size="lg"
@@ -664,10 +673,16 @@ export function ManualBookingPage({ onNavigate }: ManualBookingPageProps) {
             </div>
 
             <div className="flex gap-3">
-              <Button variant="outline" onClick={() => setStep(2)} className="flex-1" size="lg">
+              <Button variant="outline" onClick={() => {
+                setStep(2);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }} className="flex-1" size="lg">
                 Back
               </Button>
-              <Button onClick={() => setStep(4)} className="flex-1" size="lg">
+              <Button onClick={() => {
+                setStep(4);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }} className="flex-1" size="lg">
                 Next: Payment
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
@@ -684,83 +699,70 @@ export function ManualBookingPage({ onNavigate }: ManualBookingPageProps) {
               </div>
               <div>
                 <h2 className="text-foreground">Payment</h2>
-                <p className="text-sm text-muted-foreground">How will they pay?</p>
+                <p className="text-sm text-muted-foreground">Choose method</p>
               </div>
             </div>
 
-            {/* Summary */}
-            <div className="mb-6 rounded-lg bg-primary/5 border-2 border-primary/20 p-4">
-              <div className="space-y-2 mb-3">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Passes:</span>
-                  <span className="text-foreground">
-                    {formData.adults}A {formData.children > 0 && `+ ${formData.children}C`} {formData.infants > 0 && `+ ${formData.infants}I`}
-                  </span>
-                </div>
-                {formData.guidedTour && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">⭐ Guided Tour:</span>
-                    <span className="text-foreground">
-                      €{(pricing.guidedTourSurcharge * (formData.adults + formData.children)).toFixed(2)}
-                    </span>
-                  </div>
-                )}
-                {formData.selectedAttractions.length > 0 && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">🎫 Attractions:</span>
-                    <span className="text-foreground">
-                      €{formData.selectedAttractions.reduce((sum, id) => 
-                        sum + (pricing.attractions[id]?.price || 0) * (formData.adults + formData.children), 0
-                      ).toFixed(2)}
-                    </span>
-                  </div>
-                )}
-              </div>
-              <div className="border-t border-primary/20 pt-3 flex justify-between items-center">
-                <span className="text-foreground">Total:</span>
-                <span className="text-3xl text-primary">€{totalPrice.toFixed(2)}</span>
-              </div>
-            </div>
-
-            {/* Payment Method */}
-            <div className="grid grid-cols-2 gap-3 mb-6">
+            <div className="space-y-4 mb-6">
+              {/* Payment Method */}
               <Card
-                className={`border-2 p-6 cursor-pointer transition-all ${
+                className={`border-2 p-4 cursor-pointer transition-all ${
                   formData.paymentMethod === "cash"
-                    ? "border-green-500 bg-green-50"
-                    : "border-border hover:border-green-300"
+                    ? "border-primary bg-primary/5"
+                    : "border-border hover:border-primary/50"
                 }`}
                 onClick={() => setFormData({ ...formData, paymentMethod: "cash" })}
               >
-                <div className="flex flex-col items-center gap-2 text-center">
-                  <Banknote className="h-12 w-12 text-green-600" />
-                  <h3 className="text-foreground">Cash</h3>
-                  {formData.paymentMethod === "cash" && (
-                    <CheckCircle className="h-5 w-5 text-green-600" />
-                  )}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl">💰</span>
+                    <div>
+                      <h3 className="text-foreground">Cash</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Pay in cash
+                      </p>
+                    </div>
+                  </div>
+                  <div className={`flex h-8 w-8 items-center justify-center rounded-full ${
+                    formData.paymentMethod === "cash" ? "bg-primary" : "bg-border"
+                  }`}>
+                    {formData.paymentMethod === "cash" && <CheckCircle className="h-5 w-5 text-white" />}
+                  </div>
                 </div>
               </Card>
 
               <Card
-                className={`border-2 p-6 cursor-pointer transition-all ${
+                className={`border-2 p-4 cursor-pointer transition-all ${
                   formData.paymentMethod === "card"
-                    ? "border-blue-500 bg-blue-50"
-                    : "border-border hover:border-blue-300"
+                    ? "border-primary bg-primary/5"
+                    : "border-border hover:border-primary/50"
                 }`}
                 onClick={() => setFormData({ ...formData, paymentMethod: "card" })}
               >
-                <div className="flex flex-col items-center gap-2 text-center">
-                  <CreditCard className="h-12 w-12 text-blue-600" />
-                  <h3 className="text-foreground">Card</h3>
-                  {formData.paymentMethod === "card" && (
-                    <CheckCircle className="h-5 w-5 text-blue-600" />
-                  )}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl">💳</span>
+                    <div>
+                      <h3 className="text-foreground">Card</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Pay with card
+                      </p>
+                    </div>
+                  </div>
+                  <div className={`flex h-8 w-8 items-center justify-center rounded-full ${
+                    formData.paymentMethod === "card" ? "bg-primary" : "bg-border"
+                  }`}>
+                    {formData.paymentMethod === "card" && <CheckCircle className="h-5 w-5 text-white" />}
+                  </div>
                 </div>
               </Card>
             </div>
 
             <div className="flex gap-3">
-              <Button variant="outline" onClick={() => setStep(3)} className="flex-1" size="lg">
+              <Button variant="outline" onClick={() => {
+                setStep(3);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }} className="flex-1" size="lg">
                 Back
               </Button>
               <Button

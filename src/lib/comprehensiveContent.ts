@@ -1405,18 +1405,16 @@ export async function saveIncrementalTranslation(
     const serviceStatus = await checkTranslationService();
     
     if (!serviceStatus.available) {
-      console.warn('⚠️ Translation service not available:', serviceStatus.error);
-      console.log('💡 Saving content without translation');
+      // Only log to console, don't show warnings for automatic background checks
+      console.log('ℹ️ Translation service not available - saving content without translation');
       
       // Save English content only
       const result = await saveComprehensiveContentAsync(content);
       
       if (result.success) {
         return { 
-          success: true, 
-          error: serviceStatus.needsApiKey 
-            ? 'Content saved. Translation skipped: LibreTranslate API key required. Get a free API key at https://libretranslate.com' 
-            : `Content saved. Translation skipped: ${serviceStatus.error || 'Service unavailable'}` 
+          success: true
+          // Don't return error message for automatic background saves
         };
       }
       return result;
@@ -1522,10 +1520,10 @@ export async function saveTranslatedContent(
     const serviceStatus = await checkTranslationService();
     
     if (!serviceStatus.available) {
-      console.warn('⚠️ Translation service not available:', serviceStatus.error);
+      console.log('ℹ️ Translation service not available:', serviceStatus.error);
       const errorMsg = serviceStatus.needsApiKey 
-        ? 'Translation failed: LibreTranslate API key required. Get a free API key at https://libretranslate.com' 
-        : `Translation failed: ${serviceStatus.error || 'Service unavailable'}`;
+        ? 'Translation requires a LibreTranslate API key. Get a free API key at https://libretranslate.com and add it in the admin settings.' 
+        : `Translation service unavailable: ${serviceStatus.error || 'Unknown error'}`;
       return { success: false, error: errorMsg };
     }
     

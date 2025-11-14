@@ -94,6 +94,7 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
           setCustomerPhone(result.booking.customerPhone || "");
           setGroupSize(String(result.booking.passes || 1));
           setStep("request");
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
           setVerificationError("Invalid booking code. Please check and try again.");
         }

@@ -1105,7 +1105,7 @@ app.post("/make-server-3bd0ade8/db-cleanup", async (c) => {
 app.get("/make-server-3bd0ade8/content", async (c) => {
   try {
     console.log("📖 Fetching content from database...");
-    const content = await kv.get("website_content");
+    const content = await kvWithRetry.get("website_content");
 
     if (content) {
       console.log("✅ Content found in database");
@@ -1138,9 +1138,10 @@ app.post("/make-server-3bd0ade8/content", async (c) => {
     const contentToSave = {
       ...body,
       lastUpdated: new Date().toISOString(),
+      initialized: true, // Add flag to indicate content has been set
     };
 
-    await kv.set("website_content", contentToSave);
+    await kvWithRetry.set("website_content", contentToSave);
     console.log("✅ Content saved successfully to database");
 
     return c.json({ success: true });
@@ -2012,6 +2013,7 @@ app.post("/make-server-3bd0ade8/bookings", async (c) => {
     });
 
     await kv.set(bookingId, booking);
+    console.log(`✅ Booking ${bookingId} successfully saved to database`);
 
     // Track this prefix as used (for efficient admin queries)
     const prefix = bookingId.split("-")[0];
@@ -2089,6 +2091,8 @@ app.post("/make-server-3bd0ade8/bookings", async (c) => {
       }
     }
 
+    console.log(`✅ Successfully created booking ${bookingId} - Sending response to client`);
+    
     return c.json({
       success: true,
       booking,
@@ -2101,7 +2105,9 @@ app.post("/make-server-3bd0ade8/bookings", async (c) => {
       autoCheckedIn: booking.manualBooking === true || booking.createdBy === "operations",
     });
   } catch (error) {
-    console.error("Error creating booking:", error);
+    console.error("❌ Error creating booking:", error);
+    console.error("❌ Error details:", error instanceof Error ? error.message : String(error));
+    console.error("❌ Error stack:", error instanceof Error ? error.stack : "No stack trace");
     return c.json(
       { success: false, error: "Failed to create booking" },
       500,
@@ -2981,6 +2987,74 @@ app.post(
         {
           success: false,
           error: "Failed to close conversation",
+        },
+        500,
+      );
+    }
+  },
+);
+
+// Archive conversation
+app.post(
+  "/make-server-3bd0ade8/chat/:conversationId/archive",
+  async (c) => {
+    try {
+      const conversationId = c.req.param("conversationId");
+
+      const conversation = await kv.get(
+        `chat_conversation_${conversationId}`,
+      );
+      if (conversation) {
+        conversation.archived = true;
+        await kv.set(
+          `chat_conversation_${conversationId}`,
+          conversation,
+        );
+      }
+
+      console.log(`💬 Conversation archived: ${conversationId}`);
+
+      return c.json({ success: true });
+    } catch (error) {
+      console.error("Error archiving conversation:", error);
+      return c.json(
+        {
+          success: false,
+          error: "Failed to archive conversation",
+        },
+        500,
+      );
+    }
+  },
+);
+
+// Unarchive conversation
+app.post(
+  "/make-server-3bd0ade8/chat/:conversationId/unarchive",
+  async (c) => {
+    try {
+      const conversationId = c.req.param("conversationId");
+
+      const conversation = await kv.get(
+        `chat_conversation_${conversationId}`,
+      );
+      if (conversation) {
+        conversation.archived = false;
+        await kv.set(
+          `chat_conversation_${conversationId}`,
+          conversation,
+        );
+      }
+
+      console.log(`💬 Conversation unarchived: ${conversationId}`);
+
+      return c.json({ success: true });
+    } catch (error) {
+      console.error("Error unarchiving conversation:", error);
+      return c.json(
+        {
+          success: false,
+          error: "Failed to unarchive conversation",
         },
         500,
       );

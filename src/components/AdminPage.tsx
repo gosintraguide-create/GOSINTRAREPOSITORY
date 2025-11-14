@@ -27,6 +27,10 @@ import {
   MoreHorizontal,
   FileText,
   Image,
+  ArrowLeft,
+  X,
+  Archive,
+  ArchiveRestore,
 } from "lucide-react";
 import { DestinationTracker } from './DestinationTracker';
 import { Button } from "./ui/button";
@@ -202,11 +206,18 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
   const [replyMessage, setReplyMessage] = useState("");
   const [loadingConversations, setLoadingConversations] =
     useState(false);
+  const [showArchivedConversations, setShowArchivedConversations] =
+    useState(false);
   const [activeTab, setActiveTab] = useState("pickups");
-  const [bookingFilter, setBookingFilter] = useState("all");
-  const [bookingFilterDate, setBookingFilterDate] = useState("");
-  const [expandedBookingId, setExpandedBookingId] = useState(null);
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  
+  // Notification state
+  const [lastPickupCount, setLastPickupCount] = useState(0);
+  const [lastBookingCount, setLastBookingCount] = useState(0);
+  const [lastMessageCount, setLastMessageCount] = useState(0);
+  const [newPickupsCount, setNewPickupsCount] = useState(0);
+  const [newBookingsCount, setNewBookingsCount] = useState(0);
+  const [pickupRequests, setPickupRequests] = useState<any[]>([]);
 
   // Load settings from database and localStorage
   useEffect(() => {
@@ -572,12 +583,186 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     return checkIns;
   };
 
+  const loadPickupRequests = async () => {
+    try {
+      const result = await safeJsonFetch<any>(
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/pickup-requests`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${publicAnonKey}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (result?.success && result.requests) {
+        setPickupRequests(result.requests);
+        return result.requests;
+      } else {
+        setPickupRequests([]);
+        return [];
+      }
+    } catch (error) {
+      console.error("Error loading pickup requests:", error);
+      setPickupRequests([]);
+      return [];
+    }
+  };
+
+  const checkForNewItems = async (showNotifications = true) => {
+    // Load fresh data
+    const [pickups, bookingsResult, conversationsResult] = await Promise.all([
+      loadPickupRequests(),
+      safeJsonFetch<any>(
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/bookings`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${publicAnonKey}`,
+            "Content-Type": "application/json",
+          },
+        },
+      ),
+      safeJsonFetch<any>(
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/chat/conversations`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${publicAnonKey}`,
+            "Content-Type": "application/json",
+          },
+        },
+      ),
+    ]);
+
+    // Count pending pickups (status !== 'completed' and status !== 'cancelled')
+    const pendingPickups = pickups.filter((p: any) => 
+      p.status !== 'completed' && p.status !== 'cancelled'
+    );
+    const currentPickupCount = pendingPickups.length;
+
+    // Count today's bookings
+    const today = new Date().toISOString().split("T")[0];
+    const todaysBookings = bookingsResult?.bookings?.filter((b: any) => 
+      b.selectedDate === today
+    ) || [];
+    const currentBookingCount = todaysBookings.length;
+
+    // Count unread messages
+    const unreadMessages = conversationsResult?.conversations?.filter((c: any) => 
+      c.unreadByAdmin > 0 && !c.archived
+    ) || [];
+    const currentMessageCount = unreadMessages.length;
+
+    if (showNotifications) {
+      // Check for new pickups
+      if (currentPickupCount > lastPickupCount && lastPickupCount > 0) {
+        const newCount = currentPickupCount - lastPickupCount;
+        toast.info(`🚗 ${newCount} new pickup request${newCount > 1 ? 's' : ''}!`, {
+          duration: 5000,
+        });
+        setNewPickupsCount(prev => prev + newCount);
+        
+        // Browser notification
+        if ('Notification' in window && Notification.permission === 'granted') {
+          new Notification('New Pickup Request', {
+            body: `${newCount} new pickup request${newCount > 1 ? 's' : ''} received`,
+            icon: '/favicon.ico',
+            tag: 'pickup-notification',
+          });
+        }
+      }
+
+      // Check for new bookings
+      if (currentBookingCount > lastBookingCount && lastBookingCount > 0) {
+        const newCount = currentBookingCount - lastBookingCount;
+        toast.success(`🎫 ${newCount} new booking${newCount > 1 ? 's' : ''} today!`, {
+          duration: 5000,
+        });
+        setNewBookingsCount(prev => prev + newCount);
+        
+        // Browser notification
+        if ('Notification' in window && Notification.permission === 'granted') {
+          new Notification('New Booking', {
+            body: `${newCount} new booking${newCount > 1 ? 's' : ''} received today`,
+            icon: '/favicon.ico',
+            tag: 'booking-notification',
+          });
+        }
+      }
+
+      // Check for new messages
+      if (currentMessageCount > lastMessageCount && lastMessageCount > 0) {
+        const newCount = currentMessageCount - lastMessageCount;
+        toast.info(`💬 ${newCount} new message${newCount > 1 ? 's' : ''}!`, {
+          duration: 5000,
+        });
+        
+        // Browser notification
+        if ('Notification' in window && Notification.permission === 'granted') {
+          new Notification('New Message', {
+            body: `${newCount} new message${newCount > 1 ? 's' : ''} from customers`,
+            icon: '/favicon.ico',
+            tag: 'message-notification',
+          });
+        }
+      }
+    }
+
+    // Update counts
+    setLastPickupCount(currentPickupCount);
+    setLastBookingCount(currentBookingCount);
+    setLastMessageCount(currentMessageCount);
+
+    // Update main data
+    if (bookingsResult?.success && bookingsResult.bookings) {
+      const validBookings = bookingsResult.bookings.filter(
+        (booking: any) => booking && booking.id && booking.selectedDate
+      );
+      const bookingsWithCheckIns = await Promise.all(
+        validBookings.map(async (booking: any) => {
+          const checkIns = await loadCheckInsForBooking(
+            booking.id,
+            booking.passengers?.length || 0
+          );
+          return { ...booking, checkIns };
+        })
+      );
+      setBookings(bookingsWithCheckIns);
+    }
+
+    if (conversationsResult?.success && conversationsResult.conversations) {
+      setConversations(conversationsResult.conversations);
+    }
+  };
+
   useEffect(() => {
     if (isAuthenticated) {
-      loadBookings();
-      loadConversations();
+      // Request notification permission
+      if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') {
+            toast.success('Browser notifications enabled!');
+          }
+        });
+      }
+      
+      // Initial load without notifications
+      checkForNewItems(false);
     }
   }, [isAuthenticated]);
+
+  // Auto-refresh every 30 seconds
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const interval = setInterval(() => {
+      checkForNewItems(true);
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, [isAuthenticated, lastPickupCount, lastBookingCount, lastMessageCount]);
 
   const loadConversations = async () => {
     setLoadingConversations(true);
@@ -663,6 +848,45 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     }
   };
 
+  const handleArchiveConversation = async (conversationId: string) => {
+    const result = await safeJsonFetch<any>(
+      `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/chat/${conversationId}/archive`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${publicAnonKey}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    if (result?.success) {
+      toast.success("Conversation archived");
+      loadConversations();
+      if (selectedConversation === conversationId) {
+        setSelectedConversation(null);
+      }
+    }
+  };
+
+  const handleUnarchiveConversation = async (conversationId: string) => {
+    const result = await safeJsonFetch<any>(
+      `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/chat/${conversationId}/unarchive`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${publicAnonKey}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    if (result?.success) {
+      toast.success("Conversation restored");
+      loadConversations();
+    }
+  };
+
   useEffect(() => {
     async function loadPricingFromDB() {
       try {
@@ -724,23 +948,6 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
       loadConversations();
     }
   }, [isAuthenticated]);
-
-  // ====== BOOKINGS FILTERING ======
-  const getFilteredBookings = () => {
-    const today = new Date().toISOString().split("T")[0];
-    
-    return bookings.filter((booking) => {
-      if (!booking || !booking.id || !booking.selectedDate) return false;
-      
-      if (bookingFilter === "today") {
-        return booking.selectedDate === today;
-      } else if (bookingFilter === "date" && bookingFilterDate) {
-        return booking.selectedDate === bookingFilterDate;
-      }
-      
-      return true; // "all" filter
-    });
-  };
 
   // ====== METRICS & ANALYTICS CALCULATIONS ======
   const metrics = useMemo(() => {
@@ -1004,38 +1211,41 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
 
   // Main admin dashboard
   return (
-    <div className="flex-1 bg-secondary/30 py-12">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div className="flex-1 bg-secondary/30 py-6 sm:py-8 lg:py-12">
+      <div className="mx-auto max-w-7xl px-3 sm:px-4 lg:px-8">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col gap-3 sm:gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <div className="mb-3 flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                  <Settings className="h-6 w-6 text-primary" />
+              <div className="mb-2 sm:mb-3 flex items-center gap-2 sm:gap-3">
+                <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-primary/10">
+                  <Settings className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                 </div>
-                <h1 className="text-foreground">
+                <h1 className="text-foreground text-lg sm:text-xl lg:text-2xl">
                   Admin Console
                 </h1>
               </div>
-              <div className="h-1 w-20 rounded-full bg-accent" />
+              <div className="h-1 w-16 sm:w-20 rounded-full bg-accent" />
             </div>
             <div className="flex flex-wrap gap-2">
               <Button
                 variant="outline"
-                onClick={loadBookings}
+                onClick={() => {
+                  setLoadingBookings(true);
+                  checkForNewItems(false).finally(() => setLoadingBookings(false));
+                }}
                 disabled={loadingBookings}
-                className="gap-2"
+                className="gap-1.5 sm:gap-2 text-xs sm:text-sm"
                 size="sm"
               >
-                <RefreshCw className={`h-4 w-4 ${loadingBookings ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${loadingBookings ? 'animate-spin' : ''}`} />
                 <span className="hidden md:inline">Refresh Data</span>
                 <span className="md:hidden">Refresh</span>
               </Button>
               <Button
                 variant="outline"
                 onClick={() => onNavigate("home")}
-                className="gap-2"
+                className="gap-1.5 sm:gap-2 text-xs sm:text-sm"
                 size="sm"
               >
                 <span className="hidden sm:inline">Back to Website</span>
@@ -1045,19 +1255,19 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
               <Button
                 variant="outline"
                 onClick={() => onNavigate("diagnostics")}
-                className="gap-2"
+                className="gap-1.5 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3"
                 size="sm"
               >
-                <AlertCircle className="h-4 w-4" />
+                <AlertCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 <span className="hidden lg:inline">Diagnostics</span>
               </Button>
               <Button
                 variant="outline"
                 onClick={() => onNavigate("qr-scanner")}
-                className="gap-2"
+                className="gap-1.5 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3"
                 size="sm"
               >
-                <QrCode className="h-4 w-4" />
+                <QrCode className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 <span className="hidden lg:inline">QR Scanner</span>
               </Button>
             </div>
@@ -1067,36 +1277,54 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
         <Tabs
           defaultValue="pickups"
           value={activeTab}
-          onValueChange={setActiveTab}
+          onValueChange={(tab) => {
+            setActiveTab(tab);
+            // Clear notification badges when tab is clicked
+            if (tab === "pickups") {
+              setNewPickupsCount(0);
+            } else if (tab === "bookings") {
+              setNewBookingsCount(0);
+            }
+          }}
           className="w-full"
         >
-          <div className="mb-8">
+          <div className="mb-4 sm:mb-8">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <TabsList className="w-full sm:w-auto flex-wrap h-auto">
+              <TabsList className="w-full sm:w-auto flex-wrap h-auto gap-1">
                 <TabsTrigger
                   value="pickups"
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-1.5 text-xs sm:text-sm px-2 sm:px-3 relative"
                 >
-                  <Navigation className="h-4 w-4" />
+                  <Navigation className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   <span>Pickups</span>
+                  {newPickupsCount > 0 && (
+                    <span className="ml-1 flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full bg-orange-500 text-xs text-white animate-pulse">
+                      {newPickupsCount}
+                    </span>
+                  )}
                 </TabsTrigger>
                 <TabsTrigger
                   value="bookings"
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-1.5 text-xs sm:text-sm px-2 sm:px-3 relative"
                 >
-                  <Package className="h-4 w-4" />
+                  <Package className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   <span>Bookings</span>
+                  {newBookingsCount > 0 && (
+                    <span className="ml-1 flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full bg-blue-500 text-xs text-white animate-pulse">
+                      {newBookingsCount}
+                    </span>
+                  )}
                 </TabsTrigger>
                 <TabsTrigger
                   value="messages"
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-1.5 text-xs sm:text-sm px-2 sm:px-3 relative"
                 >
-                  <MessageCircle className="h-4 w-4" />
+                  <MessageCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   <span>Messages</span>
                   {conversations.filter(
-                    (c) => c.unreadByAdmin > 0,
+                    (c) => c.unreadByAdmin > 0 && !c.archived,
                   ).length > 0 && (
-                    <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+                    <span className="ml-1 flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
                       {
                         conversations.filter(
                           (c) => c.unreadByAdmin > 0,
@@ -1107,17 +1335,17 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                 </TabsTrigger>
                 <TabsTrigger
                   value="metrics"
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-1.5 text-xs sm:text-sm px-2 sm:px-3"
                 >
-                  <BarChart3 className="h-4 w-4" />
+                  <BarChart3 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   <span>Analytics</span>
                 </TabsTrigger>
               </TabsList>
 
               <Sheet open={moreMenuOpen} onOpenChange={setMoreMenuOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="outline" className="gap-2">
-                    <MoreHorizontal className="h-4 w-4" />
+                  <Button variant="outline" className="gap-2 text-xs sm:text-sm px-3 sm:px-4">
+                    <MoreHorizontal className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                     More
                   </Button>
                 </SheetTrigger>
@@ -1242,82 +1470,206 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
           </div>
 
           {/* ====== PICKUPS TAB ====== */}
-          <TabsContent value="pickups" className="space-y-6">
+          <TabsContent value="pickups" className="space-y-4 sm:space-y-6">
             <PickupRequestsManagement />
           </TabsContent>
 
           {/* ====== BOOKINGS TAB ====== */}
-          <TabsContent value="bookings" className="space-y-6">
+          <TabsContent value="bookings" className="space-y-4 sm:space-y-6">
             <CompactBookingsList
-              bookings={getFilteredBookings()}
+              bookings={bookings}
               onRefresh={loadBookings}
-              loadingBookings={loadingBookings}
             />
           </TabsContent>
 
           {/* ====== MESSAGES TAB ====== */}
-          <TabsContent value="messages" className="space-y-6">
-            <Card className="border-border p-6">
-              <div className="mb-6">
-                <h2 className="mb-2 text-foreground">Customer Messages</h2>
-                <div className="h-1 w-16 rounded-full bg-accent" />
-                <p className="mt-4 text-muted-foreground">
-                  View and respond to customer inquiries from the website chat
-                </p>
-              </div>
+          <TabsContent value="messages" className="space-y-4 sm:space-y-6">
+            {/* WhatsApp-style layout */}
+            <div className="flex h-[calc(100vh-200px)] md:h-[calc(100vh-200px)] overflow-hidden rounded-lg border border-border bg-background">
+              {/* Left Sidebar - Conversations List */}
+              <div className={`flex w-full flex-col border-r border-border md:w-[350px] ${selectedConversation ? 'hidden md:flex' : 'flex'}`}>
+                {/* Sidebar Header */}
+                <div className="border-b border-border bg-background p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <h2 className="text-foreground">Messages</h2>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowArchivedConversations(!showArchivedConversations)}
+                      className="gap-2"
+                    >
+                      {showArchivedConversations ? (
+                        <>
+                          <MessageCircle className="h-4 w-4" />
+                          <span className="hidden md:inline">Active</span>
+                        </>
+                      ) : (
+                        <>
+                          <Archive className="h-4 w-4" />
+                          <span className="hidden md:inline">Archived</span>
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {showArchivedConversations 
+                      ? `${conversations.filter((c: any) => c.archived).length} archived`
+                      : `${conversations.filter((c: any) => c.unreadByAdmin > 0 && !c.archived).length} unread`
+                    }
+                  </p>
+                </div>
 
-              <div className="grid gap-4 md:grid-cols-3">
-                <div className="space-y-2">
-                  <h3 className="text-foreground">Conversations</h3>
+                {/* Conversations List */}
+                <div className="flex-1 overflow-y-auto">
                   {loadingConversations ? (
-                    <div className="flex items-center justify-center py-8">
+                    <div className="flex items-center justify-center py-12">
                       <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
                     </div>
-                  ) : conversations.length === 0 ? (
-                    <p className="py-4 text-center text-muted-foreground">
-                      No conversations yet
-                    </p>
+                  ) : conversations.filter((c: any) => showArchivedConversations ? c.archived : !c.archived).length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-12 px-4">
+                      <MessageCircle className="h-12 w-12 text-muted-foreground/50 mb-3" />
+                      <p className="text-center text-muted-foreground">
+                        {showArchivedConversations ? "No archived conversations" : "No conversations yet"}
+                      </p>
+                      <p className="text-xs text-center text-muted-foreground mt-1">
+                        {showArchivedConversations ? "Archived chats will appear here" : "Customer messages will appear here"}
+                      </p>
+                    </div>
                   ) : (
-                    <div className="space-y-2">
-                      {conversations.map((conv: any) => (
-                        <button
-                          key={conv.id}
-                          onClick={() => {
-                            setSelectedConversation(conv.id);
-                            loadConversationMessages(conv.id);
-                          }}
-                          className={`w-full rounded-lg border p-3 text-left transition-colors ${
-                            selectedConversation === conv.id
-                              ? "border-primary bg-primary/5"
-                              : "border-border hover:border-primary/50"
-                          }`}
-                        >
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <p className="text-foreground">
-                                {conv.name || "Anonymous"}
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                {conv.email}
-                              </p>
+                    <div>
+                      {conversations.filter((c: any) => showArchivedConversations ? c.archived : !c.archived).map((conv: any) => {
+                        const lastMessage = conv.lastMessage || "";
+                        const lastMessageTime = conv.lastMessageTime 
+                          ? new Date(conv.lastMessageTime)
+                          : new Date(conv.createdAt);
+                        const isToday = new Date().toDateString() === lastMessageTime.toDateString();
+                        const timeDisplay = isToday 
+                          ? lastMessageTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                          : lastMessageTime.toLocaleDateString([], { month: 'short', day: 'numeric' });
+
+                        return (
+                          <button
+                            key={conv.id}
+                            onClick={() => {
+                              setSelectedConversation(conv.id);
+                              loadConversationMessages(conv.id);
+                            }}
+                            className={`w-full border-b border-border p-4 text-left transition-colors hover:bg-secondary/30 ${
+                              selectedConversation === conv.id
+                                ? "bg-primary/5 border-l-4 border-l-primary"
+                                : ""
+                            }`}
+                          >
+                            <div className="flex items-start gap-3">
+                              {/* Avatar */}
+                              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                                <span className="font-semibold">
+                                  {(conv.name || "A").charAt(0).toUpperCase()}
+                                </span>
+                              </div>
+
+                              {/* Content */}
+                              <div className="flex-1 overflow-hidden">
+                                <div className="flex items-start justify-between gap-2">
+                                  <p className={`truncate ${conv.unreadByAdmin > 0 ? 'font-semibold' : ''} text-foreground`}>
+                                    {conv.name || "Anonymous"}
+                                  </p>
+                                  <span className="text-xs text-muted-foreground whitespace-nowrap">
+                                    {timeDisplay}
+                                  </span>
+                                </div>
+                                <div className="flex items-center justify-between gap-2 mt-1">
+                                  <p className={`truncate text-sm ${conv.unreadByAdmin > 0 ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>
+                                    {lastMessage || "No messages yet"}
+                                  </p>
+                                  {conv.unreadByAdmin > 0 && (
+                                    <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+                                      {conv.unreadByAdmin}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
                             </div>
-                            {conv.unreadByAdmin > 0 && (
-                              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                                {conv.unreadByAdmin}
-                              </span>
-                            )}
-                          </div>
-                        </button>
-                      ))}
+                          </button>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
+              </div>
 
-                <div className="md:col-span-2">
-                  {selectedConversation ? (
-                    <div className="space-y-4">
-                      <div className="max-h-96 space-y-3 overflow-y-auto rounded-lg border border-border p-4">
-                        {conversationMessages.map((msg: any) => (
+              {/* Right Side - Chat Area */}
+              <div className={`flex flex-1 flex-col ${selectedConversation ? 'flex' : 'hidden md:flex'}`}>
+                {selectedConversation ? (
+                  <>
+                    {/* Chat Header */}
+                    <div className="flex items-center justify-between border-b border-border bg-background p-4">
+                      <div className="flex items-center gap-3">
+                        {/* Back Button (Mobile) */}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setSelectedConversation(null)}
+                          className="md:hidden p-2"
+                        >
+                          <ArrowLeft className="h-5 w-5" />
+                        </Button>
+                        {/* Avatar */}
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                          <span className="font-semibold">
+                            {((conversations.find((c: any) => c.id === selectedConversation)?.name) || "A").charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                        {/* Info */}
+                        <div className="flex-1 overflow-hidden">
+                          <p className="font-medium text-foreground truncate">
+                            {conversations.find((c: any) => c.id === selectedConversation)?.name || "Anonymous"}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {conversations.find((c: any) => c.id === selectedConversation)?.email || ""}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {conversations.find((c: any) => c.id === selectedConversation)?.archived ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleUnarchiveConversation(selectedConversation)}
+                            className="gap-2"
+                          >
+                            <ArchiveRestore className="h-4 w-4" />
+                            <span className="hidden md:inline">Restore</span>
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleArchiveConversation(selectedConversation)}
+                            className="gap-2"
+                          >
+                            <Archive className="h-4 w-4" />
+                            <span className="hidden md:inline">Archive</span>
+                          </Button>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={loadConversations}
+                        >
+                          <RefreshCw className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Messages Area */}
+                    <div className="flex-1 overflow-y-auto bg-secondary/5 p-4 space-y-3">
+                      {conversationMessages.length === 0 ? (
+                        <div className="flex h-full items-center justify-center">
+                          <p className="text-muted-foreground">No messages yet</p>
+                        </div>
+                      ) : (
+                        conversationMessages.map((msg: any) => (
                           <div
                             key={msg.id}
                             className={`flex ${
@@ -1327,70 +1679,82 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                             }`}
                           >
                             <div
-                              className={`max-w-xs rounded-lg p-3 ${
+                              className={`max-w-[70%] rounded-2xl px-4 py-2 ${
                                 msg.sender === "admin"
-                                  ? "bg-primary text-primary-foreground"
-                                  : "bg-secondary text-foreground"
+                                  ? "bg-primary text-primary-foreground rounded-br-sm"
+                                  : "bg-background border border-border text-foreground rounded-bl-sm"
                               }`}
                             >
-                              <p className="text-sm">{msg.message}</p>
+                              <p className="text-sm leading-relaxed">{msg.message}</p>
                               <p
                                 className={`mt-1 text-xs ${
                                   msg.sender === "admin"
                                     ? "text-primary-foreground/70"
                                     : "text-muted-foreground"
-                                }`}
+                                } text-right`}
                               >
-                                {new Date(
-                                  msg.createdAt
-                                ).toLocaleTimeString()}
+                                {new Date(msg.createdAt).toLocaleTimeString([], { 
+                                  hour: '2-digit', 
+                                  minute: '2-digit' 
+                                })}
                               </p>
                             </div>
                           </div>
-                        ))}
-                      </div>
+                        ))
+                      )}
+                    </div>
+
+                    {/* Message Input */}
+                    <div className="border-t border-border bg-background p-4">
                       <div className="flex gap-2">
                         <Input
                           value={replyMessage}
-                          onChange={(e) =>
-                            setReplyMessage(e.target.value)
-                          }
-                          placeholder="Type your reply..."
+                          onChange={(e) => setReplyMessage(e.target.value)}
+                          placeholder="Type a message..."
                           onKeyPress={(e) =>
                             e.key === "Enter" && handleSendReply()
                           }
+                          className="flex-1"
                         />
-                        <Button onClick={handleSendReply}>
+                        <Button 
+                          onClick={handleSendReply}
+                          disabled={!replyMessage.trim()}
+                          className="gap-2"
+                        >
                           <Send className="h-4 w-4" />
                         </Button>
                       </div>
                     </div>
-                  ) : (
-                    <div className="flex h-full items-center justify-center rounded-lg border border-dashed border-border p-8">
-                      <p className="text-center text-muted-foreground">
-                        Select a conversation to view messages
-                      </p>
-                    </div>
-                  )}
-                </div>
+                  </>
+                ) : (
+                  <div className="hidden md:flex h-full flex-col items-center justify-center bg-secondary/5 p-8">
+                    <MessageCircle className="h-20 w-20 text-muted-foreground/30 mb-4" />
+                    <h3 className="font-medium text-foreground mb-2">
+                      Select a conversation
+                    </h3>
+                    <p className="text-center text-sm text-muted-foreground max-w-sm">
+                      Choose a conversation from the list to view and respond to customer messages
+                    </p>
+                  </div>
+                )}
               </div>
-            </Card>
+            </div>
           </TabsContent>
 
           {/* ====== METRICS TAB ====== */}
-          <TabsContent value="metrics" className="space-y-6">
+          <TabsContent value="metrics" className="space-y-4 sm:space-y-6">
             {/* Today's Operations - Featured Section */}
-            <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5 p-6">
-              <div className="mb-6 flex items-center justify-between">
+            <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5 p-4 sm:p-6">
+              <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                    <CalendarIconMetrics className="h-6 w-6 text-primary" />
+                  <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-primary/10">
+                    <CalendarIconMetrics className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                   </div>
                   <div>
-                    <h2 className="text-foreground">
+                    <h2 className="text-foreground text-sm sm:text-base">
                       Today's Operations
                     </h2>
-                    <p className="text-muted-foreground">
+                    <p className="text-muted-foreground text-xs sm:text-sm">
                       {new Date().toLocaleDateString("en-US", {
                         weekday: "long",
                         month: "long",
@@ -1401,20 +1765,24 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                   </div>
                 </div>
                 <Button
-                  onClick={loadBookings}
+                  onClick={() => {
+                    setLoadingBookings(true);
+                    checkForNewItems(false).finally(() => setLoadingBookings(false));
+                  }}
                   variant="outline"
                   size="sm"
                   disabled={loadingBookings}
-                  className="gap-2"
+                  className="gap-1.5 sm:gap-2 text-xs sm:text-sm w-full sm:w-auto"
                 >
                   {loadingBookings ? (
                     <>
-                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                      Updating...
+                      <div className="h-3.5 w-3.5 sm:h-4 sm:w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                      <span className="hidden sm:inline">Updating...</span>
+                      <span className="sm:hidden">Loading...</span>
                     </>
                   ) : (
                     <>
-                      <Clock className="h-4 w-4" />
+                      <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                       Refresh
                     </>
                   )}
@@ -1422,43 +1790,43 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
               </div>
 
               {/* Today's Quick Stats */}
-              <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <div className="rounded-lg bg-white p-4 shadow-sm">
-                  <div className="flex items-center gap-2">
-                    <Package className="h-5 w-5 text-primary" />
-                    <p className="text-muted-foreground">
+              <div className="mb-4 sm:mb-6 grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
+                <div className="rounded-lg bg-white p-3 sm:p-4 shadow-sm">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <Package className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                    <p className="text-muted-foreground text-xs sm:text-sm">
                       Bookings
                     </p>
                   </div>
-                  <p className="mt-2 text-foreground">
+                  <p className="mt-1.5 sm:mt-2 text-foreground text-lg sm:text-2xl">
                     {metrics.todayStats.totalBookings}
                   </p>
                 </div>
 
-                <div className="rounded-lg bg-white p-4 shadow-sm">
-                  <div className="flex items-center gap-2">
-                    <Users className="h-5 w-5 text-primary" />
-                    <p className="text-muted-foreground">
+                <div className="rounded-lg bg-white p-3 sm:p-4 shadow-sm">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                    <p className="text-muted-foreground text-xs sm:text-sm">
                       Passengers
                     </p>
                   </div>
-                  <p className="mt-2 text-foreground">
+                  <p className="mt-1.5 sm:mt-2 text-foreground text-lg sm:text-2xl">
                     {metrics.todayStats.totalPassengers}
                   </p>
                 </div>
 
-                <div className="rounded-lg bg-white p-4 shadow-sm">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-green-600" />
-                    <p className="text-muted-foreground">
+                <div className="rounded-lg bg-white p-3 sm:p-4 shadow-sm">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
+                    <p className="text-muted-foreground text-xs sm:text-sm">
                       Checked In
                     </p>
                   </div>
-                  <p className="mt-2 text-foreground">
+                  <p className="mt-1.5 sm:mt-2 text-foreground text-sm sm:text-base">
                     {metrics.todayStats.checkedIn} /{" "}
                     {metrics.todayStats.totalPassengers}
                   </p>
-                  <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted">
+                  <div className="mt-1.5 sm:mt-2 h-2 w-full overflow-hidden rounded-full bg-muted">
                     <div
                       className="h-full bg-green-600 transition-all duration-500"
                       style={{
@@ -1468,14 +1836,14 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                   </div>
                 </div>
 
-                <div className="rounded-lg bg-white p-4 shadow-sm">
-                  <div className="flex items-center gap-2">
-                    <DollarSign className="h-5 w-5 text-green-600" />
-                    <p className="text-muted-foreground">
+                <div className="rounded-lg bg-white p-3 sm:p-4 shadow-sm">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
+                    <p className="text-muted-foreground text-xs sm:text-sm">
                       Revenue
                     </p>
                   </div>
-                  <p className="mt-2 text-primary">
+                  <p className="mt-1.5 sm:mt-2 text-primary text-lg sm:text-2xl">
                     €{metrics.todayStats.revenue.toFixed(2)}
                   </p>
                 </div>
@@ -1484,11 +1852,11 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
               {/* Today's Bookings List */}
               {metrics.todaysBookings.length > 0 ? (
                 <div>
-                  <h3 className="mb-3 text-foreground">
+                  <h3 className="mb-3 text-foreground text-sm sm:text-base">
                     Today's Bookings (
                     {metrics.todaysBookings.length})
                   </h3>
-                  <div className="space-y-3">
+                  <div className="space-y-2 sm:space-y-3">
                     {metrics.todaysBookings.map(
                       (booking: any) => {
                         const totalPassengers =
@@ -1507,24 +1875,24 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                         return (
                           <div
                             key={booking.id}
-                            className="flex items-center justify-between rounded-lg border border-border bg-white p-4 shadow-sm"
+                            className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-lg border border-border bg-white p-3 sm:p-4 shadow-sm"
                           >
-                            <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-3 sm:gap-4">
                               <div className="flex flex-col">
-                                <p className="font-mono text-primary">
+                                <p className="font-mono text-primary text-xs sm:text-sm">
                                   #{bookingIdShort}
                                 </p>
-                                <p className="text-muted-foreground">
+                                <p className="text-muted-foreground text-xs">
                                   {booking.timeSlot}
                                 </p>
                               </div>
-                              <div className="h-8 w-px bg-border" />
+                              <div className="h-8 w-px bg-border hidden sm:block" />
                               <div>
-                                <p className="text-foreground">
+                                <p className="text-foreground text-sm sm:text-base">
                                   {booking.contactInfo?.name ||
                                     "N/A"}
                                 </p>
-                                <p className="text-muted-foreground">
+                                <p className="text-muted-foreground text-xs sm:text-sm">
                                   {totalPassengers}{" "}
                                   {totalPassengers === 1
                                     ? "passenger"
@@ -1532,8 +1900,8 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                                 </p>
                               </div>
                             </div>
-                            <div className="flex items-center gap-4">
-                              <p className="text-primary">
+                            <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
+                              <p className="text-primary text-sm sm:text-base">
                                 €
                                 {booking.totalPrice?.toFixed(2)}
                               </p>
@@ -1651,21 +2019,21 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
             </div>
 
             {/* Charts Row */}
-            <div className="grid gap-6 lg:grid-cols-2">
+            <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
               {/* Revenue Trend */}
-              <Card className="border-border p-6">
-                <div className="mb-6">
-                  <h3 className="text-foreground">
+              <Card className="border-border p-4 sm:p-6">
+                <div className="mb-4 sm:mb-6">
+                  <h3 className="text-foreground text-sm sm:text-base">
                     Revenue Trend (Last 14 Days)
                   </h3>
-                  <p className="text-muted-foreground">
+                  <p className="text-muted-foreground text-xs sm:text-sm">
                     Daily revenue overview
                   </p>
                 </div>
                 {metrics.revenueByDate.length > 0 ? (
                   <ResponsiveContainer
                     width="100%"
-                    height={300}
+                    height={250}
                   >
                     <LineChart data={metrics.revenueByDate}>
                       <CartesianGrid
@@ -1702,12 +2070,12 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
               </Card>
 
               {/* Ticket Type Distribution */}
-              <Card className="border-border p-6">
-                <div className="mb-6">
-                  <h3 className="text-foreground">
+              <Card className="border-border p-4 sm:p-6">
+                <div className="mb-4 sm:mb-6">
+                  <h3 className="text-foreground text-sm sm:text-base">
                     Ticket Type Distribution
                   </h3>
-                  <p className="text-muted-foreground">
+                  <p className="text-muted-foreground text-xs sm:text-sm">
                     Standard vs Guided
                   </p>
                 </div>
@@ -1715,7 +2083,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                 metrics.totalBookings > 0 ? (
                   <ResponsiveContainer
                     width="100%"
-                    height={300}
+                    height={250}
                   >
                     <RechartsPie>
                       <Pie
@@ -1965,530 +2333,8 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
             )}
           </TabsContent>
 
-          {/* ====== MESSAGES TAB ====== */}
-          <TabsContent value="messages" className="space-y-6">
-            <div className="grid gap-6 lg:grid-cols-3">
-              {/* Conversations List */}
-              <Card className="border-border p-6 lg:col-span-1">
-                <div className="mb-6 flex items-center justify-between">
-                  <div>
-                    <h2 className="mb-2 text-foreground">
-                      Conversations
-                    </h2>
-                    <div className="h-1 w-16 rounded-full bg-accent" />
-                  </div>
-                  <Button
-                    onClick={loadConversations}
-                    variant="outline"
-                    size="sm"
-                    disabled={loadingConversations}
-                  >
-                    {loadingConversations ? "..." : "Refresh"}
-                  </Button>
-                </div>
-
-                {loadingConversations ? (
-                  <div className="flex items-center justify-center py-12">
-                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-                  </div>
-                ) : conversations.length === 0 ? (
-                  <div className="rounded-lg border-2 border-dashed border-border bg-muted/30 p-8 text-center">
-                    <MessageCircle className="mx-auto mb-3 h-10 w-10 text-muted-foreground" />
-                    <p className="text-muted-foreground">
-                      No conversations yet
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {conversations.map((conv) => (
-                      <button
-                        key={conv.id}
-                        onClick={() => {
-                          setSelectedConversation(conv.id);
-                          loadConversationMessages(conv.id);
-                        }}
-                        className={`w-full rounded-lg border p-3 text-left transition-colors ${
-                          selectedConversation === conv.id
-                            ? "border-primary bg-primary/5"
-                            : "border-border bg-white hover:border-primary/50"
-                        }`}
-                      >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <p className="text-foreground">
-                              {conv.customerName}
-                            </p>
-                            <p className="text-muted-foreground">
-                              {conv.customerEmail}
-                            </p>
-                            <p className="mt-1 text-xs text-muted-foreground">
-                              {new Date(
-                                conv.lastMessageAt,
-                              ).toLocaleString()}
-                            </p>
-                          </div>
-                          {conv.unreadByAdmin > 0 && (
-                            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                              {conv.unreadByAdmin}
-                            </span>
-                          )}
-                        </div>
-                        {conv.status === "closed" && (
-                          <div className="mt-2 inline-flex rounded bg-muted px-2 py-1 text-xs text-muted-foreground">
-                            Closed
-                          </div>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </Card>
-
-              {/* Chat Messages */}
-              <Card className="border-border p-6 lg:col-span-2">
-                {selectedConversation ? (
-                  <>
-                    <div className="mb-6 flex items-center justify-between border-b border-border pb-4">
-                      <div>
-                        <h2 className="text-foreground">
-                          {
-                            conversations.find(
-                              (c) =>
-                                c.id === selectedConversation,
-                            )?.customerName
-                          }
-                        </h2>
-                        <p className="text-muted-foreground">
-                          {
-                            conversations.find(
-                              (c) =>
-                                c.id === selectedConversation,
-                            )?.customerEmail
-                          }
-                        </p>
-                      </div>
-                      <Button
-                        onClick={() =>
-                          handleCloseConversation(
-                            selectedConversation,
-                          )
-                        }
-                        variant="outline"
-                        size="sm"
-                      >
-                        Close Chat
-                      </Button>
-                    </div>
-
-                    {/* Messages */}
-                    <div
-                      className="mb-6 space-y-4"
-                      style={{
-                        maxHeight: "400px",
-                        overflowY: "auto",
-                      }}
-                    >
-                      {conversationMessages.map((msg) => (
-                        <div
-                          key={msg.id}
-                          className={`flex items-start gap-3 ${
-                            msg.sender === "admin"
-                              ? "flex-row-reverse"
-                              : ""
-                          }`}
-                        >
-                          <div
-                            className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full ${
-                              msg.sender === "admin"
-                                ? "bg-primary/10"
-                                : "bg-accent/10"
-                            }`}
-                          >
-                            <MessageCircle
-                              className={`h-4 w-4 ${
-                                msg.sender === "admin"
-                                  ? "text-primary"
-                                  : "text-accent"
-                              }`}
-                            />
-                          </div>
-                          <div
-                            className={`flex-1 rounded-lg p-4 ${
-                              msg.sender === "admin"
-                                ? "bg-primary/5 text-foreground"
-                                : "bg-secondary text-foreground"
-                            }`}
-                          >
-                            <p className="break-words">
-                              {msg.message}
-                            </p>
-                            <p className="mt-2 text-xs text-muted-foreground">
-                              {msg.senderName} ·{" "}
-                              {new Date(
-                                msg.timestamp,
-                              ).toLocaleString()}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Reply Input */}
-                    <div className="border-t border-border pt-4">
-                      <div className="flex gap-2">
-                        <Input
-                          value={replyMessage}
-                          onChange={(e) =>
-                            setReplyMessage(e.target.value)
-                          }
-                          placeholder="Type your reply..."
-                          className="flex-1 border-border"
-                          onKeyPress={(e) =>
-                            e.key === "Enter" &&
-                            handleSendReply()
-                          }
-                        />
-                        <Button
-                          onClick={handleSendReply}
-                          disabled={!replyMessage.trim()}
-                          className="bg-primary text-primary-foreground hover:bg-primary/90"
-                        >
-                          <Send className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex h-full min-h-[400px] items-center justify-center">
-                    <div className="text-center">
-                      <MessageCircle className="mx-auto mb-4 h-16 w-16 text-muted-foreground" />
-                      <h3 className="mb-2 text-foreground">
-                        Select a Conversation
-                      </h3>
-                      <p className="text-muted-foreground">
-                        Choose a conversation from the left to
-                        view and reply
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </Card>
-            </div>
-          </TabsContent>
-
-          {/* ====== BOOKINGS TAB ====== */}
-          <TabsContent value="bookings" className="space-y-6">
-            <Card className="border-border p-8">
-              <div className="mb-6 flex items-center justify-between">
-                <div>
-                  <h2 className="mb-2 text-foreground">
-                    All Bookings
-                  </h2>
-                  <div className="h-1 w-16 rounded-full bg-accent" />
-                  <p className="mt-4 text-muted-foreground">
-                    View and manage all customer bookings with
-                    check-in status
-                  </p>
-                </div>
-                <Button
-                  onClick={loadBookings}
-                  variant="outline"
-                  disabled={loadingBookings}
-                >
-                  {loadingBookings ? "Loading..." : "Refresh"}
-                </Button>
-              </div>
-
-              {loadingBookings ? (
-                <div className="flex items-center justify-center py-12">
-                  <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-                </div>
-              ) : bookings.length === 0 ? (
-                <div className="rounded-lg border-2 border-dashed border-border bg-muted/30 p-12 text-center">
-                  <Package className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-                  <h3 className="mb-2 text-foreground">
-                    No Bookings Yet
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Bookings will appear here once customers
-                    start booking day passes.
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {bookings
-                    .filter(
-                      (booking) =>
-                        booking &&
-                        booking.id &&
-                        booking.selectedDate,
-                    )
-                    .map((booking) => {
-                      const formattedDate = new Date(
-                        booking.selectedDate,
-                      ).toLocaleDateString("en-US", {
-                        weekday: "long",
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      });
-                      const bookingIdShort =
-                        booking.id.split("_")[1] || booking.id;
-
-                      // Calculate check-in status
-                      const totalPassengers =
-                        booking.passengers?.length || 0;
-                      const checkedInCount = (
-                        booking.checkIns || []
-                      ).filter(
-                        (checkInArray: any[]) =>
-                          checkInArray &&
-                          checkInArray.length > 0,
-                      ).length;
-
-                      return (
-                        <Card
-                          key={booking.id}
-                          className="border-border p-6"
-                        >
-                          <div className="grid gap-4 md:grid-cols-2">
-                            {/* Booking Info */}
-                            <div className="space-y-3">
-                              <div className="flex items-start justify-between">
-                                <div>
-                                  <p className="text-muted-foreground">
-                                    Booking ID
-                                  </p>
-                                  <p className="font-mono text-primary">
-                                    #{bookingIdShort}
-                                  </p>
-                                </div>
-                                {/* Check-in Status Badge */}
-                                <div>
-                                  {checkedInCount === 0 ? (
-                                    <div className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5">
-                                      <Clock className="h-3.5 w-3.5 text-muted-foreground" />
-                                      <span className="text-muted-foreground">
-                                        Not Checked In
-                                      </span>
-                                    </div>
-                                  ) : checkedInCount ===
-                                    totalPassengers ? (
-                                    <div className="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1.5">
-                                      <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
-                                      <span className="text-green-600">
-                                        All Checked In
-                                      </span>
-                                    </div>
-                                  ) : (
-                                    <div className="inline-flex items-center gap-1.5 rounded-full bg-yellow-100 px-3 py-1.5">
-                                      <AlertCircle className="h-3.5 w-3.5 text-yellow-600" />
-                                      <span className="text-yellow-600">
-                                        Partially Checked In
-                                      </span>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                              <div>
-                                <p className="text-muted-foreground">
-                                  Customer
-                                </p>
-                                <p className="text-foreground">
-                                  {booking.contactInfo?.name ||
-                                    "N/A"}
-                                </p>
-                                <p className="text-muted-foreground">
-                                  {booking.contactInfo?.email ||
-                                    "N/A"}
-                                </p>
-                              </div>
-                              <div>
-                                <p className="text-muted-foreground">
-                                  Date & Time
-                                </p>
-                                <p className="text-foreground">
-                                  {formattedDate}
-                                </p>
-                                <p className="text-muted-foreground">
-                                  {booking.timeSlot} - 8:00 PM
-                                </p>
-                              </div>
-                              <div>
-                                <p className="text-muted-foreground">
-                                  Passengers
-                                </p>
-                                <p className="text-foreground">
-                                  {totalPassengers}{" "}
-                                  {totalPassengers === 1
-                                    ? "passenger"
-                                    : "passengers"}
-                                </p>
-                                {checkedInCount > 0 && (
-                                  <p className="text-muted-foreground">
-                                    {checkedInCount} checked in
-                                  </p>
-                                )}
-                              </div>
-                              <div>
-                                <p className="text-muted-foreground">
-                                  Total Price
-                                </p>
-                                <p className="text-primary">
-                                  €
-                                  {booking.totalPrice?.toFixed(
-                                    2,
-                                  ) || "0.00"}
-                                </p>
-                              </div>
-                            </div>
-
-                            {/* Passenger Details */}
-                            <div className="space-y-2">
-                              <p className="text-muted-foreground">
-                                Passengers
-                              </p>
-                              <div className="space-y-1">
-                                {booking.passengers?.map(
-                                  (
-                                    passenger: any,
-                                    idx: number,
-                                  ) => {
-                                    const isCheckedIn =
-                                      booking.checkIns?.[idx] &&
-                                      booking.checkIns[idx]
-                                        .length > 0;
-                                    return (
-                                      <div
-                                        key={idx}
-                                        className="flex items-center gap-2 text-foreground"
-                                      >
-                                        {isCheckedIn ? (
-                                          <CheckCircle2 className="h-4 w-4 text-green-600" />
-                                        ) : (
-                                          <Clock className="h-4 w-4 text-muted-foreground" />
-                                        )}
-                                        <span>
-                                          {passenger.name ||
-                                            passenger.fullName ||
-                                            `Passenger ${idx + 1}`}
-                                        </span>
-                                      </div>
-                                    );
-                                  },
-                                )}
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Additional Details */}
-                          <div className="mt-4 flex flex-wrap gap-2">
-                            {booking.guidedCommentary && (
-                              <div className="inline-flex items-center gap-1 rounded-full bg-accent/20 px-3 py-1 text-accent">
-                                <MessageCircle className="h-3.5 w-3.5" />
-                                <span>Guided Tour</span>
-                              </div>
-                            )}
-                            {booking.addons &&
-                              booking.addons.length > 0 && (
-                                <div className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-primary">
-                                  <Tag className="h-3.5 w-3.5" />
-                                  <span>
-                                    {booking.addons.length} add-on
-                                    {booking.addons.length > 1
-                                      ? "s"
-                                      : ""}
-                                  </span>
-                                </div>
-                              )}
-                          </div>
-                        </Card>
-                      );
-                    })}
-                  </div>
-                )}
-              </Card>
-            </TabsContent>
-
-            {/* ====== MESSAGES TAB ====== */}
-            <TabsContent value="messages" className="space-y-6">
-              <Card className="border-border p-8">
-                <div className="mb-6">
-                  <h2 className="mb-2 text-foreground">
-                    Customer Messages
-                  </h2>
-                  <div className="h-1 w-16 rounded-full bg-accent" />
-                </div>
-
-                <div className="space-y-4">
-                  {loadingConversations ? (
-                    <div className="flex justify-center py-12">
-                      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-                    </div>
-                  ) : conversations.length === 0 ? (
-                    <div className="rounded-lg border border-border p-8 text-center">
-                      <MessageCircle className="mx-auto h-12 w-12 text-muted-foreground" />
-                      <p className="mt-4 text-muted-foreground">
-                        No messages yet
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {conversations.map((conv) => {
-                        const unreadCount = (conv.messages || []).filter(
-                          (msg: any) =>
-                            !msg.isAdmin && !msg.read,
-                        ).length;
-
-                        return (
-                          <Card
-                            key={conv.id}
-                            className="cursor-pointer border-border p-4 transition-colors hover:bg-secondary/50"
-                            onClick={() => {
-                              setSelectedConversation(conv);
-                              loadConversationMessages(
-                                conv.id,
-                              );
-                            }}
-                          >
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <div className="mb-1 flex items-center gap-2">
-                                  <p className="text-foreground">
-                                    {conv.name || "Anonymous"}
-                                  </p>
-                                  {unreadCount > 0 && (
-                                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                                      {unreadCount}
-                                    </span>
-                                  )}
-                                </div>
-                                <p className="text-muted-foreground">
-                                  {conv.email}
-                                </p>
-                                <p className="mt-1 line-clamp-1 text-muted-foreground">
-                                  {(conv.messages && conv.messages.length > 0)
-                                    ? (conv.messages[conv.messages.length - 1]?.message || "No messages")
-                                    : "No messages"}
-                                </p>
-                              </div>
-                              <div className="text-muted-foreground">
-                                {new Date(
-                                  conv.updatedAt,
-                                ).toLocaleDateString()}
-                              </div>
-                            </div>
-                          </Card>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              </Card>
-            </TabsContent>
-
-            {/* ====== SETTINGS TAB ====== */}
-            <TabsContent value="settings" className="space-y-6">
+          {/* ====== SETTINGS TAB ====== */}
+            <TabsContent value="settings" className="space-y-4 sm:space-y-6">
               {/* Feature Flags */}
               <FeatureFlagManager />
               
@@ -2496,9 +2342,9 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
               <SunsetSpecialManager />
               
               {/* Pricing & Availability - moved from old location */}
-              <Card className="border-border p-8">
-                <div className="mb-6">
-                  <h2 className="mb-2 text-foreground">
+              <Card className="border-border p-4 sm:p-6 lg:p-8">
+                <div className="mb-4 sm:mb-6">
+                  <h2 className="mb-2 text-foreground text-sm sm:text-base">
                     Pricing Settings
                   </h2>
                   <div className="h-1 w-16 rounded-full bg-accent" />
@@ -2785,7 +2631,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
             </TabsContent>
 
             {/* ====== DRIVERS TAB ====== */}
-            <TabsContent value="drivers" className="space-y-6">
+            <TabsContent value="drivers" className="space-y-4 sm:space-y-6">
               <DriverManagement />
             </TabsContent>
 

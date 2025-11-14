@@ -123,9 +123,11 @@ const PrivateToursPage = lazy(() =>
 );
 
 const SunsetSpecialPurchasePage = lazy(() =>
-  import("./components/SunsetSpecialPurchasePage").then((m) => ({
-    default: m.SunsetSpecialPurchasePage,
-  })),
+  import("./components/SunsetSpecialPurchasePage").then(
+    (m) => ({
+      default: m.SunsetSpecialPurchasePage,
+    }),
+  ),
 );
 
 // Loading fallback component
@@ -139,7 +141,15 @@ function PageLoader() {
 
 // Detect user's browser language and map to supported languages
 function detectBrowserLanguage(): string {
-  const supportedLanguages = ["en", "es", "fr", "de", "pt", "nl", "it"];
+  const supportedLanguages = [
+    "en",
+    "es",
+    "fr",
+    "de",
+    "pt",
+    "nl",
+    "it",
+  ];
 
   // Get browser language (e.g., "en-US", "pt-BR", "es")
   const browserLang =
@@ -166,7 +176,10 @@ export default function App() {
   );
   const [bookingData, setBookingData] = useState<any>(null);
   const [pageData, setPageData] = useState<any>(null);
-  const [driverSession, setDriverSession] = useState<{ driver: any; token: string } | null>(() => {
+  const [driverSession, setDriverSession] = useState<{
+    driver: any;
+    token: string;
+  } | null>(() => {
     // Check for existing driver session in localStorage
     const savedSession = localStorage.getItem("driver_session");
     if (savedSession) {
@@ -282,16 +295,20 @@ export default function App() {
   useEffect(() => {
     async function syncContent() {
       try {
-        const { syncContentFromDatabaseWithLanguage } = await import("./lib/contentManager");
-        const freshContent = await syncContentFromDatabaseWithLanguage(language);
+        const { syncContentFromDatabaseWithLanguage } =
+          await import("./lib/contentManager");
+        const freshContent =
+          await syncContentFromDatabaseWithLanguage(language);
         setWebsiteContent(freshContent);
-        console.log('✅ Content synced from database');
+        console.log("✅ Content synced from database");
       } catch (error) {
-        console.log('ℹ️ Using local content (backend unavailable)');
+        console.log(
+          "ℹ️ Using local content (backend unavailable)",
+        );
         // Silently fail and use local content - this is expected in development
       }
     }
-    
+
     // Delay sync slightly to not block initial render
     const timer = setTimeout(syncContent, 100);
     return () => clearTimeout(timer);
@@ -301,17 +318,23 @@ export default function App() {
   useEffect(() => {
     async function syncContentForLanguage() {
       try {
-        const { syncContentFromDatabaseWithLanguage } = await import("./lib/contentManager");
-        const freshContent = await syncContentFromDatabaseWithLanguage(language);
+        const { syncContentFromDatabaseWithLanguage } =
+          await import("./lib/contentManager");
+        const freshContent =
+          await syncContentFromDatabaseWithLanguage(language);
         setWebsiteContent(freshContent);
-        console.log(`✅ Content synced for language: ${language}`);
+        console.log(
+          `✅ Content synced for language: ${language}`,
+        );
       } catch (error) {
-        console.log('ℹ️ Using local content for language change');
+        console.log(
+          "ℹ️ Using local content for language change",
+        );
         // Fallback to local content
         setWebsiteContent(loadContentWithLanguage(language));
       }
     }
-    
+
     syncContentForLanguage();
   }, [language]);
 
@@ -319,18 +342,20 @@ export default function App() {
   useEffect(() => {
     async function periodicSync() {
       try {
-        const { syncContentFromDatabaseWithLanguage } = await import("./lib/contentManager");
-        const freshContent = await syncContentFromDatabaseWithLanguage(language);
+        const { syncContentFromDatabaseWithLanguage } =
+          await import("./lib/contentManager");
+        const freshContent =
+          await syncContentFromDatabaseWithLanguage(language);
         setWebsiteContent(freshContent);
-        console.log('🔄 Periodic content refresh completed');
+        console.log("🔄 Periodic content refresh completed");
       } catch (error) {
         // Silently fail - this is a background refresh
       }
     }
-    
+
     // Set up periodic refresh every 3 minutes (180000ms)
     const interval = setInterval(periodicSync, 180000);
-    
+
     return () => clearInterval(interval);
   }, [language]); // Re-set interval when language changes
 
@@ -338,6 +363,38 @@ export default function App() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [currentPage]);
+
+  // Listen for content updates from admin panel
+  useEffect(() => {
+    const handleContentUpdate = async () => {
+      console.log(
+        "📢 Content update event received, reloading...",
+      );
+      try {
+        const { syncContentFromDatabaseWithLanguage } =
+          await import("./lib/contentManager");
+        const freshContent =
+          await syncContentFromDatabaseWithLanguage(language);
+        setWebsiteContent(freshContent);
+        console.log("✅ Content reloaded after admin update");
+        toast.success("Content updated!");
+      } catch (error) {
+        console.error("Error reloading content:", error);
+        // Fallback to localStorage
+        setWebsiteContent(loadContentWithLanguage(language));
+      }
+    };
+
+    window.addEventListener(
+      "content-updated",
+      handleContentUpdate,
+    );
+    return () =>
+      window.removeEventListener(
+        "content-updated",
+        handleContentUpdate,
+      );
+  }, [language]);
 
   const handleLanguageChange = (newLanguage: string) => {
     setLanguage(newLanguage);
@@ -357,7 +414,10 @@ export default function App() {
   const handleDriverLogin = (driver: any, token: string) => {
     const session = { driver, token };
     setDriverSession(session);
-    localStorage.setItem("driver_session", JSON.stringify(session));
+    localStorage.setItem(
+      "driver_session",
+      JSON.stringify(session),
+    );
     setCurrentPage("operations");
   };
 
@@ -372,7 +432,11 @@ export default function App() {
   const getSeoConfig = () => {
     switch (currentPage) {
       case "home":
-        return { ...websiteContent.seo.home, path: "/", type: "service" as const };
+        return {
+          ...websiteContent.seo.home,
+          path: "/",
+          type: "service" as const,
+        };
       case "attractions":
         return {
           ...websiteContent.seo.attractions,
@@ -386,7 +450,11 @@ export default function App() {
           type: "product" as const,
         };
       case "about":
-        return { ...websiteContent.seo.about, path: "/about", type: "service" as const };
+        return {
+          ...websiteContent.seo.about,
+          path: "/about",
+          type: "service" as const,
+        };
       case "request-pickup":
         return {
           title: "Request Pickup - Hop On Sintra Live Tracking",
@@ -424,7 +492,8 @@ export default function App() {
         };
       case "private-tours":
         return {
-          title: "Private Tours of Sintra - Personalized Guided Experiences",
+          title:
+            "Private Tours of Sintra - Personalized Guided Experiences",
           description:
             "Experience Sintra your way with a private tour. Expert local guides, custom itineraries, and flexible schedules. Perfect for families, couples, and groups seeking a personalized adventure.",
           keywords:
@@ -434,7 +503,8 @@ export default function App() {
         };
       case "sunset-special-purchase":
         return {
-          title: "Add Sunset Special - Exclusive Sunset Drive to Cabo da Roca",
+          title:
+            "Add Sunset Special - Exclusive Sunset Drive to Cabo da Roca",
           description:
             "Add an exclusive sunset drive to Cabo da Roca to your Hop On Sintra booking. Experience the breathtaking sunset at Europe's westernmost point.",
           keywords:
@@ -443,7 +513,11 @@ export default function App() {
           type: "product" as const,
         };
       default:
-        return { ...websiteContent.seo.home, path: "/", type: "service" as const };
+        return {
+          ...websiteContent.seo.home,
+          path: "/",
+          type: "service" as const,
+        };
     }
   };
 
@@ -495,7 +569,12 @@ export default function App() {
       case "about":
         return <AboutPage language={language} />;
       case "blog":
-        return <BlogPage onNavigate={handleNavigate} language={language} />;
+        return (
+          <BlogPage
+            onNavigate={handleNavigate}
+            language={language}
+          />
+        );
       case "blog-article":
         return (
           <BlogArticlePage
@@ -548,7 +627,10 @@ export default function App() {
         );
       case "manage-booking":
         return (
-          <ManageBookingPage onNavigate={handleNavigate} language={language} />
+          <ManageBookingPage
+            onNavigate={handleNavigate}
+            language={language}
+          />
         );
       case "driver-login":
         return (
@@ -559,7 +641,9 @@ export default function App() {
           // If no session, redirect to login
           setCurrentPage("driver-login");
           return (
-            <DriverLoginPage onLoginSuccess={handleDriverLogin} />
+            <DriverLoginPage
+              onLoginSuccess={handleDriverLogin}
+            />
           );
         }
         return (
