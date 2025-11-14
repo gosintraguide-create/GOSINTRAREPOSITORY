@@ -1,5 +1,6 @@
 // Automatic Translation Service
-// Translates content automatically using LibreTranslate (open-source, free)
+// Now uses MyMemory Translated API (free, no API key required)
+// Fallback to LibreTranslate if MyMemory fails
 
 export interface TranslationResult {
   success: boolean;
@@ -10,11 +11,13 @@ export interface TranslationResult {
 // Supported languages
 export const SUPPORTED_LANGUAGES = ['en', 'pt', 'es', 'fr', 'de', 'nl', 'it'];
 
-// LibreTranslate API configuration
-// You can use the free public instance or host your own
+// MyMemory API configuration (free, no API key required)
+const MYMEMORY_API = 'https://api.mymemory.translated.net/get';
+
+// LibreTranslate API configuration (fallback)
 const LIBRE_TRANSLATE_API = 'https://libretranslate.com/translate';
 
-// Get API key from localStorage if available
+// Get API key from localStorage if available (for LibreTranslate fallback)
 function getApiKey(): string | null {
   try {
     return localStorage.getItem('libretranslate-api-key');
@@ -24,7 +27,109 @@ function getApiKey(): string | null {
 }
 
 /**
+ * Translate text using MyMemory API (free)
+ */
+async function translateWithMyMemory(
+  text: string,
+  sourceLang: string,
+  targetLang: string
+): Promise<TranslationResult> {
+  try {
+    const langPair = `${sourceLang}|${targetLang}`;
+    const encodedText = encodeURIComponent(text);
+    const url = `${MYMEMORY_API}?q=${encodedText}&langpair=${langPair}`;
+
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.responseStatus !== 200) {
+      throw new Error(data.responseDetails || 'Translation failed');
+    }
+
+    if (!data.responseData?.translatedText) {
+      throw new Error('No translated text in response');
+    }
+    
+    return {
+      success: true,
+      translatedText: data.responseData.translatedText,
+    };
+  } catch (error) {
+    throw error;
+  }
+}
+
+/**
+ * Translate text using LibreTranslate (fallback)
+ */
+async function translateWithLibreTranslate(
+  text: string,
+  sourceLang: string,
+  targetLang: string
+): Promise<TranslationResult> {
+  const apiKey = getApiKey();
+  const requestBody: any = {
+    q: text,
+    source: sourceLang,
+    target: targetLang,
+    format: 'text',
+  };
+
+  // Add API key if available
+  if (apiKey) {
+    requestBody.api_key = apiKey;
+  }
+
+  const response = await fetch(LIBRE_TRANSLATE_API, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(requestBody),
+  });
+
+  // Get response text for better error logging
+  const responseText = await response.text();
+  
+  if (!response.ok) {
+    let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+    
+    // Try to parse error details
+    try {
+      const errorData = JSON.parse(responseText);
+      if (errorData.error) {
+        errorMessage = errorData.error;
+      }
+    } catch {
+      // If not JSON, use response text
+      if (responseText) {
+        errorMessage += ` - ${responseText.substring(0, 200)}`;
+      }
+    }
+    
+    throw new Error(errorMessage);
+  }
+
+  const data = JSON.parse(responseText);
+  
+  if (!data.translatedText) {
+    throw new Error('No translated text in response');
+  }
+  
+  return {
+    success: true,
+    translatedText: data.translatedText,
+  };
+}
+
+/**
  * Translate text from one language to another with retry logic
+ * Uses MyMemory (free) as primary, LibreTranslate as fallback
  * @param text Text to translate
  * @param sourceLang Source language code (e.g., 'en')
  * @param targetLang Target language code (e.g., 'pt')
@@ -64,59 +169,17 @@ export async function translateText(
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      const apiKey = getApiKey();
-      const requestBody: any = {
-        q: text,
-        source: sourceLang,
-        target: targetLang,
-        format: 'text',
-      };
-
-      // Add API key if available
-      if (apiKey) {
-        requestBody.api_key = apiKey;
-      }
-
-      const response = await fetch(LIBRE_TRANSLATE_API, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      // Get response text for better error logging
-      const responseText = await response.text();
-      
-      if (!response.ok) {
-        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+      // Try MyMemory first (free, no API key)
+      try {
+        const result = await translateWithMyMemory(text, sourceLang, targetLang);
+        return result;
+      } catch (myMemoryError) {
+        console.warn(`⚠️ MyMemory failed, trying LibreTranslate fallback...`);
         
-        // Try to parse error details
-        try {
-          const errorData = JSON.parse(responseText);
-          if (errorData.error) {
-            errorMessage = errorData.error;
-          }
-        } catch {
-          // If not JSON, use response text
-          if (responseText) {
-            errorMessage += ` - ${responseText.substring(0, 200)}`;
-          }
-        }
-        
-        throw new Error(errorMessage);
+        // Fallback to LibreTranslate
+        const result = await translateWithLibreTranslate(text, sourceLang, targetLang);
+        return result;
       }
-
-      const data = JSON.parse(responseText);
-      
-      if (!data.translatedText) {
-        throw new Error('No translated text in response');
-      }
-      
-      return {
-        success: true,
-        translatedText: data.translatedText,
-      };
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
       
