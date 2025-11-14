@@ -105,7 +105,7 @@ export function ContentEditor() {
   };
 
   const handleTranslateNow = async () => {
-    if (confirm("This will translate all current content to all supported languages. This may take a few minutes. Continue?")) {
+    if (confirm("This will translate all current content to 7 languages using MyMemory API (free). This may take a few minutes. Continue?")) {
       try {
         setIsTranslating(true);
         toast.info("Translating content to all languages...");
@@ -304,7 +304,23 @@ export function ContentEditor() {
         <Alert>
           <AlertDescription className="flex items-center gap-2">
             <Loader2 className="h-4 w-4 animate-spin" />
-            Translating to {translationProgress.language}... {Math.round(translationProgress.progress)}%
+            {translationProgress.language === 'complete' ? (
+              'Finalizing translations...'
+            ) : (
+              <>
+                Translating to {
+                  { 
+                    en: 'English', 
+                    pt: 'Portuguese', 
+                    es: 'Spanish', 
+                    fr: 'French', 
+                    de: 'German', 
+                    nl: 'Dutch', 
+                    it: 'Italian' 
+                  }[translationProgress.language] || translationProgress.language
+                }... {Math.round(translationProgress.progress)}%
+              </>
+            )}
           </AlertDescription>
         </Alert>
       )}
@@ -339,7 +355,7 @@ export function ContentEditor() {
                 Auto-Translate on Save
               </Label>
               <p className="mt-1 text-sm text-muted-foreground">
-                Automatically translate content when clicking "Save & Translate"
+                Automatically translate content to 7 languages using MyMemory API (free)
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -395,24 +411,29 @@ export function ContentEditor() {
           </div>
 
           {/* Manual translation button */}
-          <Button
-            variant="outline"
-            onClick={handleTranslateNow}
-            className="w-full gap-2"
-            disabled={isTranslating}
-          >
-            {isTranslating ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Translating...
-              </>
-            ) : (
-              <>
-                <Languages className="h-4 w-4" />
-                Translate All Content Now
-              </>
-            )}
-          </Button>
+          <div className="space-y-2">
+            <Button
+              variant="outline"
+              onClick={handleTranslateNow}
+              className="w-full gap-2"
+              disabled={isTranslating}
+            >
+              {isTranslating ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Translating...
+                </>
+              ) : (
+                <>
+                  <Languages className="h-4 w-4" />
+                  Translate All Content Now
+                </>
+              )}
+            </Button>
+            <p className="text-xs text-center text-muted-foreground">
+              Uses MyMemory API (free, no API key needed)
+            </p>
+          </div>
         </div>
       </Card>
 

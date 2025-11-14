@@ -1521,9 +1521,7 @@ export async function saveTranslatedContent(
     
     if (!serviceStatus.available) {
       console.log('ℹ️ Translation service not available:', serviceStatus.error);
-      const errorMsg = serviceStatus.needsApiKey 
-        ? 'Translation requires a LibreTranslate API key. Get a free API key at https://libretranslate.com and add it in the admin settings.' 
-        : `Translation service unavailable: ${serviceStatus.error || 'Unknown error'}`;
+      const errorMsg = `Translation service unavailable: ${serviceStatus.error || 'Unknown error'}`;
       return { success: false, error: errorMsg };
     }
     
