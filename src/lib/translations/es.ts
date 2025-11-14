@@ -493,7 +493,7 @@ export const es: WebsiteContent = {
       other: "Decidir Más Tarde",
     },
     timeSlots: {
-      guidedTourLabel: "Visita Guiada",
+      guidedTourLabel: "Insight Tour",
     },
     passengersSelection: {
       yourInformation: "Tu Información",

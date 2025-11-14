@@ -448,7 +448,7 @@ export const en: WebsiteContent = {
     },
     dateSelection: {
       planYourVisit: "Plan your visit",
-      planYourVisitDescription: "Your day pass gives you unlimited hop-on/hop-off access from your start time until 7:00 PM. Start times help us manage capacity.",
+      planYourVisitDescription: "Your day pass gives you unlimited hop-on/hop-off access from your chosen start time until 7:00 PM.\n\nSome start times include our Insight Tour, a longer, more detailed ride where your driver shares the stories and history behind Sintra's monuments.\n\nIf you select a tour departure, the Insight Tour is already included in your ticket.",
       selectDate: "Select Date",
       pickDate: "Pick a date",
       preferredStartTime: "Preferred Start Time",
@@ -544,7 +544,7 @@ export const en: WebsiteContent = {
       other: "Will Decide Later",
     },
     timeSlots: {
-      guidedTourLabel: "Guided Tour",
+      guidedTourLabel: "Insight Tour",
     },
     passengersSelection: {
       yourInformation: "Your Information",

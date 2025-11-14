@@ -493,7 +493,7 @@ export const nl: WebsiteContent = {
       other: "Later Beslissen",
     },
     timeSlots: {
-      guidedTourLabel: "Begeleide Tour",
+      guidedTourLabel: "Insight Tour",
     },
     passengersSelection: {
       yourInformation: "Jouw Informatie",

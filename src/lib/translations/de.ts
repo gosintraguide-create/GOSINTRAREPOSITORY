@@ -276,7 +276,7 @@ export const de: WebsiteContent = {
     "sintra-palace": {
       name: "Nationalpalast von Sintra",
       description: "Im Herzen von Sintras historischem Zentrum gelegen, ist dies der am besten erhaltene mittelalterliche Königspalast Portugals, berühmt für seine markanten Zwillingsschornsteine und prächtige Fliesenarbeit.",
-      longDescription: "Der Nationalpalast von Sintra war seit dem frühen 15. Jahrhundert eine königliche Residenz und wurde bis 1910 kontinuierlich von der portugiesischen Königsfamilie bewohnt. Der Palast zeigt verschiedene architektonische Stile, die sich über die Jahrhunderte angesammelt haben, vom Mittelalter bis zur Renaissance. Sein Inneres präsentiert einige der besten Beispiele mudéjarischer Fliesenarbeit in Portugal, zusammen mit bemalten Decken, die Armillarsphären, Elstern und Schw��ne darstellen.",
+      longDescription: "Der Nationalpalast von Sintra war seit dem frühen 15. Jahrhundert eine königliche Residenz und wurde bis 1910 kontinuierlich von der portugiesischen Königsfamilie bewohnt. Der Palast zeigt verschiedene architektonische Stile, die sich über die Jahrhunderte angesammelt haben, vom Mittelalter bis zur Renaissance. Sein Inneres präsentiert einige der besten Beispiele mudéjarischer Fliesenarbeit in Portugal, zusammen mit bemalten Decken, die Armillarsphären, Elstern und Schwne darstellen.",
       highlights: [
         "Ikonische konische Zwillingsschornsteine",
         "Prächtige Azulejo-Fliesensammlung",
@@ -493,7 +493,7 @@ export const de: WebsiteContent = {
       other: "Später Entscheiden",
     },
     timeSlots: {
-      guidedTourLabel: "Geführte Tour",
+      guidedTourLabel: "Insight Tour",
     },
     passengersSelection: {
       yourInformation: "Ihre Informationen",

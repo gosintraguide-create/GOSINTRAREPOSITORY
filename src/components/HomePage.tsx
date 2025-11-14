@@ -162,6 +162,16 @@ export function HomePage({
     }
   }, [language, websiteContent]);
 
+  // Listen for content updates from admin panel
+  useEffect(() => {
+    const handleContentUpdate = () => {
+      setLegacyContent(loadContentWithLanguage(language));
+    };
+
+    window.addEventListener('content-updated', handleContentUpdate);
+    return () => window.removeEventListener('content-updated', handleContentUpdate);
+  }, [language]);
+
   // Listen for PWA install prompt
   useEffect(() => {
     // Check if already installed
@@ -452,7 +462,7 @@ export function HomePage({
                     <CheckCircle className="mt-1 h-5 w-5 flex-shrink-0 text-accent" />
                     <div>
                       <p className="text-foreground">{legacyContent.homepage.realTimeTrackingTitle}</p>
-                      <p className="text-sm text-muted-foreground">{legacyContent.homepage.realTimeTrackingSubtitle}</p>
+                      <p className="text-sm text-muted-foreground font-[Microsoft_Sans_Serif]">{legacyContent.homepage.realTimeTrackingSubtitle}</p>
                     </div>
                   </div>
                 </div>

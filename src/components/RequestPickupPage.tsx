@@ -272,7 +272,7 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
                 </span>
               </div>
               {parseInt(groupSize) > 6 && (
-                <p className="mt-2 text-accent">Coordinating multiple vehicles may take 3-5 minutes</p>
+                <p className="mt-2 text-accent">Coordinating multiple vehicles</p>
               )}
             </div>
           </div>
@@ -313,10 +313,6 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
                   <span>Group Size:</span>
                   <span className="text-foreground">{groupSize} {parseInt(groupSize) === 1 ? 'passenger' : 'passengers'}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span>Estimated Arrival:</span>
-                  <span className="text-foreground">{parseInt(groupSize) > 6 ? '5-8 minutes' : '3-5 minutes'}</span>
-                </div>
               </div>
             </div>
 
@@ -349,7 +345,7 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
                   {parseInt(groupSize) <= 6 ? (
                     <p>Our drivers have been notified of your group size and will dispatch an <strong className="text-foreground">appropriate vehicle</strong> to accommodate everyone comfortably.</p>
                   ) : parseInt(groupSize) === 7 ? (
-                    <p>We've coordinated <strong className="text-foreground">2 vehicles</strong> for your group. They'll arrive together or within 1-2 minutes of each other.</p>
+                    <p>We've coordinated <strong className="text-foreground">2 vehicles</strong> for your group. They'll arrive together.</p>
                   ) : (
                     <p>We've coordinated <strong className="text-foreground">{Math.ceil(parseInt(groupSize) / 6)} vehicles</strong> for your large group. Our drivers will ensure everyone departs together.</p>
                   )}
@@ -481,7 +477,7 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
                     <div className="flex items-start gap-2 text-muted-foreground">
                       <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0 text-accent" />
                       <p>
-                        Your group will require <strong className="text-foreground">2 vehicles</strong> that will be coordinated to arrive together. This may add 2-3 minutes to pickup time.
+                        Your group will require <strong className="text-foreground">2 vehicles</strong> that will be coordinated to arrive together.
                       </p>
                     </div>
                   </div>
@@ -490,7 +486,7 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
                     <div className="flex items-start gap-2 text-muted-foreground">
                       <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0 text-accent" />
                       <p>
-                        Large group! You'll need <strong className="text-foreground">{Math.ceil(parseInt(groupSize) / 6)} vehicles</strong> coordinated to arrive together. This may add 3-5 minutes to pickup time.
+                        Large group! You'll need <strong className="text-foreground">{Math.ceil(parseInt(groupSize) / 6)} vehicles</strong> coordinated to arrive together.
                       </p>
                     </div>
                   </div>
@@ -549,8 +545,7 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
                   <span>Service Hours</span>
                 </div>
                 <p className="text-muted-foreground">
-                  Our vehicles run every 30 minutes from 9:00 AM to 7:00 PM daily. 
-                  Average wait time is 5-10 minutes.
+                  Our vehicles run every 30 minutes from 9:00 AM to 7:00 PM daily.
                 </p>
               </div>
 
@@ -603,7 +598,7 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
               </div>
               <h3 className="mb-2 text-foreground">3. Vehicles Arrive</h3>
               <p className="text-muted-foreground">
-                Your vehicle(s) arrive in 3-5 minutes, coordinated for groups over 6
+                Your vehicle(s) arrive shortly, coordinated for groups over 6
               </p>
             </div>
           </div>

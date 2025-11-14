@@ -101,55 +101,26 @@ export function BlogPage({ onNavigate, language }: BlogPageProps) {
       />
 
       {/* Hero Section */}
-      <section className="bg-primary py-16 sm:py-24">
+      <section className="border-b border-border bg-white py-12">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <motion.div
-              className="mb-6 flex justify-center"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 0.5, type: "spring" }}
-            >
-              <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-white shadow-xl sm:h-24 sm:w-24">
-                <BookOpen className="h-10 w-10 text-primary sm:h-12 sm:w-12" />
-              </div>
-            </motion.div>
-            
-            <motion.h1
-              className="mb-4 text-white"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
+          <div className="mb-6 text-center">
+            <h1 className="mb-3 text-foreground">
               {content.blog.pageTitle}
-            </motion.h1>
-            
-            <motion.p
-              className="mx-auto mb-8 max-w-2xl text-xl text-white/90"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
+            </h1>
+            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
               {content.blog.pageSubtitle}
-            </motion.p>
+            </p>
+          </div>
 
-            <motion.div
-              className="mx-auto max-w-2xl"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-            >
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  type="text"
-                  placeholder={content.blog.searchPlaceholder}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-14 rounded-full bg-white pl-12 pr-4 shadow-xl"
-                />
-              </div>
-            </motion.div>
+          <div className="relative mx-auto max-w-2xl">
+            <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder={content.blog.searchPlaceholder}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="h-12 rounded-xl bg-secondary/30 pl-12 pr-4"
+            />
           </div>
         </div>
       </section>

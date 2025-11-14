@@ -278,7 +278,6 @@ export function PickupLocationMap({ selectedLocation, onLocationSelect }: Pickup
                 {!isLast && (
                   <div className="ml-14 py-0.5 flex items-center gap-1 text-[10px] text-muted-foreground">
                     <div className="h-3 w-px" style={{ backgroundColor: `${routeColor}40` }} />
-                    <span>~5 min</span>
                   </div>
                 )}
               </div>

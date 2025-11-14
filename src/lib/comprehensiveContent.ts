@@ -468,6 +468,11 @@ export interface ComprehensiveContent {
     manageBooking: { title: string; description: string; keywords: string };
     requestPickup: { title: string; description: string; keywords: string };
   };
+
+  // Admin Settings (persisted across sessions and devices)
+  adminSettings?: {
+    autoTranslateEnabled: boolean;
+  };
 }
 
 // Default English Content
@@ -1194,6 +1199,9 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
       keywords: "request pickup Sintra, on-demand transport Sintra, Sintra ride request",
     },
   },
+  adminSettings: {
+    autoTranslateEnabled: false,
+  },
 };
 
 // Import API functions
@@ -1521,7 +1529,9 @@ export async function saveTranslatedContent(
     
     if (!serviceStatus.available) {
       console.log('ℹ️ Translation service not available:', serviceStatus.error);
-      const errorMsg = `Translation service unavailable: ${serviceStatus.error || 'Unknown error'}`;
+      const errorMsg = serviceStatus.needsApiKey 
+        ? 'Translation requires a LibreTranslate API key. Get a free API key at https://libretranslate.com and add it in the admin settings.' 
+        : `Translation service unavailable: ${serviceStatus.error || 'Unknown error'}`;
       return { success: false, error: errorMsg };
     }
     

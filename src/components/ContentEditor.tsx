@@ -44,16 +44,27 @@ export function ContentEditor() {
     language: string;
     progress: number;
   } | null>(null);
-  const [autoTranslateEnabled, setAutoTranslateEnabled] = useState(true);
+  const [autoTranslateEnabled, setAutoTranslateEnabled] = useState(false);
   const [translationStatus, setTranslationStatus] = useState(getTranslationStatus());
 
   useEffect(() => {
-    setContent(loadComprehensiveContent());
+    const loadedContent = loadComprehensiveContent();
+    setContent(loadedContent);
     setMainContent(loadMainContent());
+    // Load autoTranslateEnabled from server settings
+    setAutoTranslateEnabled(loadedContent.adminSettings?.autoTranslateEnabled ?? false);
   }, []);
 
   const handleSave = async () => {
     try {
+      // Update content with current admin settings
+      const updatedContent = {
+        ...content,
+        adminSettings: {
+          autoTranslateEnabled,
+        },
+      };
+      
       // Save main content first
       const mainResult = await saveMainContentAsync(mainContent);
       
@@ -63,7 +74,7 @@ export function ContentEditor() {
         toast.info("Saving content and updating translations...");
         
         // Use incremental translation (only translate changed content)
-        const result = await saveIncrementalTranslation(content, 'en', (language, progress) => {
+        const result = await saveIncrementalTranslation(updatedContent, 'en', (language, progress) => {
           setTranslationProgress({ language, progress });
         });
         
@@ -83,7 +94,7 @@ export function ContentEditor() {
         }
       } else {
         // Save without translation
-        const result = await saveComprehensiveContentAsync(content);
+        const result = await saveComprehensiveContentAsync(updatedContent);
         
         if (result.success && mainResult.success) {
           setHasChanges(false);
@@ -104,8 +115,31 @@ export function ContentEditor() {
     }
   };
 
+  const handleAutoTranslateToggle = async (checked: boolean) => {
+    setAutoTranslateEnabled(checked);
+    
+    // Immediately save the setting to the server
+    try {
+      const updatedContent = {
+        ...content,
+        adminSettings: {
+          autoTranslateEnabled: checked,
+        },
+      };
+      
+      await saveComprehensiveContentAsync(updatedContent);
+      setContent(updatedContent);
+      toast.success(checked ? "Auto-translate enabled" : "Auto-translate disabled");
+    } catch (error) {
+      console.error('Error saving auto-translate setting:', error);
+      toast.error("Failed to save setting");
+      // Revert the toggle if save failed
+      setAutoTranslateEnabled(!checked);
+    }
+  };
+
   const handleTranslateNow = async () => {
-    if (confirm("This will translate all current content to 7 languages using MyMemory API (free). This may take a few minutes. Continue?")) {
+    if (confirm("This will translate all current content to all supported languages. This may take a few minutes. Continue?")) {
       try {
         setIsTranslating(true);
         toast.info("Translating content to all languages...");
@@ -224,6 +258,27 @@ export function ContentEditor() {
       setHasChanges(true);
       return newContent;
     });
+    
+    // Also update mainContent for fields that exist in both
+    setMainContent(prev => {
+      const newMainContent = JSON.parse(JSON.stringify(prev));
+      let current: any = newMainContent;
+      let exists = true;
+      
+      for (let i = 0; i < path.length; i++) {
+        if (current[path[i]] === undefined) {
+          exists = false;
+          break;
+        }
+        current = current[path[i]];
+      }
+      
+      if (exists && current[index] !== undefined) {
+        current[index][field] = value;
+      }
+      
+      return newMainContent;
+    });
   };
 
   const addArrayItem = (path: string[], template: any) => {
@@ -238,6 +293,27 @@ export function ContentEditor() {
       current.push(template);
       setHasChanges(true);
       return newContent;
+    });
+    
+    // Also update mainContent for fields that exist in both
+    setMainContent(prev => {
+      const newMainContent = JSON.parse(JSON.stringify(prev));
+      let current: any = newMainContent;
+      let exists = true;
+      
+      for (let i = 0; i < path.length; i++) {
+        if (current[path[i]] === undefined) {
+          exists = false;
+          break;
+        }
+        current = current[path[i]];
+      }
+      
+      if (exists && Array.isArray(current)) {
+        current.push(template);
+      }
+      
+      return newMainContent;
     });
   };
 
@@ -254,6 +330,27 @@ export function ContentEditor() {
       setHasChanges(true);
       return newContent;
     });
+    
+    // Also update mainContent for fields that exist in both
+    setMainContent(prev => {
+      const newMainContent = JSON.parse(JSON.stringify(prev));
+      let current: any = newMainContent;
+      let exists = true;
+      
+      for (let i = 0; i < path.length; i++) {
+        if (current[path[i]] === undefined) {
+          exists = false;
+          break;
+        }
+        current = current[path[i]];
+      }
+      
+      if (exists && Array.isArray(current)) {
+        current.splice(index, 1);
+      }
+      
+      return newMainContent;
+    });
   };
 
   return (
@@ -267,7 +364,7 @@ export function ContentEditor() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={handleReset} className="gap-2">
+          <Button variant="outline" onClick={handleReset} className="gap-2 hidden">
             <RefreshCw className="h-4 w-4" />
             Reset to Defaults
           </Button>
@@ -304,23 +401,7 @@ export function ContentEditor() {
         <Alert>
           <AlertDescription className="flex items-center gap-2">
             <Loader2 className="h-4 w-4 animate-spin" />
-            {translationProgress.language === 'complete' ? (
-              'Finalizing translations...'
-            ) : (
-              <>
-                Translating to {
-                  { 
-                    en: 'English', 
-                    pt: 'Portuguese', 
-                    es: 'Spanish', 
-                    fr: 'French', 
-                    de: 'German', 
-                    nl: 'Dutch', 
-                    it: 'Italian' 
-                  }[translationProgress.language] || translationProgress.language
-                }... {Math.round(translationProgress.progress)}%
-              </>
-            )}
+            Translating to {translationProgress.language}... {Math.round(translationProgress.progress)}%
           </AlertDescription>
         </Alert>
       )}
@@ -355,7 +436,7 @@ export function ContentEditor() {
                 Auto-Translate on Save
               </Label>
               <p className="mt-1 text-sm text-muted-foreground">
-                Automatically translate content to 7 languages using MyMemory API (free)
+                Automatically translate content when clicking "Save & Translate"
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -365,7 +446,7 @@ export function ContentEditor() {
               <Switch
                 id="auto-translate"
                 checked={autoTranslateEnabled}
-                onCheckedChange={setAutoTranslateEnabled}
+                onCheckedChange={handleAutoTranslateToggle}
               />
             </div>
           </div>
@@ -411,29 +492,24 @@ export function ContentEditor() {
           </div>
 
           {/* Manual translation button */}
-          <div className="space-y-2">
-            <Button
-              variant="outline"
-              onClick={handleTranslateNow}
-              className="w-full gap-2"
-              disabled={isTranslating}
-            >
-              {isTranslating ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Translating...
-                </>
-              ) : (
-                <>
-                  <Languages className="h-4 w-4" />
-                  Translate All Content Now
-                </>
-              )}
-            </Button>
-            <p className="text-xs text-center text-muted-foreground">
-              Uses MyMemory API (free, no API key needed)
-            </p>
-          </div>
+          <Button
+            variant="outline"
+            onClick={handleTranslateNow}
+            className="w-full gap-2"
+            disabled={isTranslating}
+          >
+            {isTranslating ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Translating...
+              </>
+            ) : (
+              <>
+                <Languages className="h-4 w-4" />
+                Translate All Content Now
+              </>
+            )}
+          </Button>
         </div>
       </Card>
 
@@ -684,7 +760,7 @@ export function ContentEditor() {
           <Card className="p-6">
             <h3 className="mb-4 text-foreground">Benefit Pills</h3>
             <div className="space-y-4">
-              {content.homepage.hero.benefitPills.map((pill, index) => (
+              {mainContent.homepage.hero.benefitPills.map((pill, index) => (
                 <div key={index} className="flex gap-2">
                   <div className="flex-1">
                     <Label>Icon Name (Lucide)</Label>
@@ -723,6 +799,177 @@ export function ContentEditor() {
                 <Plus className="mr-2 h-4 w-4" />
                 Add Benefit Pill
               </Button>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <h3 className="mb-4 text-foreground">Service Features (Bullet Points)</h3>
+            <div className="space-y-6">
+              <div>
+                <Label>Service Description (Paragraph 1)</Label>
+                <Textarea
+                  value={mainContent.homepage.serviceDescription}
+                  onChange={(e) => 
+                    updateContent(["homepage", "serviceDescription"], e.target.value)
+                  }
+                  rows={3}
+                />
+              </div>
+
+              <div>
+                <Label>Service Description (Paragraph 2)</Label>
+                <Textarea
+                  value={mainContent.homepage.serviceDescription2}
+                  onChange={(e) => 
+                    updateContent(["homepage", "serviceDescription2"], e.target.value)
+                  }
+                  rows={3}
+                />
+              </div>
+
+              <div className="space-y-4">
+                <h4 className="text-sm font-medium text-foreground">1. Unlimited Rides</h4>
+                <div className="grid gap-4">
+                  <div>
+                    <Label>Title</Label>
+                    <Input
+                      value={mainContent.homepage.unlimitedRidesTitle}
+                      onChange={(e) => 
+                        updateContent(["homepage", "unlimitedRidesTitle"], e.target.value)
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label>Subtitle</Label>
+                    <Input
+                      value={mainContent.homepage.unlimitedRidesSubtitle}
+                      onChange={(e) => 
+                        updateContent(["homepage", "unlimitedRidesSubtitle"], e.target.value)
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h4 className="text-sm font-medium text-foreground">2. Frequent Service</h4>
+                <div className="grid gap-4">
+                  <div>
+                    <Label>Title</Label>
+                    <Input
+                      value={mainContent.homepage.frequentServiceTitle}
+                      onChange={(e) => 
+                        updateContent(["homepage", "frequentServiceTitle"], e.target.value)
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label>Subtitle</Label>
+                    <Input
+                      value={mainContent.homepage.frequentServiceSubtitle}
+                      onChange={(e) => 
+                        updateContent(["homepage", "frequentServiceSubtitle"], e.target.value)
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h4 className="text-sm font-medium text-foreground">3. Small Groups</h4>
+                <div className="grid gap-4">
+                  <div>
+                    <Label>Title</Label>
+                    <Input
+                      value={mainContent.homepage.smallGroupsTitle}
+                      onChange={(e) => 
+                        updateContent(["homepage", "smallGroupsTitle"], e.target.value)
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label>Subtitle</Label>
+                    <Input
+                      value={mainContent.homepage.smallGroupsSubtitle}
+                      onChange={(e) => 
+                        updateContent(["homepage", "smallGroupsSubtitle"], e.target.value)
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h4 className="text-sm font-medium text-foreground">4. Professional Guides</h4>
+                <div className="grid gap-4">
+                  <div>
+                    <Label>Title</Label>
+                    <Input
+                      value={mainContent.homepage.professionalGuidesTitle}
+                      onChange={(e) => 
+                        updateContent(["homepage", "professionalGuidesTitle"], e.target.value)
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label>Subtitle</Label>
+                    <Input
+                      value={mainContent.homepage.professionalGuidesSubtitle}
+                      onChange={(e) => 
+                        updateContent(["homepage", "professionalGuidesSubtitle"], e.target.value)
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h4 className="text-sm font-medium text-foreground">5. Request Pickup</h4>
+                <div className="grid gap-4">
+                  <div>
+                    <Label>Title</Label>
+                    <Input
+                      value={mainContent.homepage.requestPickupTitle}
+                      onChange={(e) => 
+                        updateContent(["homepage", "requestPickupTitle"], e.target.value)
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label>Subtitle</Label>
+                    <Input
+                      value={mainContent.homepage.requestPickupSubtitle}
+                      onChange={(e) => 
+                        updateContent(["homepage", "requestPickupSubtitle"], e.target.value)
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h4 className="text-sm font-medium text-foreground">6. Real-Time Tracking</h4>
+                <div className="grid gap-4">
+                  <div>
+                    <Label>Title</Label>
+                    <Input
+                      value={mainContent.homepage.realTimeTrackingTitle}
+                      onChange={(e) => 
+                        updateContent(["homepage", "realTimeTrackingTitle"], e.target.value)
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label>Subtitle</Label>
+                    <Input
+                      value={mainContent.homepage.realTimeTrackingSubtitle}
+                      onChange={(e) => 
+                        updateContent(["homepage", "realTimeTrackingSubtitle"], e.target.value)
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           </Card>
 

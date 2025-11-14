@@ -485,7 +485,7 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                     <h2 className="text-foreground">{t.buyTicket.dateSelection.planYourVisit}</h2>
                   </div>
                   <div className="h-1 w-16 rounded-full bg-accent" />
-                  <p className="mt-4 text-muted-foreground">
+                  <p className="mt-4 text-muted-foreground whitespace-pre-line">
                     {t.buyTicket.dateSelection.planYourVisitDescription}
                   </p>
                 </div>
@@ -566,8 +566,8 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                                         </span>
                                       )}
                                       {slot.isGuided && (
-                                        <span className="text-xs text-accent">
-                                          {t.buyTicket.timeSlots.guidedTourLabel}
+                                        <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full font-medium">
+                                          {t.buyTicket.timeSlots.guidedTourLabel} +€{guidedTourSurcharge}
                                         </span>
                                       )}
                                     </div>
