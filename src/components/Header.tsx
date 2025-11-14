@@ -1,8 +1,8 @@
-import { Menu, X, Ticket } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { LanguageSelector } from "./LanguageSelector";
-import Frame from "../imports/Frame";
+import { Logo } from "./Logo";
 import { getUITranslation, getTranslation } from "../lib/translations";
 
 interface HeaderProps {
@@ -39,8 +39,8 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
               }}
               className="group absolute left-1/2 -translate-x-1/2 md:relative md:left-auto md:translate-x-0 flex items-center transition-all hover:opacity-90"
             >
-              <div className="h-7 w-auto sm:h-8">
-                <Frame />
+              <div className="h-11 w-auto sm:h-12">
+                <Logo />
               </div>
             </button>
 
@@ -68,7 +68,6 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
                 className="ml-2 bg-accent hover:bg-accent/90 shadow-lg hover:shadow-xl transition-all hover:scale-105"
                 onClick={() => onNavigate("buy-ticket")}
               >
-                <Ticket className="mr-2 h-5 w-5" />
                 {t.buyTicket}
               </Button>
             </nav>
@@ -97,7 +96,6 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
                 size="lg"
                 className="w-full bg-accent hover:bg-accent/90 mb-4"
               >
-                <Ticket className="mr-2 h-5 w-5" />
                 {t.buyTicket}
               </Button>
               

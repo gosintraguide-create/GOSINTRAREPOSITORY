@@ -1,7 +1,7 @@
 
-  # Go Sintra Website
+  # HopOn Sintra Sintra Website
 
-  This is a code bundle for Go Sintra Website. The original project is available at https://www.figma.com/design/kqNXtFqmLKsh4yctFKDz8O/Go-Sintra-Website.
+  This is a code bundle for HopOn Sintra Sintra Website. The original project is available at https://www.figma.com/design/kqNXtFqmLKsh4yctFKDz8O/HopOn-Sintra-Sintra-Website.
 
   ## Running the code
 

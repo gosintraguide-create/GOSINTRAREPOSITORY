@@ -1,7 +1,7 @@
 import { Mail, MapPin, Clock } from "lucide-react";
 import { useEffect, useState } from "react";
 import { loadContent, type WebsiteContent, DEFAULT_CONTENT } from "../lib/contentManager";
-import Frame from "../imports/Frame";
+import { Logo } from "./Logo";
 import { getUITranslation, getTranslation } from "../lib/translations";
 import {
   DropdownMenu,
@@ -31,7 +31,7 @@ export function Footer({ onNavigate, language = "en" }: FooterProps) {
           {/* Brand */}
           <div>
             <div className="mb-4 h-8 w-auto">
-              <Frame />
+              <Logo />
             </div>
             <p className="text-muted-foreground">
               Your friendly hop-on/hop-off adventure through Sintra's magical landscapes.
