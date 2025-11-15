@@ -97,9 +97,9 @@ export function AttractionsPage({
     "pena-palace":
       "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwZW5hJTIwcGFsYWNlJTIwc2ludHJhfGVufDF8fHx8MTc2MDE0MDYwMnww&ixlib=rb-4.1.0&q=80&w=1080",
     "quinta-regaleira":
-      "https://images.unsplash.com/photo-1643208143695-3c79c2f36cce?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxxdWludGElMjByZWdhbGVpcmElMjBzaW50cmF8ZW58MXx8fHwxNzYwMTQwNjAyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "https://images.unsplash.com/photo-1668377298351-3f7a745a56fe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxxdWludGElMjBkYSUyMHJlZ2FsZWlyYSUyMHNpbnRyYXxlbnwxfHx8fDE3NjMxNjg3Njl8MA&ixlib=rb-4.1.0&q=80&w=1080",
     "moorish-castle":
-      "https://images.unsplash.com/photo-1555881674-7d4f8e8867e0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb29yaXNoJTIwY2FzdGxlJTIwc2ludHJhfGVufDF8fHx8MTc2MDE0MDYwM3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "https://images.unsplash.com/photo-1651520011190-6f37b5213684?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb29yaXNoJTIwY2FzdGxlJTIwc2ludHJhfGVufDF8fHx8MTc2MzE2ODc2OXww&ixlib=rb-4.1.0&q=80&w=1080",
     "monserrate-palace":
       "https://images.unsplash.com/photo-1609137144813-7d9921338f24?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb25zZXJyYXRlJTIwcGFsYWNlJTIwc2ludHJhfGVufDF8fHx8MTc2MDE0MDYwM3ww&ixlib=rb-4.1.0&q=80&w=1080",
     "sintra-palace":
@@ -206,60 +206,53 @@ export function AttractionsPage({
       <section className="py-12 sm:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {attractions.map((attraction, index) => (
-              <motion.div
+            {attractions.map((attraction) => (
+              <Card
                 key={attraction.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
+                className="group h-full cursor-pointer overflow-hidden border bg-white shadow-md transition-all hover:shadow-xl"
+                onClick={() => onNavigate(attraction.id)}
               >
-                <Card
-                  className="group h-full cursor-pointer overflow-hidden border bg-white shadow-md transition-all hover:shadow-xl"
-                  onClick={() => onNavigate(attraction.id)}
-                >
-                  {/* Image - Larger, more prominent */}
-                  <div className="relative aspect-[16/10] overflow-hidden">
-                    <ImageWithFallback
-                      src={
-                        attraction.cardImage ||
-                        attractionFallbackImages[
-                          attraction.id
-                        ] ||
-                        "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=800&h=600&fit=crop"
-                      }
-                      alt={attraction.name}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                {/* Image - Larger, more prominent */}
+                <div className="relative aspect-[16/10] overflow-hidden">
+                  <ImageWithFallback
+                    src={
+                      attraction.cardImage ||
+                      attractionFallbackImages[
+                        attraction.id
+                      ] ||
+                      "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=800&h=600&fit=crop"
+                    }
+                    alt={attraction.name}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
 
-                    {/* Title on image */}
-                    <div className="absolute bottom-0 left-0 right-0 p-6">
-                      <h3 className="text-white">
-                        {attraction.name}
-                      </h3>
+                  {/* Title on image */}
+                  <div className="absolute bottom-0 left-0 right-0 p-6">
+                    <h3 className="text-white">
+                      {attraction.name}
+                    </h3>
+                  </div>
+                </div>
+
+                {/* Minimal Content */}
+                <div className="p-5">
+                  <p className="mb-4 line-clamp-2 text-sm text-muted-foreground">
+                    {attraction.description}
+                  </p>
+
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <Clock className="h-4 w-4" />
+                      {attraction.duration}
+                    </div>
+                    <div className="flex items-center gap-2 text-primary">
+                      <span>{t.learnMore}</span>
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-2" />
                     </div>
                   </div>
-
-                  {/* Minimal Content */}
-                  <div className="p-5">
-                    <p className="mb-4 line-clamp-2 text-sm text-muted-foreground">
-                      {attraction.description}
-                    </p>
-
-                    <div className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-1 text-muted-foreground">
-                        <Clock className="h-4 w-4" />
-                        {attraction.duration}
-                      </div>
-                      <div className="flex items-center gap-2 text-primary">
-                        <span>{t.learnMore}</span>
-                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-2" />
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
+                </div>
+              </Card>
             ))}
           </div>
         </div>

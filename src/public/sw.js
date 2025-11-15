@@ -1,7 +1,7 @@
 // Service Worker for Go Sintra PWA
-// Version 1.2.0 - Performance optimized
+// Version 1.3.0 - Enhanced offline support for attractions and travel guides
 
-const CACHE_NAME = 'go-sintra-v3'; // Bumped for performance improvements
+const CACHE_NAME = 'go-sintra-v4'; // Bumped for offline content improvements
 const OFFLINE_URL = '/offline.html';
 
 // Core assets to cache for offline functionality
