@@ -8,7 +8,7 @@ interface SitemapUrl {
 }
 
 export function generateSitemap(): string {
-  const baseUrl = 'https://gosintra.pt';
+  const baseUrl = 'https://www.hoponsintra.com';
   const urls: SitemapUrl[] = [];
 
   // Static pages
@@ -95,7 +95,7 @@ Disallow: /analytics
 Disallow: /operations
 Disallow: /diagnostics
 
-Sitemap: https://gosintra.pt/sitemap.xml`;
+Sitemap: https://www.hoponsintra.com/sitemap.xml`;
 }
 
 export function downloadRobotsTxt(): void {

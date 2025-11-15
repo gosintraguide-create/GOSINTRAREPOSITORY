@@ -46,7 +46,7 @@ export function BlogSEO({ article, categoryName }: BlogSEOProps) {
     updateMetaTag("og:title", article.seo.title || article.title, true);
     updateMetaTag("og:description", article.seo.description || article.excerpt, true);
     updateMetaTag("og:type", "article", true);
-    updateMetaTag("og:url", `https://gosintra.pt/blog/${article.slug}`, true);
+    updateMetaTag("og:url", `https://www.hoponsintra.com/blog/${article.slug}`, true);
     updateMetaTag("og:site_name", "Hop On Sintra Travel Guide", true);
     updateMetaTag("og:locale", "en_US", true);
     
@@ -66,8 +66,8 @@ export function BlogSEO({ article, categoryName }: BlogSEOProps) {
       updateMetaTag("twitter:image", article.featuredImage);
       updateMetaTag("twitter:image:alt", article.title);
     }
-    updateMetaTag("twitter:creator", "@gosintra");
-    updateMetaTag("twitter:site", "@gosintra");
+    updateMetaTag("twitter:creator", "@hoponsintra");
+    updateMetaTag("twitter:site", "@hoponsintra");
     
     // Update canonical link
     let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
@@ -76,7 +76,7 @@ export function BlogSEO({ article, categoryName }: BlogSEOProps) {
       canonical.rel = "canonical";
       document.head.appendChild(canonical);
     }
-    canonical.href = `https://gosintra.pt/blog/${article.slug}`;
+    canonical.href = `https://www.hoponsintra.com/blog/${article.slug}`;
 
     // Add JSON-LD structured data for Article
     let structuredData = document.querySelector('script[type="application/ld+json"]');
@@ -103,20 +103,20 @@ export function BlogSEO({ article, categoryName }: BlogSEOProps) {
       "author": {
         "@type": "Organization",
         "name": article.author,
-        "url": "https://gosintra.pt"
+        "url": "https://www.hoponsintra.com"
       },
       "publisher": {
         "@type": "Organization",
         "name": "Hop On Sintra",
-        "url": "https://gosintra.pt",
+        "url": "https://www.hoponsintra.com",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://gosintra.pt/icon-72x72.png"
+          "url": "https://www.hoponsintra.com/icon-72x72.png"
         }
       },
       "mainEntityOfPage": {
         "@type": "WebPage",
-        "@id": `https://gosintra.pt/blog/${article.slug}`
+        "@id": `https://www.hoponsintra.com/blog/${article.slug}`
       },
       "articleSection": categoryName,
       "keywords": article.tags.join(", "),
@@ -143,25 +143,25 @@ export function BlogSEO({ article, categoryName }: BlogSEOProps) {
           "@type": "ListItem",
           "position": 1,
           "name": "Home",
-          "item": "https://gosintra.pt"
+          "item": "https://www.hoponsintra.com"
         },
         {
           "@type": "ListItem",
           "position": 2,
           "name": "Travel Guide",
-          "item": "https://gosintra.pt/blog"
+          "item": "https://www.hoponsintra.com/blog"
         },
         {
           "@type": "ListItem",
           "position": 3,
           "name": categoryName,
-          "item": `https://gosintra.pt/blog?category=${article.category}`
+          "item": `https://www.hoponsintra.com/blog?category=${article.category}`
         },
         {
           "@type": "ListItem",
           "position": 4,
           "name": article.title,
-          "item": `https://gosintra.pt/blog/${article.slug}`
+          "item": `https://www.hoponsintra.com/blog/${article.slug}`
         }
       ]
     };

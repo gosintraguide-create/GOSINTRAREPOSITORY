@@ -2,16 +2,15 @@
 User-agent: *
 Allow: /
 
-# Disallow admin and internal pages
-Disallow: /*?page=admin
-Disallow: /*?page=analytics
-Disallow: /*?page=operations
-Disallow: /*?page=manual-booking
-Disallow: /*?page=qr-scanner
-Disallow: /*?page=diagnostics
-Disallow: /*?page=pwa-icons
-Disallow: /*?page=pwa-installer
-Disallow: /*?page=debug-icons
+# Block admin and internal pages
+Disallow: /admin
+Disallow: /analytics
+Disallow: /operations
+Disallow: /diagnostics
+Disallow: /qr-scanner
+Disallow: /manual-booking
+Disallow: /driver-login
+Disallow: /driver-dashboard
 
 # Sitemap
-Sitemap: https://gosintra.pt/sitemap.xml
+Sitemap: https://www.hoponsintra.com/sitemap.xml

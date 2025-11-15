@@ -415,7 +415,7 @@ export function BlogArticlePage({ onNavigate, slug, language }: BlogArticlePageP
       {/* FAQ Section */}
       {article.faqs && article.faqs.length > 0 && (
         <section className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
-          <ArticleFAQ faqs={article.faqs} articleUrl={`https://gosintra.pt/blog/${article.slug}`} />
+          <ArticleFAQ faqs={article.faqs} articleUrl={`https://www.hoponsintra.com/blog/${article.slug}`} />
         </section>
       )}
 

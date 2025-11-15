@@ -97,7 +97,7 @@ export function SEOTools() {
         <div className="mb-4">
           <h3 className="mb-2 text-foreground">XML Sitemap</h3>
           <p className="text-sm text-muted-foreground">
-            Your sitemap includes all static pages, attractions, and blog articles. Download and upload to your website root or submit to Google Search Console.
+            {content.tools.sitemapDescription}
           </p>
         </div>
 
@@ -117,7 +117,7 @@ export function SEOTools() {
             <strong>Sitemap Location:</strong>
           </p>
           <code className="text-sm text-muted-foreground">
-            https://gosintra.pt/sitemap.xml
+            https://www.hoponsintra.com/sitemap.xml
           </code>
         </div>
       </Card>
@@ -143,7 +143,7 @@ export function SEOTools() {
             <strong>robots.txt Location:</strong>
           </p>
           <code className="text-sm text-muted-foreground">
-            https://gosintra.pt/robots.txt
+            https://www.hoponsintra.com/robots.txt
           </code>
         </div>
       </Card>

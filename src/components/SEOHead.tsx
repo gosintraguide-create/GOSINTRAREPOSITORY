@@ -69,7 +69,7 @@ export function SEOHead({
     updateMetaTag("og:image:width", "1200", true);
     updateMetaTag("og:image:height", "630", true);
     updateMetaTag("og:type", "website", true);
-    updateMetaTag("og:url", `https://gosintra.pt${canonicalPath}`, true);
+    updateMetaTag("og:url", `https://www.hoponsintra.com${canonicalPath}`, true);
     updateMetaTag("og:site_name", "Hop On Sintra", true);
     updateMetaTag("og:locale", localeMap[language] || "en_US", true);
     
@@ -86,7 +86,7 @@ export function SEOHead({
       canonical.rel = "canonical";
       document.head.appendChild(canonical);
     }
-    canonical.href = `https://gosintra.pt${canonicalPath}`;
+    canonical.href = `https://www.hoponsintra.com${canonicalPath}`;
 
     // Remove old hreflang tags
     document.querySelectorAll('link[rel="alternate"]').forEach(link => link.remove());
@@ -97,7 +97,7 @@ export function SEOHead({
       const hreflang = document.createElement("link");
       hreflang.rel = "alternate";
       hreflang.hreflang = lang;
-      hreflang.href = `https://gosintra.pt${canonicalPath}?lang=${lang}`;
+      hreflang.href = `https://www.hoponsintra.com${canonicalPath}?lang=${lang}`;
       document.head.appendChild(hreflang);
     });
 
@@ -105,7 +105,7 @@ export function SEOHead({
     const defaultLang = document.createElement("link");
     defaultLang.rel = "alternate";
     defaultLang.hreflang = "x-default";
-    defaultLang.href = `https://gosintra.pt${canonicalPath}`;
+    defaultLang.href = `https://www.hoponsintra.com${canonicalPath}`;
     document.head.appendChild(defaultLang);
 
     // Add JSON-LD structured data
@@ -127,12 +127,12 @@ export function SEOHead({
         "@type": ["TouristAttraction", "Service"],
         "name": "Hop On Sintra",
         "description": description,
-        "url": `https://gosintra.pt${canonicalPath}`,
+        "url": `https://www.hoponsintra.com${canonicalPath}`,
         "image": ogImage,
         "provider": {
           "@type": "TouristInformationCenter",
           "name": "Hop On Sintra",
-          "url": "https://gosintra.pt"
+          "url": "https://www.hoponsintra.com"
         },
         "address": {
           "@type": "PostalAddress",
@@ -180,7 +180,7 @@ export function SEOHead({
         },
         "offers": {
           "@type": "Offer",
-          "url": `https://gosintra.pt${canonicalPath}`,
+          "url": `https://www.hoponsintra.com${canonicalPath}`,
           "priceCurrency": "EUR",
           "price": price,
           "availability": "https://schema.org/InStock",
@@ -208,7 +208,7 @@ export function SEOHead({
           "name": "Hop On Sintra",
           "logo": {
             "@type": "ImageObject",
-            "url": "https://gosintra.pt/logo.png"
+            "url": "https://www.hoponsintra.com/logo.png"
           }
         },
         "datePublished": new Date().toISOString(),
