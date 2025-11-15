@@ -478,7 +478,7 @@ export interface ComprehensiveContent {
 // Default English Content
 export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
   company: {
-    name: "Go Sintra",
+    name: "Hop On Sintra",
     email: "info@gosintra.com",
     phone: "+351 932 967 279",
     location: "Sintra, Portugal",
@@ -518,7 +518,7 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
       privateTours: { title: "Prefer a Private Tour?", subtitle: "Exclusive personalized experience" },
     },
     whyChoose: {
-      title: "Why Choose Go Sintra?",
+      title: "Why Choose Hop On Sintra?",
       subtitle: "Skip the crowded tour buses and experience Sintra the way it's meant to be discovered",
     },
     features: [
@@ -575,7 +575,7 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
     },
     callToAction: {
       title: "Ready to Explore Sintra?",
-      description: "Book your flexible day pass now and discover why thousands of visitors choose Go Sintra for their Sintra adventure.",
+      description: "Book your flexible day pass now and discover why thousands of visitors choose Hop On Sintra for their Sintra adventure.",
       buttonText: "Book Your Day Pass Now",
     },
   },
@@ -648,7 +648,7 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
     },
     frequentlyAskedQuestions: {
       title: "Frequently Asked Questions",
-      subtitle: "Everything you need to know about your Go Sintra day pass",
+      subtitle: "Everything you need to know about your Hop On Sintra day pass",
       questions: [
         {
           question: "How does the day pass work?",
@@ -695,7 +695,7 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
     hero: {
       title: "Discover Sintra's Treasures",
       subtitle: "Explore UNESCO World Heritage Sites with Your Day Pass",
-      description: "Your Go Sintra day pass gives you access to all these magnificent attractions. Hop on and off as you please, spending as much time as you'd like at each location.",
+      description: "Your Hop On Sintra day pass gives you access to all these magnificent attractions. Hop on and off as you please, spending as much time as you'd like at each location.",
     },
     listingIntro: {
       title: "Where Your Day Pass Takes You",
@@ -932,7 +932,7 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
     payment: {
       title: "Payment Details",
       orderSummary: "Order Summary",
-      dayPass: "Go Sintra Day Pass",
+      dayPass: "Hop On Sintra Day Pass",
       passes: "passes",
       guidedCommentary: "Guided Commentary",
       attractionTickets: "Attraction Tickets",
@@ -981,7 +981,7 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
     },
     tickets: {
       title: "Your Tickets",
-      description: "Show these QR codes to board any Go Sintra vehicle",
+      description: "Show these QR codes to board any Hop On Sintra vehicle",
       yourPasses: "Day Passes",
       attractionTickets: "Attraction Tickets",
       showQR: "Show QR Code",
@@ -1040,15 +1040,15 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
 
   about: {
     hero: {
-      title: "About Go Sintra",
+      title: "About Hop On Sintra",
       subtitle: "Your premium hop-on/hop-off adventure through Sintra's magical landscapes",
     },
     ourStory: {
       title: "Our Story",
       paragraphs: [
-        "Go Sintra was born from a simple observation: visitors to this UNESCO World Heritage site deserved better than crowded buses and rigid schedules.",
+        "Hop On Sintra was born from a simple observation: visitors to this UNESCO World Heritage site deserved better than crowded buses and rigid schedules.",
         "We created a flexible, premium alternative that combines the intimacy of small vehicles with the freedom of hop-on/hop-off convenience.",
-        "Today, thousands of visitors choose Go Sintra for guaranteed seating, regular departures every 10-15 minutes, and an authentic, intimate way to explore this magical destination.",
+        "Today, thousands of visitors choose Hop On Sintra for guaranteed seating, regular departures every 30 minutes, and an authentic, intimate way to explore this magical destination.",
       ],
     },
     mission: {
@@ -1170,7 +1170,7 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
       title: "Follow Us",
       followUs: "Stay connected on social media",
     },
-    copyright: "© 2025 Go Sintra. All rights reserved.",
+    copyright: "© 2025 Hop On Sintra. All rights reserved.",
   },
 
   common: {
@@ -1227,33 +1227,33 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
 
   seo: {
     home: {
-      title: "Go Sintra - Premium Hop-On/Hop-Off Day Pass | Small Vehicle Tours",
-      description: "Explore Sintra's UNESCO World Heritage sites with guaranteed seating in small vehicles. Unlimited rides every 10-15 minutes. Book your flexible day pass online now.",
+      title: "Hop On Sintra - Premium Hop-On/Hop-Off Day Pass | Small Vehicle Tours",
+      description: "Explore Sintra's UNESCO World Heritage sites with guaranteed seating in small vehicles. Unlimited rides every 30 minutes. Book your flexible day pass online now.",
       keywords: "Sintra tours, hop on hop off Sintra, Sintra transport, small group tours Sintra, Pena Palace tours, Sintra day pass",
     },
     howItWorks: {
-      title: "How It Works - Go Sintra Hop-On/Hop-Off Service",
+      title: "How It Works - Hop On Sintra Hop-On/Hop-Off Service",
       description: "Learn how our flexible day pass works. Book online, get your QR codes, and hop on any vehicle during operating hours. Simple and convenient.",
       keywords: "how to visit Sintra, Sintra transport guide, hop on hop off how it works, Sintra day pass guide",
     },
     attractions: {
-      title: "Sintra Attractions - Palaces & Castles | Go Sintra Day Pass",
+      title: "Sintra Attractions - Palaces & Castles | Hop On Sintra Day Pass",
       description: "Discover Pena Palace, Quinta da Regaleira, Moorish Castle, and more. Our day pass includes unlimited transport to all major Sintra attractions.",
       keywords: "Sintra attractions, Pena Palace, Quinta da Regaleira, Moorish Castle, Monserrate Palace, Sintra National Palace",
     },
     buyTicket: {
-      title: "Book Your Day Pass - Go Sintra | Instant Confirmation",
-      description: "Book your Sintra day pass online. Choose your date, get instant QR codes for each passenger, and enjoy unlimited rides until 8pm. Add attraction tickets too.",
+      title: "Book Your Day Pass - Hop On Sintra | Instant Confirmation",
+      description: "Book your Sintra day pass online. Choose your date, get instant QR codes for each passenger, and enjoy unlimited rides until 7pm. Add attraction tickets too.",
       keywords: "book Sintra tours, buy Sintra day pass, Sintra tickets online, Sintra attraction tickets",
     },
     about: {
-      title: "About Go Sintra - Premium Small Vehicle Tour Service",
-      description: "Go Sintra offers premium hop-on/hop-off service with guaranteed seating in small vehicles. Regular departures every 10-15 minutes throughout Sintra.",
-      keywords: "about Go Sintra, Sintra tour company, premium Sintra tours, small group Sintra",
+      title: "About Hop On Sintra - Premium Small Vehicle Tour Service",
+      description: "Hop On Sintra offers premium hop-on/hop-off service with guaranteed seating in small vehicles. Regular departures every 30 minutes throughout Sintra.",
+      keywords: "about Hop On Sintra, Sintra tour company, premium Sintra tours, small group Sintra",
     },
     manageBooking: {
-      title: "Manage Your Booking - Go Sintra",
-      description: "Access your Go Sintra tickets, view booking details, and request pickup service using your booking ID and email.",
+      title: "Manage Your Booking - Hop On Sintra",
+      description: "Access your Hop On Sintra tickets, view booking details, and request pickup service using your booking ID and email.",
       keywords: "manage Sintra booking, view tickets, Sintra booking portal",
     },
     requestPickup: {

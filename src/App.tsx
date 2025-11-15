@@ -8,6 +8,7 @@ import { CookieConsent } from "./components/CookieConsent";
 import { InstallPrompt } from "./components/InstallPrompt";
 import { OfflineIndicator } from "./components/OfflineIndicator";
 import { DynamicManifest } from "./components/DynamicManifest";
+import { DynamicFavicon } from "./components/DynamicFavicon";
 import { loadContentWithLanguage } from "./lib/contentManager";
 import { Toaster } from "./components/ui/sonner";
 import { toast } from "sonner@2.0.3";
@@ -228,16 +229,18 @@ export default function App() {
   // Handle browser back/forward navigation and mobile swipe gestures
   useEffect(() => {
     const handlePopState = (event: PopStateEvent) => {
-      const urlParams = new URLSearchParams(window.location.search);
+      const urlParams = new URLSearchParams(
+        window.location.search,
+      );
       const page = urlParams.get("page");
-      
+
       // Update the page state to match the URL
       if (page) {
         setCurrentPage(page);
       } else {
         setCurrentPage("home");
       }
-      
+
       // Clear page data when navigating back
       setPageData(null);
     };
@@ -290,10 +293,9 @@ export default function App() {
           // Send message to service worker to cache images
           if (registration.active) {
             registration.active.postMessage({
-              type: 'CACHE_URLS',
-              urls: preloadImages
+              type: "CACHE_URLS",
+              urls: preloadImages,
             });
-            console.log('📦 Preloading attraction images for offline use');
           }
 
           // Check for updates
@@ -346,11 +348,7 @@ export default function App() {
         const freshContent =
           await syncContentFromDatabaseWithLanguage(language);
         setWebsiteContent(freshContent);
-        console.log("✅ Content synced from database");
       } catch (error) {
-        console.log(
-          "ℹ️ Using local content (backend unavailable)",
-        );
         // Silently fail and use local content - this is expected in development
       }
     }
@@ -369,13 +367,7 @@ export default function App() {
         const freshContent =
           await syncContentFromDatabaseWithLanguage(language);
         setWebsiteContent(freshContent);
-        console.log(
-          `✅ Content synced for language: ${language}`,
-        );
       } catch (error) {
-        console.log(
-          "ℹ️ Using local content for language change",
-        );
         // Fallback to local content
         setWebsiteContent(loadContentWithLanguage(language));
       }
@@ -393,7 +385,6 @@ export default function App() {
         const freshContent =
           await syncContentFromDatabaseWithLanguage(language);
         setWebsiteContent(freshContent);
-        console.log("🔄 Periodic content refresh completed");
       } catch (error) {
         // Silently fail - this is a background refresh
       }
@@ -413,16 +404,12 @@ export default function App() {
   // Listen for content updates from admin panel
   useEffect(() => {
     const handleContentUpdate = async () => {
-      console.log(
-        "📢 Content update event received, reloading...",
-      );
       try {
         const { syncContentFromDatabaseWithLanguage } =
           await import("./lib/contentManager");
         const freshContent =
           await syncContentFromDatabaseWithLanguage(language);
         setWebsiteContent(freshContent);
-        console.log("✅ Content reloaded after admin update");
         toast.success("Content updated!");
       } catch (error) {
         console.error("Error reloading content:", error);
@@ -819,6 +806,9 @@ export default function App() {
 
       {/* Dynamic Manifest Loader */}
       <DynamicManifest />
+
+      {/* Dynamic Favicon Loader */}
+      <DynamicFavicon />
 
       {/* Toast notifications */}
       <Toaster position="top-center" richColors />

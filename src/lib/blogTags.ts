@@ -1,4 +1,4 @@
-// Blog Tags Management System for Go Sintra
+// Blog Tags Management System for Hop On Sintra
 // Centralized tag management for better SEO consistency
 
 export const DEFAULT_BLOG_TAGS = [

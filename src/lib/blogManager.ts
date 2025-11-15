@@ -1,4 +1,4 @@
-// Blog/Articles Management System for Go Sintra
+// Blog/Articles Management System for Hop On Sintra
 
 export interface FAQItem {
   question: string;
@@ -127,7 +127,7 @@ Many companies offer day tours from Lisbon including:
 
 After reaching Sintra train station, you have several options:
 
-1. **Go Sintra Day Pass** (Recommended)
+1. **Hop On Sintra Day Pass** (Recommended)
    - Hop-on/hop-off service with guaranteed seating
    - Unlimited rides between all major attractions
    - Small vehicles (2-6 passengers) for a personalized experience
@@ -151,7 +151,7 @@ After reaching Sintra train station, you have several options:
 ## Return Journey
 
 Plan to catch your return train by 6-7 PM to avoid rush hour crowds. Evening trains can be packed with day-trippers returning to Lisbon.`,
-    author: "Go Sintra Team",
+    author: "Hop On Sintra Team",
     publishDate: "2025-10-15",
     lastModified: "2025-10-15",
     featuredImage: "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200",
@@ -237,7 +237,7 @@ Sintra has so much to offer that trying to see everything in one day can be over
 
 ### Book in Advance
 - Purchase attraction tickets online to skip long queues
-- Book your Go Sintra day pass the day before
+- Book your Hop On Sintra day pass the day before
 - Popular time slots (10 AM - 2 PM) sell out quickly
 
 ### What to Bring
@@ -256,7 +256,7 @@ Sintra has so much to offer that trying to see everything in one day can be over
 
 Sintra's attractions are spread across steep hills. Options include:
 
-1. **Go Sintra Hop-On/Hop-Off**
+1. **Hop On Sintra Hop-On/Hop-Off**
    - Most convenient and comfortable
    - No waiting or crowding
    - Includes all major attractions
@@ -292,7 +292,7 @@ Sintra's attractions are spread across steep hills. Options include:
 ### Money-Saving Tips
 - Bring lunch from Lisbon
 - Visit free viewpoints instead of all palaces
-- Use the Go Sintra pass for unlimited transport
+- Use the Hop On Sintra pass for unlimited transport
 - Book combined tickets online for discounts
 
 ## Common Mistakes to Avoid
@@ -326,7 +326,7 @@ Sintra has its own microclimate - often cooler and foggier than Lisbon.
 5. **Take photos** - But also put the camera down to enjoy the moment
 
 With proper planning, your day in Sintra will be one of the highlights of your Portugal trip!`,
-    author: "Go Sintra Team",
+    author: "Hop On Sintra Team",
     publishDate: "2025-10-14",
     lastModified: "2025-10-14",
     featuredImage: "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200",
@@ -413,7 +413,7 @@ Many visitors buy combined tickets online for:
 
 ### From Sintra Train Station
 
-**Option 1: Go Sintra Day Pass**
+**Option 1: Hop On Sintra Day Pass**
 - Most comfortable option
 - Guaranteed seating
 - Departures every 10-15 minutes
@@ -560,7 +560,7 @@ Pena Palace sits at 500m elevation with its own microclimate:
 5. **Visit the terrace** - Best views in Sintra
 
 Pena Palace is truly magical and deserves a leisurely visit. Take your time, soak in the atmosphere, and enjoy this fairy-tale masterpiece!`,
-    author: "Go Sintra Team",
+    author: "Hop On Sintra Team",
     publishDate: "2025-10-13",
     lastModified: "2025-10-13",
     featuredImage: "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200",
