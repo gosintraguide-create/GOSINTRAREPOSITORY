@@ -153,6 +153,77 @@ export function AttractionDetailPage({ onNavigate, attractionId }: AttractionDet
                 </p>
               </motion.div>
 
+              {/* Opening Hours & Ticket Info - Mobile Only */}
+              <div className="space-y-6 lg:hidden">
+                {/* Opening Hours Card - Mobile */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.1 }}
+                >
+                  <Card className="p-6 shadow-xl">
+                    <div className="mb-3 flex items-center gap-2">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                        <Clock className="h-5 w-5 text-primary" />
+                      </div>
+                      <h4 className="text-foreground">Opening Hours</h4>
+                    </div>
+                    <p className="text-muted-foreground">{attraction.hours}</p>
+                  </Card>
+                </motion.div>
+
+                {/* Ticket Information Card - Mobile */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.15 }}
+                >
+                  <Card className="p-6 shadow-xl">
+                    <div className="mb-6 flex items-center gap-3">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                        <Ticket className="h-6 w-6 text-primary" />
+                      </div>
+                      <h3 className="text-foreground">Ticket Information</h3>
+                    </div>
+
+                    <div className="mb-6 rounded-xl bg-secondary/30 p-6 text-center">
+                      <div className="mb-2 text-sm text-muted-foreground">Entrance Ticket</div>
+                      <div className="mb-4 text-3xl text-foreground">
+                        €{attraction.parkOnlyPrice ? attraction.parkOnlyPrice : attraction.price}
+                      </div>
+                      <Badge variant="outline" className="text-muted-foreground">
+                        Online Booking Coming Soon
+                      </Badge>
+                    </div>
+
+                    <div className="mb-6 space-y-2 rounded-xl bg-primary/5 p-4">
+                      <p className="text-sm text-muted-foreground">
+                        Attraction tickets are not yet available for online purchase. You can buy tickets at the entrance.
+                      </p>
+                    </div>
+
+                    <div className="rounded-xl border border-accent/30 bg-accent/5 p-4">
+                      <h4 className="mb-2 flex items-center gap-2 text-foreground">
+                        💡 Get There Easily!
+                      </h4>
+                      <p className="mb-3 text-sm text-muted-foreground">
+                        Book a Hop On Sintra day pass for unlimited transport between all attractions with professional driver-guides!
+                      </p>
+                      <Button
+                        size="lg"
+                        className="w-full"
+                        onClick={() => onNavigate("buy-ticket")}
+                      >
+                        Get Day Pass
+                        <ChevronRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </div>
+                  </Card>
+                </motion.div>
+              </div>
+
               {/* Highlights */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -209,24 +280,14 @@ export function AttractionDetailPage({ onNavigate, attractionId }: AttractionDet
                 </div>
               </motion.div>
 
-              {/* Practical Information */}
+              {/* Time Needed - Mobile Only */}
               <motion.div
-                className="grid gap-6 sm:grid-cols-2"
+                className="lg:hidden"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.3 }}
               >
-                <Card className="p-6 transition-all hover:shadow-lg">
-                  <div className="mb-3 flex items-center gap-2">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-                      <Clock className="h-5 w-5 text-primary" />
-                    </div>
-                    <h4 className="text-foreground">Opening Hours</h4>
-                  </div>
-                  <p className="text-muted-foreground">{attraction.hours}</p>
-                </Card>
-
                 <Card className="p-6 transition-all hover:shadow-lg">
                   <div className="mb-3 flex items-center gap-2">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10">
@@ -239,54 +300,68 @@ export function AttractionDetailPage({ onNavigate, attractionId }: AttractionDet
               </motion.div>
             </div>
 
-            {/* Right Column - Ticket Info Card */}
+            {/* Right Column - Ticket Info Card (Desktop Only) */}
             <motion.div
-              className="lg:col-span-1"
+              className="hidden lg:col-span-1 lg:block"
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <Card className="sticky top-24 p-6 shadow-xl">
-                <div className="mb-6 flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                    <Ticket className="h-6 w-6 text-primary" />
+              <div className="sticky top-24 space-y-6">
+                {/* Opening Hours Card */}
+                <Card className="p-6 shadow-xl">
+                  <div className="mb-3 flex items-center gap-2">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                      <Clock className="h-5 w-5 text-primary" />
+                    </div>
+                    <h4 className="text-foreground">Opening Hours</h4>
                   </div>
-                  <h3 className="text-foreground">Ticket Information</h3>
-                </div>
+                  <p className="text-muted-foreground">{attraction.hours}</p>
+                </Card>
 
-                <div className="mb-6 rounded-xl bg-secondary/30 p-6 text-center">
-                  <div className="mb-2 text-sm text-muted-foreground">Entrance Ticket</div>
-                  <div className="mb-4 text-3xl text-foreground">
-                    €{attraction.parkOnlyPrice ? attraction.parkOnlyPrice : attraction.price}
+                {/* Ticket Information Card */}
+                <Card className="p-6 shadow-xl">
+                  <div className="mb-6 flex items-center gap-3">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                      <Ticket className="h-6 w-6 text-primary" />
+                    </div>
+                    <h3 className="text-foreground">Ticket Information</h3>
                   </div>
-                  <Badge variant="outline" className="text-muted-foreground">
-                    Online Booking Coming Soon
-                  </Badge>
-                </div>
 
-                <div className="mb-6 space-y-2 rounded-xl bg-primary/5 p-4">
-                  <p className="text-sm text-muted-foreground">
-                    Attraction tickets are not yet available for online purchase. You can buy tickets at the entrance.
-                  </p>
-                </div>
+                  <div className="mb-6 rounded-xl bg-secondary/30 p-6 text-center">
+                    <div className="mb-2 text-sm text-muted-foreground">Entrance Ticket</div>
+                    <div className="mb-4 text-3xl text-foreground">
+                      €{attraction.parkOnlyPrice ? attraction.parkOnlyPrice : attraction.price}
+                    </div>
+                    <Badge variant="outline" className="text-muted-foreground">
+                      Online Booking Coming Soon
+                    </Badge>
+                  </div>
 
-                <div className="rounded-xl border border-accent/30 bg-accent/5 p-4">
-                  <h4 className="mb-2 flex items-center gap-2 text-foreground">
-                    💡 Get There Easily!
-                  </h4>
-                  <p className="mb-3 text-sm text-muted-foreground">
-                    Book a Hop On Sintra day pass for unlimited transport between all attractions with professional driver-guides!
-                  </p>
-                  <Button
-                    size="lg"
-                    className="w-full"
-                    onClick={() => onNavigate("buy-ticket")}
-                  >
-                    Get Day Pass
-                    <ChevronRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </div>
-              </Card>
+                  <div className="mb-6 space-y-2 rounded-xl bg-primary/5 p-4">
+                    <p className="text-sm text-muted-foreground">
+                      Attraction tickets are not yet available for online purchase. You can buy tickets at the entrance.
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl border border-accent/30 bg-accent/5 p-4">
+                    <h4 className="mb-2 flex items-center gap-2 text-foreground">
+                      💡 Get There Easily!
+                    </h4>
+                    <p className="mb-3 text-sm text-muted-foreground">
+                      Book a Hop On Sintra day pass for unlimited transport between all attractions with professional driver-guides!
+                    </p>
+                    <Button
+                      size="lg"
+                      className="w-full"
+                      onClick={() => onNavigate("buy-ticket")}
+                    >
+                      Get Day Pass
+                      <ChevronRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </div>
+                </Card>
+              </div>
             </motion.div>
           </div>
         </div>

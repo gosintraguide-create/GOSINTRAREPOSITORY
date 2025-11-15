@@ -32,6 +32,9 @@ const DEFAULT_PRICING: PricingSettings = {
     "moorish-castle": { name: "Moorish Castle", price: 10 },
     "monserrate-palace": { name: "Monserrate Palace", price: 10 },
     "sintra-palace": { name: "Sintra Palace", price: 10 },
+    "convento-capuchos": { name: "Convento dos Capuchos", price: 8 },
+    "cabo-da-roca": { name: "Cabo da Roca", price: 0 },
+    "villa-sassetti": { name: "Villa Sassetti", price: 0 },
   },
 };
 
@@ -42,6 +45,9 @@ const ATTRACTION_CARDS = [
   { id: "monserrate-palace", emoji: "🏛️", shortName: "Monserrate" },
   { id: "sintra-palace", emoji: "👑", shortName: "Sintra Palace" },
   { id: "pena-palace-park", emoji: "🌲", shortName: "Pena Park" },
+  { id: "convento-capuchos", emoji: "⛪", shortName: "Capuchos" },
+  { id: "cabo-da-roca", emoji: "🌊", shortName: "Cabo da Roca" },
+  { id: "villa-sassetti", emoji: "🏛️", shortName: "Villa Sassetti" },
 ];
 
 export function ManualBookingPage({ onNavigate }: ManualBookingPageProps) {

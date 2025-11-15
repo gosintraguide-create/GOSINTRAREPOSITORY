@@ -213,17 +213,42 @@ export default function App() {
     if (currentPage !== "home") {
       if (currentUrlPage !== currentPage) {
         window.history.pushState(
-          {},
+          { page: currentPage },
           "",
           `?page=${currentPage}`,
         );
       }
     } else {
       if (currentUrlPage) {
-        window.history.pushState({}, "", "/");
+        window.history.pushState({ page: "home" }, "", "/");
       }
     }
   }, [currentPage]);
+
+  // Handle browser back/forward navigation and mobile swipe gestures
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const page = urlParams.get("page");
+      
+      // Update the page state to match the URL
+      if (page) {
+        setCurrentPage(page);
+      } else {
+        setCurrentPage("home");
+      }
+      
+      // Clear page data when navigating back
+      setPageData(null);
+    };
+
+    // Listen for browser back/forward events (including mobile swipe gestures)
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
 
   // Remove dark class if it exists and initialize language
   useEffect(() => {
@@ -659,6 +684,9 @@ export default function App() {
       case "moorish-castle":
       case "monserrate-palace":
       case "sintra-palace":
+      case "convento-capuchos":
+      case "cabo-da-roca":
+      case "villa-sassetti":
         return (
           <AttractionDetailPage
             onNavigate={handleNavigate}

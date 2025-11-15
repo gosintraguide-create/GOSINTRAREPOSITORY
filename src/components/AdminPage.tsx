@@ -140,6 +140,18 @@ const DEFAULT_PRICING: PricingSettings = {
       name: "Sintra National Palace",
       price: 10,
     },
+    "convento-capuchos": {
+      name: "Convento dos Capuchos",
+      price: 8,
+    },
+    "cabo-da-roca": {
+      name: "Cabo da Roca",
+      price: 0,
+    },
+    "villa-sassetti": {
+      name: "Villa Sassetti",
+      price: 0,
+    },
   },
 };
 

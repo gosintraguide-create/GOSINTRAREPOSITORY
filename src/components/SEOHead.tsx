@@ -56,7 +56,11 @@ export function SEOHead({
     updateMetaTag("robots", "index, follow");
     updateMetaTag("author", "Hop On Sintra");
     updateMetaTag("viewport", "width=device-width, initial-scale=1.0");
-    updateMetaTag("theme-color", "#0A4D5C");
+    updateMetaTag("theme-color", "#ffffff");
+    
+    // iOS-specific status bar styling for PWA mode
+    updateMetaTag("apple-mobile-web-app-capable", "yes");
+    updateMetaTag("apple-mobile-web-app-status-bar-style", "default");
     
     // Open Graph tags
     updateMetaTag("og:title", title, true);

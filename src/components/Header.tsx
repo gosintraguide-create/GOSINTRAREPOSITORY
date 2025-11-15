@@ -39,7 +39,7 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
               }}
               className="group absolute left-1/2 -translate-x-1/2 md:relative md:left-auto md:translate-x-0 flex items-center transition-all hover:opacity-90"
             >
-              <div className="h-11 w-auto sm:h-12">
+              <div className="h-9 w-auto sm:h-10">
                 <Logo />
               </div>
             </button>

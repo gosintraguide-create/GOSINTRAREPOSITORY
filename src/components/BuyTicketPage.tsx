@@ -46,6 +46,9 @@ const DEFAULT_PRICING: PricingSettings = {
     "moorish-castle": { name: "Moorish Castle", price: 10 },
     "monserrate-palace": { name: "Monserrate Palace", price: 10 },
     "sintra-palace": { name: "Sintra National Palace", price: 10 },
+    "convento-capuchos": { name: "Convento dos Capuchos", price: 8 },
+    "cabo-da-roca": { name: "Cabo da Roca", price: 0 },
+    "villa-sassetti": { name: "Villa Sassetti", price: 0 },
   },
 };
 

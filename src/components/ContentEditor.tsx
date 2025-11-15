@@ -1569,6 +1569,36 @@ export function ContentEditor() {
                         </div>
                       )}
                       <div className="border-t pt-4">
+                        <h4 className="mb-4 font-medium">Highlights</h4>
+                        <p className="mb-3 text-sm text-muted-foreground">
+                          Enter one highlight per line
+                        </p>
+                        <Textarea
+                          value={attraction.highlights.join("\n")}
+                          onChange={(e) => {
+                            const highlights = e.target.value.split("\n").filter((h: string) => h.trim());
+                            updateContent(["attractions", "attractionDetails", key, "highlights"], highlights);
+                          }}
+                          rows={5}
+                          placeholder="Panoramic views&#10;Historic architecture&#10;Beautiful gardens"
+                        />
+                      </div>
+                      <div className="border-t pt-4">
+                        <h4 className="mb-4 font-medium">Visitor Tips (Pro Tips)</h4>
+                        <p className="mb-3 text-sm text-muted-foreground">
+                          Enter one tip per line
+                        </p>
+                        <Textarea
+                          value={attraction.tips.join("\n")}
+                          onChange={(e) => {
+                            const tips = e.target.value.split("\n").filter((t: string) => t.trim());
+                            updateContent(["attractions", "attractionDetails", key, "tips"], tips);
+                          }}
+                          rows={5}
+                          placeholder="Arrive early to avoid crowds&#10;Wear comfortable shoes&#10;Bring water"
+                        />
+                      </div>
+                      <div className="border-t pt-4">
                         <h4 className="mb-4 font-medium">Images</h4>
                         <div className="space-y-4">
                           <ImageSelector
