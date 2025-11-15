@@ -9,10 +9,19 @@ import { InstallPrompt } from "./components/InstallPrompt";
 import { OfflineIndicator } from "./components/OfflineIndicator";
 import { DynamicManifest } from "./components/DynamicManifest";
 import { DynamicFavicon } from "./components/DynamicFavicon";
+import { GoogleAnalytics } from "./components/GoogleAnalytics";
+import { MicrosoftClarity } from "./components/MicrosoftClarity";
 import { loadContentWithLanguage } from "./lib/contentManager";
+import { trackPageView } from "./lib/analytics";
 import { Toaster } from "./components/ui/sonner";
 import { toast } from "sonner@2.0.3";
 import { Analytics } from "@vercel/analytics/react";
+
+// Analytics Configuration
+// Get your free Google Analytics ID: https://analytics.google.com/
+// Get your free Microsoft Clarity ID: https://clarity.microsoft.com/
+const GA_MEASUREMENT_ID = "G-VM2HFTLH4R"; // Hop On Sintra GA4 Measurement ID
+const CLARITY_PROJECT_ID = ""; // Replace with your Clarity project ID (optional)
 
 // Lazy load page components for better performance
 const HomePage = lazy(() =>
@@ -815,6 +824,12 @@ export default function App() {
 
       {/* Vercel Analytics */}
       <Analytics />
+
+      {/* Google Analytics */}
+      <GoogleAnalytics measurementId={GA_MEASUREMENT_ID} />
+
+      {/* Microsoft Clarity */}
+      <MicrosoftClarity projectId={CLARITY_PROJECT_ID} />
     </div>
   );
 }
