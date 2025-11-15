@@ -6,7 +6,7 @@
   "installCommand": "npm install",
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/((?!sitemap\\.xml|robots\\.txt|manifest\\.json|sw\\.js|icon-.*\\.png|offline\\.html|assets/).*)",
       "destination": "/index.html"
     }
   ],
