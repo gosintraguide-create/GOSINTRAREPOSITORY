@@ -567,8 +567,8 @@ export interface WebsiteContent {
 
 export const DEFAULT_CONTENT: WebsiteContent = {
   company: {
-    name: "Go Sintra",
-    email: "info@gosintra.com",
+    name: "Hop On Sintra",
+    email: "info@hoponsintra.com",
     phone: "+351 932 967 279",
     location: "Sintra, Portugal",
     operatingHours: "9 AM - 8 PM Daily",

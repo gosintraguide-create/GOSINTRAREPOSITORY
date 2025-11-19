@@ -1,11 +1,13 @@
 import { MapPin } from "lucide-react";
 import { getTranslation } from "../lib/translations";
+import { Button } from "./ui/button";
 
 interface RouteOverviewProps {
   language?: string;
+  onNavigate?: (page: string) => void;
 }
 
-export function RouteOverview({ language = "en" }: RouteOverviewProps) {
+export function RouteOverview({ language = "en", onNavigate }: RouteOverviewProps) {
   const content = getTranslation(language);
 
   const ROUTE_1_STOPS = [
@@ -158,6 +160,20 @@ export function RouteOverview({ language = "en" }: RouteOverviewProps) {
             </div>
           </div>
         </div>
+
+        {/* Navigation Button */}
+        {onNavigate && (
+          <div className="mt-6 text-center">
+            <Button
+              onClick={() => onNavigate("route-map")}
+              variant="outline"
+              className="gap-2"
+            >
+              <MapPin className="h-4 w-4" />
+              {content.routes.viewMapButton}
+            </Button>
+          </div>
+        )}
       </div>
     </section>
   );

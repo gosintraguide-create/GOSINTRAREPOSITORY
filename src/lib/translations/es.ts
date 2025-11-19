@@ -99,13 +99,13 @@ export const es: WebsiteContent = {
   },
   routes: {
     title: "Nuestras Dos Rutas Circulares",
-    subtitle: "Todas las paradas servidas cada 30 minutos • No necesitas cambiar de vehículo",
+    subtitle: "Conectando todas las atracciones principales • No necesitas cambiar de vehículo",
     route1: "Ruta 1",
     route2: "Ruta 2",
     bothRoutes: "Ambas rutas",
     loopsBack: "regresa",
     onePassBothRoutes: "Un Pase, Ambas Rutas",
-    onePassDescription: "Tu pase de día te da acceso ilimitado a ambas rutas. Nuestros vehículos visitan todas las paradas cada 30 minutos desde las 9 AM hasta las 7 PM, y nunca necesitas cambiar de vehículo: permanece a bordo ya que las rutas se conectan en la Estación de Tren y en el Centro Histórico Norte.",
+    onePassDescription: "Tu pase de día te da acceso ilimitado a ambas rutas. Nuestros vehículos visitan todas las paradas durante el horario de servicio (9 AM a 7 PM), y nunca necesitas cambiar de vehículo: permanece a bordo ya que las rutas se conectan en la Estación de Tren y en el Centro Histórico Norte.",
     stops: {
       trainStation: "Estación de Tren",
       historicalCenterNorth: "Centro Histórico Norte",

@@ -1,16 +1,12 @@
-# robots.txt for Go Sintra
 User-agent: *
 Allow: /
-
-# Block admin and internal pages
 Disallow: /admin
 Disallow: /analytics
 Disallow: /operations
 Disallow: /diagnostics
-Disallow: /qr-scanner
-Disallow: /manual-booking
 Disallow: /driver-login
 Disallow: /driver-dashboard
+Disallow: /manual-booking
+Disallow: /qr-scanner
 
-# Sitemap
 Sitemap: https://www.hoponsintra.com/sitemap.xml

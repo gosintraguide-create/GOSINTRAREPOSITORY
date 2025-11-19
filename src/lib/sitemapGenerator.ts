@@ -15,10 +15,15 @@ export function generateSitemap(): string {
   const staticPages = [
     { path: '/', changefreq: 'daily', priority: '1.0', lastmod: new Date().toISOString().split('T')[0] },
     { path: '/attractions', changefreq: 'weekly', priority: '0.9', lastmod: new Date().toISOString().split('T')[0] },
-    { path: '/buy-ticket', changefreq: 'daily', priority: '1.0', lastmod: new Date().toISOString().split('T')[0] },
+    { path: '/buy-ticket', changefreq: 'daily', priority: '0.9', lastmod: new Date().toISOString().split('T')[0] },
     { path: '/about', changefreq: 'monthly', priority: '0.7', lastmod: new Date().toISOString().split('T')[0] },
-    { path: '/blog', changefreq: 'daily', priority: '0.9', lastmod: new Date().toISOString().split('T')[0] },
+    { path: '/blog', changefreq: 'weekly', priority: '0.9', lastmod: new Date().toISOString().split('T')[0] },
+    { path: '/private-tours', changefreq: 'weekly', priority: '0.9', lastmod: new Date().toISOString().split('T')[0] },
+    { path: '/sunset-special', changefreq: 'weekly', priority: '0.8', lastmod: new Date().toISOString().split('T')[0] },
+    { path: '/request-pickup', changefreq: 'weekly', priority: '0.7', lastmod: new Date().toISOString().split('T')[0] },
     { path: '/manage-booking', changefreq: 'weekly', priority: '0.6', lastmod: new Date().toISOString().split('T')[0] },
+    { path: '/privacy-policy', changefreq: 'yearly', priority: '0.3', lastmod: new Date().toISOString().split('T')[0] },
+    { path: '/terms-of-service', changefreq: 'yearly', priority: '0.3', lastmod: new Date().toISOString().split('T')[0] },
   ];
 
   staticPages.forEach(page => {
@@ -37,6 +42,9 @@ export function generateSitemap(): string {
     'moorish-castle',
     'monserrate-palace',
     'sintra-palace',
+    'convento-capuchos',
+    'cabo-da-roca',
+    'villa-sassetti',
   ];
 
   attractions.forEach(attraction => {

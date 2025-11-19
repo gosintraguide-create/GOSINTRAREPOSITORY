@@ -1,7 +1,7 @@
 // Email templates for booking confirmations
 //
-// NOTE: By default, emails are sent from "Go Sintra <onboarding@resend.dev>"
-// To use your own domain (e.g., bookings@gosintra.com):
+// NOTE: By default, emails are sent from "Hop On Sintra <onboarding@resend.dev>"
+// To use your own domain (e.g., bookings@hoponsintra.com):
 // 1. Verify your domain at https://resend.com/domains
 // 2. Update the 'from' address in /supabase/functions/server/index.tsx
 
@@ -393,7 +393,7 @@ export function generateBookingConfirmationEmail(data: BookingEmailData): string
       <div class="manage-booking">
         <h3>🎯 Manage Your Booking</h3>
         <p>Request pickups, get route tips, and access exclusive benefits</p>
-        <a href="https://gosintra.com/manage-booking?id=${bookingId}" class="manage-booking-btn">
+        <a href="https://hoponsintra.com/manage-booking?id=${bookingId}" class="manage-booking-btn">
           Manage My Booking →
         </a>
       </div>
@@ -453,7 +453,7 @@ export function generateBookingConfirmationEmail(data: BookingEmailData): string
       <p style="font-size: 20px; margin-bottom: 10px;"><strong>🎫 Go Sintra</strong></p>
       <p style="color: #D97843; font-weight: 600;">Premium Hop-On/Hop-Off Day Pass Service</p>
       <p style="margin-top: 20px;">
-        📧 <a href="mailto:info@gosintra.com">info@gosintra.com</a>
+        📧 <a href="mailto:info@hoponsintra.com">info@hoponsintra.com</a>
       </p>
       <p style="margin-top: 5px;">
         📱 WhatsApp: <a href="https://wa.me/351932967279">+351 932 967 279</a>

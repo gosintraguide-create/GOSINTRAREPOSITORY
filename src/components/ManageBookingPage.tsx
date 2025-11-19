@@ -82,7 +82,7 @@ export function ManageBookingPage({ onNavigate, language = "en" }: ManageBooking
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `GoSintra_Tickets_${booking.id}.pdf`;
+        a.download = `HopOnSintra_Tickets_${booking.id}.pdf`;
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);

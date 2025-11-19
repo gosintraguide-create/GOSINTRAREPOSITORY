@@ -99,13 +99,13 @@ export const nl: WebsiteContent = {
   },
   routes: {
     title: "Onze Twee Cirkelroutes",
-    subtitle: "Alle haltes bediend om de 30 minuten • Geen need om van voertuig te wisselen",
+    subtitle: "Verbindt alle belangrijke attracties • Geen need om van voertuig te wisselen",
     route1: "Route 1",
     route2: "Route 2",
     bothRoutes: "Beide routes",
     loopsBack: "keert terug",
     onePassBothRoutes: "Één Pass, Beide Routes",
-    onePassDescription: "Uw dagpas geeft u onbeperkte toegang tot beide routes. Onze voertuigen bezoeken alle haltes om de 30 minuten van 9 tot 19 uur, en u hoeft nooit van voertuig te wisselen - blijf aan boord terwijl routes verbinden bij het Station en Historisch Centrum Noord.",
+    onePassDescription: "Uw dagpas geeft u onbeperkte toegang tot beide routes. Onze voertuigen bezoeken alle haltes tijdens de openingstijden (9 tot 19 uur), en u hoeft nooit van voertuig te wisselen - blijf aan boord terwijl routes verbinden bij het Station en Historisch Centrum Noord.",
     stops: {
       trainStation: "Treinstation",
       historicalCenterNorth: "Historisch Centrum Noord",

@@ -483,7 +483,7 @@ export function HomePage({
       </section>
 
       {/* Route Overview Section */}
-      <RouteOverview language={language} />
+      <RouteOverview language={language} onNavigate={onNavigate} />
 
       {/* Today's Special: Sunset Drive Carousel */}
       {sunsetSpecialEnabled && (

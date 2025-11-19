@@ -9,7 +9,7 @@ Go Sintra is a **Progressive Web App (PWA)** that works like a native app on you
 ### Using Safari Browser
 
 1. **Open Safari** on your iPhone/iPad
-2. Navigate to **https://gosintra.pt**
+2. Navigate to **https://hoponsintra.com**
 3. Tap the **Share button** (□↑) at the bottom of the screen
 4. Scroll down and tap **"Add to Home Screen"**
 5. Customize the name if you want
@@ -30,7 +30,7 @@ Go Sintra is a **Progressive Web App (PWA)** that works like a native app on you
 ### Using Chrome or Edge
 
 1. **Open Chrome** on your Android device
-2. Navigate to **https://gosintra.pt**
+2. Navigate to **https://hoponsintra.com**
 3. Wait 10 seconds for the automatic install prompt, or:
 4. Tap the **menu (⋮)** in the top right
 5. Select **"Install app"** or **"Add to Home screen"**
@@ -55,7 +55,7 @@ Go Sintra is a **Progressive Web App (PWA)** that works like a native app on you
 ### Windows (Chrome/Edge)
 
 1. Open **Chrome** or **Edge** browser
-2. Navigate to **https://gosintra.pt**
+2. Navigate to **https://hoponsintra.com**
 3. Look for the **install icon (⊕)** in the address bar
 4. Click the icon and select **"Install"**
 5. Or click the **menu (⋮)** → **"Install Go Sintra"**
@@ -64,7 +64,7 @@ Go Sintra is a **Progressive Web App (PWA)** that works like a native app on you
 ### macOS (Chrome/Edge)
 
 1. Open **Chrome** or **Edge** browser
-2. Navigate to **https://gosintra.pt**
+2. Navigate to **https://hoponsintra.com**
 3. Click the **install icon (⊕)** in the address bar
 4. Or go to **menu (⋮)** → **"Install Go Sintra"**
 5. ✅ The app appears in your Applications folder!
@@ -160,7 +160,7 @@ Only a small amount for caching pages you've visited.
 
 If you have trouble installing:
 - 💬 **WhatsApp**: Contact us for instant help
-- 📧 **Email**: support@gosintra.pt
+- 📧 **Email**: support@hoponsintra.com
 - 🌐 **Website**: Continue using the browser version
 
 ---

@@ -132,6 +132,12 @@ const PrivateToursPage = lazy(() =>
   })),
 );
 
+const RouteMapPage = lazy(() =>
+  import("./components/RouteMapPage").then((m) => ({
+    default: m.RouteMapPage,
+  })),
+);
+
 const SunsetSpecialPurchasePage = lazy(() =>
   import("./components/SunsetSpecialPurchasePage").then(
     (m) => ({
@@ -204,54 +210,135 @@ export default function App() {
 
   // Handle URL-based page navigation
   useEffect(() => {
-    const urlParams = new URLSearchParams(
-      window.location.search,
-    );
-    const page = urlParams.get("page");
+    // Function to extract page from URL
+    const getPageFromURL = () => {
+      // First, check for clean URLs (pathname-based)
+      const pathname = window.location.pathname;
+      
+      // Remove leading/trailing slashes
+      const cleanPath = pathname.replace(/^\/+|\/+$/g, '');
+      
+      // If we have a clean path, use it
+      if (cleanPath) {
+        // Handle blog article URLs (e.g., /blog/article-slug)
+        if (cleanPath.startsWith('blog/')) {
+          const slug = cleanPath.replace('blog/', '');
+          return { page: 'blog-article', slug };
+        }
+        
+        // Handle sunset-special URL
+        if (cleanPath === 'sunset-special') {
+          return { page: 'sunset-special-purchase' };
+        }
+        
+        // For all other clean URLs, return the path as the page name
+        return { page: cleanPath };
+      }
+      
+      // Fallback: check for query parameters (backward compatibility)
+      const urlParams = new URLSearchParams(window.location.search);
+      const page = urlParams.get("page");
+      const slug = urlParams.get("slug");
+      
+      if (page) {
+        return { page, slug };
+      }
+      
+      return { page: null, slug: null };
+    };
+    
+    const { page, slug } = getPageFromURL();
+    
     if (page) {
       setCurrentPage(page);
+      if (slug) {
+        setPageData({ slug });
+      }
     }
   }, []);
 
   // Update URL when page changes
   useEffect(() => {
-    const urlParams = new URLSearchParams(
-      window.location.search,
-    );
-    const currentUrlPage = urlParams.get("page");
-
     if (currentPage !== "home") {
-      if (currentUrlPage !== currentPage) {
-        window.history.pushState(
-          { page: currentPage },
-          "",
-          `?page=${currentPage}`,
-        );
+      // Use clean URLs
+      let path = `/${currentPage}`;
+      
+      // Handle blog articles with slugs
+      if (currentPage === 'blog-article' && pageData?.slug) {
+        path = `/blog/${pageData.slug}`;
+      }
+      
+      // Handle sunset special
+      if (currentPage === 'sunset-special-purchase') {
+        path = '/sunset-special';
+      }
+      
+      // Only update if the path has changed
+      if (window.location.pathname !== path) {
+        window.history.pushState({ page: currentPage }, "", path);
       }
     } else {
-      if (currentUrlPage) {
+      // Home page
+      if (window.location.pathname !== '/') {
         window.history.pushState({ page: "home" }, "", "/");
       }
     }
-  }, [currentPage]);
+  }, [currentPage, pageData]);
 
   // Handle browser back/forward navigation and mobile swipe gestures
   useEffect(() => {
     const handlePopState = (event: PopStateEvent) => {
-      const urlParams = new URLSearchParams(
-        window.location.search,
-      );
-      const page = urlParams.get("page");
+      // Function to extract page from URL
+      const getPageFromURL = () => {
+        // First, check for clean URLs (pathname-based)
+        const pathname = window.location.pathname;
+        
+        // Remove leading/trailing slashes
+        const cleanPath = pathname.replace(/^\/+|\/+$/g, '');
+        
+        // If we have a clean path, use it
+        if (cleanPath) {
+          // Handle blog article URLs (e.g., /blog/article-slug)
+          if (cleanPath.startsWith('blog/')) {
+            const slug = cleanPath.replace('blog/', '');
+            return { page: 'blog-article', slug };
+          }
+          
+          // Handle sunset-special URL
+          if (cleanPath === 'sunset-special') {
+            return { page: 'sunset-special-purchase' };
+          }
+          
+          // For all other clean URLs, return the path as the page name
+          return { page: cleanPath };
+        }
+        
+        // Fallback: check for query parameters (backward compatibility)
+        const urlParams = new URLSearchParams(window.location.search);
+        const page = urlParams.get("page");
+        const slug = urlParams.get("slug");
+        
+        if (page) {
+          return { page, slug };
+        }
+        
+        return { page: null, slug: null };
+      };
+      
+      const { page, slug } = getPageFromURL();
 
       // Update the page state to match the URL
       if (page) {
         setCurrentPage(page);
+        if (slug) {
+          setPageData({ slug });
+        } else {
+          setPageData(null);
+        }
       } else {
         setCurrentPage("home");
+        setPageData(null);
       }
-
-      // Clear page data when navigating back
-      setPageData(null);
     };
 
     // Listen for browser back/forward events (including mobile swipe gestures)
@@ -543,6 +630,17 @@ export default function App() {
           path: "/private-tours",
           type: "product" as const,
         };
+      case "route-map":
+        return {
+          title:
+            "Route Map & Stops - Hop On Sintra Locations",
+          description:
+            "View all Hop On Sintra stops and pickup locations on an interactive Google Map. Plan your journey and see exactly where we service throughout Sintra.",
+          keywords:
+            "Sintra route map, Sintra stops, hop on hop off map, Sintra locations, Sintra pickup points",
+          path: "/route-map",
+          type: "service" as const,
+        };
       case "sunset-special-purchase":
         return {
           title:
@@ -628,6 +726,13 @@ export default function App() {
       case "private-tours":
         return (
           <PrivateToursPage
+            onNavigate={handleNavigate}
+            language={language}
+          />
+        );
+      case "route-map":
+        return (
+          <RouteMapPage
             onNavigate={handleNavigate}
             language={language}
           />

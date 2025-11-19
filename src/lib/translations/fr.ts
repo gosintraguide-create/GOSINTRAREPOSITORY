@@ -99,13 +99,13 @@ export const fr: WebsiteContent = {
   },
   routes: {
     title: "Nos Deux Circuits Circulaires",
-    subtitle: "Tous les arrêts desservis toutes les 30 minutes • Pas besoin de changer de véhicule",
+    subtitle: "Reliant toutes les principales attractions • Pas besoin de changer de véhicule",
     route1: "Circuit 1",
     route2: "Circuit 2",
     bothRoutes: "Les deux circuits",
     loopsBack: "retourne",
     onePassBothRoutes: "Un Pass, Deux Circuits",
-    onePassDescription: "Votre pass journée vous donne un accès illimité aux deux circuits. Nos véhicules visitent tous les arrêts toutes les 30 minutes de 9h à 19h, et vous n'avez jamais besoin de changer de véhicule - restez à bord car les circuits se connectent à la Gare et au Centre Historique Nord.",
+    onePassDescription: "Votre pass journée vous donne un accès illimité aux deux circuits. Nos véhicules visitent tous les arrêts pendant les heures d'ouverture (9h à 19h), et vous n'avez jamais besoin de changer de véhicule - restez à bord car les circuits se connectent à la Gare et au Centre Historique Nord.",
     stops: {
       trainStation: "Gare",
       historicalCenterNorth: "Centre Historique Nord",

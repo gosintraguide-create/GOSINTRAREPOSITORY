@@ -126,13 +126,14 @@ export const pt: WebsiteContent = {
   },
   routes: {
     title: "Nossas Duas Rotas Circulares",
-    subtitle: "Todas as paragens servidas a cada 30 minutos • Não precisa trocar de veículo",
+    subtitle: "Conectando todas as principais atrações • Não precisa trocar de veículo",
     route1: "Rota 1",
     route2: "Rota 2",
     bothRoutes: "Ambas as rotas",
     loopsBack: "volta ao início",
     onePassBothRoutes: "Um Passe, Ambas as Rotas",
-    onePassDescription: "O seu passe diário dá-lhe acesso ilimitado a ambas as rotas. Os nossos veículos visitam todas as paragens a cada 30 minutos das 9h às 19h, e nunca precisa trocar de veículo - fique a bordo pois as rotas conectam-se na Estação de Comboios e no Centro Histórico Norte.",
+    onePassDescription: "O seu passe diário dá-lhe acesso ilimitado a ambas as rotas. Os nossos veículos visitam todas as paragens durante o horário de funcionamento (9h às 19h), e nunca precisa trocar de veículo - fique a bordo pois as rotas conectam-se na Estação de Comboios e no Centro Histórico Norte.",
+    viewMapButton: "Ver Mapa Interativo",
     stops: {
       trainStation: "Estação de Comboios",
       historicalCenterNorth: "Centro Histórico Norte",
@@ -301,7 +302,7 @@ export const pt: WebsiteContent = {
     "monserrate-palace": {
       name: "Palácio de Monserrate",
       description: "Um palácio exótico que combina influências góticas, indianas e mouriscas, situado num dos mais belos jardins botânicos de Portugal com espécies de plantas raras e exóticas de todo o mundo.",
-      longDescription: "O Palácio de Monserrate foi construído em 1858 para Sir Francis Cook, um magnata têxtil e colecionador de arte inglês. O palácio apresenta uma fusão extraordinária de estilos arquitetónicos, enquanto os seus jardins são considerados entre os melhores exemplos de jardinagem paisagística em Portugal. A propriedade apresenta plantas de cinco continentes, criando microclimas que suportam espécies do México, Austrália, Japão e além.",
+      longDescription: "O Palácio de Monserrate foi construído em 1858 para Sir Francis Cook, um magnata têxtil e colecionador de arte inglês. O palácio apresenta uma fusão extraordinária de estilos arquitetónicos, enquanto os seus jardins são considerados entre os melhores exemplos de jardinagem paisagística em Portugal. A propriedade apresenta plantas de cinco continentes, criando microclimas que suportam espécies do México, Austrália, Japão e alm.",
       highlights: [
         "Mistura deslumbrante de estilos arquitetónicos",
         "Jardins botânicos de classe mundial",
@@ -363,7 +364,7 @@ export const pt: WebsiteContent = {
       keywords: "reservar passe dia Sintra, comprar bilhetes Sintra, passe dia Sintra online, bilhetes atrações Sintra",
     },
     about: {
-      title: "Sobre Hop On Sintra - Serviço Premium Hop-On/Hop-Off com Guias Profissionais",
+      title: "Sobre Hop On Sintra - Servio Premium Hop-On/Hop-Off com Guias Profissionais",
       description: "Hop On Sintra oferece serviço premium hop-on/hop-off com lugares garantidos em veículos pequenos e guias locais profissionais. Partidas regulares a cada 30 minutos por toda Sintra.",
       keywords: "sobre Hop On Sintra, empresa tours Sintra, transporte premium Sintra, grupos pequenos Sintra, guias profissionais",
     },
@@ -726,5 +727,18 @@ export const pt: WebsiteContent = {
       requestQuoteButton: "Solicitar Orçamento",
       chatButton: "Fale Connosco",
     },
+  },
+  routeMap: {
+    badge: "Mapa Interativo",
+    title: "Paragens e Localizações da Rota",
+    subtitle: "Veja todas as nossas paragens no Google Maps. Planeie a sua viagem e veja exatamente onde fazemos recolhas e deixamos ao longo de Sintra.",
+    mapTitle: "Mapa de Rotas Hop On Sintra",
+    infoTitle: "Como Usar o Mapa",
+    infoDescription: "Este mapa interativo mostra todas as nossas localizações de recolha e entrega em Sintra. Pode ampliar, mover e clicar nos marcadores para ver detalhes sobre cada paragem.",
+    tip1: "Clique em qualquer marcador para ver o nome da paragem e atrações próximas",
+    tip2: "Use a função de direções para obter rotas a pé entre paragens",
+    tip3: "Todas as paragens são servidas durante o horário de funcionamento (9h às 19h)",
+    ctaButton: "Reserve o Seu Passe Diário Agora",
+    ctaSubtext: "Viagens ilimitadas a todas estas paragens durante um dia inteiro",
   },
 };

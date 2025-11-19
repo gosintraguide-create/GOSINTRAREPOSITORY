@@ -269,7 +269,7 @@ PWA:           100 ✅
 
 PWAs only work on HTTPS (secure connections):
 
-- ✅ Production: https://gosintra.pt
+- ✅ Production: https://hoponsintra.com
 - ✅ Development: http://localhost (exempt)
 
 ### No Extra Permissions
@@ -524,7 +524,7 @@ For PWA-specific issues:
 - Check browser console for errors
 - Test in incognito mode
 - Clear cache and retry
-- Contact: dev@gosintra.pt
+- Contact: dev@hoponsintra.com
 
 ---
 

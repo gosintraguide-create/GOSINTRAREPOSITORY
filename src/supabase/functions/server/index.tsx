@@ -596,7 +596,7 @@ async function generateBookingPDF(
       });
 
       // Email & WhatsApp line - size 9, ~5 per char = 245
-      const contactLine = "info@gosintra.com  |  WhatsApp: +351 932 967 279";
+      const contactLine = "info@hoponsintra.com  |  WhatsApp: +351 932 967 279";
       page.drawText(contactLine, {
         x: width / 2 - (contactLine.length * 2.5),
         y: 30,
@@ -757,12 +757,12 @@ async function sendBookingEmail(
       booking.id.split("_")[1] || booking.id;
 
     // Send email via Resend with PDF attachment
-    // NOTE: Using bookings@hoponsintra.com as the sender email
-    // To use this email, verify hoponsintra.com domain at https://resend.com/domains
+    // Domain hoponsintra.com is verified in Resend with receiving enabled
     const emailPayload: any = {
       from: "Hop On Sintra <bookings@hoponsintra.com>",
       to: [recipientEmail],
-      subject: `🎉 Your Go Sintra Booking Confirmed - ${formattedDate}`,
+      reply_to: "info@hoponsintra.com", // Customers can reply here, you'll receive it in Resend inbox
+      subject: `🎉 Your Hop On Sintra Booking Confirmed - ${formattedDate}`,
       html: htmlContent,
     };
 

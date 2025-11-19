@@ -99,13 +99,13 @@ export const de: WebsiteContent = {
   },
   routes: {
     title: "Unsere Zwei Rundstrecken",
-    subtitle: "Alle Haltestellen alle 30 Minuten bedient • Kein Fahrzeugwechsel erforderlich",
+    subtitle: "Verbindet alle Hauptattraktionen • Kein Fahrzeugwechsel erforderlich",
     route1: "Route 1",
     route2: "Route 2",
     bothRoutes: "Beide Routen",
     loopsBack: "kehrt zurück",
     onePassBothRoutes: "Ein Pass, Beide Routen",
-    onePassDescription: "Ihr Tagespass gibt Ihnen unbegrenzten Zugang zu beiden Routen. Unsere Fahrzeuge besuchen alle Haltestellen alle 30 Minuten von 9 bis 19 Uhr, und Sie müssen nie das Fahrzeug wechseln - bleiben Sie an Bord, da sich die Routen am Bahnhof und im Historischen Zentrum Nord verbinden.",
+    onePassDescription: "Ihr Tagespass gibt Ihnen unbegrenzten Zugang zu beiden Routen. Unsere Fahrzeuge besuchen alle Haltestellen während der Betriebszeiten (9 bis 19 Uhr), und Sie müssen nie das Fahrzeug wechseln - bleiben Sie an Bord, da sich die Routen am Bahnhof und im Historischen Zentrum Nord verbinden.",
     stops: {
       trainStation: "Bahnhof",
       historicalCenterNorth: "Historisches Zentrum Nord",

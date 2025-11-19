@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { CheckCircle, Download, Mail, Calendar, Users, ArrowRight, Printer, AlertCircle, FileDown, Ticket } from "lucide-react";
+import { CheckCircle, Download, Mail, Calendar, Users, ArrowRight, Printer, AlertCircle, FileDown, Ticket, Home, Settings } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Badge } from "./ui/badge";
@@ -7,13 +7,15 @@ import { Alert, AlertDescription } from "./ui/alert";
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { toast } from "sonner@2.0.3";
 import { TicketCard } from "./TicketCard";
+import { getTranslation } from "../lib/translations";
 
 interface BookingConfirmationPageProps {
   onNavigate: (page: string) => void;
   booking: any;
+  language?: string;
 }
 
-export function BookingConfirmationPage({ onNavigate, booking }: BookingConfirmationPageProps) {
+export function BookingConfirmationPage({ onNavigate, booking, language }: BookingConfirmationPageProps) {
   const [emailSent, setEmailSent] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
 
@@ -54,7 +56,7 @@ export function BookingConfirmationPage({ onNavigate, booking }: BookingConfirma
       const link = document.createElement('a');
       link.href = url;
       const bookingIdShort = booking.id.split('_')[1] || booking.id;
-      link.download = `GoSintra_Tickets_${bookingIdShort}.pdf`;
+      link.download = `HopOnSintra_Tickets_${bookingIdShort}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -98,7 +100,7 @@ export function BookingConfirmationPage({ onNavigate, booking }: BookingConfirma
 
   const handleDownloadQR = (qrCode: string, passengerName: string) => {
     const link = document.createElement('a');
-    link.download = `gosintra-qr-${passengerName.replace(/\s/g, '-')}.png`;
+    link.download = `hoponsintra-qr-${passengerName.replace(/\s/g, '-')}.png`;
     link.href = qrCode;
     link.click();
   };
@@ -285,40 +287,68 @@ export function BookingConfirmationPage({ onNavigate, booking }: BookingConfirma
           </div>
         </Card>
 
-        {/* Next Steps */}
-        <div className="text-center">
-          <h3 className="mb-4 text-primary">Plan Your Visit</h3>
-          <p className="mb-6 text-muted-foreground">
-            Explore our attraction guide to plan your perfect day in Sintra
-          </p>
-          
+        {/* Thank You & Navigation Actions */}
+        <Card className="mb-8 bg-gradient-to-br from-primary/5 to-secondary/5 p-8 text-center border-primary/20">
+          <div className="mb-6">
+            <h2 className="mb-3 text-primary">🎉 Thank You for Choosing Hop On Sintra!</h2>
+            <p className="text-lg text-muted-foreground">
+              We're excited to show you the magic of Sintra. Your adventure begins on {formattedDate}!
+            </p>
+            <p className="mt-3 text-muted-foreground">
+              Your booking confirmation and tickets have been sent to <strong>{booking.contactInfo.email}</strong>
+            </p>
+          </div>
+
+          {/* Action Buttons */}
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
             <Button
               size="lg"
-              onClick={() => onNavigate("attractions")}
-              className="bg-primary"
+              variant="default"
+              onClick={() => onNavigate("home")}
+              className="gap-2 bg-primary hover:bg-primary/90"
             >
-              View Attractions
-              <ArrowRight className="ml-2 h-5 w-5" />
+              <Home className="h-5 w-5" />
+              Back to Homepage
             </Button>
             
             <Button
               size="lg"
               variant="outline"
-              onClick={() => onNavigate("attractions")}
+              onClick={() => onNavigate("manage-booking")}
+              className="gap-2 border-primary text-primary hover:bg-primary/10"
             >
+              <Settings className="h-5 w-5" />
+              Manage Booking
+            </Button>
+
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => onNavigate("attractions")}
+              className="gap-2"
+            >
+              <ArrowRight className="h-5 w-5" />
               View Attractions
             </Button>
           </div>
 
-          <p className="mt-6 text-muted-foreground">
-            Need help? Contact us via{" "}
-            <a href="mailto:info@gosintra.com" className="text-accent hover:underline">
-              email
+          <div className="mt-6 space-y-2 text-sm text-muted-foreground">
+            <p>💡 <strong>Tip:</strong> Use your Booking ID <span className="font-mono text-primary">{booking.id}</span> to manage your reservation</p>
+            <p>📍 View our <button onClick={() => onNavigate("route-map")} className="text-primary hover:underline">interactive route map</button> to plan your stops</p>
+          </div>
+        </Card>
+
+        {/* Contact Support */}
+        <div className="text-center text-sm text-muted-foreground">
+          <p className="mb-2">Questions or need to make changes?</p>
+          <p>
+            Contact us via{" "}
+            <a href="mailto:info@hoponsintra.com" className="text-primary hover:underline">
+              info@hoponsintra.com
             </a>{" "}
             or{" "}
-            <a href="https://wa.me/351932967279" className="text-accent hover:underline">
-              WhatsApp
+            <a href="https://wa.me/351932967279" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">
+              WhatsApp (+351 932 967 279)
             </a>
           </p>
         </div>
