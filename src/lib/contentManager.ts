@@ -1,6 +1,9 @@
 // Central content management system for the website
-import { getContent as getContentFromAPI, saveContent as saveContentToAPI } from './api';
-import { getTranslation } from './translations';
+import {
+  getContent as getContentFromAPI,
+  saveContent as saveContentToAPI,
+} from "./api";
+import { getTranslation } from "./translations";
 
 export interface WebsiteContent {
   company: {
@@ -192,12 +195,36 @@ export interface WebsiteContent {
     };
   };
   seo: {
-    home: { title: string; description: string; keywords: string };
-    attractions: { title: string; description: string; keywords: string };
-    howItWorks: { title: string; description: string; keywords: string };
-    buyTicket: { title: string; description: string; keywords: string };
-    about: { title: string; description: string; keywords: string };
-    blog: { title: string; description: string; keywords: string };
+    home: {
+      title: string;
+      description: string;
+      keywords: string;
+    };
+    attractions: {
+      title: string;
+      description: string;
+      keywords: string;
+    };
+    howItWorks: {
+      title: string;
+      description: string;
+      keywords: string;
+    };
+    buyTicket: {
+      title: string;
+      description: string;
+      keywords: string;
+    };
+    about: {
+      title: string;
+      description: string;
+      keywords: string;
+    };
+    blog: {
+      title: string;
+      description: string;
+      keywords: string;
+    };
   };
   blog: {
     pageTitle: string;
@@ -227,7 +254,7 @@ export interface WebsiteContent {
     updated: string;
     relatedArticles: string;
     moreArticles: string;
-    
+
     // Blog Article Page specific
     breadcrumbHome: string;
     breadcrumbTravelGuide: string;
@@ -241,7 +268,7 @@ export interface WebsiteContent {
     readyToExperience: string;
     bookFlexibleDayPass: string;
     bookDayPassNow: string;
-    
+
     categories: {
       planning: string;
       "getting-there": string;
@@ -578,7 +605,8 @@ export const DEFAULT_CONTENT: WebsiteContent = {
     // Hero Section
     hero: {
       title: "Discover Sintra Your Way",
-      subtitle: "Hop-on, hop-off day pass with guaranteed seats and professional driver-guides. Unlimited rides in small tuk tuks and vintage jeeps. New departure every 30 minutes.",
+      subtitle:
+        "Hop-on, hop-off day pass with guaranteed seats and professional driver-guides. Unlimited rides in small tuk tuks and vintage jeeps. New departure every 30 minutes.",
       ctaButton: "Book Your Day Pass",
       benefitPills: [
         { icon: "Users", text: "Small Groups (2-6)" },
@@ -589,13 +617,27 @@ export const DEFAULT_CONTENT: WebsiteContent = {
     // Quick Links Section
     quickLinks: {
       title: "Quick Links",
-      subtitle: "Explore Sintra's magical landscapes with our hop-on/hop-off service",
-      attractions: { title: "Attractions", subtitle: "Discover Pena Palace, Quinta da Regaleira, Moorish Castle, and more" },
-      travelGuide: { title: "Travel Guide", subtitle: "Expert tips, insider secrets, and everything you need for a magical Sintra adventure" },
-      privateTours: { title: "Private Tours", subtitle: "Book a private tour for a personalized experience" },
+      subtitle:
+        "Explore Sintra's magical landscapes with our hop-on/hop-off service",
+      attractions: {
+        title: "Attractions",
+        subtitle:
+          "Discover Pena Palace, Quinta da Regaleira, Moorish Castle, and more",
+      },
+      travelGuide: {
+        title: "Travel Guide",
+        subtitle:
+          "Expert tips, insider secrets, and everything you need for a magical Sintra adventure",
+      },
+      privateTours: {
+        title: "Private Tours",
+        subtitle:
+          "Book a private tour for a personalized experience",
+      },
     },
     heroTitle: "Discover Sintra Your Way",
-    heroSubtitle: "Hop-on, hop-off day pass with guaranteed seats and professional driver-guides. Unlimited rides in small tuk tuks and vintage jeeps. New departure every 30 minutes.",
+    heroSubtitle:
+      "Hop-on, hop-off day pass with guaranteed seats and professional driver-guides. Unlimited rides in small tuk tuks and vintage jeeps. New departure every 30 minutes.",
     heroCallToAction: "Book Your Day Pass",
     benefitPills: [
       { icon: "Users", text: "Small Groups (2-6)" },
@@ -603,66 +645,88 @@ export const DEFAULT_CONTENT: WebsiteContent = {
       { icon: "MapPin", text: "All Attractions" },
     ],
     sectionOneTitle: "Why Choose Go Sintra?",
-    sectionOneDescription: "Skip the crowded tour buses and experience Sintra the way it's meant to be discovered",
+    sectionOneDescription:
+      "Skip the crowded tour buses and experience Sintra the way it's meant to be discovered",
     // What Is Hop On Sintra Section
     hopOnHopOffDayPass: "Hop-On/Hop-Off Day Pass",
     unlimitedAdventureTitle: "Unlimited Adventure",
-    serviceDescription: "Explore Sintra's UNESCO World Heritage sites with guaranteed seating in small vehicles. Unlimited rides every 30 minutes. Book your flexible day pass online now.",
-    serviceDescription2: "Experience Sintra's magical landscapes with our premium hop-on/hop-off service. Enjoy unlimited rides in small, intimate vehicles with professional driver-guides.",
+    serviceDescription:
+      "Explore Sintra's UNESCO World Heritage sites with guaranteed seating in small vehicles. Unlimited rides every 30 minutes. Book your flexible day pass online now.",
+    serviceDescription2:
+      "Experience Sintra's magical landscapes with our premium hop-on/hop-off service. Enjoy unlimited rides in small, intimate vehicles with professional driver-guides.",
     // Feature benefits
     unlimitedRidesTitle: "Unlimited Rides",
-    unlimitedRidesSubtitle: "Explore Sintra's attractions at your own pace with unlimited rides.",
+    unlimitedRidesSubtitle:
+      "Explore Sintra's attractions at your own pace with unlimited rides.",
     frequentServiceTitle: "Frequent Service",
-    frequentServiceSubtitle: "Regular departures every 30 minutes, ensuring you never wait long.",
+    frequentServiceSubtitle:
+      "Regular departures every 30 minutes, ensuring you never wait long.",
     smallGroupsTitle: "Small Groups",
-    smallGroupsSubtitle: "Enjoy intimate tours with small groups (2-6 people).",
+    smallGroupsSubtitle:
+      "Enjoy intimate tours with small groups (2-6 people).",
     professionalGuidesTitle: "Professional Guides",
-    professionalGuidesSubtitle: "Learn from certified guides with deep local knowledge.",
+    professionalGuidesSubtitle:
+      "Learn from certified guides with deep local knowledge.",
     requestPickupTitle: "Request Pickup",
-    requestPickupSubtitle: "Choose your preferred pickup location and time.",
+    requestPickupSubtitle:
+      "Choose your preferred pickup location and time.",
     realTimeTrackingTitle: "Real-Time Tracking",
-    realTimeTrackingSubtitle: "Track your vehicle in real-time and know exactly where it is.",
+    realTimeTrackingSubtitle:
+      "Track your vehicle in real-time and know exactly where it is.",
     // Why You'll Love It section
     whatMakesDifferentTitle: "What Makes Us Different",
-    whatMakesDifferentSubtitle: "Experience Sintra like never before with our premium service.",
+    whatMakesDifferentSubtitle:
+      "Experience Sintra like never before with our premium service.",
     intimateAdventuresTitle: "Intimate Adventures",
-    intimateAdventuresDescription: "Skip the crowds and enjoy small, intimate tours with professional guides.",
+    intimateAdventuresDescription:
+      "Skip the crowds and enjoy small, intimate tours with professional guides.",
     professionalDriverGuidesTitle: "Professional Driver-Guides",
-    professionalDriverGuidesDescription: "Every vehicle is driven by a certified professional guide with deep local knowledge and years of experience showing visitors the best of Sintra.",
+    professionalDriverGuidesDescription:
+      "Every vehicle is driven by a certified professional guide with deep local knowledge and years of experience showing visitors the best of Sintra.",
     yourTimeYourWayTitle: "Your Time, Your Way",
-    yourTimeYourWayDescription: "Hop off at any attraction, spend as long as you want, then hop back on. Your day, your pace.",
+    yourTimeYourWayDescription:
+      "Hop off at any attraction, spend as long as you want, then hop back on. Your day, your pace.",
     neverRushTitle: "Never Rush",
-    neverRushDescription: "Enjoy a relaxed and stress-free experience with our flexible service.",
+    neverRushDescription:
+      "Enjoy a relaxed and stress-free experience with our flexible service.",
     guaranteedSeatsTitle: "Guaranteed Seats",
-    guaranteedSeatsDescription: "Every guest has a guaranteed seat in a small, intimate vehicle. No standing, no overcrowding.",
+    guaranteedSeatsDescription:
+      "Every guest has a guaranteed seat in a small, intimate vehicle. No standing, no overcrowding.",
     // Pro tip
     proTipTitle: "Pro Tip",
     proTipNoVehicle: "No vehicle needed!",
-    proTipDescription: "Our service includes transportation to all major Sintra attractions, so you don't need to worry about renting a vehicle.",
+    proTipDescription:
+      "Our service includes transportation to all major Sintra attractions, so you don't need to worry about renting a vehicle.",
     // Price badge
     priceFrom: "From",
     pricePerPerson: "per person",
     // On-demand pickup tip (Step 4)
     cantSeeVehicle: "Can't see your vehicle?",
-    requestPickupTip: "Request pickup to have a vehicle dispatched to your location.",
+    requestPickupTip:
+      "Request pickup to have a vehicle dispatched to your location.",
     // On-Demand Pickup Feature (Feature 6)
     onDemandPickupTitle: "On-Demand Pickup",
-    onDemandPickupDescription: "Request a vehicle to be dispatched to your location for a seamless start to your adventure.",
+    onDemandPickupDescription:
+      "Request a vehicle to be dispatched to your location for a seamless start to your adventure.",
     // Final CTA Section
     finalCtaTitle: "Ready to Start Your Adventure?",
-    finalCtaSubtitle: "Now that you're armed with insider knowledge, book your flexible day pass with professional driver-guides! 🎉",
+    finalCtaSubtitle:
+      "Now that you're armed with insider knowledge, book your flexible day pass with professional driver-guides! 🎉",
     finalCtaButton: "Book Your Day Pass",
-    finalCtaSubtext: "Experience Sintra's magical landscapes like never before.",
+    finalCtaSubtext:
+      "Experience Sintra's magical landscapes like never before.",
   },
   routes: {
     title: "Routes",
-    subtitle: "Explore Sintra's magical landscapes with our hop-on/hop-off service",
+    subtitle:
+      "Explore Sintra's magical landscapes with our hop-on/hop-off service",
     route1: "Route 1",
     route2: "Route 2",
     bothRoutes: "Both Routes",
     loopsBack: "Loops Back",
     onePassBothRoutes: "One Pass for Both Routes",
-    onePassDescription: "Enjoy both routes with a single day pass. Perfect for a full day of exploration.",
+    onePassDescription:
+      "Enjoy both routes with a single day pass. Perfect for a full day of exploration.",
     stops: {
       trainStation: "Sintra Train Station",
       historicalCenterNorth: "Historical Center North",
@@ -692,7 +756,8 @@ export const DEFAULT_CONTENT: WebsiteContent = {
   },
   manageBooking: {
     pageTitle: "Manage Your Booking",
-    pageSubtitle: "Enter your booking details to find and manage your Sintra day pass",
+    pageSubtitle:
+      "Enter your booking details to find and manage your Sintra day pass",
     bookingIdLabel: "Booking ID",
     bookingIdPlaceholder: "Enter your booking ID",
     lastNameLabel: "Last Name",
@@ -700,7 +765,8 @@ export const DEFAULT_CONTENT: WebsiteContent = {
     findBookingButton: "Find Booking",
     whereToFindBookingId: "Where to find your booking ID?",
     inConfirmationEmail: "In the confirmation email",
-    subjectLine: "Subject line: Sintra Day Pass Booking Confirmation",
+    subjectLine:
+      "Subject line: Sintra Day Pass Booking Confirmation",
     lookFor: "Look for a line that says 'Your booking ID is:'",
     needHelp: "Need help?",
     contactSupport: "Contact support",
@@ -724,50 +790,62 @@ export const DEFAULT_CONTENT: WebsiteContent = {
     totalPaid: "Total Paid",
     importantInformation: "Important Information",
     serviceHours: "Service Hours",
-    serviceHoursDescription: "Our service operates from 9 AM to 8 PM daily. Please arrive at your pickup location 15 minutes before your scheduled pickup time.",
+    serviceHoursDescription:
+      "Our service operates from 9 AM to 8 PM daily. Please arrive at your pickup location 15 minutes before your scheduled pickup time.",
     digitalTickets: "Digital Tickets",
-    digitalTicketsDescription: "You will receive digital tickets via email along with your day pass QR code(s).",
+    digitalTicketsDescription:
+      "You will receive digital tickets via email along with your day pass QR code(s).",
     guaranteedSeating: "Guaranteed Seating",
-    guaranteedSeatingDescription: "Every guest has a guaranteed seat in a small, intimate vehicle. No standing, no overcrowding.",
+    guaranteedSeatingDescription:
+      "Every guest has a guaranteed seat in a small, intimate vehicle. No standing, no overcrowding.",
     hopOnOff: "Hop-On/Hop-Off",
-    hopOnOffDescription: "Explore Sintra's attractions at your own pace with unlimited rides in small, intimate vehicles with professional driver-guides.",
+    hopOnOffDescription:
+      "Explore Sintra's attractions at your own pace with unlimited rides in small, intimate vehicles with professional driver-guides.",
     downloadTickets: "Download Tickets",
     downloadQRCodes: "Download QR Codes",
     bookingNotFound: "Booking Not Found",
-    bookingNotFoundDescription: "We couldn't find a booking with the provided details. Please check the details and try again.",
+    bookingNotFoundDescription:
+      "We couldn't find a booking with the provided details. Please check the details and try again.",
     checkDetails: "Check Details",
     tryAgain: "Try Again",
     backToSearch: "Back to Search",
   },
   about: {
     title: "About Go Sintra",
-    subtitle: "Your premium hop-on/hop-off adventure through Sintra's magical landscapes",
+    subtitle:
+      "Your premium hop-on/hop-off adventure through Sintra's magical landscapes",
     story: [
       "Go Sintra was born from a simple observation: visitors to this UNESCO World Heritage site deserved better than crowded buses and rigid schedules.",
       "We created a flexible, premium alternative that combines the intimacy of small vehicles with the freedom of hop-on/hop-off convenience.",
       "Today, thousands of visitors choose Go Sintra for guaranteed seating, regular departures every 30 minutes, and an authentic, intimate way to explore this magical destination.",
     ],
-    mission: "Our mission is to provide the most convenient, comfortable, and authentic way to explore Sintra's palaces, castles, and gardens.",
+    mission:
+      "Our mission is to provide the most convenient, comfortable, and authentic way to explore Sintra's palaces, castles, and gardens.",
     values: [
       {
         title: "Guaranteed Comfort",
-        description: "Every guest has a guaranteed seat in a small, intimate vehicle. No standing, no overcrowding.",
+        description:
+          "Every guest has a guaranteed seat in a small, intimate vehicle. No standing, no overcrowding.",
       },
       {
         title: "Total Flexibility",
-        description: "Hop off at any attraction, spend as long as you want, then hop back on. Your day, your pace.",
+        description:
+          "Hop off at any attraction, spend as long as you want, then hop back on. Your day, your pace.",
       },
       {
         title: "Professional Driver-Guides",
-        description: "Every vehicle is driven by a certified professional guide with deep local knowledge and years of experience showing visitors the best of Sintra.",
+        description:
+          "Every vehicle is driven by a certified professional guide with deep local knowledge and years of experience showing visitors the best of Sintra.",
       },
     ],
   },
   attractions: {
     "pena-palace": {
       name: "Pena Palace",
-      description: "The crown jewel of Sintra, this Romanticist palace sits atop a hill with stunning views. Built in the 19th century, it showcases vibrant colors and eclectic architecture.",
-      longDescription: "Built on the ruins of an old monastery, Pena Palace was commissioned by King Ferdinand II and represents the peak of Romantic architecture in Portugal. The palace combines Gothic, Moorish, Renaissance, and Manueline styles in a whimsical display of color and creativity. The surrounding park features exotic trees and plants from around the world, winding paths, and breathtaking viewpoints.",
+      description:
+        "The crown jewel of Sintra, this Romanticist palace sits atop a hill with stunning views. Built in the 19th century, it showcases vibrant colors and eclectic architecture.",
+      longDescription:
+        "Built on the ruins of an old monastery, Pena Palace was commissioned by King Ferdinand II and represents the peak of Romantic architecture in Portugal. The palace combines Gothic, Moorish, Renaissance, and Manueline styles in a whimsical display of color and creativity. The surrounding park features exotic trees and plants from around the world, winding paths, and breathtaking viewpoints.",
       highlights: [
         "Panoramic views of Sintra and the Atlantic Ocean",
         "Ornate interior rooms with original 19th-century furnishings",
@@ -788,8 +866,10 @@ export const DEFAULT_CONTENT: WebsiteContent = {
     },
     "quinta-regaleira": {
       name: "Quinta da Regaleira",
-      description: "A mystical estate featuring enigmatic gardens, underground tunnels, and the famous Initiation Well. This UNESCO World Heritage site is a masterpiece of symbolic and philosophical architecture.",
-      longDescription: "Created by Italian architect Luigi Manini for millionaire António Augusto Carvalho Monteiro, Quinta da Regaleira is filled with alchemical and masonic symbolism. The estate features elaborate gardens, mysterious grottoes, enchanting lakes, and the iconic Initiation Well - a 27-meter spiral staircase descending into the earth, used for ceremonial purposes.",
+      description:
+        "A mystical estate featuring enigmatic gardens, underground tunnels, and the famous Initiation Well. This UNESCO World Heritage site is a masterpiece of symbolic and philosophical architecture.",
+      longDescription:
+        "Created by Italian architect Luigi Manini for millionaire António Augusto Carvalho Monteiro, Quinta da Regaleira is filled with alchemical and masonic symbolism. The estate features elaborate gardens, mysterious grottoes, enchanting lakes, and the iconic Initiation Well - a 27-meter spiral staircase descending into the earth, used for ceremonial purposes.",
       highlights: [
         "The famous Initiation Well with spiral staircase",
         "Mysterious underground tunnel system",
@@ -809,8 +889,10 @@ export const DEFAULT_CONTENT: WebsiteContent = {
     },
     "moorish-castle": {
       name: "Moorish Castle",
-      description: "Ancient fortress walls snake along mountain ridges, offering spectacular panoramic views. Built by the Moors in the 8th-9th centuries, this castle is a testament to medieval military architecture.",
-      longDescription: "The Moorish Castle was built during the Muslim occupation of the Iberian Peninsula, strategically positioned to guard the town of Sintra and surrounding trade routes. After the Christian conquest, the castle fell into disrepair but was later restored in the 19th century. Today, visitors can walk along the ancient ramparts and enjoy some of the most spectacular views in the region.",
+      description:
+        "Ancient fortress walls snake along mountain ridges, offering spectacular panoramic views. Built by the Moors in the 8th-9th centuries, this castle is a testament to medieval military architecture.",
+      longDescription:
+        "The Moorish Castle was built during the Muslim occupation of the Iberian Peninsula, strategically positioned to guard the town of Sintra and surrounding trade routes. After the Christian conquest, the castle fell into disrepair but was later restored in the 19th century. Today, visitors can walk along the ancient ramparts and enjoy some of the most spectacular views in the region.",
       highlights: [
         "360-degree views from the castle walls",
         "Ancient medieval fortification system",
@@ -830,8 +912,10 @@ export const DEFAULT_CONTENT: WebsiteContent = {
     },
     "monserrate-palace": {
       name: "Monserrate Palace",
-      description: "An exotic palace blending Gothic, Indian, and Moorish influences, set within one of the most beautiful botanical gardens in Portugal with rare and exotic plant species from around the world.",
-      longDescription: "Monserrate Palace was built in 1858 for Sir Francis Cook, an English textile magnate and art collector. The palace showcases an extraordinary fusion of architectural styles, while its gardens are considered among the finest examples of landscape gardening in Portugal. The estate features plants from five continents, creating microclimates that support species from Mexico, Australia, Japan, and beyond.",
+      description:
+        "An exotic palace blending Gothic, Indian, and Moorish influences, set within one of the most beautiful botanical gardens in Portugal with rare and exotic plant species from around the world.",
+      longDescription:
+        "Monserrate Palace was built in 1858 for Sir Francis Cook, an English textile magnate and art collector. The palace showcases an extraordinary fusion of architectural styles, while its gardens are considered among the finest examples of landscape gardening in Portugal. The estate features plants from five continents, creating microclimates that support species from Mexico, Australia, Japan, and beyond.",
       highlights: [
         "Stunning mix of architectural styles",
         "World-class botanical gardens",
@@ -851,8 +935,10 @@ export const DEFAULT_CONTENT: WebsiteContent = {
     },
     "sintra-palace": {
       name: "Sintra National Palace",
-      description: "Located in the heart of Sintra's historic center, this is the best-preserved medieval royal palace in Portugal, famous for its distinctive twin chimneys and magnificent tile work.",
-      longDescription: "The Sintra National Palace has been a royal residence since the early 15th century and was continuously inhabited by Portuguese royalty until 1910. The palace showcases various architectural styles accumulated over the centuries, from medieval to Renaissance. Its interior features some of the finest examples of Mudéjar tilework in Portugal, along with painted ceilings depicting armillary spheres, magpies, and swans.",
+      description:
+        "Located in the heart of Sintra's historic center, this is the best-preserved medieval royal palace in Portugal, famous for its distinctive twin chimneys and magnificent tile work.",
+      longDescription:
+        "The Sintra National Palace has been a royal residence since the early 15th century and was continuously inhabited by Portuguese royalty until 1910. The palace showcases various architectural styles accumulated over the centuries, from medieval to Renaissance. Its interior features some of the finest examples of Mudéjar tilework in Portugal, along with painted ceilings depicting armillary spheres, magpies, and swans.",
       highlights: [
         "Iconic twin conical chimneys",
         "Magnificent azulejo tile collection",
@@ -873,45 +959,64 @@ export const DEFAULT_CONTENT: WebsiteContent = {
   },
   seo: {
     home: {
-      title: "Go Sintra - Premium Hop-On/Hop-Off Day Pass | Small Vehicle Tours",
-      description: "Explore Sintra's UNESCO World Heritage sites with guaranteed seating in small vehicles. Unlimited rides every 30 minutes. Book your flexible day pass online now.",
-      keywords: "Sintra tours, hop on hop off Sintra, Sintra transport, small group tours Sintra, Pena Palace tours, Sintra day pass",
+      title:
+        "Go Sintra - Premium Hop-On/Hop-Off Day Pass | Small Vehicle Tours",
+      description:
+        "Explore Sintra's UNESCO World Heritage sites with guaranteed seating in small vehicles. Unlimited rides every 30 minutes. Book your flexible day pass online now.",
+      keywords:
+        "Sintra tours, hop on hop off Sintra, Sintra transport, small group tours Sintra, Pena Palace tours, Sintra day pass",
     },
     attractions: {
-      title: "Sintra Attractions - Palaces & Castles | Go Sintra Day Pass",
-      description: "Discover Pena Palace, Quinta da Regaleira, Moorish Castle, and more. Our day pass includes unlimited transport to all major Sintra attractions.",
-      keywords: "Sintra attractions, Pena Palace, Quinta da Regaleira, Moorish Castle, Monserrate Palace, Sintra National Palace",
+      title:
+        "Sintra Attractions - Palaces & Castles | Go Sintra Day Pass",
+      description:
+        "Discover Pena Palace, Quinta da Regaleira, Moorish Castle, and more. Our day pass includes unlimited transport to all major Sintra attractions.",
+      keywords:
+        "Sintra attractions, Pena Palace, Quinta da Regaleira, Moorish Castle, Monserrate Palace, Sintra National Palace",
     },
     howItWorks: {
       title: "How It Works - Go Sintra Hop-On/Hop-Off Service",
-      description: "Learn how our flexible day pass works. Book online, get your QR codes, and hop on any vehicle during operating hours. Simple and convenient.",
-      keywords: "how to visit Sintra, Sintra transport guide, hop on hop off how it works, Sintra day pass guide",
+      description:
+        "Learn how our flexible day pass works. Book online, get your QR codes, and hop on any vehicle during operating hours. Simple and convenient.",
+      keywords:
+        "how to visit Sintra, Sintra transport guide, hop on hop off how it works, Sintra day pass guide",
     },
     buyTicket: {
-      title: "Book Your Day Pass - Go Sintra | Instant Confirmation",
-      description: "Book your Sintra day pass online. Choose your date, get instant QR codes for each passenger, and enjoy unlimited rides until 8pm. Add attraction tickets too.",
-      keywords: "book Sintra tours, buy Sintra day pass, Sintra tickets online, Sintra attraction tickets",
+      title:
+        "Book Your Day Pass - Go Sintra | Instant Confirmation",
+      description:
+        "Book your Sintra day pass online. Choose your date, get instant QR codes for each passenger, and enjoy unlimited rides until 8pm. Add attraction tickets too.",
+      keywords:
+        "book Sintra tours, buy Sintra day pass, Sintra tickets online, Sintra attraction tickets",
     },
     about: {
-      title: "About Go Sintra - Premium Small Vehicle Tour Service",
-      description: "Go Sintra offers premium hop-on/hop-off service with guaranteed seating in small vehicles. Regular departures every 30 minutes throughout Sintra.",
-      keywords: "about Go Sintra, Sintra tour company, premium Sintra tours, small group Sintra",
+      title:
+        "About Go Sintra - Premium Small Vehicle Tour Service",
+      description:
+        "Go Sintra offers premium hop-on/hop-off service with guaranteed seating in small vehicles. Regular departures every 30 minutes throughout Sintra.",
+      keywords:
+        "about Go Sintra, Sintra tour company, premium Sintra tours, small group Sintra",
     },
     blog: {
       title: "Your Ultimate Sintra Travel Guide",
-      description: "Expert tips, insider secrets, and everything you need for a magical Sintra adventure ✨",
-      keywords: "Sintra travel guide, Sintra tips, Sintra attractions, Sintra day pass, Sintra tours",
+      description:
+        "Expert tips, insider secrets, and everything you need for a magical Sintra adventure ✨",
+      keywords:
+        "Sintra travel guide, Sintra tips, Sintra attractions, Sintra day pass, Sintra tours",
     },
   },
   blog: {
     pageTitle: "Your Ultimate Sintra Travel Guide",
-    pageSubtitle: "Expert tips, insider secrets, and everything you need for a magical Sintra adventure ✨",
-    searchPlaceholder: "Search for guides, tips, and itineraries...",
+    pageSubtitle:
+      "Expert tips, insider secrets, and everything you need for a magical Sintra adventure ✨",
+    searchPlaceholder:
+      "Search for guides, tips, and itineraries...",
     filterBy: "Filter by:",
     allArticles: "All Articles",
     noArticlesFound: "No articles found",
     tryDifferentSearch: "Try a different search term",
-    noArticlesInCategory: "No articles available in this category",
+    noArticlesInCategory:
+      "No articles available in this category",
     articlesFound: "Articles Found",
     article: "Article",
     articles: "Articles",
@@ -919,11 +1024,13 @@ export const DEFAULT_CONTENT: WebsiteContent = {
     minRead: "min read",
     browseTopics: "Browse Topics",
     exploreByCategory: "Explore by Category",
-    exploreCategoryDescription: "Find exactly what you're looking for—organized by topic!",
+    exploreCategoryDescription:
+      "Find exactly what you're looking for—organized by topic!",
     guide: "guide",
     guides: "guides",
     ctaTitle: "Ready to Start Your Adventure?",
-    ctaSubtitle: "Now that you're armed with insider knowledge, book your flexible day pass with professional driver-guides! 🎉",
+    ctaSubtitle:
+      "Now that you're armed with insider knowledge, book your flexible day pass with professional driver-guides! 🎉",
     ctaButton: "Book Your Day Pass",
     backToBlog: "Back to Blog",
     articleNotFound: "Article not found",
@@ -931,7 +1038,7 @@ export const DEFAULT_CONTENT: WebsiteContent = {
     updated: "Updated",
     relatedArticles: "Related Articles",
     moreArticles: "More Articles",
-    
+
     // Blog Article Page specific
     breadcrumbHome: "Home",
     breadcrumbTravelGuide: "Travel Guide",
@@ -943,9 +1050,10 @@ export const DEFAULT_CONTENT: WebsiteContent = {
     viewAllArticles: "View All Articles",
     tableOfContents: "Table of Contents",
     readyToExperience: "Ready to Experience Sintra?",
-    bookFlexibleDayPass: "Book your flexible day pass and start exploring Sintra's magnificent palaces and gardens",
+    bookFlexibleDayPass:
+      "Book your flexible day pass and start exploring Sintra's magnificent palaces and gardens",
     bookDayPassNow: "Book Your Day Pass Now",
-    
+
     categories: {
       planning: "Planning Your Visit",
       "getting-there": "Getting There",
@@ -954,11 +1062,15 @@ export const DEFAULT_CONTENT: WebsiteContent = {
       history: "History & Culture",
     },
     categoryDescriptions: {
-      planning: "Everything you need to know to plan the perfect Sintra day trip",
-      "getting-there": "Transportation guides and tips for reaching Sintra",
-      attractions: "In-depth guides to Sintra's palaces, castles, and gardens",
+      planning:
+        "Everything you need to know to plan the perfect Sintra day trip",
+      "getting-there":
+        "Transportation guides and tips for reaching Sintra",
+      attractions:
+        "In-depth guides to Sintra's palaces, castles, and gardens",
       tips: "Insider tips and local advice for exploring Sintra",
-      history: "Learn about Sintra's rich history and cultural heritage",
+      history:
+        "Learn about Sintra's rich history and cultural heritage",
     },
   },
   privateTours: {
@@ -966,32 +1078,40 @@ export const DEFAULT_CONTENT: WebsiteContent = {
     comingSoon: {
       badge: "Coming Soon",
       title: "Private Tours",
-      subtitle: "Experience Sintra like never before with our exclusive private tours.",
-      stayTunedText: "Stay tuned for updates on our private tour offerings!",
+      subtitle:
+        "Experience Sintra like never before with our exclusive private tours.",
+      stayTunedText:
+        "Stay tuned for updates on our private tour offerings!",
       feature1: "Personalized Itineraries",
       feature2: "Exclusive Access",
       feature3: "Private Vehicles",
       notifyButton: "Notify Me",
       exploreDayPassButton: "Explore Day Pass",
-      footerText: "Don't miss out on the ultimate Sintra adventure!",
+      footerText:
+        "Don't miss out on the ultimate Sintra adventure!",
     },
     // Why Wait section
     whyWait: {
       title: "Why Wait?",
-      subtitle: "Upgrade your Sintra experience with our private tours.",
+      subtitle:
+        "Upgrade your Sintra experience with our private tours.",
       card1Title: "Personalized Itineraries",
-      card1Description: "Tailored tours to suit your interests and preferences.",
+      card1Description:
+        "Tailored tours to suit your interests and preferences.",
       card2Title: "Exclusive Access",
-      card2Description: "Skip the crowds and enjoy private access to top attractions.",
+      card2Description:
+        "Skip the crowds and enjoy private access to top attractions.",
       card3Title: "Private Vehicles",
-      card3Description: "Travel in comfort with your own private vehicle.",
+      card3Description:
+        "Travel in comfort with your own private vehicle.",
       bookDayPassButton: "Book Day Pass",
     },
     // Main Private Tours Page (when enabled)
     hero: {
       badge: "Exclusive",
       title: "Private Tours",
-      subtitle: "Experience Sintra like never before with our exclusive private tours.",
+      subtitle:
+        "Experience Sintra like never before with our exclusive private tours.",
       pill1: "Personalized Itineraries",
       pill2: "Exclusive Access",
       pill3: "Private Vehicles",
@@ -1000,11 +1120,13 @@ export const DEFAULT_CONTENT: WebsiteContent = {
     },
     packages: {
       title: "Private Tour Packages",
-      subtitle: "Choose the perfect package for your Sintra adventure.",
+      subtitle:
+        "Choose the perfect package for your Sintra adventure.",
       // Half Day
       halfDay: {
         title: "Half Day Tour",
-        description: "Explore Sintra's top attractions in a half-day tour.",
+        description:
+          "Explore Sintra's top attractions in a half-day tour.",
         price: "€150",
         priceSubtext: "per person",
         duration: "4 hours",
@@ -1019,7 +1141,8 @@ export const DEFAULT_CONTENT: WebsiteContent = {
       fullDay: {
         badge: "Best Value",
         title: "Full Day Tour",
-        description: "Discover Sintra's magical landscapes in a full-day tour.",
+        description:
+          "Discover Sintra's magical landscapes in a full-day tour.",
         price: "€250",
         priceSubtext: "per person",
         duration: "8 hours",
@@ -1034,7 +1157,8 @@ export const DEFAULT_CONTENT: WebsiteContent = {
       // Custom
       custom: {
         title: "Custom Tour",
-        description: "Create your own Sintra adventure with a custom tour.",
+        description:
+          "Create your own Sintra adventure with a custom tour.",
         price: "€300+",
         duration: "Custom",
         feature1: "Personalized Itinerary",
@@ -1044,43 +1168,56 @@ export const DEFAULT_CONTENT: WebsiteContent = {
         feature5: "Skip-the-Line Entry",
         contactButton: "Contact Us",
       },
-      disclaimer: "Prices are per person and may vary based on group size and season.",
+      disclaimer:
+        "Prices are per person and may vary based on group size and season.",
     },
     whyChoose: {
       title: "Why Choose Go Sintra Private Tours?",
-      subtitle: "Experience Sintra like never before with our exclusive private tours.",
+      subtitle:
+        "Experience Sintra like never before with our exclusive private tours.",
       benefit1Title: "Personalized Itineraries",
-      benefit1Description: "Tailored tours to suit your interests and preferences.",
+      benefit1Description:
+        "Tailored tours to suit your interests and preferences.",
       benefit2Title: "Exclusive Access",
-      benefit2Description: "Skip the crowds and enjoy private access to top attractions.",
+      benefit2Description:
+        "Skip the crowds and enjoy private access to top attractions.",
       benefit3Title: "Private Vehicles",
-      benefit3Description: "Travel in comfort with your own private vehicle.",
+      benefit3Description:
+        "Travel in comfort with your own private vehicle.",
     },
     whatsIncluded: {
       title: "What's Included in Our Private Tours?",
       item1Title: "Personalized Itinerary",
-      item1Description: "Tailored tours to suit your interests and preferences.",
+      item1Description:
+        "Tailored tours to suit your interests and preferences.",
       item2Title: "Exclusive Access",
-      item2Description: "Skip the crowds and enjoy private access to top attractions.",
+      item2Description:
+        "Skip the crowds and enjoy private access to top attractions.",
       item3Title: "Private Vehicle",
-      item3Description: "Travel in comfort with your own private vehicle.",
+      item3Description:
+        "Travel in comfort with your own private vehicle.",
       item4Title: "Professional Guide",
-      item4Description: "Learn from certified guides with deep local knowledge.",
+      item4Description:
+        "Learn from certified guides with deep local knowledge.",
     },
     sampleItineraries: {
       title: "Sample Itineraries",
-      subtitle: "Discover Sintra's magical landscapes with our exclusive private tours.",
+      subtitle:
+        "Discover Sintra's magical landscapes with our exclusive private tours.",
       // Half Day Sample
       halfDay: {
         title: "Half Day Tour",
         duration: "4 hours",
         badge: "Popular",
         stop1Title: "Pena Palace",
-        stop1Description: "Discover the crown jewel of Sintra with a private tour.",
+        stop1Description:
+          "Discover the crown jewel of Sintra with a private tour.",
         stop2Title: "Quinta da Regaleira",
-        stop2Description: "Explore the mystical estate with a private guide.",
+        stop2Description:
+          "Explore the mystical estate with a private guide.",
         stop3Title: "Moorish Castle",
-        stop3Description: "Walk along the ancient ramparts with a private tour.",
+        stop3Description:
+          "Walk along the ancient ramparts with a private tour.",
       },
       // Full Day Sample
       fullDay: {
@@ -1088,34 +1225,46 @@ export const DEFAULT_CONTENT: WebsiteContent = {
         duration: "8 hours",
         badge: "Best Value",
         stop1Title: "Pena Palace",
-        stop1Description: "Discover the crown jewel of Sintra with a private tour.",
+        stop1Description:
+          "Discover the crown jewel of Sintra with a private tour.",
         stop2Title: "Quinta da Regaleira",
-        stop2Description: "Explore the mystical estate with a private guide.",
+        stop2Description:
+          "Explore the mystical estate with a private guide.",
         stop3Title: "Moorish Castle",
-        stop3Description: "Walk along the ancient ramparts with a private tour.",
+        stop3Description:
+          "Walk along the ancient ramparts with a private tour.",
         stop4Title: "Monserrate Palace",
-        stop4Description: "Enjoy the exotic palace with a private guide.",
+        stop4Description:
+          "Enjoy the exotic palace with a private guide.",
         stop5Title: "Sintra National Palace",
-        stop5Description: "Discover the best-preserved medieval royal palace with a private tour.",
+        stop5Description:
+          "Discover the best-preserved medieval royal palace with a private tour.",
       },
     },
     faq: {
       title: "Frequently Asked Questions",
-      subtitle: "Get answers to your questions about our private tours.",
+      subtitle:
+        "Get answers to your questions about our private tours.",
       question1: "What is included in a private tour?",
-      answer1: "Our private tours include a personalized itinerary, exclusive access to top attractions, a private vehicle, a professional guide, and skip-the-line entry.",
+      answer1:
+        "Our private tours include a personalized itinerary, exclusive access to top attractions, a private vehicle, a professional guide, and skip-the-line entry.",
       question2: "How many people can join a private tour?",
-      answer2: "Private tours are available for groups of up to 6 people. Larger groups can be accommodated with multiple vehicles.",
+      answer2:
+        "Private tours are available for groups of up to 6 people. Larger groups can be accommodated with multiple vehicles.",
       question3: "Can I customize my private tour?",
-      answer3: "Absolutely! We offer custom tour packages to suit your interests and preferences. Contact us to create your own Sintra adventure.",
+      answer3:
+        "Absolutely! We offer custom tour packages to suit your interests and preferences. Contact us to create your own Sintra adventure.",
       question4: "What languages are spoken by the guides?",
-      answer4: "Our guides speak English, Portuguese, and Spanish. We can also provide guides in other languages upon request.",
+      answer4:
+        "Our guides speak English, Portuguese, and Spanish. We can also provide guides in other languages upon request.",
       question5: "What should I wear for a private tour?",
-      answer5: "Comfortable shoes and clothing are recommended for walking and exploring Sintra's attractions. Bring water and sun protection for outdoor tours.",
+      answer5:
+        "Comfortable shoes and clothing are recommended for walking and exploring Sintra's attractions. Bring water and sun protection for outdoor tours.",
     },
     finalCta: {
       title: "Ready to Start Your Adventure?",
-      subtitle: "Experience Sintra like never before with our exclusive private tours.",
+      subtitle:
+        "Experience Sintra like never before with our exclusive private tours.",
       requestQuoteButton: "Request Quote",
       chatButton: "Chat with Us",
     },
@@ -1127,32 +1276,46 @@ export const DEFAULT_CONTENT: WebsiteContent = {
 
 export function saveContent(content: WebsiteContent): void {
   // Save to localStorage as backup
-  localStorage.setItem("website-content", JSON.stringify(content));
-  
+  localStorage.setItem(
+    "website-content",
+    JSON.stringify(content),
+  );
+
   // Also save to Supabase (non-blocking)
-  saveContentToAPI(content).catch(error => {
-    console.error('Failed to save content to database:', error);
+  saveContentToAPI(content).catch((error) => {
+    console.error("Failed to save content to database:", error);
   });
 }
 
 // Async version that waits for database save and returns result
-export async function saveContentAsync(content: WebsiteContent): Promise<{ success: boolean; error?: string }> {
+export async function saveContentAsync(
+  content: WebsiteContent,
+): Promise<{ success: boolean; error?: string }> {
   try {
     // Save to localStorage as backup
-    localStorage.setItem("website-content", JSON.stringify(content));
-    
+    localStorage.setItem(
+      "website-content",
+      JSON.stringify(content),
+    );
+
     // Save to database and wait for result
     const result = await saveContentToAPI(content);
-    
+
     if (result.success) {
-      console.log('✅ Content saved to database successfully');
+      console.log("✅ Content saved to database successfully");
       return { success: true };
     } else {
-      console.error('❌ Failed to save content to database:', result.error);
-      return { success: false, error: result.error || 'Failed to save to database' };
+      console.error(
+        "❌ Failed to save content to database:",
+        result.error,
+      );
+      return {
+        success: false,
+        error: result.error || "Failed to save to database",
+      };
     }
   } catch (error) {
-    console.error('❌ Error saving content:', error);
+    console.error("❌ Error saving content:", error);
     return { success: false, error: String(error) };
   }
 }
@@ -1163,17 +1326,39 @@ export function loadContent(): WebsiteContent {
   if (saved) {
     try {
       const parsed = JSON.parse(saved);
+
+      // 🔥 BRAND UPDATE: Force refresh if using old gosintra email
+      if (parsed.company?.email?.includes("gosintra.com")) {
+        console.log(
+          "🔄 Detected old branding in cache - clearing and using updated defaults",
+        );
+        localStorage.removeItem("website-content");
+        return DEFAULT_CONTENT;
+      }
+
       // Merge with defaults to ensure all fields exist
       return {
         ...DEFAULT_CONTENT,
         ...parsed,
-        company: { ...DEFAULT_CONTENT.company, ...parsed.company },
-        homepage: { ...DEFAULT_CONTENT.homepage, ...parsed.homepage },
+        company: {
+          ...DEFAULT_CONTENT.company,
+          ...parsed.company,
+        },
+        homepage: {
+          ...DEFAULT_CONTENT.homepage,
+          ...parsed.homepage,
+        },
         about: { ...DEFAULT_CONTENT.about, ...parsed.about },
-        attractions: { ...DEFAULT_CONTENT.attractions, ...parsed.attractions },
+        attractions: {
+          ...DEFAULT_CONTENT.attractions,
+          ...parsed.attractions,
+        },
         seo: { ...DEFAULT_CONTENT.seo, ...parsed.seo },
         blog: { ...DEFAULT_CONTENT.blog, ...parsed.blog },
-        featureFlags: { ...DEFAULT_CONTENT.featureFlags, ...parsed.featureFlags },
+        featureFlags: {
+          ...DEFAULT_CONTENT.featureFlags,
+          ...parsed.featureFlags,
+        },
       };
     } catch {
       return DEFAULT_CONTENT;
@@ -1183,10 +1368,12 @@ export function loadContent(): WebsiteContent {
 }
 
 // Load content with language support
-export function loadContentWithLanguage(languageCode: string = 'en'): WebsiteContent {
+export function loadContentWithLanguage(
+  languageCode: string = "en",
+): WebsiteContent {
   // Get translation for the language
   const translation = getTranslation(languageCode);
-  
+
   // Check if there's custom content saved by admin
   const saved = localStorage.getItem("website-content");
   if (saved) {
@@ -1197,12 +1384,21 @@ export function loadContentWithLanguage(languageCode: string = 'en'): WebsiteCon
         ...translation,
         ...parsed,
         company: { ...translation.company, ...parsed.company },
-        homepage: { ...translation.homepage, ...parsed.homepage },
+        homepage: {
+          ...translation.homepage,
+          ...parsed.homepage,
+        },
         about: { ...translation.about, ...parsed.about },
-        attractions: { ...translation.attractions, ...parsed.attractions },
+        attractions: {
+          ...translation.attractions,
+          ...parsed.attractions,
+        },
         seo: { ...translation.seo, ...parsed.seo },
         blog: { ...translation.blog, ...parsed.blog },
-        featureFlags: { ...translation.featureFlags, ...parsed.featureFlags },
+        featureFlags: {
+          ...translation.featureFlags,
+          ...parsed.featureFlags,
+        },
       };
     } catch {
       return translation;
@@ -1218,59 +1414,100 @@ export async function syncContentFromDatabase(): Promise<WebsiteContent> {
     if (content && content.initialized) {
       // Only save if there's actual content (not just the initialized flag)
       const hasActualContent = Object.keys(content).length > 2; // More than just initialized and lastUpdated
-      
+
       if (hasActualContent) {
         // Save to localStorage for offline access
-        localStorage.setItem("website-content", JSON.stringify(content));
-        console.log('✅ Synced content from database to localStorage');
+        localStorage.setItem(
+          "website-content",
+          JSON.stringify(content),
+        );
+        console.log(
+          "✅ Synced content from database to localStorage",
+        );
         return {
           ...DEFAULT_CONTENT,
           ...content,
-          company: { ...DEFAULT_CONTENT.company, ...content.company },
-          homepage: { ...DEFAULT_CONTENT.homepage, ...content.homepage },
+          company: {
+            ...DEFAULT_CONTENT.company,
+            ...content.company,
+          },
+          homepage: {
+            ...DEFAULT_CONTENT.homepage,
+            ...content.homepage,
+          },
           about: { ...DEFAULT_CONTENT.about, ...content.about },
-          attractions: { ...DEFAULT_CONTENT.attractions, ...content.attractions },
+          attractions: {
+            ...DEFAULT_CONTENT.attractions,
+            ...content.attractions,
+          },
           seo: { ...DEFAULT_CONTENT.seo, ...content.seo },
           blog: { ...DEFAULT_CONTENT.blog, ...content.blog },
-          featureFlags: { ...DEFAULT_CONTENT.featureFlags, ...content.featureFlags },
+          featureFlags: {
+            ...DEFAULT_CONTENT.featureFlags,
+            ...content.featureFlags,
+          },
         };
       } else {
-        console.log('⚠️ Database content is empty, using defaults');
+        console.log(
+          "⚠️ Database content is empty, using defaults",
+        );
       }
     } else {
-      console.log('ℹ️ No content in database yet, using defaults');
+      console.log(
+        "ℹ️ No content in database yet, using defaults",
+      );
     }
   } catch (error) {
-    console.error('Failed to sync content from database:', error);
+    console.error(
+      "Failed to sync content from database:",
+      error,
+    );
   }
   return loadContent();
 }
 
 // Async function to sync content from database with language support
-export async function syncContentFromDatabaseWithLanguage(languageCode: string = 'en'): Promise<WebsiteContent> {
+export async function syncContentFromDatabaseWithLanguage(
+  languageCode: string = "en",
+): Promise<WebsiteContent> {
   try {
     const content = await getContentFromAPI();
     const translation = getTranslation(languageCode);
-    
+
     if (content && content.initialized) {
       // Only save if there's actual content
       const hasActualContent = Object.keys(content).length > 2;
-      
+
       if (hasActualContent) {
         // Save to localStorage for offline access
-        localStorage.setItem("website-content", JSON.stringify(content));
-        
+        localStorage.setItem(
+          "website-content",
+          JSON.stringify(content),
+        );
+
         // Merge database content with translation (database content takes precedence)
         return {
           ...translation,
           ...content,
-          company: { ...translation.company, ...content.company },
-          homepage: { ...translation.homepage, ...content.homepage },
+          company: {
+            ...translation.company,
+            ...content.company,
+          },
+          homepage: {
+            ...translation.homepage,
+            ...content.homepage,
+          },
           about: { ...translation.about, ...content.about },
-          attractions: { ...translation.attractions, ...content.attractions },
+          attractions: {
+            ...translation.attractions,
+            ...content.attractions,
+          },
           seo: { ...translation.seo, ...content.seo },
           blog: { ...translation.blog, ...content.blog },
-          featureFlags: { ...translation.featureFlags, ...content.featureFlags },
+          featureFlags: {
+            ...translation.featureFlags,
+            ...content.featureFlags,
+          },
         };
       }
     }

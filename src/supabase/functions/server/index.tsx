@@ -770,13 +770,13 @@ async function sendBookingEmail(
     if (pdfBase64) {
       emailPayload.attachments = [
         {
-          filename: `GoSintra_Tickets_${bookingIdShort}.pdf`,
+          filename: `HopOnSintra_Tickets_${bookingIdShort}.pdf`,
           content: pdfBase64,
         },
       ];
       console.log(`📎 PDF attachment added to email payload`);
       console.log(
-        `📎 Attachment filename: GoSintra_Tickets_${bookingIdShort}.pdf`,
+        `📎 Attachment filename: HopOnSintra_Tickets_${bookingIdShort}.pdf`,
       );
       console.log(
         `📎 Attachment size: ${pdfBase64.length} characters (base64)`,
@@ -851,7 +851,7 @@ async function sendBookingEmail(
     );
     if (pdfBase64) {
       console.log(
-        `✅ Email included PDF attachment: GoSintra_Tickets_${bookingIdShort}.pdf`,
+        `✅ Email included PDF attachment: HopOnSintra_Tickets_${bookingIdShort}.pdf`,
       );
     } else {
       console.log(
@@ -2567,13 +2567,13 @@ app.get("/make-server-3bd0ade8/bookings/:id/pdf", async (c) => {
       booking.id.split("_")[1] || booking.id;
 
     console.log(
-      `📦 Sending PDF file: GoSintra_Tickets_${bookingIdShort}.pdf (${pdfBinary.length} bytes)`,
+      `📦 Sending PDF file: HopOnSintra_Tickets_${bookingIdShort}.pdf (${pdfBinary.length} bytes)`,
     );
 
     return new Response(pdfBinary, {
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="GoSintra_Tickets_${bookingIdShort}.pdf"`,
+        "Content-Disposition": `attachment; filename="HopOnSintra_Tickets_${bookingIdShort}.pdf"`,
         "Access-Control-Allow-Origin": "*",
       },
     });

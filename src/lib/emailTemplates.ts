@@ -510,7 +510,7 @@ Show the QR codes (attached) to board any vehicle.
 MANAGE YOUR BOOKING
 ===================
 Request pickups, get route tips, and access exclusive benefits:
-https://gosintra.com/manage-booking?id=${bookingId}
+https://hoponsintra.com/manage-booking?id=${bookingId}
 
 ORDER SUMMARY
 =============
@@ -526,7 +526,7 @@ HOW IT WORKS
 3. Vehicles every 30 minutes at all major attractions
 
 Need help? Contact us:
-Email: info@gosintra.com
+Email: info@hoponsintra.com
 WhatsApp: +351 932 967 279
 
 Safe travels and enjoy Sintra!
