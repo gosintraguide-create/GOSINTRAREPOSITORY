@@ -1,4 +1,5 @@
 // Central content management system for the website
+// Version: 2.0 - Updated branding to Hop On Sintra
 import {
   getContent as getContentFromAPI,
   saveContent as saveContentToAPI,
@@ -960,7 +961,7 @@ export const DEFAULT_CONTENT: WebsiteContent = {
   seo: {
     home: {
       title:
-        "Go Sintra - Premium Hop-On/Hop-Off Day Pass | Small Vehicle Tours",
+        "Hop On Sintra - Premium Hop-On/Hop-Off Day Pass | Small Vehicle Tours",
       description:
         "Explore Sintra's UNESCO World Heritage sites with guaranteed seating in small vehicles. Unlimited rides every 30 minutes. Book your flexible day pass online now.",
       keywords:
@@ -968,14 +969,15 @@ export const DEFAULT_CONTENT: WebsiteContent = {
     },
     attractions: {
       title:
-        "Sintra Attractions - Palaces & Castles | Go Sintra Day Pass",
+        "Sintra Attractions - Palaces & Castles | Hop On Sintra Day Pass",
       description:
         "Discover Pena Palace, Quinta da Regaleira, Moorish Castle, and more. Our day pass includes unlimited transport to all major Sintra attractions.",
       keywords:
         "Sintra attractions, Pena Palace, Quinta da Regaleira, Moorish Castle, Monserrate Palace, Sintra National Palace",
     },
     howItWorks: {
-      title: "How It Works - Go Sintra Hop-On/Hop-Off Service",
+      title:
+        "How It Works - Hop On Sintra Hop-On/Hop-Off Service",
       description:
         "Learn how our flexible day pass works. Book online, get your QR codes, and hop on any vehicle during operating hours. Simple and convenient.",
       keywords:
@@ -983,7 +985,7 @@ export const DEFAULT_CONTENT: WebsiteContent = {
     },
     buyTicket: {
       title:
-        "Book Your Day Pass - Go Sintra | Instant Confirmation",
+        "Book Your Day Pass - Hop On Sintra | Instant Confirmation",
       description:
         "Book your Sintra day pass online. Choose your date, get instant QR codes for each passenger, and enjoy unlimited rides until 8pm. Add attraction tickets too.",
       keywords:
@@ -991,11 +993,11 @@ export const DEFAULT_CONTENT: WebsiteContent = {
     },
     about: {
       title:
-        "About Go Sintra - Premium Small Vehicle Tour Service",
+        "About Hop On Sintra - Premium Small Vehicle Tour Service",
       description:
-        "Go Sintra offers premium hop-on/hop-off service with guaranteed seating in small vehicles. Regular departures every 30 minutes throughout Sintra.",
+        "Hop On Sintra offers premium hop-on/hop-off service with guaranteed seating in small vehicles. Regular departures every 30 minutes throughout Sintra.",
       keywords:
-        "about Go Sintra, Sintra tour company, premium Sintra tours, small group Sintra",
+        "about Hop On Sintra, Sintra tour company, premium Sintra tours, small group Sintra",
     },
     blog: {
       title: "Your Ultimate Sintra Travel Guide",
