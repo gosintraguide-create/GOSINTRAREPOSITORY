@@ -645,7 +645,7 @@ export const DEFAULT_CONTENT: WebsiteContent = {
       { icon: "Shield", text: "Local Guides" },
       { icon: "MapPin", text: "All Attractions" },
     ],
-    sectionOneTitle: "Why Choose Go Sintra?",
+    sectionOneTitle: "Why Choose Hop On Sintra?",
     sectionOneDescription:
       "Skip the crowded tour buses and experience Sintra the way it's meant to be discovered",
     // What Is Hop On Sintra Section
@@ -812,13 +812,13 @@ export const DEFAULT_CONTENT: WebsiteContent = {
     backToSearch: "Back to Search",
   },
   about: {
-    title: "About Go Sintra",
+    title: "About Hop On Sintra",
     subtitle:
       "Your premium hop-on/hop-off adventure through Sintra's magical landscapes",
     story: [
-      "Go Sintra was born from a simple observation: visitors to this UNESCO World Heritage site deserved better than crowded buses and rigid schedules.",
+      "Hop On Sintra was born from a simple observation: visitors to this UNESCO World Heritage site deserved better than crowded buses and rigid schedules.",
       "We created a flexible, premium alternative that combines the intimacy of small vehicles with the freedom of hop-on/hop-off convenience.",
-      "Today, thousands of visitors choose Go Sintra for guaranteed seating, regular departures every 30 minutes, and an authentic, intimate way to explore this magical destination.",
+      "Today, thousands of visitors choose Hop On Sintra for guaranteed seating, regular departures every 30 minutes, and an authentic, intimate way to explore this magical destination.",
     ],
     mission:
       "Our mission is to provide the most convenient, comfortable, and authentic way to explore Sintra's palaces, castles, and gardens.",
@@ -1174,7 +1174,7 @@ export const DEFAULT_CONTENT: WebsiteContent = {
         "Prices are per person and may vary based on group size and season.",
     },
     whyChoose: {
-      title: "Why Choose Go Sintra Private Tours?",
+      title: "Why Choose Hop On Sintra Private Tours?",
       subtitle:
         "Experience Sintra like never before with our exclusive private tours.",
       benefit1Title: "Personalized Itineraries",
@@ -1414,6 +1414,22 @@ export async function syncContentFromDatabase(): Promise<WebsiteContent> {
   try {
     const content = await getContentFromAPI();
     if (content && content.initialized) {
+      // 🔥 BRAND UPDATE: Check if database has old branding
+      if (
+        content.company?.email?.includes("gosintra.com") ||
+        content.company?.name?.includes("Go Sintra") ||
+        content.seo?.home?.title?.includes("Go Sintra")
+      ) {
+        console.log(
+          "🔄 Detected old branding in database - clearing and using updated defaults",
+        );
+        // Clear localStorage
+        localStorage.removeItem("website-content");
+        // Save fresh defaults to database
+        await saveContentToAPI(DEFAULT_CONTENT);
+        return DEFAULT_CONTENT;
+      }
+
       // Only save if there's actual content (not just the initialized flag)
       const hasActualContent = Object.keys(content).length > 2; // More than just initialized and lastUpdated
 
