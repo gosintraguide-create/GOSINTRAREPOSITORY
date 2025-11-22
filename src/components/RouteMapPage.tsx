@@ -25,9 +25,7 @@ export function RouteMapPage({
                 {content.routeMap.badge}
               </span>
             </div>
-            <h1 className="mb-4">
-              {content.routeMap.title}
-            </h1>
+            <h1 className="mb-4">{content.routeMap.title}</h1>
             <p className="text-muted-foreground">
               {content.routeMap.subtitle}
             </p>
@@ -43,7 +41,7 @@ export function RouteMapPage({
             <div className="overflow-hidden rounded-lg border bg-white shadow-lg">
               <div className="aspect-[4/3] w-full">
                 <iframe
-                  src="https://www.google.com/maps/d/u/0/embed?mid=1NdKTgLPXHXZeD0pCcG9QB8EL43Irk0c&ehbc=2E312F"
+                  src="https://www.google.com/maps/d/embed?mid=1ArqMSGqEk4309KwRRH6OEFy8y2k3oWs"
                   className="h-full w-full"
                   title={content.routeMap.mapTitle}
                   loading="lazy"
@@ -59,7 +57,9 @@ export function RouteMapPage({
                   <Navigation className="size-6 text-primary" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="mb-2">{content.routeMap.infoTitle}</h3>
+                  <h3 className="mb-2">
+                    {content.routeMap.infoTitle}
+                  </h3>
                   <p className="mb-4 text-muted-foreground">
                     {content.routeMap.infoDescription}
                   </p>

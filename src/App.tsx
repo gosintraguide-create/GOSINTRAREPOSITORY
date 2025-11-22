@@ -214,41 +214,43 @@ export default function App() {
     const getPageFromURL = () => {
       // First, check for clean URLs (pathname-based)
       const pathname = window.location.pathname;
-      
+
       // Remove leading/trailing slashes
-      const cleanPath = pathname.replace(/^\/+|\/+$/g, '');
-      
+      const cleanPath = pathname.replace(/^\/+|\/+$/g, "");
+
       // If we have a clean path, use it
       if (cleanPath) {
         // Handle blog article URLs (e.g., /blog/article-slug)
-        if (cleanPath.startsWith('blog/')) {
-          const slug = cleanPath.replace('blog/', '');
-          return { page: 'blog-article', slug };
+        if (cleanPath.startsWith("blog/")) {
+          const slug = cleanPath.replace("blog/", "");
+          return { page: "blog-article", slug };
         }
-        
+
         // Handle sunset-special URL
-        if (cleanPath === 'sunset-special') {
-          return { page: 'sunset-special-purchase' };
+        if (cleanPath === "sunset-special") {
+          return { page: "sunset-special-purchase" };
         }
-        
+
         // For all other clean URLs, return the path as the page name
         return { page: cleanPath };
       }
-      
+
       // Fallback: check for query parameters (backward compatibility)
-      const urlParams = new URLSearchParams(window.location.search);
+      const urlParams = new URLSearchParams(
+        window.location.search,
+      );
       const page = urlParams.get("page");
       const slug = urlParams.get("slug");
-      
+
       if (page) {
         return { page, slug };
       }
-      
+
       return { page: null, slug: null };
     };
-    
+
     const { page, slug } = getPageFromURL();
-    
+
     if (page) {
       setCurrentPage(page);
       if (slug) {
@@ -262,24 +264,28 @@ export default function App() {
     if (currentPage !== "home") {
       // Use clean URLs
       let path = `/${currentPage}`;
-      
+
       // Handle blog articles with slugs
-      if (currentPage === 'blog-article' && pageData?.slug) {
+      if (currentPage === "blog-article" && pageData?.slug) {
         path = `/blog/${pageData.slug}`;
       }
-      
+
       // Handle sunset special
-      if (currentPage === 'sunset-special-purchase') {
-        path = '/sunset-special';
+      if (currentPage === "sunset-special-purchase") {
+        path = "/sunset-special";
       }
-      
+
       // Only update if the path has changed
       if (window.location.pathname !== path) {
-        window.history.pushState({ page: currentPage }, "", path);
+        window.history.pushState(
+          { page: currentPage },
+          "",
+          path,
+        );
       }
     } else {
       // Home page
-      if (window.location.pathname !== '/') {
+      if (window.location.pathname !== "/") {
         window.history.pushState({ page: "home" }, "", "/");
       }
     }
@@ -292,39 +298,41 @@ export default function App() {
       const getPageFromURL = () => {
         // First, check for clean URLs (pathname-based)
         const pathname = window.location.pathname;
-        
+
         // Remove leading/trailing slashes
-        const cleanPath = pathname.replace(/^\/+|\/+$/g, '');
-        
+        const cleanPath = pathname.replace(/^\/+|\/+$/g, "");
+
         // If we have a clean path, use it
         if (cleanPath) {
           // Handle blog article URLs (e.g., /blog/article-slug)
-          if (cleanPath.startsWith('blog/')) {
-            const slug = cleanPath.replace('blog/', '');
-            return { page: 'blog-article', slug };
+          if (cleanPath.startsWith("blog/")) {
+            const slug = cleanPath.replace("blog/", "");
+            return { page: "blog-article", slug };
           }
-          
+
           // Handle sunset-special URL
-          if (cleanPath === 'sunset-special') {
-            return { page: 'sunset-special-purchase' };
+          if (cleanPath === "sunset-special") {
+            return { page: "sunset-special-purchase" };
           }
-          
+
           // For all other clean URLs, return the path as the page name
           return { page: cleanPath };
         }
-        
+
         // Fallback: check for query parameters (backward compatibility)
-        const urlParams = new URLSearchParams(window.location.search);
+        const urlParams = new URLSearchParams(
+          window.location.search,
+        );
         const page = urlParams.get("page");
         const slug = urlParams.get("slug");
-        
+
         if (page) {
           return { page, slug };
         }
-        
+
         return { page: null, slug: null };
       };
-      
+
       const { page, slug } = getPageFromURL();
 
       // Update the page state to match the URL
@@ -632,8 +640,7 @@ export default function App() {
         };
       case "route-map":
         return {
-          title:
-            "Route Map & Stops - Hop On Sintra Locations",
+          title: "Route Map & Stops - Hop On Sintra Locations",
           description:
             "View all Hop On Sintra stops and pickup locations on an interactive Google Map. Plan your journey and see exactly where we service throughout Sintra.",
           keywords:

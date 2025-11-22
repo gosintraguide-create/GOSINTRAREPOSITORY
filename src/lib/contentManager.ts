@@ -1493,6 +1493,24 @@ export async function syncContentFromDatabaseWithLanguage(
     const translation = getTranslation(languageCode);
 
     if (content && content.initialized) {
+      // 🔥 BRAND UPDATE: Check if database has old branding
+      if (content.company?.email?.includes("gosintra.com") || 
+          content.company?.name?.includes("Go Sintra") ||
+          content.seo?.home?.title?.includes("Go Sintra")) {
+        console.log(
+          "🔄 Detected old branding in database - clearing and using updated defaults",
+        );
+        // Clear localStorage
+        localStorage.removeItem("website-content");
+        // Save fresh defaults to database
+        await saveContentToAPI(DEFAULT_CONTENT);
+        // Return translation merged with fresh defaults
+        return {
+          ...DEFAULT_CONTENT,
+          ...translation,
+        };
+      }
+
       // Only save if there's actual content
       const hasActualContent = Object.keys(content).length > 2;
 

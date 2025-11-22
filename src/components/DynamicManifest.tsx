@@ -77,8 +77,6 @@ export function DynamicManifest() {
         // Check if icons are deployed on the backend
         const serverUrl = `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8`;
         
-        console.log('🔍 Checking for deployed PWA icons...');
-        
         const response = await fetch(`${serverUrl}/pwa-icons/status`, {
           headers: {
             'Authorization': `Bearer ${publicAnonKey}`,
@@ -86,7 +84,7 @@ export function DynamicManifest() {
         });
         
         if (!response.ok) {
-          console.log('ℹ️ PWA icons check: Using default manifest (backend not accessible or icons not uploaded)');
+          // Silently use default manifest - this is expected when icons aren't uploaded
           return;
         }
         

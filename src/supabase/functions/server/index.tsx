@@ -7,6 +7,7 @@ import QRCode from "npm:qrcode@1.5.4";
 import { PDFDocument, rgb } from "npm:pdf-lib@1.17.1";
 import Stripe from "npm:stripe@17.3.1";
 import { generateBookingConfirmationHTML } from "./email_template.tsx";
+import { cleanupDatabase, removeLegacyBranding, cleanupOldAvailability } from "./cleanup.tsx";
 
 // Retry wrapper for KV store operations to handle transient connection errors
 async function withRetry<T>(
@@ -5370,6 +5371,67 @@ app.post("/make-server-3bd0ade8/admin/reset-all-data", async (c) => {
         error: "Failed to reset system data",
         message: error.message
       },
+      500
+    );
+  }
+});
+
+// Database Cleanup Endpoints (Admin only - password protected)
+app.post("/make-server-3bd0ade8/admin/cleanup/database", async (c) => {
+  try {
+    const body = await c.req.json();
+    
+    // Verify admin password
+    if (body.password !== "Sintra2025") {
+      return c.json({ success: false, error: "Unauthorized" }, 401);
+    }
+    
+    const results = await cleanupDatabase();
+    return c.json({ success: true, results });
+  } catch (error) {
+    console.error("❌ Database cleanup failed:", error);
+    return c.json(
+      { success: false, error: "Database cleanup failed", message: error.message },
+      500
+    );
+  }
+});
+
+app.post("/make-server-3bd0ade8/admin/cleanup/branding", async (c) => {
+  try {
+    const body = await c.req.json();
+    
+    // Verify admin password
+    if (body.password !== "Sintra2025") {
+      return c.json({ success: false, error: "Unauthorized" }, 401);
+    }
+    
+    const results = await removeLegacyBranding();
+    return c.json({ success: true, results });
+  } catch (error) {
+    console.error("❌ Branding cleanup failed:", error);
+    return c.json(
+      { success: false, error: "Branding cleanup failed", message: error.message },
+      500
+    );
+  }
+});
+
+app.post("/make-server-3bd0ade8/admin/cleanup/availability", async (c) => {
+  try {
+    const body = await c.req.json();
+    
+    // Verify admin password
+    if (body.password !== "Sintra2025") {
+      return c.json({ success: false, error: "Unauthorized" }, 401);
+    }
+    
+    const results = await cleanupOldAvailability();
+    return c.json({ success: true, results });
+  } catch (error) {
+    console.error("❌ Availability cleanup failed:", error);
+    return c.json(
+      { success: false, error: "Availability cleanup failed", message: error.message },
       500
     );
   }

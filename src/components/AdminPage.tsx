@@ -29,6 +29,7 @@ import {
   Image,
   ArrowLeft,
   X,
+  Trash2,
   Archive,
   ArchiveRestore,
 } from "lucide-react";
@@ -80,6 +81,7 @@ import { TagManagement } from "./TagManagement";
 import { ImageManager } from "./ImageManager";
 import { CompactBookingsList } from "./CompactBookingsList";
 import { FeatureFlagManager } from "./FeatureFlagManager";
+import { DatabaseCleanup } from "./DatabaseCleanup";
 import { SunsetSpecialManager } from "./SunsetSpecialManager";
 import {
   LineChart,
@@ -1475,6 +1477,23 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                         <span className="text-xs text-muted-foreground">Manage blog tags</span>
                       </div>
                     </Button>
+
+                    <div className="my-4 h-px bg-border" />
+
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-3"
+                      onClick={() => {
+                        setActiveTab("cleanup");
+                        setMoreMenuOpen(false);
+                      }}
+                    >
+                      <Trash2 className="h-5 w-5" />
+                      <div className="flex flex-col items-start">
+                        <span>Database Cleanup</span>
+                        <span className="text-xs text-muted-foreground">Remove old data and optimize</span>
+                      </div>
+                    </Button>
                   </div>
                 </SheetContent>
               </Sheet>
@@ -2670,6 +2689,11 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
             {/* ====== TAGS TAB ====== */}
             <TabsContent value="tags" className="space-y-6">
               <TagManagement />
+            </TabsContent>
+
+            {/* ====== CLEANUP TAB ====== */}
+            <TabsContent value="cleanup" className="space-y-6">
+              <DatabaseCleanup adminPassword="Sintra2025" />
             </TabsContent>
           </Tabs>
         </div>
