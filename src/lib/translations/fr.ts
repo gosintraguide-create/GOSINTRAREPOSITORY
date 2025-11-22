@@ -329,7 +329,7 @@ export const fr: WebsiteContent = {
   },
   blog: {
     pageTitle: "Votre Guide de Voyage Ultime de Sintra",
-    pageSubtitle: "Conseils d'experts, secrets d'initiés et tout ce dont vous avez besoin pour une aventure magique à Sintra ✨",
+    pageSubtitle: "Conseils d'experts, secrets d'initiés et tout ce dont vous avez besoin pour une aventure magique à Sintra",
     searchPlaceholder: "Rechercher des guides, conseils et itinéraires...",
     filterBy: "Filtrer par:",
     allArticles: "Tous les Articles",
@@ -635,7 +635,7 @@ export const fr: WebsiteContent = {
       subtitle: "Inspirez-vous de nos itinéraires les plus populaires (entièrement personnalisables)",
       halfDay: {
         title: "Demi-Journée : Palais Royaux",
-        duration: "4 heures • Parfait pour les visiteurs de première fois",
+        duration: "4 heures �� Parfait pour les visiteurs de première fois",
         badge: "Populaire",
         stop1Title: "Palais da Pena (90 min)",
         stop1Description: "Le monument le plus emblématique de Sintra",

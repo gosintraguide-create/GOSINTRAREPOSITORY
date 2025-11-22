@@ -381,7 +381,7 @@ export const en: WebsiteContent = {
   },
   blog: {
     pageTitle: "Your Ultimate Sintra Travel Guide",
-    pageSubtitle: "Expert tips, insider secrets, and everything you need for a magical Sintra adventure ✨",
+    pageSubtitle: "Expert tips, insider secrets, and everything you need for a magical Sintra adventure",
     searchPlaceholder: "Search for guides, tips, and itineraries...",
     filterBy: "Filter by:",
     allArticles: "All Articles",

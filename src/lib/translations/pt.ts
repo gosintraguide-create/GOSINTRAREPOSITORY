@@ -376,7 +376,7 @@ export const pt: WebsiteContent = {
   },
   blog: {
     pageTitle: "O Seu Guia de Viagem Definitivo de Sintra",
-    pageSubtitle: "Dicas de especialistas, segredos locais e tudo o que precisa para uma aventura mágica em Sintra ✨",
+    pageSubtitle: "Dicas de especialistas, segredos locais e tudo o que precisa para uma aventura mágica em Sintra",
     searchPlaceholder: "Pesquisar guias, dicas e itinerários...",
     filterBy: "Filtrar por:",
     allArticles: "Todos os Artigos",

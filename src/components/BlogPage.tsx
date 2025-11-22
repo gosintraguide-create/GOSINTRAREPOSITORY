@@ -142,7 +142,9 @@ export function BlogPage({
               {content.blog.pageTitle}
             </h1>
             <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-              {content.blog.pageSubtitle}
+              {content.blog.pageSubtitle
+                .replace(/✨/g, "")
+                .trim()}
             </p>
           </div>
 
@@ -256,7 +258,7 @@ export function BlogPage({
                             alt={article.title}
                             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
 
                           <Badge className="absolute left-4 top-4 bg-primary text-white">
                             {getCategoryName(article.category)}

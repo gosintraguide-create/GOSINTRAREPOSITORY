@@ -329,7 +329,7 @@ export const es: WebsiteContent = {
   },
   blog: {
     pageTitle: "Tu Guía de Viaje Definitiva de Sintra",
-    pageSubtitle: "Consejos de expertos, secretos locales y todo lo que necesitas para una aventura mágica en Sintra ✨",
+    pageSubtitle: "Consejos de expertos, secretos locales y todo lo que necesitas para una aventura mágica en Sintra",
     searchPlaceholder: "Buscar guías, consejos e itinerarios...",
     filterBy: "Filtrar por:",
     allArticles: "Todos los Artículos",
@@ -367,7 +367,7 @@ export const es: WebsiteContent = {
     viewAllArticles: "Ver Todos los Artículos",
     tableOfContents: "Tabla de Contenidos",
     readyToExperience: "¿Listo para Explorar Sintra?",
-    bookFlexibleDayPass: "Reserva tu pase de día flexible y comienza a explorar los magníficos palacios y jardines de Sintra",
+    bookFlexibleDayPass: "Reserva tu pase de d��a flexible y comienza a explorar los magníficos palacios y jardines de Sintra",
     bookDayPassNow: "Reserva Tu Pase de Día Ahora",
     
     categories: {

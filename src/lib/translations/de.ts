@@ -329,7 +329,7 @@ export const de: WebsiteContent = {
   },
   blog: {
     pageTitle: "Ihr Ultimativer Sintra-Reiseführer",
-    pageSubtitle: "Expertentipps, Insidergeheimnisse und alles, was Sie für ein magisches Sintra-Abenteuer brauchen ✨",
+    pageSubtitle: "Expertentipps, Insidergeheimnisse und alles, was Sie für ein magisches Sintra-Abenteuer brauchen",
     searchPlaceholder: "Suchen Sie nach Führern, Tipps und Reiserouten...",
     filterBy: "Filtern nach:",
     allArticles: "Alle Artikel",

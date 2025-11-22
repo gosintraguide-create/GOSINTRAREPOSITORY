@@ -149,7 +149,7 @@ export const it: WebsiteContent = {
     contactSupport: "Contattaci via WhatsApp",
     yourBooking: "La Tua Prenotazione",
     bookingId: "ID Prenotazione:",
-    validToday: "Il tuo pass �� valido OGGI!",
+    validToday: "Il tuo pass  valido OGGI!",
     enjoyYourDay: "Goditi la tua giornata esplorando Sintra",
     startsIn: "Inizia tra",
     days: "giorni",
@@ -329,7 +329,7 @@ export const it: WebsiteContent = {
   },
   blog: {
     pageTitle: "La Tua Guida di Viaggio Definitiva di Sintra",
-    pageSubtitle: "Consigli di esperti, segreti locali e tutto ciò di cui hai bisogno per un'avventura magica a Sintra ✨",
+    pageSubtitle: "Consigli di esperti, segreti locali e tutto ciò di cui hai bisogno per un'avventura magica a Sintra",
     searchPlaceholder: "Cerca guide, consigli e itinerari...",
     filterBy: "Filtra per:",
     allArticles: "Tutti gli Articoli",

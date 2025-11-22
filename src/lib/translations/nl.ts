@@ -329,7 +329,7 @@ export const nl: WebsiteContent = {
   },
   blog: {
     pageTitle: "Jouw Ultieme Sintra Reisgids",
-    pageSubtitle: "Expert tips, insider geheimen en alles wat je nodig hebt voor een magisch Sintra avontuur ✨",
+    pageSubtitle: "Expert tips, insider geheimen en alles wat je nodig hebt voor een magisch Sintra avontuur",
     searchPlaceholder: "Zoek naar gidsen, tips en reisroutes...",
     filterBy: "Filter op:",
     allArticles: "Alle Artikelen",

@@ -46,7 +46,7 @@ export function RouteMapPage({
                   title={content.routeMap.mapTitle}
                   loading="lazy"
                   style={{ border: 0 }}
-                />
+                ></iframe>
               </div>
             </div>
 
@@ -65,15 +65,15 @@ export function RouteMapPage({
                   </p>
                   <ul className="space-y-2 text-sm text-muted-foreground">
                     <li className="flex items-center gap-2">
-                      <div className="size-1.5 rounded-full bg-primary" />
+                      <div className="size-1.5 rounded-full bg-primary"></div>
                       {content.routeMap.tip1}
                     </li>
                     <li className="flex items-center gap-2">
-                      <div className="size-1.5 rounded-full bg-primary" />
+                      <div className="size-1.5 rounded-full bg-primary"></div>
                       {content.routeMap.tip2}
                     </li>
                     <li className="flex items-center gap-2">
-                      <div className="size-1.5 rounded-full bg-primary" />
+                      <div className="size-1.5 rounded-full bg-primary"></div>
                       {content.routeMap.tip3}
                     </li>
                   </ul>
