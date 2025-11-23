@@ -1,6 +1,36 @@
+import { useState, useEffect } from "react";
 import { toast } from "sonner@2.0.3";
 import { createBooking, createPaymentIntent } from "../lib/api";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
+import { getTranslation } from "../lib/translations";
+import { Button } from "./ui/button";
+import { Card } from "./ui/card";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Calendar as CalendarComponent } from "./ui/calendar";
+import { Badge } from "./ui/badge";
+import { 
+  Calendar as CalendarIcon, 
+  Users, 
+  MapPin, 
+  Ticket, 
+  User, 
+  Mail, 
+  CreditCard, 
+  Check, 
+  ArrowRight, 
+  ChevronLeft,
+  AlertCircle,
+  Loader2,
+  Car,
+  Receipt,
+  RefreshCw
+} from "lucide-react";
+import { format } from "date-fns";
+import { StripePaymentForm } from "./StripePaymentForm";
+import { PickupLocationMap } from "./PickupLocationMap";
 
 interface BuyTicketPageProps {
   onNavigate: (page: string) => void;
