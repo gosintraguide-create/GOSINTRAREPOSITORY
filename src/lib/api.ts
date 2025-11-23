@@ -14,7 +14,10 @@ async function apiCall<T>(
   silent = false // Silent mode for optional API calls with fallbacks
 ): Promise<ApiResponse<T>> {
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const url = `${API_BASE_URL}${endpoint}`;
+    console.log(`🔗 API Call: ${options.method || 'GET'} ${url}`);
+    
+    const response = await fetch(url, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
@@ -27,8 +30,21 @@ async function apiCall<T>(
 
     if (!response.ok) {
       if (!silent) {
-        console.error(`API Error (${endpoint}):`, data);
+        console.error(`API Error (${endpoint}):`, {
+          status: response.status,
+          statusText: response.statusText,
+          error: data
+        });
       }
+      
+      // More helpful error messages for common issues
+      if (response.status === 404) {
+        return {
+          success: false,
+          error: 'Server endpoint not found. The backend service may be initializing. Please try again in a moment.',
+        };
+      }
+      
       return {
         success: false,
         error: data.error || 'An error occurred',
@@ -41,11 +57,11 @@ async function apiCall<T>(
     };
   } catch (error) {
     if (!silent) {
-      console.log(`ℹ️ Backend not available (${endpoint}) - using local data`);
+      console.error(`❌ Network Error (${endpoint}):`, error);
     }
     return {
       success: false,
-      error: 'Network error. Please check your connection.',
+      error: 'Network error. Please check your connection and try again.',
     };
   }
 }
@@ -109,11 +125,25 @@ export async function setAvailability(date: string, availability: any) {
 // Booking Management
 export async function createBooking(bookingData: any) {
   console.log("📤 Creating booking with data:", bookingData);
+  console.log("🔗 API endpoint:", `${API_BASE_URL}/bookings`);
+  console.log("🔑 Using project ID:", projectId);
+  console.log("🔑 Has anon key:", !!publicAnonKey);
+  
   const response = await apiCall('/bookings', {
     method: 'POST',
     body: JSON.stringify(bookingData),
   });
+  
   console.log("📥 Booking response:", response);
+  
+  if (!response.success) {
+    console.error("❌ Booking creation failed:");
+    console.error("   - Error:", response.error);
+    console.error("   - Booking data sent:", bookingData);
+  } else {
+    console.log("✅ Booking created successfully:", response.data);
+  }
+  
   return response;
 }
 

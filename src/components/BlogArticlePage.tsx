@@ -444,45 +444,30 @@ export function BlogArticlePage({
                             })
                           }
                         >
-                          {otherArticle.featuredImage ? (
-                            <div className="relative">
-                              <div className="relative aspect-video overflow-hidden">
-                                <ImageWithFallback
-                                  src={
-                                    otherArticle.thumbnailImage ||
-                                    otherArticle.featuredImage
-                                  }
-                                  alt={otherArticle.title}
-                                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                />
-                              </div>
-                              <div className="p-4">
-                                <h4 className="mb-2 line-clamp-2 transition-colors group-hover:text-primary">
-                                  {otherArticle.title}
-                                </h4>
-                                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                  <Clock className="h-3 w-3" />
-                                  {
-                                    otherArticle.readTimeMinutes
-                                  }{" "}
-                                  {content.blog.minRead}
-                                </div>
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="p-4">
-                              <h4 className="mb-2 line-clamp-2 transition-colors group-hover:text-primary">
-                                {otherArticle.title}
-                              </h4>
-                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <Clock className="h-3 w-3" />
-                                {
-                                  otherArticle.readTimeMinutes
-                                }{" "}
-                                {content.blog.minRead}
-                              </div>
+                          {(otherArticle.thumbnailImage || otherArticle.featuredImage) && (
+                            <div className="relative aspect-video overflow-hidden">
+                              <ImageWithFallback
+                                src={
+                                  otherArticle.thumbnailImage ||
+                                  otherArticle.featuredImage
+                                }
+                                alt={otherArticle.title}
+                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                              />
                             </div>
                           )}
+                          <div className="p-4">
+                            <h4 className="mb-2 line-clamp-2 transition-colors group-hover:text-primary">
+                              {otherArticle.title}
+                            </h4>
+                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                              <Clock className="h-3 w-3" />
+                              {
+                                otherArticle.readTimeMinutes
+                              }{" "}
+                              {content.blog.minRead}
+                            </div>
+                          </div>
                         </div>
                       ))}
                   </div>

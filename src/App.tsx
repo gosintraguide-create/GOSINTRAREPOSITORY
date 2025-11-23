@@ -7,6 +7,7 @@ import { SEOHead } from "./components/SEOHead";
 import { CookieConsent } from "./components/CookieConsent";
 import { InstallPrompt } from "./components/InstallPrompt";
 import { OfflineIndicator } from "./components/OfflineIndicator";
+import { BackendStatusIndicator } from "./components/BackendStatusIndicator";
 import { DynamicManifest } from "./components/DynamicManifest";
 import { DynamicFavicon } from "./components/DynamicFavicon";
 import { GoogleAnalytics } from "./components/GoogleAnalytics";
@@ -924,6 +925,9 @@ export default function App() {
 
       {/* Offline Indicator */}
       <OfflineIndicator />
+
+      {/* Backend Status Indicator */}
+      <BackendStatusIndicator />
 
       {/* Dynamic Manifest Loader */}
       <DynamicManifest />

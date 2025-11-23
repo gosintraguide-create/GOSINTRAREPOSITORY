@@ -33,7 +33,7 @@ import {
   Archive,
   ArchiveRestore,
 } from "lucide-react";
-import { DestinationTracker } from './DestinationTracker';
+import { DestinationTracker } from "./DestinationTracker";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
@@ -82,6 +82,7 @@ import { ImageManager } from "./ImageManager";
 import { CompactBookingsList } from "./CompactBookingsList";
 import { FeatureFlagManager } from "./FeatureFlagManager";
 import { DatabaseCleanup } from "./DatabaseCleanup";
+import { BookingDiagnostics } from "./BookingDiagnostics";
 import { SunsetSpecialManager } from "./SunsetSpecialManager";
 import {
   LineChart,
@@ -179,16 +180,18 @@ const CHART_COLORS = [
 export function AdminPage({ onNavigate }: AdminPageProps) {
   // Block search engines from indexing this page
   useEffect(() => {
-    const metaRobots = document.querySelector('meta[name="robots"]');
+    const metaRobots = document.querySelector(
+      'meta[name="robots"]',
+    );
     if (metaRobots) {
-      metaRobots.setAttribute('content', 'noindex, nofollow');
+      metaRobots.setAttribute("content", "noindex, nofollow");
     } else {
-      const meta = document.createElement('meta');
-      meta.name = 'robots';
-      meta.content = 'noindex, nofollow';
+      const meta = document.createElement("meta");
+      meta.name = "robots";
+      meta.content = "noindex, nofollow";
       document.head.appendChild(meta);
     }
-    document.title = 'Admin Portal - Access Restricted';
+    document.title = "Admin Portal - Access Restricted";
   }, []);
 
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -220,18 +223,22 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
   const [replyMessage, setReplyMessage] = useState("");
   const [loadingConversations, setLoadingConversations] =
     useState(false);
-  const [showArchivedConversations, setShowArchivedConversations] =
-    useState(false);
+  const [
+    showArchivedConversations,
+    setShowArchivedConversations,
+  ] = useState(false);
   const [activeTab, setActiveTab] = useState("pickups");
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
-  
+
   // Notification state
   const [lastPickupCount, setLastPickupCount] = useState(0);
   const [lastBookingCount, setLastBookingCount] = useState(0);
   const [lastMessageCount, setLastMessageCount] = useState(0);
   const [newPickupsCount, setNewPickupsCount] = useState(0);
   const [newBookingsCount, setNewBookingsCount] = useState(0);
-  const [pickupRequests, setPickupRequests] = useState<any[]>([]);
+  const [pickupRequests, setPickupRequests] = useState<any[]>(
+    [],
+  );
 
   // Load settings from database and localStorage
   useEffect(() => {
@@ -337,20 +344,23 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     // Set up realtime subscription for instant booking updates
     const supabase = createClient();
     const channel = supabase
-      .channel('bookings-changes')
+      .channel("bookings-changes")
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: '*',
-          schema: 'public',
-          table: 'kv_store_3bd0ade8',
-          filter: 'key=like.booking_%'
+          event: "*",
+          schema: "public",
+          table: "kv_store_3bd0ade8",
+          filter: "key=like.booking_%",
         },
         (payload) => {
-          console.log('Realtime booking change detected:', payload);
+          console.log(
+            "Realtime booking change detected:",
+            payload,
+          );
           // Reload bookings when any booking changes
           fetchBookings();
-        }
+        },
       )
       .subscribe();
 
@@ -388,7 +398,10 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
 
   const saveSettings = async () => {
     try {
-      localStorage.setItem("admin-pricing", JSON.stringify(pricing));
+      localStorage.setItem(
+        "admin-pricing",
+        JSON.stringify(pricing),
+      );
 
       const response = await fetch(
         `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/pricing`,
@@ -409,14 +422,19 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
       toast.success("Settings saved successfully to database!");
     } catch (error) {
       console.error("Error saving settings:", error);
-      toast.error("Failed to save settings to database. Saved locally only.");
+      toast.error(
+        "Failed to save settings to database. Saved locally only.",
+      );
     }
   };
 
   const saveAvailability = async () => {
     setSavingAvailability(true);
     try {
-      localStorage.setItem("admin-availability", JSON.stringify(availability));
+      localStorage.setItem(
+        "admin-availability",
+        JSON.stringify(availability),
+      );
 
       const dates = Object.keys(availability);
       for (const date of dates) {
@@ -434,7 +452,10 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
 
         const result = await response.json();
         if (!result.success) {
-          console.error(`Failed to save availability for ${date}:`, result.error);
+          console.error(
+            `Failed to save availability for ${date}:`,
+            result.error,
+          );
         }
       }
 
@@ -452,9 +473,13 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
       const result = await saveContentAsync(content);
 
       if (result.success) {
-        toast.success("Content saved successfully to database!");
+        toast.success(
+          "Content saved successfully to database!",
+        );
       } else {
-        toast.error(`Failed to save to database: ${result.error}. Saved locally only.`);
+        toast.error(
+          `Failed to save to database: ${result.error}. Saved locally only.`,
+        );
       }
     } catch (error) {
       console.error("Error saving content:", error);
@@ -474,13 +499,19 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
         const result = await saveContentAsync(DEFAULT_CONTENT);
 
         if (result.success) {
-          toast.success("Content reset to defaults and saved to database!");
+          toast.success(
+            "Content reset to defaults and saved to database!",
+          );
         } else {
-          toast.error(`Content reset locally but database save failed: ${result.error}`);
+          toast.error(
+            `Content reset locally but database save failed: ${result.error}`,
+          );
         }
       } catch (error) {
         console.error("Error resetting content:", error);
-        toast.error("Content reset locally but database save failed.");
+        toast.error(
+          "Content reset locally but database save failed.",
+        );
       }
     }
   };
@@ -509,7 +540,10 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     }));
   };
 
-  const getAvailability = (date: string, timeSlot: string): number => {
+  const getAvailability = (
+    date: string,
+    timeSlot: string,
+  ): number => {
     return availability[date]?.[timeSlot] ?? 50;
   };
 
@@ -555,10 +589,12 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
       );
 
       setBookings(bookingsWithCheckIns);
-      console.log(`✅ Loaded ${bookingsWithCheckIns.length} bookings with check-in data`);
+      console.log(
+        `✅ Loaded ${bookingsWithCheckIns.length} bookings with check-in data`,
+      );
     } else {
       setBookings([]);
-      console.log('ℹ️ No bookings found');
+      console.log("ℹ️ No bookings found");
     }
 
     setLoadingBookings(false);
@@ -626,99 +662,130 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
 
   const checkForNewItems = async (showNotifications = true) => {
     // Load fresh data
-    const [pickups, bookingsResult, conversationsResult] = await Promise.all([
-      loadPickupRequests(),
-      safeJsonFetch<any>(
-        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/bookings`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${publicAnonKey}`,
-            "Content-Type": "application/json",
+    const [pickups, bookingsResult, conversationsResult] =
+      await Promise.all([
+        loadPickupRequests(),
+        safeJsonFetch<any>(
+          `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/bookings`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${publicAnonKey}`,
+              "Content-Type": "application/json",
+            },
           },
-        },
-      ),
-      safeJsonFetch<any>(
-        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/chat/conversations`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${publicAnonKey}`,
-            "Content-Type": "application/json",
+        ),
+        safeJsonFetch<any>(
+          `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/chat/conversations`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${publicAnonKey}`,
+              "Content-Type": "application/json",
+            },
           },
-        },
-      ),
-    ]);
+        ),
+      ]);
 
     // Count pending pickups (status !== 'completed' and status !== 'cancelled')
-    const pendingPickups = pickups.filter((p: any) => 
-      p.status !== 'completed' && p.status !== 'cancelled'
+    const pendingPickups = pickups.filter(
+      (p: any) =>
+        p.status !== "completed" && p.status !== "cancelled",
     );
     const currentPickupCount = pendingPickups.length;
 
     // Count today's bookings
     const today = new Date().toISOString().split("T")[0];
-    const todaysBookings = bookingsResult?.bookings?.filter((b: any) => 
-      b.selectedDate === today
-    ) || [];
+    const todaysBookings =
+      bookingsResult?.bookings?.filter(
+        (b: any) => b.selectedDate === today,
+      ) || [];
     const currentBookingCount = todaysBookings.length;
 
     // Count unread messages
-    const unreadMessages = conversationsResult?.conversations?.filter((c: any) => 
-      c.unreadByAdmin > 0 && !c.archived
-    ) || [];
+    const unreadMessages =
+      conversationsResult?.conversations?.filter(
+        (c: any) => c.unreadByAdmin > 0 && !c.archived,
+      ) || [];
     const currentMessageCount = unreadMessages.length;
 
     if (showNotifications) {
       // Check for new pickups
-      if (currentPickupCount > lastPickupCount && lastPickupCount > 0) {
+      if (
+        currentPickupCount > lastPickupCount &&
+        lastPickupCount > 0
+      ) {
         const newCount = currentPickupCount - lastPickupCount;
-        toast.info(`🚗 ${newCount} new pickup request${newCount > 1 ? 's' : ''}!`, {
-          duration: 5000,
-        });
-        setNewPickupsCount(prev => prev + newCount);
-        
+        toast.info(
+          `🚗 ${newCount} new pickup request${newCount > 1 ? "s" : ""}!`,
+          {
+            duration: 5000,
+          },
+        );
+        setNewPickupsCount((prev) => prev + newCount);
+
         // Browser notification
-        if ('Notification' in window && Notification.permission === 'granted') {
-          new Notification('New Pickup Request', {
-            body: `${newCount} new pickup request${newCount > 1 ? 's' : ''} received`,
-            icon: '/favicon.ico',
-            tag: 'pickup-notification',
+        if (
+          "Notification" in window &&
+          Notification.permission === "granted"
+        ) {
+          new Notification("New Pickup Request", {
+            body: `${newCount} new pickup request${newCount > 1 ? "s" : ""} received`,
+            icon: "/favicon.ico",
+            tag: "pickup-notification",
           });
         }
       }
 
       // Check for new bookings
-      if (currentBookingCount > lastBookingCount && lastBookingCount > 0) {
+      if (
+        currentBookingCount > lastBookingCount &&
+        lastBookingCount > 0
+      ) {
         const newCount = currentBookingCount - lastBookingCount;
-        toast.success(`🎫 ${newCount} new booking${newCount > 1 ? 's' : ''} today!`, {
-          duration: 5000,
-        });
-        setNewBookingsCount(prev => prev + newCount);
-        
+        toast.success(
+          `🎫 ${newCount} new booking${newCount > 1 ? "s" : ""} today!`,
+          {
+            duration: 5000,
+          },
+        );
+        setNewBookingsCount((prev) => prev + newCount);
+
         // Browser notification
-        if ('Notification' in window && Notification.permission === 'granted') {
-          new Notification('New Booking', {
-            body: `${newCount} new booking${newCount > 1 ? 's' : ''} received today`,
-            icon: '/favicon.ico',
-            tag: 'booking-notification',
+        if (
+          "Notification" in window &&
+          Notification.permission === "granted"
+        ) {
+          new Notification("New Booking", {
+            body: `${newCount} new booking${newCount > 1 ? "s" : ""} received today`,
+            icon: "/favicon.ico",
+            tag: "booking-notification",
           });
         }
       }
 
       // Check for new messages
-      if (currentMessageCount > lastMessageCount && lastMessageCount > 0) {
+      if (
+        currentMessageCount > lastMessageCount &&
+        lastMessageCount > 0
+      ) {
         const newCount = currentMessageCount - lastMessageCount;
-        toast.info(`💬 ${newCount} new message${newCount > 1 ? 's' : ''}!`, {
-          duration: 5000,
-        });
-        
+        toast.info(
+          `💬 ${newCount} new message${newCount > 1 ? "s" : ""}!`,
+          {
+            duration: 5000,
+          },
+        );
+
         // Browser notification
-        if ('Notification' in window && Notification.permission === 'granted') {
-          new Notification('New Message', {
-            body: `${newCount} new message${newCount > 1 ? 's' : ''} from customers`,
-            icon: '/favicon.ico',
-            tag: 'message-notification',
+        if (
+          "Notification" in window &&
+          Notification.permission === "granted"
+        ) {
+          new Notification("New Message", {
+            body: `${newCount} new message${newCount > 1 ? "s" : ""} from customers`,
+            icon: "/favicon.ico",
+            tag: "message-notification",
           });
         }
       }
@@ -732,21 +799,25 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     // Update main data
     if (bookingsResult?.success && bookingsResult.bookings) {
       const validBookings = bookingsResult.bookings.filter(
-        (booking: any) => booking && booking.id && booking.selectedDate
+        (booking: any) =>
+          booking && booking.id && booking.selectedDate,
       );
       const bookingsWithCheckIns = await Promise.all(
         validBookings.map(async (booking: any) => {
           const checkIns = await loadCheckInsForBooking(
             booking.id,
-            booking.passengers?.length || 0
+            booking.passengers?.length || 0,
           );
           return { ...booking, checkIns };
-        })
+        }),
       );
       setBookings(bookingsWithCheckIns);
     }
 
-    if (conversationsResult?.success && conversationsResult.conversations) {
+    if (
+      conversationsResult?.success &&
+      conversationsResult.conversations
+    ) {
       setConversations(conversationsResult.conversations);
     }
   };
@@ -754,14 +825,17 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
   useEffect(() => {
     if (isAuthenticated) {
       // Request notification permission
-      if ('Notification' in window && Notification.permission === 'default') {
-        Notification.requestPermission().then(permission => {
-          if (permission === 'granted') {
-            toast.success('Browser notifications enabled!');
+      if (
+        "Notification" in window &&
+        Notification.permission === "default"
+      ) {
+        Notification.requestPermission().then((permission) => {
+          if (permission === "granted") {
+            toast.success("Browser notifications enabled!");
           }
         });
       }
-      
+
       // Initial load without notifications
       checkForNewItems(false);
     }
@@ -776,7 +850,12 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     }, 30000); // 30 seconds
 
     return () => clearInterval(interval);
-  }, [isAuthenticated, lastPickupCount, lastBookingCount, lastMessageCount]);
+  }, [
+    isAuthenticated,
+    lastPickupCount,
+    lastBookingCount,
+    lastMessageCount,
+  ]);
 
   const loadConversations = async () => {
     setLoadingConversations(true);
@@ -799,7 +878,9 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     setLoadingConversations(false);
   };
 
-  const loadConversationMessages = async (conversationId: string) => {
+  const loadConversationMessages = async (
+    conversationId: string,
+  ) => {
     const result = await safeJsonFetch<any>(
       `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/chat/messages/${conversationId}`,
       {
@@ -842,7 +923,9 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     }
   };
 
-  const handleCloseConversation = async (conversationId: string) => {
+  const handleCloseConversation = async (
+    conversationId: string,
+  ) => {
     const result = await safeJsonFetch<any>(
       `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/chat/${conversationId}/close`,
       {
@@ -862,7 +945,9 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     }
   };
 
-  const handleArchiveConversation = async (conversationId: string) => {
+  const handleArchiveConversation = async (
+    conversationId: string,
+  ) => {
     const result = await safeJsonFetch<any>(
       `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/chat/${conversationId}/archive`,
       {
@@ -883,7 +968,9 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     }
   };
 
-  const handleUnarchiveConversation = async (conversationId: string) => {
+  const handleUnarchiveConversation = async (
+    conversationId: string,
+  ) => {
     const result = await safeJsonFetch<any>(
       `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/chat/${conversationId}/unarchive`,
       {
@@ -938,7 +1025,8 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
         // Silently handle error - backend may not be available
       }
 
-      const savedPricing = localStorage.getItem("admin-pricing");
+      const savedPricing =
+        localStorage.getItem("admin-pricing");
       if (savedPricing) {
         try {
           setPricing(JSON.parse(savedPricing));
@@ -1085,7 +1173,9 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     const standardCount = bookings.filter(
       (b) => !b.isGuidedTour,
     ).length;
-    const guidedCount = bookings.filter((b) => b.isGuidedTour).length;
+    const guidedCount = bookings.filter(
+      (b) => b.isGuidedTour,
+    ).length;
     const bookingsByTicketType = [
       { type: "Standard", count: standardCount },
       { type: "Guided", count: guidedCount },
@@ -1095,7 +1185,8 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     const attractionCounts: { [key: string]: number } = {};
     bookings.forEach((booking) => {
       (booking.attractions || []).forEach((attr: string) => {
-        attractionCounts[attr] = (attractionCounts[attr] || 0) + 1;
+        attractionCounts[attr] =
+          (attractionCounts[attr] || 0) + 1;
       });
     });
     const popularAttractions = Object.entries(attractionCounts)
@@ -1106,10 +1197,14 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     // Upcoming bookings (next 7 days)
     const upcomingDate = new Date();
     upcomingDate.setDate(upcomingDate.getDate() + 7);
-    const upcomingStr = upcomingDate.toISOString().split("T")[0];
+    const upcomingStr = upcomingDate
+      .toISOString()
+      .split("T")[0];
     const upcomingBookings = bookings
       .filter(
-        (b) => b.selectedDate >= today && b.selectedDate <= upcomingStr,
+        (b) =>
+          b.selectedDate >= today &&
+          b.selectedDate <= upcomingStr,
       )
       .sort(
         (a, b) =>
@@ -1246,14 +1341,20 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                 variant="outline"
                 onClick={() => {
                   setLoadingBookings(true);
-                  checkForNewItems(false).finally(() => setLoadingBookings(false));
+                  checkForNewItems(false).finally(() =>
+                    setLoadingBookings(false),
+                  );
                 }}
                 disabled={loadingBookings}
                 className="gap-1.5 sm:gap-2 text-xs sm:text-sm"
                 size="sm"
               >
-                <RefreshCw className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${loadingBookings ? 'animate-spin' : ''}`} />
-                <span className="hidden md:inline">Refresh Data</span>
+                <RefreshCw
+                  className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${loadingBookings ? "animate-spin" : ""}`}
+                />
+                <span className="hidden md:inline">
+                  Refresh Data
+                </span>
                 <span className="md:hidden">Refresh</span>
               </Button>
               <Button
@@ -1262,7 +1363,9 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                 className="gap-1.5 sm:gap-2 text-xs sm:text-sm"
                 size="sm"
               >
-                <span className="hidden sm:inline">Back to Website</span>
+                <span className="hidden sm:inline">
+                  Back to Website
+                </span>
                 <span className="sm:hidden">Website</span>
               </Button>
 
@@ -1273,7 +1376,9 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                 size="sm"
               >
                 <AlertCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                <span className="hidden lg:inline">Diagnostics</span>
+                <span className="hidden lg:inline">
+                  Diagnostics
+                </span>
               </Button>
               <Button
                 variant="outline"
@@ -1282,7 +1387,9 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                 size="sm"
               >
                 <QrCode className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                <span className="hidden lg:inline">QR Scanner</span>
+                <span className="hidden lg:inline">
+                  QR Scanner
+                </span>
               </Button>
             </div>
           </div>
@@ -1356,14 +1463,23 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                 </TabsTrigger>
               </TabsList>
 
-              <Sheet open={moreMenuOpen} onOpenChange={setMoreMenuOpen}>
+              <Sheet
+                open={moreMenuOpen}
+                onOpenChange={setMoreMenuOpen}
+              >
                 <SheetTrigger asChild>
-                  <Button variant="outline" className="gap-2 text-xs sm:text-sm px-3 sm:px-4">
+                  <Button
+                    variant="outline"
+                    className="gap-2 text-xs sm:text-sm px-3 sm:px-4"
+                  >
                     <MoreHorizontal className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                     More
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto">
+                <SheetContent
+                  side="right"
+                  className="w-full sm:max-w-md overflow-y-auto"
+                >
                   <SheetHeader>
                     <SheetTitle>More Options</SheetTitle>
                     <SheetDescription>
@@ -1382,7 +1498,9 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                       <UserCog className="h-5 w-5" />
                       <div className="flex flex-col items-start">
                         <span>Drivers</span>
-                        <span className="text-xs text-muted-foreground">Manage driver accounts</span>
+                        <span className="text-xs text-muted-foreground">
+                          Manage driver accounts
+                        </span>
                       </div>
                     </Button>
 
@@ -1397,7 +1515,10 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                       <DollarSign className="h-5 w-5" />
                       <div className="flex flex-col items-start">
                         <span>Settings</span>
-                        <span className="text-xs text-muted-foreground">Pricing, availability & system settings</span>
+                        <span className="text-xs text-muted-foreground">
+                          Pricing, availability & system
+                          settings
+                        </span>
                       </div>
                     </Button>
 
@@ -1414,7 +1535,9 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                       <Image className="h-5 w-5" />
                       <div className="flex flex-col items-start">
                         <span>Images</span>
-                        <span className="text-xs text-muted-foreground">Upload and manage images</span>
+                        <span className="text-xs text-muted-foreground">
+                          Upload and manage images
+                        </span>
                       </div>
                     </Button>
 
@@ -1429,7 +1552,9 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                       <Settings className="h-5 w-5" />
                       <div className="flex flex-col items-start">
                         <span>Content</span>
-                        <span className="text-xs text-muted-foreground">Edit website content</span>
+                        <span className="text-xs text-muted-foreground">
+                          Edit website content
+                        </span>
                       </div>
                     </Button>
 
@@ -1444,7 +1569,9 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                       <FileText className="h-5 w-5" />
                       <div className="flex flex-col items-start">
                         <span>Blog</span>
-                        <span className="text-xs text-muted-foreground">Manage blog articles</span>
+                        <span className="text-xs text-muted-foreground">
+                          Manage blog articles
+                        </span>
                       </div>
                     </Button>
 
@@ -1459,7 +1586,9 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                       <Tag className="h-5 w-5" />
                       <div className="flex flex-col items-start">
                         <span>SEO</span>
-                        <span className="text-xs text-muted-foreground">SEO tools and settings</span>
+                        <span className="text-xs text-muted-foreground">
+                          SEO tools and settings
+                        </span>
                       </div>
                     </Button>
 
@@ -1474,7 +1603,9 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                       <Tag className="h-5 w-5" />
                       <div className="flex flex-col items-start">
                         <span>Tags</span>
-                        <span className="text-xs text-muted-foreground">Manage blog tags</span>
+                        <span className="text-xs text-muted-foreground">
+                          Manage blog tags
+                        </span>
                       </div>
                     </Button>
 
@@ -1491,7 +1622,9 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                       <Trash2 className="h-5 w-5" />
                       <div className="flex flex-col items-start">
                         <span>Database Cleanup</span>
-                        <span className="text-xs text-muted-foreground">Remove old data and optimize</span>
+                        <span className="text-xs text-muted-foreground">
+                          Remove old data and optimize
+                        </span>
                       </div>
                     </Button>
                   </div>
@@ -1501,12 +1634,18 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
           </div>
 
           {/* ====== PICKUPS TAB ====== */}
-          <TabsContent value="pickups" className="space-y-4 sm:space-y-6">
+          <TabsContent
+            value="pickups"
+            className="space-y-4 sm:space-y-6"
+          >
             <PickupRequestsManagement />
           </TabsContent>
 
           {/* ====== BOOKINGS TAB ====== */}
-          <TabsContent value="bookings" className="space-y-4 sm:space-y-6">
+          <TabsContent
+            value="bookings"
+            className="space-y-4 sm:space-y-6"
+          >
             <CompactBookingsList
               bookings={bookings}
               onRefresh={loadBookings}
@@ -1514,39 +1653,53 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
           </TabsContent>
 
           {/* ====== MESSAGES TAB ====== */}
-          <TabsContent value="messages" className="space-y-4 sm:space-y-6">
+          <TabsContent
+            value="messages"
+            className="space-y-4 sm:space-y-6"
+          >
             {/* WhatsApp-style layout */}
             <div className="flex h-[calc(100vh-200px)] md:h-[calc(100vh-200px)] overflow-hidden rounded-lg border border-border bg-background">
               {/* Left Sidebar - Conversations List */}
-              <div className={`flex w-full flex-col border-r border-border md:w-[350px] ${selectedConversation ? 'hidden md:flex' : 'flex'}`}>
+              <div
+                className={`flex w-full flex-col border-r border-border md:w-[350px] ${selectedConversation ? "hidden md:flex" : "flex"}`}
+              >
                 {/* Sidebar Header */}
                 <div className="border-b border-border bg-background p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <h2 className="text-foreground">Messages</h2>
+                    <h2 className="text-foreground">
+                      Messages
+                    </h2>
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => setShowArchivedConversations(!showArchivedConversations)}
+                      onClick={() =>
+                        setShowArchivedConversations(
+                          !showArchivedConversations,
+                        )
+                      }
                       className="gap-2"
                     >
                       {showArchivedConversations ? (
                         <>
                           <MessageCircle className="h-4 w-4" />
-                          <span className="hidden md:inline">Active</span>
+                          <span className="hidden md:inline">
+                            Active
+                          </span>
                         </>
                       ) : (
                         <>
                           <Archive className="h-4 w-4" />
-                          <span className="hidden md:inline">Archived</span>
+                          <span className="hidden md:inline">
+                            Archived
+                          </span>
                         </>
                       )}
                     </Button>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {showArchivedConversations 
+                    {showArchivedConversations
                       ? `${conversations.filter((c: any) => c.archived).length} archived`
-                      : `${conversations.filter((c: any) => c.unreadByAdmin > 0 && !c.archived).length} unread`
-                    }
+                      : `${conversations.filter((c: any) => c.unreadByAdmin > 0 && !c.archived).length} unread`}
                   </p>
                 </div>
 
@@ -1556,81 +1709,124 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                     <div className="flex items-center justify-center py-12">
                       <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
                     </div>
-                  ) : conversations.filter((c: any) => showArchivedConversations ? c.archived : !c.archived).length === 0 ? (
+                  ) : conversations.filter((c: any) =>
+                      showArchivedConversations
+                        ? c.archived
+                        : !c.archived,
+                    ).length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12 px-4">
                       <MessageCircle className="h-12 w-12 text-muted-foreground/50 mb-3" />
                       <p className="text-center text-muted-foreground">
-                        {showArchivedConversations ? "No archived conversations" : "No conversations yet"}
+                        {showArchivedConversations
+                          ? "No archived conversations"
+                          : "No conversations yet"}
                       </p>
                       <p className="text-xs text-center text-muted-foreground mt-1">
-                        {showArchivedConversations ? "Archived chats will appear here" : "Customer messages will appear here"}
+                        {showArchivedConversations
+                          ? "Archived chats will appear here"
+                          : "Customer messages will appear here"}
                       </p>
                     </div>
                   ) : (
                     <div>
-                      {conversations.filter((c: any) => showArchivedConversations ? c.archived : !c.archived).map((conv: any) => {
-                        const lastMessage = conv.lastMessage || "";
-                        const lastMessageTime = conv.lastMessageTime 
-                          ? new Date(conv.lastMessageTime)
-                          : new Date(conv.createdAt);
-                        const isToday = new Date().toDateString() === lastMessageTime.toDateString();
-                        const timeDisplay = isToday 
-                          ? lastMessageTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                          : lastMessageTime.toLocaleDateString([], { month: 'short', day: 'numeric' });
+                      {conversations
+                        .filter((c: any) =>
+                          showArchivedConversations
+                            ? c.archived
+                            : !c.archived,
+                        )
+                        .map((conv: any) => {
+                          const lastMessage =
+                            conv.lastMessage || "";
+                          const lastMessageTime =
+                            conv.lastMessageTime
+                              ? new Date(conv.lastMessageTime)
+                              : new Date(conv.createdAt);
+                          const isToday =
+                            new Date().toDateString() ===
+                            lastMessageTime.toDateString();
+                          const timeDisplay = isToday
+                            ? lastMessageTime.toLocaleTimeString(
+                                [],
+                                {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                },
+                              )
+                            : lastMessageTime.toLocaleDateString(
+                                [],
+                                {
+                                  month: "short",
+                                  day: "numeric",
+                                },
+                              );
 
-                        return (
-                          <button
-                            key={conv.id}
-                            onClick={() => {
-                              setSelectedConversation(conv.id);
-                              loadConversationMessages(conv.id);
-                            }}
-                            className={`w-full border-b border-border p-4 text-left transition-colors hover:bg-secondary/30 ${
-                              selectedConversation === conv.id
-                                ? "bg-primary/5 border-l-4 border-l-primary"
-                                : ""
-                            }`}
-                          >
-                            <div className="flex items-start gap-3">
-                              {/* Avatar */}
-                              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                                <span className="font-semibold">
-                                  {(conv.name || "A").charAt(0).toUpperCase()}
-                                </span>
-                              </div>
-
-                              {/* Content */}
-                              <div className="flex-1 overflow-hidden">
-                                <div className="flex items-start justify-between gap-2">
-                                  <p className={`truncate ${conv.unreadByAdmin > 0 ? 'font-semibold' : ''} text-foreground`}>
-                                    {conv.name || "Anonymous"}
-                                  </p>
-                                  <span className="text-xs text-muted-foreground whitespace-nowrap">
-                                    {timeDisplay}
+                          return (
+                            <button
+                              key={conv.id}
+                              onClick={() => {
+                                setSelectedConversation(
+                                  conv.id,
+                                );
+                                loadConversationMessages(
+                                  conv.id,
+                                );
+                              }}
+                              className={`w-full border-b border-border p-4 text-left transition-colors hover:bg-secondary/30 ${
+                                selectedConversation === conv.id
+                                  ? "bg-primary/5 border-l-4 border-l-primary"
+                                  : ""
+                              }`}
+                            >
+                              <div className="flex items-start gap-3">
+                                {/* Avatar */}
+                                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                                  <span className="font-semibold">
+                                    {(conv.name || "A")
+                                      .charAt(0)
+                                      .toUpperCase()}
                                   </span>
                                 </div>
-                                <div className="flex items-center justify-between gap-2 mt-1">
-                                  <p className={`truncate text-sm ${conv.unreadByAdmin > 0 ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>
-                                    {lastMessage || "No messages yet"}
-                                  </p>
-                                  {conv.unreadByAdmin > 0 && (
-                                    <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
-                                      {conv.unreadByAdmin}
+
+                                {/* Content */}
+                                <div className="flex-1 overflow-hidden">
+                                  <div className="flex items-start justify-between gap-2">
+                                    <p
+                                      className={`truncate ${conv.unreadByAdmin > 0 ? "font-semibold" : ""} text-foreground`}
+                                    >
+                                      {conv.name || "Anonymous"}
+                                    </p>
+                                    <span className="text-xs text-muted-foreground whitespace-nowrap">
+                                      {timeDisplay}
                                     </span>
-                                  )}
+                                  </div>
+                                  <div className="flex items-center justify-between gap-2 mt-1">
+                                    <p
+                                      className={`truncate text-sm ${conv.unreadByAdmin > 0 ? "text-foreground font-medium" : "text-muted-foreground"}`}
+                                    >
+                                      {lastMessage ||
+                                        "No messages yet"}
+                                    </p>
+                                    {conv.unreadByAdmin > 0 && (
+                                      <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+                                        {conv.unreadByAdmin}
+                                      </span>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          </button>
-                        );
-                      })}
+                            </button>
+                          );
+                        })}
                     </div>
                   )}
                 </div>
               </div>
 
               {/* Right Side - Chat Area */}
-              <div className={`flex flex-1 flex-col ${selectedConversation ? 'flex' : 'hidden md:flex'}`}>
+              <div
+                className={`flex flex-1 flex-col ${selectedConversation ? "flex" : "hidden md:flex"}`}
+              >
                 {selectedConversation ? (
                   <>
                     {/* Chat Header */}
@@ -1640,7 +1836,9 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => setSelectedConversation(null)}
+                          onClick={() =>
+                            setSelectedConversation(null)
+                          }
                           className="md:hidden p-2"
                         >
                           <ArrowLeft className="h-5 w-5" />
@@ -1648,39 +1846,67 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                         {/* Avatar */}
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
                           <span className="font-semibold">
-                            {((conversations.find((c: any) => c.id === selectedConversation)?.name) || "A").charAt(0).toUpperCase()}
+                            {(
+                              conversations.find(
+                                (c: any) =>
+                                  c.id === selectedConversation,
+                              )?.name || "A"
+                            )
+                              .charAt(0)
+                              .toUpperCase()}
                           </span>
                         </div>
                         {/* Info */}
                         <div className="flex-1 overflow-hidden">
                           <p className="font-medium text-foreground truncate">
-                            {conversations.find((c: any) => c.id === selectedConversation)?.name || "Anonymous"}
+                            {conversations.find(
+                              (c: any) =>
+                                c.id === selectedConversation,
+                            )?.name || "Anonymous"}
                           </p>
                           <p className="text-xs text-muted-foreground truncate">
-                            {conversations.find((c: any) => c.id === selectedConversation)?.email || ""}
+                            {conversations.find(
+                              (c: any) =>
+                                c.id === selectedConversation,
+                            )?.email || ""}
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        {conversations.find((c: any) => c.id === selectedConversation)?.archived ? (
+                        {conversations.find(
+                          (c: any) =>
+                            c.id === selectedConversation,
+                        )?.archived ? (
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleUnarchiveConversation(selectedConversation)}
+                            onClick={() =>
+                              handleUnarchiveConversation(
+                                selectedConversation,
+                              )
+                            }
                             className="gap-2"
                           >
                             <ArchiveRestore className="h-4 w-4" />
-                            <span className="hidden md:inline">Restore</span>
+                            <span className="hidden md:inline">
+                              Restore
+                            </span>
                           </Button>
                         ) : (
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleArchiveConversation(selectedConversation)}
+                            onClick={() =>
+                              handleArchiveConversation(
+                                selectedConversation,
+                              )
+                            }
                             className="gap-2"
                           >
                             <Archive className="h-4 w-4" />
-                            <span className="hidden md:inline">Archive</span>
+                            <span className="hidden md:inline">
+                              Archive
+                            </span>
                           </Button>
                         )}
                         <Button
@@ -1697,7 +1923,9 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                     <div className="flex-1 overflow-y-auto bg-secondary/5 p-4 space-y-3">
                       {conversationMessages.length === 0 ? (
                         <div className="flex h-full items-center justify-center">
-                          <p className="text-muted-foreground">No messages yet</p>
+                          <p className="text-muted-foreground">
+                            No messages yet
+                          </p>
                         </div>
                       ) : (
                         conversationMessages.map((msg: any) => (
@@ -1716,7 +1944,9 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                                   : "bg-background border border-border text-foreground rounded-bl-sm"
                               }`}
                             >
-                              <p className="text-sm leading-relaxed">{msg.message}</p>
+                              <p className="text-sm leading-relaxed">
+                                {msg.message}
+                              </p>
                               <p
                                 className={`mt-1 text-xs ${
                                   msg.sender === "admin"
@@ -1724,9 +1954,11 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                                     : "text-muted-foreground"
                                 } text-right`}
                               >
-                                {new Date(msg.createdAt).toLocaleTimeString([], { 
-                                  hour: '2-digit', 
-                                  minute: '2-digit' 
+                                {new Date(
+                                  msg.createdAt,
+                                ).toLocaleTimeString([], {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
                                 })}
                               </p>
                             </div>
@@ -1740,14 +1972,17 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                       <div className="flex gap-2">
                         <Input
                           value={replyMessage}
-                          onChange={(e) => setReplyMessage(e.target.value)}
+                          onChange={(e) =>
+                            setReplyMessage(e.target.value)
+                          }
                           placeholder="Type a message..."
                           onKeyPress={(e) =>
-                            e.key === "Enter" && handleSendReply()
+                            e.key === "Enter" &&
+                            handleSendReply()
                           }
                           className="flex-1"
                         />
-                        <Button 
+                        <Button
                           onClick={handleSendReply}
                           disabled={!replyMessage.trim()}
                           className="gap-2"
@@ -1764,7 +1999,8 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                       Select a conversation
                     </h3>
                     <p className="text-center text-sm text-muted-foreground max-w-sm">
-                      Choose a conversation from the list to view and respond to customer messages
+                      Choose a conversation from the list to
+                      view and respond to customer messages
                     </p>
                   </div>
                 )}
@@ -1773,7 +2009,10 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
           </TabsContent>
 
           {/* ====== METRICS TAB ====== */}
-          <TabsContent value="metrics" className="space-y-4 sm:space-y-6">
+          <TabsContent
+            value="metrics"
+            className="space-y-4 sm:space-y-6"
+          >
             {/* Today's Operations - Featured Section */}
             <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5 p-4 sm:p-6">
               <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -1798,7 +2037,9 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                 <Button
                   onClick={() => {
                     setLoadingBookings(true);
-                    checkForNewItems(false).finally(() => setLoadingBookings(false));
+                    checkForNewItems(false).finally(() =>
+                      setLoadingBookings(false),
+                    );
                   }}
                   variant="outline"
                   size="sm"
@@ -1808,8 +2049,12 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                   {loadingBookings ? (
                     <>
                       <div className="h-3.5 w-3.5 sm:h-4 sm:w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                      <span className="hidden sm:inline">Updating...</span>
-                      <span className="sm:hidden">Loading...</span>
+                      <span className="hidden sm:inline">
+                        Updating...
+                      </span>
+                      <span className="sm:hidden">
+                        Loading...
+                      </span>
                     </>
                   ) : (
                     <>
@@ -2148,7 +2393,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                           name: string,
                           props: any,
                         ) => [
-                          `${value} bookings (${props.payload?.percentage?.toFixed(1) || '0.0'}%)`,
+                          `${value} bookings (${props.payload?.percentage?.toFixed(1) || "0.0"}%)`,
                           name,
                         ]}
                       />
@@ -2365,340 +2610,374 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
           </TabsContent>
 
           {/* ====== SETTINGS TAB ====== */}
-            <TabsContent value="settings" className="space-y-4 sm:space-y-6">
-              {/* Feature Flags */}
-              <FeatureFlagManager />
-              
-              {/* Sunset Special Manager */}
-              <SunsetSpecialManager />
-              
-              {/* Pricing & Availability - moved from old location */}
-              <Card className="border-border p-4 sm:p-6 lg:p-8">
-                <div className="mb-4 sm:mb-6">
-                  <h2 className="mb-2 text-foreground text-sm sm:text-base">
-                    Pricing Settings
-                  </h2>
-                  <div className="h-1 w-16 rounded-full bg-accent" />
-                </div>
+          <TabsContent
+            value="settings"
+            className="space-y-4 sm:space-y-6"
+          >
+            {/* Feature Flags */}
+            <FeatureFlagManager />
 
-                <div className="space-y-6">
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <div>
-                      <Label htmlFor="basePrice">
-                        Base Day Pass Price (€)
-                      </Label>
-                      <Input
-                        id="basePrice"
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={pricing.basePrice}
-                        onChange={(e) =>
-                          setPricing({
-                            ...pricing,
-                            basePrice:
-                              parseFloat(e.target.value) || 0,
-                          })
-                        }
-                        className="mt-2 border-border"
-                      />
-                    </div>
+            {/* Sunset Special Manager */}
+            <SunsetSpecialManager />
 
-                    <div>
-                      <Label htmlFor="guidedSurcharge">
-                        Guided Tour Surcharge (€)
-                      </Label>
-                      <Input
-                        id="guidedSurcharge"
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={pricing.guidedTourSurcharge}
-                        onChange={(e) =>
-                          setPricing({
-                            ...pricing,
-                            guidedTourSurcharge:
-                              parseFloat(e.target.value) || 0,
-                          })
-                        }
-                        className="mt-2 border-border"
-                      />
-                    </div>
-                  </div>
+            {/* Pricing & Availability - moved from old location */}
+            <Card className="border-border p-4 sm:p-6 lg:p-8">
+              <div className="mb-4 sm:mb-6">
+                <h2 className="mb-2 text-foreground text-sm sm:text-base">
+                  Pricing Settings
+                </h2>
+                <div className="h-1 w-16 rounded-full bg-accent" />
+              </div>
 
-                  <div className="rounded-lg bg-secondary/50 p-4">
-                    <p className="text-muted-foreground">
-                      Preview: Day pass will cost{" "}
-                      <strong className="text-foreground">
-                        €{pricing.basePrice.toFixed(2)}
-                      </strong>{" "}
-                      per person. With guided commentary:{" "}
-                      <strong className="text-foreground">
-                        €
-                        {(pricing.basePrice +
-                          pricing.guidedTourSurcharge).toFixed(2)}
-                      </strong>
-                    </p>
-                  </div>
-
-                  <Button
-                    onClick={saveSettings}
-                    className="bg-primary hover:bg-primary/90"
-                  >
-                    <Save className="mr-2 h-4 w-4" />
-                    Save Pricing
-                  </Button>
-
-                  {/* Wallet Payments Info */}
-                  <div className="mt-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
-                    <div className="flex items-start gap-3">
-                      <AlertCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                      <div className="space-y-2">
-                        <p className="text-sm text-blue-900">
-                          <strong>Enable Apple Pay & Google Pay</strong>
-                        </p>
-                        <p className="text-xs text-blue-800">
-                          To allow customers to pay with Apple Pay and Google Pay, enable these payment methods in your Stripe Dashboard:
-                        </p>
-                        <ol className="text-xs text-blue-800 list-decimal list-inside space-y-1 ml-2">
-                          <li>Go to <a href="https://dashboard.stripe.com/settings/payment_methods" target="_blank" rel="noopener noreferrer" className="underline font-medium">Stripe Dashboard → Settings → Payment methods</a></li>
-                          <li>Enable "Apple Pay" and "Google Pay"</li>
-                          <li>For Apple Pay: Add and verify your domain</li>
-                          <li>Wallet buttons will automatically appear for compatible devices</li>
-                        </ol>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-
-              {/* Attraction Ticket Prices */}
-              <Card className="border-border p-8">
-                <div className="mb-6">
-                  <h2 className="mb-2 text-foreground">
-                    Attraction Ticket Prices
-                  </h2>
-                  <div className="h-1 w-16 rounded-full bg-accent" />
-                </div>
-
-                <div className="space-y-4">
-                  {Object.entries(pricing.attractions).map(
-                    ([id, attraction]) => (
-                      <div
-                        key={id}
-                        className="flex items-center gap-4 rounded-lg border border-border bg-white p-4"
-                      >
-                        <div className="flex-1">
-                          <p className="text-foreground">
-                            {attraction.name}
-                          </p>
-                        </div>
-                        <div className="w-32">
-                          <Input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={attraction.price}
-                            onChange={(e) =>
-                              updateAttractionPrice(
-                                id,
-                                parseFloat(e.target.value) || 0,
-                              )
-                            }
-                            className="border-border"
-                          />
-                        </div>
-                      </div>
-                    ),
-                  )}
-                </div>
-
-                <div className="mt-6">
-                  <Button
-                    onClick={saveSettings}
-                    className="bg-primary hover:bg-primary/90"
-                  >
-                    <Save className="mr-2 h-4 w-4" />
-                    Save Attraction Prices
-                  </Button>
-                </div>
-              </Card>
-
-              {/* Availability Management */}
-              <Card className="border-border p-8">
-                <div className="mb-6">
-                  <h2 className="mb-2 text-foreground">
-                    Availability Management
-                  </h2>
-                  <div className="h-1 w-16 rounded-full bg-accent" />
-                </div>
-
-                <div className="space-y-6">
+              <div className="space-y-6">
+                <div className="grid gap-4 md:grid-cols-2">
                   <div>
-                    <Label>Select Date</Label>
-                    <Popover
-                      open={calendarOpen}
-                      onOpenChange={setCalendarOpen}
+                    <Label htmlFor="basePrice">
+                      Base Day Pass Price (€)
+                    </Label>
+                    <Input
+                      id="basePrice"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={pricing.basePrice}
+                      onChange={(e) =>
+                        setPricing({
+                          ...pricing,
+                          basePrice:
+                            parseFloat(e.target.value) || 0,
+                        })
+                      }
+                      className="mt-2 border-border"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="guidedSurcharge">
+                      Guided Tour Surcharge (€)
+                    </Label>
+                    <Input
+                      id="guidedSurcharge"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={pricing.guidedTourSurcharge}
+                      onChange={(e) =>
+                        setPricing({
+                          ...pricing,
+                          guidedTourSurcharge:
+                            parseFloat(e.target.value) || 0,
+                        })
+                      }
+                      className="mt-2 border-border"
+                    />
+                  </div>
+                </div>
+
+                <div className="rounded-lg bg-secondary/50 p-4">
+                  <p className="text-muted-foreground">
+                    Preview: Day pass will cost{" "}
+                    <strong className="text-foreground">
+                      €{pricing.basePrice.toFixed(2)}
+                    </strong>{" "}
+                    per person. With guided commentary:{" "}
+                    <strong className="text-foreground">
+                      €
+                      {(
+                        pricing.basePrice +
+                        pricing.guidedTourSurcharge
+                      ).toFixed(2)}
+                    </strong>
+                  </p>
+                </div>
+
+                <Button
+                  onClick={saveSettings}
+                  className="bg-primary hover:bg-primary/90"
+                >
+                  <Save className="mr-2 h-4 w-4" />
+                  Save Pricing
+                </Button>
+
+                {/* Wallet Payments Info */}
+                <div className="mt-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
+                  <div className="flex items-start gap-3">
+                    <AlertCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <div className="space-y-2">
+                      <p className="text-sm text-blue-900">
+                        <strong>
+                          Enable Apple Pay & Google Pay
+                        </strong>
+                      </p>
+                      <p className="text-xs text-blue-800">
+                        To allow customers to pay with Apple Pay
+                        and Google Pay, enable these payment
+                        methods in your Stripe Dashboard:
+                      </p>
+                      <ol className="text-xs text-blue-800 list-decimal list-inside space-y-1 ml-2">
+                        <li>
+                          Go to{" "}
+                          <a
+                            href="https://dashboard.stripe.com/settings/payment_methods"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline font-medium"
+                          >
+                            Stripe Dashboard → Settings →
+                            Payment methods
+                          </a>
+                        </li>
+                        <li>
+                          Enable "Apple Pay" and "Google Pay"
+                        </li>
+                        <li>
+                          For Apple Pay: Add and verify your
+                          domain
+                        </li>
+                        <li>
+                          Wallet buttons will automatically
+                          appear for compatible devices
+                        </li>
+                      </ol>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Attraction Ticket Prices */}
+            <Card className="border-border p-8">
+              <div className="mb-6">
+                <h2 className="mb-2 text-foreground">
+                  Attraction Ticket Prices
+                </h2>
+                <div className="h-1 w-16 rounded-full bg-accent" />
+              </div>
+
+              <div className="space-y-4">
+                {Object.entries(pricing.attractions).map(
+                  ([id, attraction]) => (
+                    <div
+                      key={id}
+                      className="flex items-center gap-4 rounded-lg border border-border bg-white p-4"
                     >
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="mt-2 w-full justify-start border-border text-left"
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {new Date(
-                            selectedDate,
-                          ).toLocaleDateString("en-US", {
-                            weekday: "long",
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          })}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <Calendar
-                          mode="single"
-                          selected={new Date(selectedDate)}
-                          onSelect={(date) => {
-                            if (date) {
-                              setSelectedDate(
-                                date.toISOString().split("T")[0],
-                              );
-                              setCalendarOpen(false);
-                            }
-                          }}
-                          disabled={(date) =>
-                            date <
-                            new Date(
-                              new Date().setHours(0, 0, 0, 0),
+                      <div className="flex-1">
+                        <p className="text-foreground">
+                          {attraction.name}
+                        </p>
+                      </div>
+                      <div className="w-32">
+                        <Input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={attraction.price}
+                          onChange={(e) =>
+                            updateAttractionPrice(
+                              id,
+                              parseFloat(e.target.value) || 0,
                             )
                           }
-                          initialFocus
+                          className="border-border"
                         />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
+                      </div>
+                    </div>
+                  ),
+                )}
+              </div>
 
-                  <div className="rounded-lg border border-border bg-white p-6">
-                    <div className="mb-4 flex items-center justify-between">
-                      <h3 className="text-foreground">
-                        Time Slots for{" "}
+              <div className="mt-6">
+                <Button
+                  onClick={saveSettings}
+                  className="bg-primary hover:bg-primary/90"
+                >
+                  <Save className="mr-2 h-4 w-4" />
+                  Save Attraction Prices
+                </Button>
+              </div>
+            </Card>
+
+            {/* Availability Management */}
+            <Card className="border-border p-8">
+              <div className="mb-6">
+                <h2 className="mb-2 text-foreground">
+                  Availability Management
+                </h2>
+                <div className="h-1 w-16 rounded-full bg-accent" />
+              </div>
+
+              <div className="space-y-6">
+                <div>
+                  <Label>Select Date</Label>
+                  <Popover
+                    open={calendarOpen}
+                    onOpenChange={setCalendarOpen}
+                  >
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="mt-2 w-full justify-start border-border text-left"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
                         {new Date(
                           selectedDate,
                         ).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
+                          weekday: "long",
                           year: "numeric",
+                          month: "long",
+                          day: "numeric",
                         })}
-                      </h3>
-                      <div className="flex gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() =>
-                            setAllSlotsForDate(selectedDate, 50)
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={new Date(selectedDate)}
+                        onSelect={(date) => {
+                          if (date) {
+                            setSelectedDate(
+                              date.toISOString().split("T")[0],
+                            );
+                            setCalendarOpen(false);
                           }
-                        >
-                          Set All to 50
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() =>
-                            setAllSlotsForDate(selectedDate, 0)
-                          }
-                        >
-                          Set All to 0
-                        </Button>
-                      </div>
-                    </div>
+                        }}
+                        disabled={(date) =>
+                          date <
+                          new Date(
+                            new Date().setHours(0, 0, 0, 0),
+                          )
+                        }
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
 
-                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                      {TIME_SLOTS.map((slot) => (
-                        <div
-                          key={slot}
-                          className="rounded-lg border border-border p-4"
-                        >
-                          <Label
-                            htmlFor={`slot-${slot}`}
-                            className="text-foreground"
-                          >
-                            {slot}
-                          </Label>
-                          <Input
-                            id={`slot-${slot}`}
-                            type="number"
-                            min="0"
-                            max="50"
-                            value={
-                              availability[selectedDate]?.[slot] ?? 50
-                            }
-                            onChange={(e) =>
-                              updateAvailability(
-                                selectedDate,
-                                slot,
-                                parseInt(e.target.value) || 0,
-                              )
-                            }
-                            className="mt-2 border-border"
-                          />
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="mt-6">
+                <div className="rounded-lg border border-border bg-white p-6">
+                  <div className="mb-4 flex items-center justify-between">
+                    <h3 className="text-foreground">
+                      Time Slots for{" "}
+                      {new Date(
+                        selectedDate,
+                      ).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </h3>
+                    <div className="flex gap-2">
                       <Button
-                        onClick={saveSettings}
-                        className="bg-primary hover:bg-primary/90"
+                        size="sm"
+                        variant="outline"
+                        onClick={() =>
+                          setAllSlotsForDate(selectedDate, 50)
+                        }
                       >
-                        <Save className="mr-2 h-4 w-4" />
-                        Save Availability
+                        Set All to 50
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() =>
+                          setAllSlotsForDate(selectedDate, 0)
+                        }
+                      >
+                        Set All to 0
                       </Button>
                     </div>
                   </div>
+
+                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    {TIME_SLOTS.map((slot) => (
+                      <div
+                        key={slot}
+                        className="rounded-lg border border-border p-4"
+                      >
+                        <Label
+                          htmlFor={`slot-${slot}`}
+                          className="text-foreground"
+                        >
+                          {slot}
+                        </Label>
+                        <Input
+                          id={`slot-${slot}`}
+                          type="number"
+                          min="0"
+                          max="50"
+                          value={
+                            availability[selectedDate]?.[
+                              slot
+                            ] ?? 50
+                          }
+                          onChange={(e) =>
+                            updateAvailability(
+                              selectedDate,
+                              slot,
+                              parseInt(e.target.value) || 0,
+                            )
+                          }
+                          className="mt-2 border-border"
+                        />
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-6">
+                    <Button
+                      onClick={saveSettings}
+                      className="bg-primary hover:bg-primary/90"
+                    >
+                      <Save className="mr-2 h-4 w-4" />
+                      Save Availability
+                    </Button>
+                  </div>
                 </div>
-              </Card>
-            </TabsContent>
+              </div>
+            </Card>
+          </TabsContent>
 
-            {/* ====== DRIVERS TAB ====== */}
-            <TabsContent value="drivers" className="space-y-4 sm:space-y-6">
-              <DriverManagement />
-            </TabsContent>
+          {/* ====== DRIVERS TAB ====== */}
+          <TabsContent
+            value="drivers"
+            className="space-y-4 sm:space-y-6"
+          >
+            <DriverManagement />
+          </TabsContent>
 
-            {/* ====== IMAGES TAB ====== */}
-            <TabsContent value="images" className="space-y-6">
-              <ImageManager />
-            </TabsContent>
+          {/* ====== IMAGES TAB ====== */}
+          <TabsContent value="images" className="space-y-6">
+            <ImageManager />
+          </TabsContent>
 
-            {/* ====== CONTENT TAB ====== */}
-            <TabsContent value="content" className="space-y-6">
-              <ContentEditor />
-            </TabsContent>
+          {/* ====== CONTENT TAB ====== */}
+          <TabsContent value="content" className="space-y-6">
+            <ContentEditor />
+          </TabsContent>
 
-            {/* ====== BLOG TAB ====== */}
-            <TabsContent value="blog" className="space-y-6">
-              <BlogEditor />
-            </TabsContent>
+          {/* ====== BLOG TAB ====== */}
+          <TabsContent value="blog" className="space-y-6">
+            <BlogEditor />
+          </TabsContent>
 
-            {/* ====== SEO TAB ====== */}
-            <TabsContent value="seo" className="space-y-6">
-              <SEOTools />
-            </TabsContent>
+          {/* ====== SEO TAB ====== */}
+          <TabsContent value="seo" className="space-y-6">
+            <SEOTools />
+          </TabsContent>
 
-            {/* ====== TAGS TAB ====== */}
-            <TabsContent value="tags" className="space-y-6">
-              <TagManagement />
-            </TabsContent>
+          {/* ====== TAGS TAB ====== */}
+          <TabsContent value="tags" className="space-y-6">
+            <TagManagement />
+          </TabsContent>
 
-            {/* ====== CLEANUP TAB ====== */}
-            <TabsContent value="cleanup" className="space-y-6">
-              <DatabaseCleanup adminPassword="Sintra2025" />
-            </TabsContent>
-          </Tabs>
-        </div>
+          {/* ====== CLEANUP TAB ====== */}
+          <TabsContent value="cleanup" className="space-y-6">
+            <BookingDiagnostics />
+            <DatabaseCleanup adminPassword="Sintra2025" />
+          </TabsContent>
+        </Tabs>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
 export default AdminPage;

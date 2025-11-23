@@ -1,17 +1,3 @@
-import { useState, useEffect } from "react";
-import { format } from "date-fns";
-import { StripePaymentForm } from "./StripePaymentForm";
-import { getTranslation } from "../lib/translations";
-import { PickupLocationMap } from "./PickupLocationMap";
-import { Button } from "./ui/button";
-import { Card } from "./ui/card";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Calendar as CalendarComponent } from "./ui/calendar";
-import { Badge } from "./ui/badge";
-import { CalendarIcon, Check, ChevronLeft, ArrowRight, User, Mail, Ticket, CreditCard, Receipt, Calendar, MapPin, Users, Car, AlertCircle, Loader2, RefreshCw } from "lucide-react";
 import { toast } from "sonner@2.0.3";
 import { createBooking, createPaymentIntent } from "../lib/api";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
@@ -150,9 +136,13 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
             console.log('✅ Loaded pricing from database');
             return;
           }
+        } else if (response.status === 404) {
+          console.warn('⚠️ Backend not available (404). Using cached pricing.');
+          console.warn('⚠️ Bookings may not work. Check /diagnostics page for backend status.');
         }
       } catch (error) {
         // Silently handle error - backend may not be available
+        console.warn('⚠️ Backend connection failed. Using cached pricing.');
       }
       
       // Fallback to localStorage if database fetch fails
@@ -347,8 +337,34 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
 
       console.log(`📤 Attempting to create booking with payment intent: ${confirmedPaymentIntentId}`);
       
-      // Create booking via API
-      const response = await createBooking(bookingData);
+      // Create booking via API with retry logic
+      let response;
+      let lastError;
+      const maxRetries = 3;
+      
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+          console.log(`🔄 Booking creation attempt ${attempt}/${maxRetries}`);
+          response = await createBooking(bookingData);
+          
+          // If we get a response, break the retry loop
+          if (response) break;
+        } catch (retryError) {
+          lastError = retryError;
+          console.error(`❌ Booking attempt ${attempt} failed:`, retryError);
+          
+          // Only retry if it's a network error and we haven't hit max retries
+          if (attempt < maxRetries) {
+            console.log(`⏳ Waiting 1 second before retry...`);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+        }
+      }
+      
+      // If no response after retries, throw the last error
+      if (!response) {
+        throw lastError || new Error('Failed to create booking after multiple attempts');
+      }
       
       console.log("📥 Full booking response:", response);
       console.log("📥 Response structure check:", {
@@ -361,10 +377,7 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
       
       // Check both outer and inner success flags
       if (response.success && response.data?.success && response.data?.booking) {
-        // Navigate to confirmation page with booking data
-        onBookingComplete(response.data.booking);
-        
-        // Show success toast
+        // Show success toast immediately
         if (response.data.emailSent) {
           toast.success("Booking confirmed! Check your email for QR codes.");
         } else {
@@ -398,17 +411,34 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
             });
           }
         }
+        
+        // Small delay to ensure toast is visible before navigation
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Navigate to confirmation page with booking data
+        console.log("🔄 Navigating to confirmation page with booking:", response.data.booking.id);
+        onBookingComplete(response.data.booking);
       } else {
         // Check if inner response has error
         const errorMsg = response.data?.error || response.error || "Failed to create booking";
+        console.error("❌ Booking creation failed:", errorMsg);
         throw new Error(errorMsg);
       }
     } catch (error) {
-      console.error("Booking error:", error);
+      console.error("❌ Booking error:", error);
       const errorMessage = error instanceof Error ? error.message : "Failed to complete booking. Please try again.";
       
+      // Special handling for 404 errors
+      if (errorMessage.includes('404') || errorMessage.includes('not found') || errorMessage.includes('endpoint')) {
+        toast.error("Server connection issue. Your payment was processed. Please contact support with your payment confirmation.", {
+          duration: 10000,
+        });
+        console.error("⚠️ CRITICAL: Payment succeeded but booking creation failed with 404");
+        console.error("⚠️ Payment Intent ID:", confirmedPaymentIntentId);
+        console.error("⚠️ Customer Email:", formData.email);
+      }
       // Check if it's an availability error
-      if (errorMessage.includes("Not enough seats") || errorMessage.includes("available")) {
+      else if (errorMessage.includes("Not enough seats") || errorMessage.includes("available")) {
         toast.error(errorMessage);
         // Refresh availability for selected date
         if (formData.date) {

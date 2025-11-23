@@ -880,6 +880,65 @@ app.get("/make-server-3bd0ade8/health", (c) => {
   });
 });
 
+// Debug endpoint to check what booking keys exist in database
+app.get("/make-server-3bd0ade8/debug-booking-keys", async (c) => {
+  try {
+    console.log("🔍 Checking all booking-related keys in database...");
+
+    // Get ALL keys from the database to see what's actually there
+    const { data: allKeys, error } = await supabase
+      .from("kv_store_3bd0ade8")
+      .select("key")
+      .or("key.like.AA-%,key.like.AB-%,key.like.AC-%,key.like.booking_%,key.like.GS-%");
+
+    if (error) {
+      throw error;
+    }
+
+    // Also check the tracking key
+    const usedPrefixes = await kvWithRetry.get("booking_used_prefixes");
+    
+    // Try to get some sample bookings directly
+    const sampleBookings = [];
+    if (allKeys && allKeys.length > 0) {
+      // Try to get up to 5 sample bookings
+      for (let i = 0; i < Math.min(5, allKeys.length); i++) {
+        const booking = await kvWithRetry.get(allKeys[i].key);
+        if (booking) {
+          sampleBookings.push({
+            key: allKeys[i].key,
+            hasData: true,
+            id: booking.id,
+            createdAt: booking.createdAt,
+            passengerCount: booking.passengers?.length
+          });
+        }
+      }
+    }
+
+    return c.json({
+      success: true,
+      totalBookingKeys: allKeys?.length || 0,
+      bookingKeys: allKeys?.map(k => k.key) || [],
+      usedPrefixes: usedPrefixes || [],
+      sampleBookings: sampleBookings,
+      explanation: {
+        problem: "If bookingKeys is empty, bookings aren't being saved",
+        solution: "If bookingKeys exist but usedPrefixes is empty, that's the issue"
+      }
+    });
+  } catch (error) {
+    console.error("❌ Debug endpoint error:", error);
+    return c.json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      },
+      500
+    );
+  }
+});
+
 // Simple database check - test if we can query the table
 app.get("/make-server-3bd0ade8/db-check", async (c) => {
   try {

@@ -160,36 +160,77 @@ export function DiagnosticsPage({
         isTestBooking: true, // Flag to bypass payment verification
       };
 
-      const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/bookings`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${publicAnonKey}`,
-          },
-          body: JSON.stringify(fakeBooking),
-        },
-      );
+      console.log("📤 Test booking data:", fakeBooking);
+      const url = `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/bookings`;
+      console.log("🔗 Calling endpoint:", url);
+      console.log("🔑 Project ID:", projectId);
+      console.log("🔑 Has anon key:", !!publicAnonKey);
 
-      const data = await response.json();
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${publicAnonKey}`,
+        },
+        body: JSON.stringify(fakeBooking),
+      });
+
+      console.log("📥 Response status:", response.status, response.statusText);
+      console.log("📥 Response ok:", response.ok);
+
+      let data;
+      try {
+        data = await response.json();
+        console.log("📥 Response data:", data);
+      } catch (parseError) {
+        console.error("❌ Failed to parse response JSON:", parseError);
+        const text = await response.text();
+        console.error("📄 Raw response text:", text);
+        
+        if (response.status === 404) {
+          toast.error("❌ Backend not found (404). The Edge Function may not be deployed.", { duration: 8000 });
+          console.error("⚠️ CRITICAL: Backend endpoint not accessible");
+          console.error("⚠️ Endpoint:", url);
+          console.error("⚠️ This means bookings and emails will not work!");
+        } else {
+          toast.error(`Backend error (${response.status}): ${text.substring(0, 100)}`, { duration: 8000 });
+        }
+        return;
+      }
 
       if (response.ok && data.success) {
         toast.success("✅ Test email sent! Check your inbox.");
         console.log("📧 Test email sent successfully:", data);
       } else {
+        const errorMsg = data.error || data.message || "Unknown error";
         toast.error(
-          `Failed to send email: ${data.error || "Unknown error"}`,
+          `Failed to send email: ${errorMsg}`,
         );
         console.error("📧 Email send failed:", data);
+        console.error("📧 HTTP Status:", response.status);
+        console.error("📧 Error details:", errorMsg);
+        
+        // Special handling for common errors
+        if (response.status === 404) {
+          toast.error("⚠️ Backend not deployed. Check Edge Function Health above.", { duration: 8000 });
+        } else if (response.status === 500) {
+          toast.error("⚠️ Backend error. Check Edge Function logs in Supabase Dashboard.", { duration: 8000 });
+        }
       }
     } catch (error) {
       console.error("📧 Test email error:", error);
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Failed to send test email",
-      );
+      console.error("📧 Error type:", error instanceof Error ? error.constructor.name : typeof error);
+      console.error("📧 Error message:", error instanceof Error ? error.message : String(error));
+      
+      const errorMsg = error instanceof Error ? error.message : "Failed to send test email";
+      
+      if (errorMsg.includes("Failed to fetch") || errorMsg.includes("NetworkError")) {
+        toast.error("❌ Cannot reach backend. Check internet connection or Edge Function deployment.", {
+          duration: 8000
+        });
+      } else {
+        toast.error(errorMsg, { duration: 5000 });
+      }
     } finally {
       setSendingEmail(false);
     }
