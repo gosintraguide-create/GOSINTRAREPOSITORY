@@ -211,9 +211,21 @@ export default function App() {
 
   // Handle URL-based page navigation
   useEffect(() => {
+    // Debug logging
+    console.log("[App] Initial URL load:", {
+      href: window.location.href,
+      pathname: window.location.pathname,
+      search: window.location.search,
+      hash: window.location.hash,
+    });
+
     // Check if we were redirected from 404.html
     const redirectPath = sessionStorage.getItem("redirect");
     if (redirectPath && redirectPath !== "/") {
+      console.log(
+        "[App] Redirect from 404.html detected:",
+        redirectPath,
+      );
       sessionStorage.removeItem("redirect");
       // Update the URL without reload
       window.history.replaceState({}, "", redirectPath);
@@ -260,7 +272,14 @@ export default function App() {
 
     const { page, slug } = getPageFromURL();
 
+    console.log("[App] Parsed URL:", {
+      page,
+      slug,
+      cleanPath: window.location.pathname,
+    });
+
     if (page) {
+      console.log("[App] Setting page to:", page);
       setCurrentPage(page);
       if (slug) {
         setPageData({ slug });

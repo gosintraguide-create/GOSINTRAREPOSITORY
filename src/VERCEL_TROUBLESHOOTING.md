@@ -1,348 +1,316 @@
-# 🔧 Vercel Deployment Troubleshooting
+# Vercel Routing Troubleshooting Guide
 
-## Current Error
+## Problem: Pages Only Accessible from Home Page
 
-```
-No Output Directory named "dist" found after the Build completed.
-```
+When you visit routes like `/attractions` directly, you see a 404 or blank page, but clicking links from the home page works fine.
 
-## ✅ Quick Fixes (Try These First)
+## Root Cause
 
-### Fix 1: Clear Vercel Cache and Redeploy
+This is a Single Page Application (SPA) routing issue. Vercel needs to serve `index.html` for ALL routes, but currently it's only serving it for `/`.
 
-1. Go to **Vercel Dashboard** → Your Project → **Settings** → **General**
-2. Scroll to **Build & Development Settings**
-3. Click **Clear Cache**
-4. Go to **Deployments** tab
-5. Click **Redeploy** on the latest deployment
+## Solution Steps
 
-### Fix 2: Update Build Settings in Vercel Dashboard
+### Step 1: Verify vercel.json Configuration
 
-1. Go to **Vercel Dashboard** → Your Project → **Settings**
-2. Navigate to **Build & Development Settings**
-3. Set the following:
-
-```
-Framework Preset: Vite
-Build Command: npm run build
-Output Directory: dist
-Install Command: npm install
-Development Command: npm run dev
-```
-
-4. Click **Save**
-5. Redeploy
-
-### Fix 3: Ensure All Files Are Committed
-
-```bash
-git status
-git add package.json vite.config.ts tsconfig.json src/main.tsx vercel.json
-git commit -m "Update build configuration"
-git push origin main
-```
-
-## 🔍 Diagnostic Steps
-
-### Step 1: Test Build Locally
-
-```bash
-# Clean install
-rm -rf node_modules package-lock.json dist
-npm install
-
-# Test build
-npm run build
-
-# Check if dist folder was created
-ls -la dist/
-
-# If dist folder exists and has files, local build works!
-```
-
-### Step 2: Check Build Output
-
-After running `npm run build`, you should see:
-
-```
-vite v5.0.8 building for production...
-✓ [number] modules transformed.
-dist/index.html                   [size] kB
-dist/assets/index-[hash].css      [size] kB │ gzip: [size] kB
-dist/assets/index-[hash].js       [size] kB │ gzip: [size] kB
-✓ built in [time]s
-```
-
-### Step 3: Verify Configuration Files
-
-Check these files exist and are correct:
-
-```bash
-ls -la package.json          # ✓ Should exist
-ls -la vite.config.ts        # ✓ Should exist
-ls -la tsconfig.json         # ✓ Should exist
-ls -la src/main.tsx          # ✓ Should exist
-ls -la index.html            # ✓ Should exist
-ls -la App.tsx               # ✓ Should exist
-```
-
-## 🎯 Common Causes & Solutions
-
-### Cause 1: Cached Build
-
-**Solution:**
-```bash
-# In Vercel Dashboard
-Settings → General → Clear Build Cache → Redeploy
-```
-
-### Cause 2: Wrong Node Version
-
-**Solution:** Add `engines` to package.json:
+Your `vercel.json` should have this exact configuration:
 
 ```json
 {
-  "engines": {
-    "node": ">=18.0.0"
-  }
-}
-```
-
-Then redeploy.
-
-### Cause 3: Build Command Failing Silently
-
-**Solution:** Check Vercel build logs:
-1. Go to **Deployments**
-2. Click on the failed deployment
-3. Click **Building** to see full logs
-4. Look for error messages
-
-### Cause 4: Missing Dependencies
-
-**Solution:** Ensure all dependencies are in package.json:
-
-```bash
-# Check if any imports are missing
-npm run build
-
-# If you see "Cannot find module", add it:
-npm install [missing-package]
-git add package.json package-lock.json
-git commit -m "Add missing dependencies"
-git push
-```
-
-### Cause 5: TypeScript Errors Blocking Build
-
-**Solution:** We've already set `strict: false` in tsconfig.json and removed `tsc` from the build command, so this shouldn't be an issue.
-
-### Cause 6: Path/Import Errors
-
-**Solution:** Check for any broken imports:
-
-```bash
-# Search for problematic imports
-grep -r "from '@/" .
-
-# If you find any, they should resolve to the root
-# Example: '@/components/Header' should resolve to './components/Header'
-```
-
-## 🚀 Alternative Deployment Methods
-
-### Method 1: Deploy via Vercel CLI
-
-```bash
-# Install Vercel CLI
-npm install -g vercel
-
-# Login
-vercel login
-
-# Deploy
-vercel --prod
-
-# This often works when dashboard deployment fails!
-```
-
-### Method 2: Force Fresh Deploy
-
-```bash
-# Delete vercel.json temporarily
-mv vercel.json vercel.json.backup
-
-# Let Vercel auto-detect
-git add vercel.json.backup
-git commit -m "Remove vercel.json for auto-detect"
-git push
-
-# After successful deploy, restore vercel.json
-mv vercel.json.backup vercel.json
-git add vercel.json
-git commit -m "Restore vercel.json"
-git push
-```
-
-### Method 3: Use Minimal vercel.json
-
-Replace vercel.json content with minimal config:
-
-```json
-{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install",
+  "devCommand": "npm run dev",
+  "framework": null,
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
   ]
 }
 ```
 
-## 📊 Checklist Before Deploying
+**Key points:**
+- ✅ `"framework": null` - Important! Don't let Vercel auto-detect
+- ✅ `"outputDirectory": "dist"` - Must match Vite output
+- ✅ Simple `rewrites` - Catches ALL routes and serves index.html
 
-- [ ] `npm install` runs without errors locally
-- [ ] `npm run build` completes successfully locally
-- [ ] `dist/` folder is created after build
-- [ ] `dist/index.html` exists
-- [ ] `dist/assets/` folder contains JS and CSS files
-- [ ] All configuration files are committed to Git
-- [ ] package.json has all required dependencies
-- [ ] No TypeScript errors (run `npm run type-check`)
-- [ ] Node version is 18+ (check with `node -v`)
+### Step 2: Check Build Output
 
-## 🆘 Still Not Working?
-
-### Check Vercel Build Logs
-
-1. **Vercel Dashboard** → **Deployments**
-2. Click the failed deployment
-3. Click **Building** to expand build logs
-4. Look for these specific error messages:
-
-**Error Pattern 1:**
-```
-Error: Cannot find module 'X'
-```
-**Fix:** Install the missing module:
-```bash
-npm install X
-git add package.json package-lock.json
-git commit -m "Add missing dependency"
-git push
-```
-
-**Error Pattern 2:**
-```
-ENOENT: no such file or directory
-```
-**Fix:** Check if all imported files exist with correct paths.
-
-**Error Pattern 3:**
-```
-Failed to parse source for import analysis
-```
-**Fix:** Check for syntax errors in your files.
-
-### Manual Verification Steps
+After running `npm run build` locally, verify:
 
 ```bash
-# 1. Check Node version
-node -v
-# Should be 18.x or higher
+ls -la dist/
+```
 
-# 2. Clean everything
-rm -rf node_modules package-lock.json dist
+You should see:
+- ✅ `index.html` - Main HTML file
+- ✅ `assets/` - Folder with JS/CSS bundles
+- ✅ `manifest.json` - PWA manifest
+- ✅ `sw.js` - Service worker
+- ✅ `404.html` - Fallback page
+- ✅ Other public files
 
-# 3. Fresh install
-npm install
+### Step 3: Test Locally
 
-# 4. Build
+```bash
+# Build production version
 npm run build
 
-# 5. Verify dist folder
-ls -la dist/
-ls -la dist/assets/
+# Serve locally (this simulates Vercel)
+npm run preview
 
-# 6. If all above works, the issue is Vercel-specific
+# Test these URLs directly in browser:
+http://localhost:4173/
+http://localhost:4173/attractions
+http://localhost:4173/buy-ticket
+http://localhost:4173/about
 ```
 
-## 💡 Vercel-Specific Issues
+**If local preview works but Vercel doesn't:**
+- The issue is with Vercel configuration
+- Check Vercel Dashboard settings
 
-### Issue 1: Vercel Not Detecting Changes
+### Step 4: Vercel Dashboard Settings
+
+Go to your Vercel project settings:
+
+1. **Settings → General → Build & Development Settings**
+   - Framework Preset: `Other` or `Vite`
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
+   - Install Command: `npm install`
+
+2. **Settings → Domains**
+   - Ensure your domain is properly connected
+   - Clear any redirects that might interfere
+
+3. **Redeploy**
+   - Go to Deployments tab
+   - Click "..." on latest deployment
+   - Click "Redeploy"
+   - ✅ Check "Use existing Build Cache" OFF
+   - ✅ Click "Redeploy"
+
+### Step 5: Clear Vercel Cache
+
+Sometimes Vercel caches the old configuration:
+
+```bash
+# In your terminal
+vercel --prod --force
+
+# Or via dashboard: Redeploy without cache
+```
+
+### Step 6: Check Deployment Logs
+
+After deploying, check the logs:
+
+1. Go to Deployments tab
+2. Click on the latest deployment
+3. Click "Building" or "Deployment" to see logs
+
+**Look for:**
+- ✅ "Running build command: npm run build"
+- ✅ "Build completed"
+- ✅ "dist directory created"
+- ❌ Any errors about missing files
+- ❌ 404 errors for routes
+
+### Step 7: Test with Console Logs
+
+Open browser DevTools Console when visiting `/attractions` directly:
+
+You should see:
+```
+[App] Initial URL load: {
+  href: "https://your-domain.vercel.app/attractions",
+  pathname: "/attractions",
+  ...
+}
+[App] Parsed URL: {
+  page: "attractions",
+  slug: null,
+  cleanPath: "/attractions"
+}
+[App] Setting page to: attractions
+```
+
+**If you see:**
+- ❌ Page not found / 404
+- ❌ No console logs
+- ❌ Blank page
+
+**Then:**
+- Vercel is NOT serving index.html for that route
+- Check vercel.json is in the root directory
+- Check vercel.json is valid JSON (no syntax errors)
+
+### Step 8: Alternative Configuration (If Above Fails)
+
+Try this more explicit configuration in `vercel.json`:
+
+```json
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/sw.js",
+      "dest": "/sw.js",
+      "headers": {
+        "cache-control": "public, max-age=0, must-revalidate",
+        "service-worker-allowed": "/"
+      }
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/(.*\\.(png|jpg|jpeg|gif|svg|ico|webp|json|txt|xml))",
+      "dest": "/$1"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
+```
+
+## Debugging Checklist
+
+- [ ] `vercel.json` exists in project root
+- [ ] `vercel.json` has `rewrites` configuration
+- [ ] `package.json` has correct build script
+- [ ] Local `npm run build` completes without errors
+- [ ] Local `npm run preview` works for all routes
+- [ ] Vercel Dashboard shows `dist` as output directory
+- [ ] Redeployed without cache
+- [ ] Checked deployment logs for errors
+- [ ] Tested in incognito/private browser window
+- [ ] Tested with browser DevTools console open
+
+## Common Issues
+
+### Issue 1: vercel.json Not Being Read
+
+**Symptoms:**
+- Routes work locally but not on Vercel
+- Vercel seems to ignore configuration
 
 **Solution:**
-```bash
-# Force a rebuild with an empty commit
-git commit --allow-empty -m "Trigger rebuild"
-git push
-```
+1. Ensure `vercel.json` is in the root directory (same level as `package.json`)
+2. Check for JSON syntax errors: https://jsonlint.com/
+3. Commit and push the file: `git add vercel.json && git commit -m "Add vercel config" && git push`
 
-### Issue 2: Vercel Using Wrong Settings
+### Issue 2: Build Command Issues
+
+**Symptoms:**
+- Build fails on Vercel
+- TypeScript errors
 
 **Solution:**
-1. Delete the project from Vercel
-2. Re-import from GitHub
-3. Let Vercel auto-detect settings
-4. Add environment variables
-5. Deploy
-
-### Issue 3: Vercel Build Environment Differences
-
-**Solution:** Add `.nvmrc` file to lock Node version:
-
-```bash
-echo "18" > .nvmrc
-git add .nvmrc
-git commit -m "Lock Node version to 18"
-git push
+Check `package.json`:
+```json
+{
+  "scripts": {
+    "build": "tsc --noEmit && vite build --outDir dist"
+  }
+}
 ```
 
-## 📞 Need More Help?
+### Issue 3: Framework Auto-Detection Conflict
 
-### Check These Resources:
+**Symptoms:**
+- Vercel detects wrong framework
+- Routes don't work despite correct config
 
-1. **Vercel Status:** https://www.vercel-status.com/
-2. **Vercel Documentation:** https://vercel.com/docs/concepts/projects/overview
-3. **Vite Documentation:** https://vitejs.dev/guide/build.html
+**Solution:**
+Set `"framework": null` in `vercel.json` to disable auto-detection
 
-### Gather This Information:
+### Issue 4: Caching Issues
 
-- Build log from Vercel (full text)
-- Output of `npm run build` locally
-- Contents of `package.json`
-- Node version (`node -v`)
-- NPM version (`npm -v`)
+**Symptoms:**
+- Old version still loads
+- Changes don't appear
 
-### Create Support Ticket:
+**Solution:**
+1. Hard refresh: Ctrl+Shift+R (Windows) or Cmd+Shift+R (Mac)
+2. Clear browser cache
+3. Clear Vercel cache and redeploy
+4. Try incognito/private window
 
-Include:
-- Error message
-- Build logs
-- Steps you've tried
-- Local build success confirmation
+## Still Not Working?
 
-## ✅ Success Criteria
+### Last Resort Options:
 
-Your deployment is successful when:
+1. **Delete and recreate Vercel project:**
+   - Export environment variables
+   - Delete project from Vercel
+   - Import again from GitHub
+   - Set environment variables
+   - Deploy
 
-1. ✅ Build completes in Vercel
-2. ✅ No "No Output Directory" error
-3. ✅ Site loads at Vercel URL
-4. ✅ All pages navigate correctly
-5. ✅ Images load
-6. ✅ API calls work
-7. ✅ Styles apply correctly
+2. **Use Vercel CLI:**
+   ```bash
+   npm i -g vercel
+   vercel login
+   vercel --prod
+   ```
+
+3. **Check Vercel Status:**
+   - Visit: https://www.vercel-status.com/
+   - Ensure no ongoing issues
+
+4. **Contact Vercel Support:**
+   - Include deployment URL
+   - Include vercel.json content
+   - Include deployment logs
+
+## Success Indicators
+
+When working correctly:
+
+✅ Direct URL visits load the correct page
+✅ Browser console shows URL parsing logs
+✅ All routes accessible via direct link
+✅ No 404 errors in Network tab
+✅ Service worker registers
+✅ PWA features work
+
+## Test URLs After Fix
+
+After deploying, test all these URLs directly in browser:
+
+```
+https://your-domain.vercel.app/
+https://your-domain.vercel.app/attractions
+https://your-domain.vercel.app/buy-ticket
+https://your-domain.vercel.app/about
+https://your-domain.vercel.app/contact
+https://your-domain.vercel.app/faq
+https://your-domain.vercel.app/route-map
+https://your-domain.vercel.app/pena-palace
+https://your-domain.vercel.app/quinta-regaleira
+```
+
+All should load correctly, not 404.
 
 ---
 
-## 🎯 Most Likely Solutions (In Order)
-
-Try these in this exact order:
-
-1. **Clear Vercel Cache** (Settings → Clear Build Cache)
-2. **Update Build Settings in Dashboard** (Framework: Vite, Output: dist)
-3. **Deploy via Vercel CLI** (`vercel --prod`)
-4. **Force Fresh Deploy** (Empty commit → push)
-5. **Delete & Re-import Project** (Last resort)
-
----
-
-**Still stuck?** Copy your full Vercel build log and share it for more specific help.
+**Last Updated:** November 24, 2025
+**Configuration Version:** 3.0 (Simplified Rewrites)
