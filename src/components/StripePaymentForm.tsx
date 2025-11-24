@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { loadStripe, Stripe, StripeElements } from "@stripe/stripe-js";
 import {
   PaymentElement,
@@ -150,17 +150,24 @@ function CheckoutForm({ amount, onSuccess, onError, customerEmail }: Omit<Stripe
 }
 
 export function StripePaymentForm({ amount, clientSecret, onSuccess, onError, customerEmail }: StripePaymentFormProps) {
-  const [stripePromise, setStripePromise] = useState<Promise<Stripe | null> | null>(null);
+  // Use ref to store stripePromise so it never changes
+  const stripePromiseRef = useRef<Promise<Stripe | null> | null>(null);
   const [isLoadingStripe, setIsLoadingStripe] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Only initialize once
+    if (stripePromiseRef.current) {
+      return;
+    }
+
     const fetchStripeConfig = async () => {
       try {
         // Try to get from window first (cached)
         const cachedKey = (window as any).STRIPE_PUBLISHABLE_KEY;
         
         if (cachedKey) {
-          setStripePromise(loadStripe(cachedKey));
+          stripePromiseRef.current = loadStripe(cachedKey);
           setIsLoadingStripe(false);
           return;
         }
@@ -180,12 +187,13 @@ export function StripePaymentForm({ amount, clientSecret, onSuccess, onError, cu
         if (data.success && data.publishableKey) {
           // Cache in window for subsequent uses
           (window as any).STRIPE_PUBLISHABLE_KEY = data.publishableKey;
-          setStripePromise(loadStripe(data.publishableKey));
+          stripePromiseRef.current = loadStripe(data.publishableKey);
         } else {
           throw new Error(data.error || "Failed to get Stripe configuration");
         }
       } catch (error) {
         console.error("Error loading Stripe:", error);
+        setLoadError("Payment system not configured. Please contact support.");
         onError("Payment system not configured. Please contact support.");
       } finally {
         setIsLoadingStripe(false);
@@ -193,9 +201,19 @@ export function StripePaymentForm({ amount, clientSecret, onSuccess, onError, cu
     };
 
     fetchStripeConfig();
-  }, [onError]);
+  }, []); // Empty deps - only run once
 
-  if (isLoadingStripe || !stripePromise) {
+  if (loadError) {
+    return (
+      <Card className="p-8">
+        <Alert variant="destructive">
+          <AlertDescription>{loadError}</AlertDescription>
+        </Alert>
+      </Card>
+    );
+  }
+
+  if (isLoadingStripe || !stripePromiseRef.current) {
     return (
       <Card className="p-8">
         <div className="flex flex-col items-center justify-center space-y-3">
@@ -223,7 +241,7 @@ export function StripePaymentForm({ amount, clientSecret, onSuccess, onError, cu
   };
 
   return (
-    <Elements stripe={stripePromise} options={options}>
+    <Elements stripe={stripePromiseRef.current} options={options}>
       <CheckoutForm amount={amount} onSuccess={onSuccess} onError={onError} customerEmail={customerEmail} />
     </Elements>
   );

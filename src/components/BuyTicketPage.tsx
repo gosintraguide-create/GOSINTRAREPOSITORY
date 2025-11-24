@@ -1,32 +1,45 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner@2.0.3";
 import { createBooking, createPaymentIntent } from "../lib/api";
-import { projectId, publicAnonKey } from "../utils/supabase/info";
+import {
+  projectId,
+  publicAnonKey,
+} from "../utils/supabase/info";
 import { getTranslation } from "../lib/translations";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "./ui/popover";
 import { Calendar as CalendarComponent } from "./ui/calendar";
 import { Badge } from "./ui/badge";
-import { 
-  Calendar as CalendarIcon, 
-  Users, 
-  MapPin, 
-  Ticket, 
-  User, 
-  Mail, 
-  CreditCard, 
-  Check, 
-  ArrowRight, 
+import {
+  Calendar as CalendarIcon,
+  Users,
+  MapPin,
+  Ticket,
+  User,
+  Mail,
+  CreditCard,
+  Check,
+  ArrowRight,
   ChevronLeft,
   AlertCircle,
   Loader2,
   Car,
   Receipt,
-  RefreshCw
+  RefreshCw,
 } from "lucide-react";
 import { format } from "date-fns";
 import { StripePaymentForm } from "./StripePaymentForm";
@@ -56,13 +69,31 @@ const DEFAULT_PRICING: PricingSettings = {
   basePrice: 25,
   guidedTourSurcharge: 5,
   attractions: {
-    "pena-palace-park": { name: "Pena Palace Park Only", price: 8 },
-    "pena-palace-full": { name: "Pena Palace & Park", price: 14 },
-    "quinta-regaleira": { name: "Quinta da Regaleira", price: 12 },
+    "pena-palace-park": {
+      name: "Pena Palace Park Only",
+      price: 8,
+    },
+    "pena-palace-full": {
+      name: "Pena Palace & Park",
+      price: 14,
+    },
+    "quinta-regaleira": {
+      name: "Quinta da Regaleira",
+      price: 12,
+    },
     "moorish-castle": { name: "Moorish Castle", price: 10 },
-    "monserrate-palace": { name: "Monserrate Palace", price: 10 },
-    "sintra-palace": { name: "Sintra National Palace", price: 10 },
-    "convento-capuchos": { name: "Convento dos Capuchos", price: 8 },
+    "monserrate-palace": {
+      name: "Monserrate Palace",
+      price: 10,
+    },
+    "sintra-palace": {
+      name: "Sintra National Palace",
+      price: 10,
+    },
+    "convento-capuchos": {
+      name: "Convento dos Capuchos",
+      price: 8,
+    },
     "cabo-da-roca": { name: "Cabo da Roca", price: 0 },
     "villa-sassetti": { name: "Villa Sassetti", price: 0 },
   },
@@ -79,32 +110,73 @@ const TIME_SLOTS = [
   { value: "16:00", label: "4:00 PM" },
 ];
 
-export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTicketPageProps) {
+export function BuyTicketPage({
+  onNavigate,
+  onBookingComplete,
+  language,
+}: BuyTicketPageProps) {
   const t = getTranslation(language);
-  
+
   const PICKUP_LOCATIONS = [
-    { value: "sintra-train-station", label: t.buyTicket.pickupLocations.sintraTrainStation },
-    { value: "sintra-town-center", label: t.buyTicket.pickupLocations.sintraTownCenter },
-    { value: "pena-palace", label: t.buyTicket.pickupLocations.penaPalace },
-    { value: "quinta-regaleira", label: t.buyTicket.pickupLocations.quintaRegaleira },
-    { value: "moorish-castle", label: t.buyTicket.pickupLocations.moorishCastle },
-    { value: "monserrate-palace", label: t.buyTicket.pickupLocations.monserratePalace },
-    { value: "sintra-palace", label: t.buyTicket.pickupLocations.sintraPalace },
-    { value: "other", label: t.buyTicket.pickupLocations.other },
+    {
+      value: "sintra-train-station",
+      label: t.buyTicket.pickupLocations.sintraTrainStation,
+    },
+    {
+      value: "sintra-town-center",
+      label: t.buyTicket.pickupLocations.sintraTownCenter,
+    },
+    {
+      value: "pena-palace",
+      label: t.buyTicket.pickupLocations.penaPalace,
+    },
+    {
+      value: "quinta-regaleira",
+      label: t.buyTicket.pickupLocations.quintaRegaleira,
+    },
+    {
+      value: "moorish-castle",
+      label: t.buyTicket.pickupLocations.moorishCastle,
+    },
+    {
+      value: "monserrate-palace",
+      label: t.buyTicket.pickupLocations.monserratePalace,
+    },
+    {
+      value: "sintra-palace",
+      label: t.buyTicket.pickupLocations.sintraPalace,
+    },
+    {
+      value: "other",
+      label: t.buyTicket.pickupLocations.other,
+    },
   ];
   // Feature flag for monument tickets
-  const [monumentTicketsEnabled, setMonumentTicketsEnabled] = useState(false);
+  const [monumentTicketsEnabled, setMonumentTicketsEnabled] =
+    useState(false);
+  
+  // Master toggle for ticket purchases
+  const [ticketPurchasesEnabled, setTicketPurchasesEnabled] = useState(true);
 
   const [currentStep, setCurrentStep] = useState(1);
   const [bookingComplete, setBookingComplete] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [pricing, setPricing] = useState<PricingSettings>(DEFAULT_PRICING);
-  const [availability, setAvailability] = useState<AvailabilitySettings>({});
-  const [loadingAvailability, setLoadingAvailability] = useState(false);
-  const [paymentClientSecret, setPaymentClientSecret] = useState<string | null>(null);
-  const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
-  const [isCreatingPayment, setIsCreatingPayment] = useState(false);
-  const [paymentInitError, setPaymentInitError] = useState<string | null>(null);
+  const [pricing, setPricing] =
+    useState<PricingSettings>(DEFAULT_PRICING);
+  const [availability, setAvailability] =
+    useState<AvailabilitySettings>({});
+  const [loadingAvailability, setLoadingAvailability] =
+    useState(false);
+  const [paymentClientSecret, setPaymentClientSecret] =
+    useState<string | null>(null);
+  const [paymentIntentId, setPaymentIntentId] = useState<
+    string | null
+  >(null);
+  const [isCreatingPayment, setIsCreatingPayment] =
+    useState(false);
+  const [paymentInitError, setPaymentInitError] = useState<
+    string | null
+  >(null);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -123,7 +195,9 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
         const flags = localStorage.getItem("feature-flags");
         if (flags) {
           const parsed = JSON.parse(flags);
-          setMonumentTicketsEnabled(parsed.monumentTicketsEnabled === true);
+          setMonumentTicketsEnabled(
+            parsed.monumentTicketsEnabled === true,
+          );
         }
       } catch (e) {
         console.error("Failed to parse feature flags:", e);
@@ -132,7 +206,8 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
 
     checkFlags();
     window.addEventListener("storage", checkFlags);
-    return () => window.removeEventListener("storage", checkFlags);
+    return () =>
+      window.removeEventListener("storage", checkFlags);
   }, []);
 
   // Load pricing from database and fallback to localStorage
@@ -142,14 +217,14 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
         const response = await fetch(
           `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/pricing`,
           {
-            method: 'GET',
+            method: "GET",
             headers: {
-              'Authorization': `Bearer ${publicAnonKey}`,
-              'Content-Type': 'application/json',
+              Authorization: `Bearer ${publicAnonKey}`,
+              "Content-Type": "application/json",
             },
-          }
+          },
         );
-        
+
         if (response.ok) {
           const data = await response.json();
           if (data.pricing) {
@@ -159,24 +234,34 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
               attractions: {
                 ...DEFAULT_PRICING.attractions,
                 ...data.pricing.attractions,
-              }
+              },
             });
             // Save to localStorage for offline use
-            localStorage.setItem("admin-pricing", JSON.stringify(data.pricing));
-            console.log('✅ Loaded pricing from database');
+            localStorage.setItem(
+              "admin-pricing",
+              JSON.stringify(data.pricing),
+            );
+            console.log("✅ Loaded pricing from database");
             return;
           }
         } else if (response.status === 404) {
-          console.warn('⚠️ Backend not available (404). Using cached pricing.');
-          console.warn('⚠️ Bookings may not work. Check /diagnostics page for backend status.');
+          console.warn(
+            "⚠️ Backend not available (404). Using cached pricing.",
+          );
+          console.warn(
+            "⚠️ Bookings may not work. Check /diagnostics page for backend status.",
+          );
         }
       } catch (error) {
         // Silently handle error - backend may not be available
-        console.warn('⚠️ Backend connection failed. Using cached pricing.');
+        console.warn(
+          "⚠️ Backend connection failed. Using cached pricing.",
+        );
       }
-      
+
       // Fallback to localStorage if database fetch fails
-      const savedPricing = localStorage.getItem("admin-pricing");
+      const savedPricing =
+        localStorage.getItem("admin-pricing");
       if (savedPricing) {
         try {
           const parsed = JSON.parse(savedPricing);
@@ -186,16 +271,42 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
             attractions: {
               ...DEFAULT_PRICING.attractions,
               ...parsed.attractions,
-            }
+            },
           });
-          console.log('ℹ️ Using saved pricing');
+          console.log("ℹ️ Using saved pricing");
         } catch (e) {
-          console.log('ℹ️ Using default pricing');
+          console.log("ℹ️ Using default pricing");
         }
       }
     }
-    
+
     loadPricingFromDB();
+
+    // Load ticket purchases enabled setting
+    async function loadTicketPurchasesSetting() {
+      try {
+        const response = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/settings/ticket-purchases-enabled`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${publicAnonKey}`,
+              "Content-Type": "application/json",
+            },
+          },
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setTicketPurchasesEnabled(data.enabled !== false);
+          console.log("✅ Loaded ticket purchases setting:", data.enabled);
+        }
+      } catch (error) {
+        console.error("Error loading ticket purchases setting:", error);
+        setTicketPurchasesEnabled(true);
+      }
+    }
+    loadTicketPurchasesSetting();
   }, []);
 
   // Load availability from backend when date is selected
@@ -207,49 +318,58 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
 
   // Create payment intent when reaching step 4
   useEffect(() => {
-    if (currentStep === 4 && !paymentClientSecret && !isCreatingPayment) {
+    if (
+      currentStep === 4 &&
+      !paymentClientSecret &&
+      !isCreatingPayment
+    ) {
       createStripePaymentIntent();
     }
   }, [currentStep]);
 
   const loadAvailabilityForDate = async (date: string) => {
     setLoadingAvailability(true);
-    
+
     try {
       const response = await fetch(
         `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/availability/${date}`,
         {
-          method: 'GET',
+          method: "GET",
           headers: {
-            'Authorization': `Bearer ${publicAnonKey}`,
-            'Content-Type': 'application/json',
+            Authorization: `Bearer ${publicAnonKey}`,
+            "Content-Type": "application/json",
           },
-        }
+        },
       );
-      
+
       if (response.ok) {
         const data = await response.json();
         if (data.availability) {
-          setAvailability(prev => ({
+          setAvailability((prev) => ({
             ...prev,
-            [date]: data.availability
+            [date]: data.availability,
           }));
         }
       }
     } catch (error) {
-      console.error('Error loading availability:', error);
+      console.error("Error loading availability:", error);
     }
-    
+
     setLoadingAvailability(false);
   };
 
-  const attractions = Object.entries(pricing.attractions).map(([id, data]) => ({
-    id,
-    name: data.name,
-    price: data.price
-  }));
+  const attractions = Object.entries(pricing.attractions).map(
+    ([id, data]) => ({
+      id,
+      name: data.name,
+      price: data.price,
+    }),
+  );
 
-  const handleInputChange = (field: string, value: string | boolean | number) => {
+  const handleInputChange = (
+    field: string,
+    value: string | boolean | number,
+  ) => {
     setFormData((prev) => {
       // If changing pickup location to "other", clear timeSlot
       if (field === "pickupLocation" && value === "other") {
@@ -259,28 +379,45 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
     });
   };
 
-  const getAvailability = (date: string, timeSlot: string): number => {
+  const getAvailability = (
+    date: string,
+    timeSlot: string,
+  ): number => {
     return availability[date]?.[timeSlot] ?? 50; // Default 50 seats
   };
 
   const guidedTourTimes = ["10:00", "14:00"];
-  const isGuidedTourTime = guidedTourTimes.includes(formData.timeSlot);
+  const isGuidedTourTime = guidedTourTimes.includes(
+    formData.timeSlot,
+  );
   const basePrice = pricing.basePrice;
   const guidedTourSurcharge = pricing.guidedTourSurcharge;
   const passTotal = basePrice * formData.quantity;
-  const guidedTourTotal = isGuidedTourTime ? guidedTourSurcharge * formData.quantity : 0;
-  const attractionsTotal = formData.selectedAttractions.reduce((total, id) => {
-    const attraction = attractions.find(a => a.id === id);
-    return total + ((attraction?.price || 0) * formData.quantity);
-  }, 0);
-  const totalPrice = passTotal + guidedTourTotal + attractionsTotal;
+  const guidedTourTotal = isGuidedTourTime
+    ? guidedTourSurcharge * formData.quantity
+    : 0;
+  const attractionsTotal = formData.selectedAttractions.reduce(
+    (total, id) => {
+      const attraction = attractions.find((a) => a.id === id);
+      return (
+        total + (attraction?.price || 0) * formData.quantity
+      );
+    },
+    0,
+  );
+  const totalPrice =
+    passTotal + guidedTourTotal + attractionsTotal;
 
   const toggleAttraction = (attractionId: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      selectedAttractions: prev.selectedAttractions.includes(attractionId)
-        ? prev.selectedAttractions.filter(id => id !== attractionId)
-        : [...prev.selectedAttractions, attractionId]
+      selectedAttractions: prev.selectedAttractions.includes(
+        attractionId,
+      )
+        ? prev.selectedAttractions.filter(
+            (id) => id !== attractionId,
+          )
+        : [...prev.selectedAttractions, attractionId],
     }));
   };
 
@@ -301,13 +438,20 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
         setPaymentIntentId(response.data.paymentIntentId);
         setPaymentInitError(null);
       } else {
-        throw new Error(response.error || "Failed to create payment intent");
+        throw new Error(
+          response.error || "Failed to create payment intent",
+        );
       }
     } catch (error) {
       console.error("Error creating payment intent:", error);
-      const errorMsg = error instanceof Error ? error.message : "Failed to initialize payment";
+      const errorMsg =
+        error instanceof Error
+          ? error.message
+          : "Failed to initialize payment";
       setPaymentInitError(errorMsg);
-      toast.error("Failed to initialize payment. Please try again.");
+      toast.error(
+        "Failed to initialize payment. Please try again.",
+      );
     } finally {
       setIsCreatingPayment(false);
     }
@@ -316,27 +460,35 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
   const handleNext = () => {
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
-  const handlePaymentSuccess = async (confirmedPaymentIntentId: string) => {
-    console.log(`🎉 Payment succeeded! Payment Intent ID: ${confirmedPaymentIntentId}`);
+  const handlePaymentSuccess = async (
+    confirmedPaymentIntentId: string,
+  ) => {
+    console.log(
+      `🎉 Payment succeeded! Payment Intent ID: ${confirmedPaymentIntentId}`,
+    );
     setIsSubmitting(true);
-    
+
     try {
       // Create booking data
-      const passengers = Array.from({ length: formData.quantity }, (_, i) => ({
-        name: i === 0 ? formData.fullName : `Passenger ${i + 1}`,
-        type: "Adult",
-      }));
+      const passengers = Array.from(
+        { length: formData.quantity },
+        (_, i) => ({
+          name:
+            i === 0 ? formData.fullName : `Passenger ${i + 1}`,
+          type: "Adult",
+        }),
+      );
 
       const bookingData = {
         contactInfo: {
@@ -348,54 +500,75 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
         timeSlot: formData.timeSlot,
         pickupLocation: formData.pickupLocation,
         passengers,
-        guidedTour: isGuidedTourTime ? {
-          type: "Small Group",
-          price: guidedTourTotal,
-        } : null,
-        selectedAttractions: formData.selectedAttractions.map(id => {
-          const attraction = attractions.find(a => a.id === id);
-          return {
-            id,
-            name: attraction?.name || id,
-            tickets: formData.quantity,
-            price: (attraction?.price || 0) * formData.quantity,
-          };
-        }),
+        guidedTour: isGuidedTourTime
+          ? {
+              type: "Small Group",
+              price: guidedTourTotal,
+            }
+          : null,
+        selectedAttractions: formData.selectedAttractions.map(
+          (id) => {
+            const attraction = attractions.find(
+              (a) => a.id === id,
+            );
+            return {
+              id,
+              name: attraction?.name || id,
+              tickets: formData.quantity,
+              price:
+                (attraction?.price || 0) * formData.quantity,
+            };
+          },
+        ),
         totalPrice,
         paymentIntentId: confirmedPaymentIntentId,
       };
 
-      console.log(`📤 Attempting to create booking with payment intent: ${confirmedPaymentIntentId}`);
-      
+      console.log(
+        `📤 Attempting to create booking with payment intent: ${confirmedPaymentIntentId}`,
+      );
+
       // Create booking via API with retry logic
       let response;
       let lastError;
       const maxRetries = 3;
-      
+
       for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
-          console.log(`🔄 Booking creation attempt ${attempt}/${maxRetries}`);
+          console.log(
+            `🔄 Booking creation attempt ${attempt}/${maxRetries}`,
+          );
           response = await createBooking(bookingData);
-          
+
           // If we get a response, break the retry loop
           if (response) break;
         } catch (retryError) {
           lastError = retryError;
-          console.error(`❌ Booking attempt ${attempt} failed:`, retryError);
-          
+          console.error(
+            `❌ Booking attempt ${attempt} failed:`,
+            retryError,
+          );
+
           // Only retry if it's a network error and we haven't hit max retries
           if (attempt < maxRetries) {
             console.log(`⏳ Waiting 1 second before retry...`);
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise((resolve) =>
+              setTimeout(resolve, 1000),
+            );
           }
         }
       }
-      
+
       // If no response after retries, throw the last error
       if (!response) {
-        throw lastError || new Error('Failed to create booking after multiple attempts');
+        throw (
+          lastError ||
+          new Error(
+            "Failed to create booking after multiple attempts",
+          )
+        );
       }
-      
+
       console.log("📥 Full booking response:", response);
       console.log("📥 Response structure check:", {
         hasSuccess: !!response.success,
@@ -404,71 +577,125 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
         hasBooking: !!response.data?.booking,
         bookingId: response.data?.booking?.id,
       });
-      
+
       // Check both outer and inner success flags
-      if (response.success && response.data?.success && response.data?.booking) {
+      if (
+        response.success &&
+        response.data?.success &&
+        response.data?.booking
+      ) {
         // Show success toast immediately
         if (response.data.emailSent) {
-          toast.success("Booking confirmed! Check your email for QR codes.");
+          toast.success(
+            "Booking confirmed! Check your email for QR codes.",
+          );
         } else {
-          toast.success("Booking confirmed! QR codes are ready.");
-          
+          toast.success(
+            "Booking confirmed! QR codes are ready.",
+          );
+
           // Check for specific email error details
           const emailError = response.data.emailError;
-          
+
           if (emailError) {
             console.error("Email sending failed:", emailError);
-            
+
             // Check if domain verification is needed
-            if (emailError.includes("Domain verification required") || emailError.includes("verify") || emailError.includes("only send testing emails")) {
-              toast.warning("⚠️ Email system requires domain verification. QR codes are available on this page.", {
-                duration: 7000,
-              });
-            } else if (emailError.includes("No email address")) {
-              toast.warning("⚠️ No email address provided. Save your QR codes from this page.", {
-                duration: 6000,
-              });
+            if (
+              emailError.includes(
+                "Domain verification required",
+              ) ||
+              emailError.includes("verify") ||
+              emailError.includes("only send testing emails")
+            ) {
+              toast.warning(
+                "⚠️ Email system requires domain verification. QR codes are available on this page.",
+                {
+                  duration: 7000,
+                },
+              );
+            } else if (
+              emailError.includes("No email address")
+            ) {
+              toast.warning(
+                "⚠️ No email address provided. Save your QR codes from this page.",
+                {
+                  duration: 6000,
+                },
+              );
             } else {
               // Show generic email error with details
-              toast.warning(`⚠️ Email couldn't be sent: ${emailError}. Save your QR codes from this page.`, {
-                duration: 7000,
-              });
+              toast.warning(
+                `⚠️ Email couldn't be sent: ${emailError}. Save your QR codes from this page.`,
+                {
+                  duration: 7000,
+                },
+              );
             }
           } else {
             // Email error without details
-            toast.warning("Email couldn't be sent. Save your QR codes from this page.", {
-              duration: 6000,
-            });
+            toast.warning(
+              "Email couldn't be sent. Save your QR codes from this page.",
+              {
+                duration: 6000,
+              },
+            );
           }
         }
-        
+
         // Small delay to ensure toast is visible before navigation
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
+        await new Promise((resolve) =>
+          setTimeout(resolve, 500),
+        );
+
         // Navigate to confirmation page with booking data
-        console.log("🔄 Navigating to confirmation page with booking:", response.data.booking.id);
+        console.log(
+          "🔄 Navigating to confirmation page with booking:",
+          response.data.booking.id,
+        );
         onBookingComplete(response.data.booking);
       } else {
         // Check if inner response has error
-        const errorMsg = response.data?.error || response.error || "Failed to create booking";
+        const errorMsg =
+          response.data?.error ||
+          response.error ||
+          "Failed to create booking";
         console.error("❌ Booking creation failed:", errorMsg);
         throw new Error(errorMsg);
       }
     } catch (error) {
       console.error("❌ Booking error:", error);
-      const errorMessage = error instanceof Error ? error.message : "Failed to complete booking. Please try again.";
-      
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to complete booking. Please try again.";
+
       // Special handling for 404 errors
-      if (errorMessage.includes('404') || errorMessage.includes('not found') || errorMessage.includes('endpoint')) {
-        toast.error("Server connection issue. Your payment was processed. Please contact support with your payment confirmation.", {
-          duration: 10000,
-        });
-        console.error("⚠️ CRITICAL: Payment succeeded but booking creation failed with 404");
-        console.error("⚠️ Payment Intent ID:", confirmedPaymentIntentId);
+      if (
+        errorMessage.includes("404") ||
+        errorMessage.includes("not found") ||
+        errorMessage.includes("endpoint")
+      ) {
+        toast.error(
+          "Server connection issue. Your payment was processed. Please contact support with your payment confirmation.",
+          {
+            duration: 10000,
+          },
+        );
+        console.error(
+          "⚠️ CRITICAL: Payment succeeded but booking creation failed with 404",
+        );
+        console.error(
+          "⚠️ Payment Intent ID:",
+          confirmedPaymentIntentId,
+        );
         console.error("⚠️ Customer Email:", formData.email);
       }
       // Check if it's an availability error
-      else if (errorMessage.includes("Not enough seats") || errorMessage.includes("available")) {
+      else if (
+        errorMessage.includes("Not enough seats") ||
+        errorMessage.includes("available")
+      ) {
         toast.error(errorMessage);
         // Refresh availability for selected date
         if (formData.date) {
@@ -487,47 +714,71 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
     setIsSubmitting(false);
   };
 
-  const canProceedStep1 = formData.date && formData.pickupLocation && formData.quantity >= 1 && (formData.pickupLocation === "other" || formData.timeSlot);
-  const canProceedStep3 = formData.fullName && formData.email && formData.confirmEmail && formData.email === formData.confirmEmail;
+  const canProceedStep1 =
+    formData.date &&
+    formData.pickupLocation &&
+    formData.quantity >= 1 &&
+    (formData.pickupLocation === "other" || formData.timeSlot) &&
+    ticketPurchasesEnabled;
+  const canProceedStep3 =
+    formData.fullName &&
+    formData.email &&
+    formData.confirmEmail &&
+    formData.email === formData.confirmEmail;
 
   return (
-    <div className="flex-1 bg-secondary/30">{/* Hero Section */}
+    <div className="flex-1 bg-secondary/30">
+      {/* Hero Section */}
       <section className="relative overflow-hidden border-b border-border bg-gradient-to-br from-primary/5 via-white to-accent/5 py-12 sm:py-16">
         <div className="absolute -top-24 right-0 h-96 w-96 rounded-full bg-gradient-to-br from-accent/10 to-primary/10 blur-3xl" />
         <div className="absolute -bottom-24 left-0 h-96 w-96 rounded-full bg-gradient-to-tr from-primary/10 to-accent/10 blur-3xl" />
-        
+
         <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
           <h1 className="mb-3 bg-gradient-to-r from-primary via-primary/90 to-accent bg-clip-text text-foreground">
             {t.buyTicket.hero.title}
           </h1>
           <div className="mx-auto mb-6 h-1 w-20 rounded-full bg-accent" />
-          
+
           {/* Progress Steps */}
           <div className="mx-auto mt-8 flex max-w-2xl items-center justify-center gap-2">
             {[1, 2, 3, 4].map((step) => (
               <div key={step} className="flex items-center">
-                <div className={`flex h-10 w-10 items-center justify-center rounded-full transition-all ${
-                  currentStep >= step 
-                    ? 'bg-primary text-white' 
-                    : 'bg-white text-muted-foreground border-2 border-border'
-                }`}>
-                  {currentStep > step ? <Check className="h-5 w-5" /> : step}
+                <div
+                  className={`flex h-10 w-10 items-center justify-center rounded-full transition-all ${
+                    currentStep >= step
+                      ? "bg-primary text-white"
+                      : "bg-white text-muted-foreground border-2 border-border"
+                  }`}
+                >
+                  {currentStep > step ? (
+                    <Check className="h-5 w-5" />
+                  ) : (
+                    step
+                  )}
                 </div>
                 {step < 4 && (
-                  <div className={`h-1 w-8 sm:w-16 transition-all ${
-                    currentStep > step ? 'bg-primary' : 'bg-border'
-                  }`} />
+                  <div
+                    className={`h-1 w-8 sm:w-16 transition-all ${
+                      currentStep > step
+                        ? "bg-primary"
+                        : "bg-border"
+                    }`}
+                  />
                 )}
               </div>
             ))}
           </div>
-          
+
           <div className="mt-4">
             <p className="text-muted-foreground">
-              {currentStep === 1 && t.buyTicket.steps.step1Description}
-              {currentStep === 2 && t.buyTicket.steps.step2Description}
-              {currentStep === 3 && t.buyTicket.steps.step3Description}
-              {currentStep === 4 && t.buyTicket.steps.step4Description}
+              {currentStep === 1 &&
+                t.buyTicket.steps.step1Description}
+              {currentStep === 2 &&
+                t.buyTicket.steps.step2Description}
+              {currentStep === 3 &&
+                t.buyTicket.steps.step3Description}
+              {currentStep === 4 &&
+                t.buyTicket.steps.step4Description}
             </p>
           </div>
         </div>
@@ -545,40 +796,89 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                       <CalendarIcon className="h-5 w-5 text-primary" />
                     </div>
-                    <h2 className="text-foreground">{t.buyTicket.dateSelection.planYourVisit}</h2>
+                    <h2 className="text-foreground">
+                      {t.buyTicket.dateSelection.planYourVisit}
+                    </h2>
                   </div>
                   <div className="h-1 w-16 rounded-full bg-accent" />
                   <p className="mt-4 text-muted-foreground whitespace-pre-line">
-                    {t.buyTicket.dateSelection.planYourVisitDescription}
+                    {
+                      t.buyTicket.dateSelection
+                        .planYourVisitDescription
+                    }
                   </p>
                 </div>
 
                 <div className="space-y-6">
+                  {/* Sold Out Warning when ticket purchases disabled */}
+                  {!ticketPurchasesEnabled && (
+                    <div className="rounded-lg border-2 border-red-200 bg-red-50 p-4">
+                      <div className="flex items-start gap-3">
+                        <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-medium text-red-900">
+                            Temporarily Unavailable
+                          </p>
+                          <p className="text-sm text-red-700 mt-1">
+                            All dates are currently sold out. Please check back later or contact us for availability.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="grid gap-6 sm:grid-cols-2">
                     <div>
-                      <Label htmlFor="date" className="text-foreground">{t.buyTicket.dateSelection.selectDate}</Label>
+                      <Label
+                        htmlFor="date"
+                        className="text-foreground"
+                      >
+                        {t.buyTicket.dateSelection.selectDate}
+                      </Label>
                       <Popover>
                         <PopoverTrigger asChild>
                           <Button
                             variant="outline"
                             className={`mt-2 w-full justify-start text-left border-border ${
-                              !formData.date && "text-muted-foreground"
+                              !formData.date &&
+                              "text-muted-foreground"
                             }`}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
-                            {formData.date ? format(new Date(formData.date), "PPP") : t.buyTicket.dateSelection.pickDate}
+                            {formData.date
+                              ? format(
+                                  new Date(formData.date),
+                                  "PPP",
+                                )
+                              : t.buyTicket.dateSelection
+                                  .pickDate}
                           </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
+                        <PopoverContent
+                          className="w-auto p-0"
+                          align="start"
+                        >
                           <CalendarComponent
                             mode="single"
-                            selected={formData.date ? new Date(formData.date) : undefined}
+                            selected={
+                              formData.date
+                                ? new Date(formData.date)
+                                : undefined
+                            }
                             onSelect={(date) => {
                               if (date) {
-                                handleInputChange("date", format(date, "yyyy-MM-dd"));
+                                handleInputChange(
+                                  "date",
+                                  format(date, "yyyy-MM-dd"),
+                                );
                               }
                             }}
-                            disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                            disabled={(date) =>
+                              date <
+                              new Date(
+                                new Date().setHours(0, 0, 0, 0),
+                              ) || !ticketPurchasesEnabled
+                            }
                             initialFocus
                           />
                         </PopoverContent>
@@ -586,11 +886,22 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                     </div>
 
                     <div>
-                      <Label htmlFor="timeSlot" className="text-foreground">{t.buyTicket.dateSelection.preferredStartTime}</Label>
+                      <Label
+                        htmlFor="timeSlot"
+                        className="text-foreground"
+                      >
+                        {
+                          t.buyTicket.dateSelection
+                            .preferredStartTime
+                        }
+                      </Label>
                       {loadingAvailability && (
                         <p className="mt-1 text-xs text-muted-foreground flex items-center gap-1">
                           <Loader2 className="h-3 w-3 animate-spin" />
-                          {t.buyTicket.dateSelection.checkingAvailability}
+                          {
+                            t.buyTicket.dateSelection
+                              .checkingAvailability
+                          }
                         </p>
                       )}
                       {formData.pickupLocation !== "other" && (
@@ -598,39 +909,76 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                           <Select
                             value={formData.timeSlot}
                             onValueChange={(value) => {
-                              handleInputChange("timeSlot", value);
+                              handleInputChange(
+                                "timeSlot",
+                                value,
+                              );
                             }}
-                            disabled={!formData.date || loadingAvailability}
+                            disabled={
+                              !formData.date ||
+                              loadingAvailability
+                            }
                           >
                             <SelectTrigger className="mt-2 border-border">
-                              <SelectValue placeholder={t.buyTicket.dateSelection.selectTime} />
+                              <SelectValue
+                                placeholder={
+                                  t.buyTicket.dateSelection
+                                    .selectTime
+                                }
+                              />
                             </SelectTrigger>
                             <SelectContent>
                               {TIME_SLOTS.map((slot) => {
-                                const seats = formData.date ? getAvailability(formData.date, slot.value) : 50;
-                                const isLowAvailability = seats < 10 && seats > 0;
+                                const seats = formData.date
+                                  ? getAvailability(
+                                      formData.date,
+                                      slot.value,
+                                    )
+                                  : 50;
+                                const isLowAvailability =
+                                  seats < 10 && seats > 0;
                                 const isSoldOut = seats === 0;
-                                
+
                                 return (
-                                  <SelectItem 
-                                    key={slot.value} 
+                                  <SelectItem
+                                    key={slot.value}
                                     value={slot.value}
                                     disabled={isSoldOut}
                                   >
                                     <div className="flex items-center gap-2 w-full">
                                       <span>{slot.label}</span>
                                       {formData.date && (
-                                        <span className={`text-xs ${
-                                          isSoldOut ? 'text-destructive' : 
-                                          isLowAvailability ? 'text-accent' : 
-                                          'text-muted-foreground'
-                                        }`}>
-                                          {isSoldOut ? t.buyTicket.dateSelection.soldOut : isLowAvailability ? t.buyTicket.dateSelection.limited : t.buyTicket.dateSelection.available}
+                                        <span
+                                          className={`text-xs ${
+                                            isSoldOut
+                                              ? "text-destructive"
+                                              : isLowAvailability
+                                                ? "text-accent"
+                                                : "text-muted-foreground"
+                                          }`}
+                                        >
+                                          {isSoldOut
+                                            ? t.buyTicket
+                                                .dateSelection
+                                                .soldOut
+                                            : isLowAvailability
+                                              ? t.buyTicket
+                                                  .dateSelection
+                                                  .limited
+                                              : t.buyTicket
+                                                  .dateSelection
+                                                  .available}
                                         </span>
                                       )}
                                       {slot.isGuided && (
                                         <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full font-medium">
-                                          {t.buyTicket.timeSlots.guidedTourLabel} +€{guidedTourSurcharge}
+                                          {
+                                            t.buyTicket
+                                              .timeSlots
+                                              .guidedTourLabel
+                                          }{" "}
+                                          +€
+                                          {guidedTourSurcharge}
                                         </span>
                                       )}
                                     </div>
@@ -639,66 +987,135 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                               })}
                             </SelectContent>
                           </Select>
-                          <p className="mt-1 text-muted-foreground">{t.buyTicket.dateSelection.passValidFullDay}</p>
-                          {formData.date && formData.timeSlot && (
-                            <p className={`mt-1 ${
-                              getAvailability(formData.date, formData.timeSlot) === 0 ? 'text-destructive' :
-                              getAvailability(formData.date, formData.timeSlot) < 10 ? 'text-accent' :
-                              'text-primary'
-                            }`}>
-                              {getAvailability(formData.date, formData.timeSlot) === 0 ? t.buyTicket.dateSelection.soldOutForTime :
-                               getAvailability(formData.date, formData.timeSlot) < 10 ? t.buyTicket.dateSelection.limitedAvailability :
-                               t.buyTicket.dateSelection.goodAvailability}
-                            </p>
-                          )}
+                          <p className="mt-1 text-muted-foreground">
+                            {
+                              t.buyTicket.dateSelection
+                                .passValidFullDay
+                            }
+                          </p>
+                          {formData.date &&
+                            formData.timeSlot && (
+                              <p
+                                className={`mt-1 ${
+                                  getAvailability(
+                                    formData.date,
+                                    formData.timeSlot,
+                                  ) === 0
+                                    ? "text-destructive"
+                                    : getAvailability(
+                                          formData.date,
+                                          formData.timeSlot,
+                                        ) < 10
+                                      ? "text-accent"
+                                      : "text-primary"
+                                }`}
+                              >
+                                {getAvailability(
+                                  formData.date,
+                                  formData.timeSlot,
+                                ) === 0
+                                  ? t.buyTicket.dateSelection
+                                      .soldOutForTime
+                                  : getAvailability(
+                                        formData.date,
+                                        formData.timeSlot,
+                                      ) < 10
+                                    ? t.buyTicket.dateSelection
+                                        .limitedAvailability
+                                    : t.buyTicket.dateSelection
+                                        .goodAvailability}
+                              </p>
+                            )}
                         </>
                       )}
                       {formData.pickupLocation === "other" && (
                         <p className="mt-2 text-sm text-muted-foreground italic">
-                          No specific time needed - hop on at any time during operating hours (9 AM - 7 PM)
+                          No specific time needed - hop on at
+                          any time during operating hours (9 AM
+                          - 7 PM)
                         </p>
                       )}
                     </div>
                   </div>
 
                   <div>
-                    <Label htmlFor="pickupLocation" className="text-foreground">{t.buyTicket.dateSelection.preferredPickupSpot}</Label>
-                    
+                    <Label
+                      htmlFor="pickupLocation"
+                      className="text-foreground"
+                    >
+                      {
+                        t.buyTicket.dateSelection
+                          .preferredPickupSpot
+                      }
+                    </Label>
+
                     {/* Interactive Map */}
                     <div className="mt-4 mb-4">
-                      <PickupLocationMap 
-                        selectedLocation={formData.pickupLocation}
-                        onLocationSelect={(location) => handleInputChange("pickupLocation", location)}
+                      <PickupLocationMap
+                        selectedLocation={
+                          formData.pickupLocation
+                        }
+                        onLocationSelect={(location) =>
+                          handleInputChange(
+                            "pickupLocation",
+                            location,
+                          )
+                        }
                       />
                     </div>
-                    
+
                     <Select
                       value={formData.pickupLocation}
-                      onValueChange={(value) => handleInputChange("pickupLocation", value)}
+                      onValueChange={(value) =>
+                        handleInputChange(
+                          "pickupLocation",
+                          value,
+                        )
+                      }
                     >
                       <SelectTrigger className="mt-2 border-border">
-                        <SelectValue placeholder={t.buyTicket.dateSelection.pickupPlaceholder} />
+                        <SelectValue
+                          placeholder={
+                            t.buyTicket.dateSelection
+                              .pickupPlaceholder
+                          }
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         {PICKUP_LOCATIONS.map((location) => (
-                          <SelectItem key={location.value} value={location.value}>
+                          <SelectItem
+                            key={location.value}
+                            value={location.value}
+                          >
                             {location.label}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                    <p className="mt-1 text-muted-foreground">{t.buyTicket.dateSelection.pickupHelpText}</p>
+                    <p className="mt-1 text-muted-foreground">
+                      {t.buyTicket.dateSelection.pickupHelpText}
+                    </p>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="quantity" className="text-foreground">{t.buyTicket.dateSelection.numberOfGuests}</Label>
+                    <Label
+                      htmlFor="quantity"
+                      className="text-foreground"
+                    >
+                      {t.buyTicket.dateSelection.numberOfGuests}
+                    </Label>
                     <div className="flex items-center gap-3">
                       <Button
                         type="button"
                         variant="outline"
                         size="sm"
                         className="h-12 w-12 border-border"
-                        onClick={() => handleInputChange("quantity", Math.max(1, formData.quantity - 1))}
+                        onClick={() =>
+                          handleInputChange(
+                            "quantity",
+                            Math.max(1, formData.quantity - 1),
+                          )
+                        }
                       >
                         -
                       </Button>
@@ -708,7 +1125,15 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                         min="1"
                         max="50"
                         value={formData.quantity}
-                        onChange={(e) => handleInputChange("quantity", Math.max(1, parseInt(e.target.value) || 1))}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "quantity",
+                            Math.max(
+                              1,
+                              parseInt(e.target.value) || 1,
+                            ),
+                          )
+                        }
                         className="border-border text-center"
                       />
                       <Button
@@ -716,7 +1141,12 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                         variant="outline"
                         size="sm"
                         className="h-12 w-12 border-border"
-                        onClick={() => handleInputChange("quantity", Math.min(50, formData.quantity + 1))}
+                        onClick={() =>
+                          handleInputChange(
+                            "quantity",
+                            Math.min(50, formData.quantity + 1),
+                          )
+                        }
                       >
                         +
                       </Button>
@@ -726,7 +1156,11 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                         <div className="flex items-start gap-2 text-muted-foreground">
                           <Car className="h-4 w-4 mt-0.5 flex-shrink-0 text-primary" />
                           <p>
-                            {t.buyTicket.dateSelection.vehicleDispatchSmall} {formData.quantity}
+                            {
+                              t.buyTicket.dateSelection
+                                .vehicleDispatchSmall
+                            }{" "}
+                            {formData.quantity}
                           </p>
                         </div>
                       </div>
@@ -735,7 +1169,21 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                         <div className="flex items-start gap-2 text-muted-foreground">
                           <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0 text-accent" />
                           <p>
-                            {t.buyTicket.dateSelection.vehicleDispatchLarge} <strong className="text-foreground">{Math.ceil(formData.quantity / 6)} {t.buyTicket.dateSelection.vehicles}</strong> {t.buyTicket.dateSelection.coordinatedToArrive}
+                            {
+                              t.buyTicket.dateSelection
+                                .vehicleDispatchLarge
+                            }{" "}
+                            <strong className="text-foreground">
+                              {Math.ceil(formData.quantity / 6)}{" "}
+                              {
+                                t.buyTicket.dateSelection
+                                  .vehicles
+                              }
+                            </strong>{" "}
+                            {
+                              t.buyTicket.dateSelection
+                                .coordinatedToArrive
+                            }
                           </p>
                         </div>
                       </div>
@@ -749,10 +1197,16 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                         <Check className="h-5 w-5 mt-0.5 flex-shrink-0 text-primary" />
                         <div className="flex-1">
                           <p className="text-foreground">
-                            {t.buyTicket.dateSelection.guidedCommentaryIncluded}
+                            {
+                              t.buyTicket.dateSelection
+                                .guidedCommentaryIncluded
+                            }
                           </p>
                           <p className="mt-1 text-muted-foreground">
-                            {t.buyTicket.dateSelection.guidedCommentaryDescription}
+                            {
+                              t.buyTicket.dateSelection
+                                .guidedCommentaryDescription
+                            }
                           </p>
                         </div>
                       </div>
@@ -763,11 +1217,27 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                   <div className="rounded-lg bg-secondary/50 p-6">
                     <div className="flex justify-between items-center">
                       <div>
-                        <p className="text-muted-foreground">{t.buyTicket.dateSelection.dayPassPriceSummary}{isGuidedTourTime ? ` ${t.buyTicket.dateSelection.dayPassWithGuided}` : ''}</p>
+                        <p className="text-muted-foreground">
+                          {
+                            t.buyTicket.dateSelection
+                              .dayPassPriceSummary
+                          }
+                          {isGuidedTourTime
+                            ? ` ${t.buyTicket.dateSelection.dayPassWithGuided}`
+                            : ""}
+                        </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-2xl text-primary">€{passTotal + guidedTourTotal}</p>
-                        <p className="text-muted-foreground">{t.buyTicket.dateSelection.forGuests} {formData.quantity} {formData.quantity === 1 ? t.buyTicket.dateSelection.guest : t.buyTicket.dateSelection.guests}</p>
+                        <p className="text-2xl text-primary">
+                          €{passTotal + guidedTourTotal}
+                        </p>
+                        <p className="text-muted-foreground">
+                          {t.buyTicket.dateSelection.forGuests}{" "}
+                          {formData.quantity}{" "}
+                          {formData.quantity === 1
+                            ? t.buyTicket.dateSelection.guest
+                            : t.buyTicket.dateSelection.guests}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -796,16 +1266,24 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                       <Ticket className="h-5 w-5 text-primary" />
                     </div>
-                    <h2 className="text-foreground">Add Attraction Tickets?</h2>
+                    <h2 className="text-foreground">
+                      Add Attraction Tickets?
+                    </h2>
                   </div>
                   <div className="h-1 w-16 rounded-full bg-accent" />
                   {monumentTicketsEnabled ? (
                     <p className="mt-4 text-muted-foreground">
-                      Skip the ticket lines! Add entrance tickets to popular attractions. {formData.quantity > 1 ? `Prices shown for ${formData.quantity} guests.` : ''}
+                      Skip the ticket lines! Add entrance
+                      tickets to popular attractions.{" "}
+                      {formData.quantity > 1
+                        ? `Prices shown for ${formData.quantity} guests.`
+                        : ""}
                     </p>
                   ) : (
                     <p className="mt-4 text-muted-foreground">
-                      Attraction tickets are not yet available for online purchase. You can buy tickets at each attraction entrance.
+                      Attraction tickets are not yet available
+                      for online purchase. You can buy tickets
+                      at each attraction entrance.
                     </p>
                   )}
                 </div>
@@ -817,37 +1295,60 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                         <div
                           key={attraction.id}
                           className={`flex items-center gap-3 rounded-lg border-2 p-5 transition-all cursor-pointer ${
-                            formData.selectedAttractions.includes(attraction.id)
-                              ? 'border-primary bg-primary/5'
-                              : 'border-border bg-white hover:border-primary/30'
+                            formData.selectedAttractions.includes(
+                              attraction.id,
+                            )
+                              ? "border-primary bg-primary/5"
+                              : "border-border bg-white hover:border-primary/30"
                           }`}
-                          onClick={() => toggleAttraction(attraction.id)}
+                          onClick={() =>
+                            toggleAttraction(attraction.id)
+                          }
                         >
                           <input
                             type="checkbox"
                             id={attraction.id}
-                            checked={formData.selectedAttractions.includes(attraction.id)}
-                            onChange={() => toggleAttraction(attraction.id)}
+                            checked={formData.selectedAttractions.includes(
+                              attraction.id,
+                            )}
+                            onChange={() =>
+                              toggleAttraction(attraction.id)
+                            }
                             className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
                           />
                           <label
                             htmlFor={attraction.id}
                             className="flex flex-1 cursor-pointer items-center justify-between"
                           >
-                            <span className="text-foreground">{attraction.name}</span>
+                            <span className="text-foreground">
+                              {attraction.name}
+                            </span>
                             <span className="text-primary">
-                              +€{attraction.price * formData.quantity}
-                              {formData.quantity > 1 && <span className="ml-1 text-muted-foreground">(€{attraction.price} each)</span>}
+                              +€
+                              {attraction.price *
+                                formData.quantity}
+                              {formData.quantity > 1 && (
+                                <span className="ml-1 text-muted-foreground">
+                                  (€{attraction.price} each)
+                                </span>
+                              )}
                             </span>
                           </label>
                         </div>
                       ))}
                     </div>
 
-                    {formData.selectedAttractions.length > 0 && (
+                    {formData.selectedAttractions.length >
+                      0 && (
                       <div className="mt-6 rounded-lg bg-accent/5 p-4">
                         <p className="text-muted-foreground">
-                          💡 <strong>Tip:</strong> You'll receive digital tickets via email along with your {formData.quantity === 1 ? 'day pass QR code' : `${formData.quantity} day pass QR codes`}.
+                          💡 <strong>Tip:</strong> You'll
+                          receive digital tickets via email
+                          along with your{" "}
+                          {formData.quantity === 1
+                            ? "day pass QR code"
+                            : `${formData.quantity} day pass QR codes`}
+                          .
                         </p>
                       </div>
                     )}
@@ -856,8 +1357,15 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                     <div className="mt-6 rounded-lg bg-secondary/50 p-6">
                       <div className="space-y-2">
                         <div className="flex justify-between text-muted-foreground">
-                          <span>Day Pass{isGuidedTourTime ? ' (includes guided commentary)' : ''}</span>
-                          <span>€{passTotal + guidedTourTotal}</span>
+                          <span>
+                            Day Pass
+                            {isGuidedTourTime
+                              ? " (includes guided commentary)"
+                              : ""}
+                          </span>
+                          <span>
+                            €{passTotal + guidedTourTotal}
+                          </span>
                         </div>
                         {attractionsTotal > 0 && (
                           <div className="flex justify-between text-muted-foreground">
@@ -866,8 +1374,12 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                           </div>
                         )}
                         <div className="border-t border-border pt-2 flex justify-between items-center">
-                          <p className="text-foreground">Total</p>
-                          <p className="text-2xl text-primary">€{totalPrice}</p>
+                          <p className="text-foreground">
+                            Total
+                          </p>
+                          <p className="text-2xl text-primary">
+                            €{totalPrice}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -876,15 +1388,24 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                   <>
                     {/* Coming Soon Message */}
                     <div className="rounded-lg border bg-secondary/30 p-8 text-center">
-                      <Badge variant="outline" className="mb-4 text-muted-foreground">
+                      <Badge
+                        variant="outline"
+                        className="mb-4 text-muted-foreground"
+                      >
                         Online Booking Coming Soon
                       </Badge>
                       <p className="mb-6 text-muted-foreground">
-                        We're working on adding the ability to purchase attraction tickets online. For now, tickets can be purchased at each attraction entrance.
+                        We're working on adding the ability to
+                        purchase attraction tickets online. For
+                        now, tickets can be purchased at each
+                        attraction entrance.
                       </p>
                       <div className="rounded-lg bg-primary/5 p-4">
                         <p className="text-sm text-muted-foreground">
-                          💡 Your Hop On Sintra day pass gets you unlimited transport to all attractions. Tickets are available for purchase when you arrive!
+                          💡 Your Hop On Sintra day pass gets
+                          you unlimited transport to all
+                          attractions. Tickets are available for
+                          purchase when you arrive!
                         </p>
                       </div>
                     </div>
@@ -893,12 +1414,23 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                     <div className="mt-6 rounded-lg bg-secondary/50 p-6">
                       <div className="space-y-2">
                         <div className="flex justify-between text-muted-foreground">
-                          <span>Day Pass{isGuidedTourTime ? ' (includes guided commentary)' : ''}</span>
-                          <span>€{passTotal + guidedTourTotal}</span>
+                          <span>
+                            Day Pass
+                            {isGuidedTourTime
+                              ? " (includes guided commentary)"
+                              : ""}
+                          </span>
+                          <span>
+                            €{passTotal + guidedTourTotal}
+                          </span>
                         </div>
                         <div className="border-t border-border pt-2 flex justify-between items-center">
-                          <p className="text-foreground">Total</p>
-                          <p className="text-2xl text-primary">€{totalPrice}</p>
+                          <p className="text-foreground">
+                            Total
+                          </p>
+                          <p className="text-2xl text-primary">
+                            €{totalPrice}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -936,14 +1468,21 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                       <User className="h-5 w-5 text-primary" />
                     </div>
-                    <h2 className="text-foreground">Your Information</h2>
+                    <h2 className="text-foreground">
+                      Your Information
+                    </h2>
                   </div>
                   <div className="h-1 w-16 rounded-full bg-accent" />
                 </div>
 
                 <div className="space-y-6">
                   <div>
-                    <Label htmlFor="fullName" className="text-foreground">Full Name</Label>
+                    <Label
+                      htmlFor="fullName"
+                      className="text-foreground"
+                    >
+                      Full Name
+                    </Label>
                     <div className="relative mt-2">
                       <User className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                       <Input
@@ -953,13 +1492,23 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                         className="border-border pl-10"
                         required
                         value={formData.fullName}
-                        onChange={(e) => handleInputChange("fullName", e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "fullName",
+                            e.target.value,
+                          )
+                        }
                       />
                     </div>
                   </div>
 
                   <div>
-                    <Label htmlFor="email" className="text-foreground">Email Address</Label>
+                    <Label
+                      htmlFor="email"
+                      className="text-foreground"
+                    >
+                      Email Address
+                    </Label>
                     <div className="relative mt-2">
                       <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                       <Input
@@ -969,14 +1518,26 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                         className="border-border pl-10"
                         required
                         value={formData.email}
-                        onChange={(e) => handleInputChange("email", e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "email",
+                            e.target.value,
+                          )
+                        }
                       />
                     </div>
-                    <p className="mt-1 text-muted-foreground">Your QR code will be sent here</p>
+                    <p className="mt-1 text-muted-foreground">
+                      Your QR code will be sent here
+                    </p>
                   </div>
 
                   <div>
-                    <Label htmlFor="confirmEmail" className="text-foreground">Confirm Email</Label>
+                    <Label
+                      htmlFor="confirmEmail"
+                      className="text-foreground"
+                    >
+                      Confirm Email
+                    </Label>
                     <div className="relative mt-2">
                       <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                       <Input
@@ -986,12 +1547,21 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                         className="border-border pl-10"
                         required
                         value={formData.confirmEmail}
-                        onChange={(e) => handleInputChange("confirmEmail", e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "confirmEmail",
+                            e.target.value,
+                          )
+                        }
                       />
                     </div>
-                    {formData.confirmEmail && formData.email !== formData.confirmEmail && (
-                      <p className="mt-1 text-destructive">Emails don't match</p>
-                    )}
+                    {formData.confirmEmail &&
+                      formData.email !==
+                        formData.confirmEmail && (
+                        <p className="mt-1 text-destructive">
+                          Emails don't match
+                        </p>
+                      )}
                   </div>
                 </div>
 
@@ -1028,51 +1598,100 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                     <div className="mb-4">
                       <div className="mb-2 flex items-center gap-2">
                         <Receipt className="h-5 w-5 text-primary" />
-                        <h3 className="text-foreground">Order Summary</h3>
+                        <h3 className="text-foreground">
+                          Order Summary
+                        </h3>
                       </div>
                       <div className="h-1 w-16 rounded-full bg-accent" />
                     </div>
-                    
+
                     <div className="space-y-3 text-muted-foreground">
                       <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-primary flex-shrink-0" />
-                        <span className="break-words">{formData.date} starting at {formData.timeSlot}</span>
+                        <CalendarIcon className="h-4 w-4 text-primary flex-shrink-0" />
+                        <span className="break-words">
+                          {formData.date} starting at{" "}
+                          {formData.timeSlot}
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <MapPin className="h-4 w-4 text-primary flex-shrink-0" />
-                        <span className="break-words">{PICKUP_LOCATIONS.find(loc => loc.value === formData.pickupLocation)?.label}</span>
+                        <span className="break-words">
+                          {
+                            PICKUP_LOCATIONS.find(
+                              (loc) =>
+                                loc.value ===
+                                formData.pickupLocation,
+                            )?.label
+                          }
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Users className="h-4 w-4 text-primary flex-shrink-0" />
-                        <span>{formData.quantity} {formData.quantity === 1 ? 'guest' : 'guests'}</span>
+                        <span>
+                          {formData.quantity}{" "}
+                          {formData.quantity === 1
+                            ? "guest"
+                            : "guests"}
+                        </span>
                       </div>
-                      
+
                       <div className="border-t border-border pt-3 mt-3 space-y-2">
                         <div className="flex justify-between gap-2">
-                          <span className="flex-shrink-0">Day Pass (×{formData.quantity}){isGuidedTourTime ? ' + Guided' : ''}</span>
-                          <span className="flex-shrink-0">€{passTotal + guidedTourTotal}</span>
+                          <span className="flex-shrink-0">
+                            Day Pass (×{formData.quantity})
+                            {isGuidedTourTime
+                              ? " + Guided"
+                              : ""}
+                          </span>
+                          <span className="flex-shrink-0">
+                            €{passTotal + guidedTourTotal}
+                          </span>
                         </div>
-                        {formData.selectedAttractions.length > 0 && (
+                        {formData.selectedAttractions.length >
+                          0 && (
                           <div className="flex justify-between gap-2">
-                            <span className="flex-shrink-0">Attraction Tickets</span>
-                            <span className="flex-shrink-0">€{attractionsTotal}</span>
+                            <span className="flex-shrink-0">
+                              Attraction Tickets
+                            </span>
+                            <span className="flex-shrink-0">
+                              €{attractionsTotal}
+                            </span>
                           </div>
                         )}
                       </div>
-                      
+
                       <div className="border-t border-border pt-3 mt-3 flex justify-between items-center gap-2">
-                        <span className="text-foreground flex-shrink-0">Total</span>
-                        <span className="text-2xl text-primary flex-shrink-0">€{totalPrice}</span>
+                        <span className="text-foreground flex-shrink-0">
+                          Total
+                        </span>
+                        <span className="text-2xl text-primary flex-shrink-0">
+                          €{totalPrice}
+                        </span>
                       </div>
                     </div>
-                    
+
                     <div className="mt-6 space-y-2 rounded-lg bg-primary/5 p-4">
-                      <p className="text-foreground">✓ Unlimited hop-on/hop-off until 8:00 PM</p>
-                      <p className="text-foreground">✓ Guaranteed seating in small vehicles</p>
-                      <p className="text-foreground">✓ Flexible - use anytime during operating hours</p>
-                      <p className="text-foreground">✓ {formData.quantity === 1 ? 'QR code' : `${formData.quantity} QR codes`} sent via email</p>
+                      <p className="text-foreground">
+                        ✓ Unlimited hop-on/hop-off until 8:00 PM
+                      </p>
+                      <p className="text-foreground">
+                        ✓ Guaranteed seating in small vehicles
+                      </p>
+                      <p className="text-foreground">
+                        ✓ Flexible - use anytime during
+                        operating hours
+                      </p>
+                      <p className="text-foreground">
+                        ✓{" "}
+                        {formData.quantity === 1
+                          ? "QR code"
+                          : `${formData.quantity} QR codes`}{" "}
+                        sent via email
+                      </p>
                       {isGuidedTourTime && (
-                        <p className="text-foreground">✓ Guided commentary included</p>
+                        <p className="text-foreground">
+                          ✓ Guided commentary included
+                        </p>
                       )}
                     </div>
                   </Card>
@@ -1086,7 +1705,9 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                           <CreditCard className="h-5 w-5 text-primary" />
                         </div>
-                        <h2 className="text-foreground">Payment Details</h2>
+                        <h2 className="text-foreground">
+                          Payment Details
+                        </h2>
                       </div>
                       <div className="h-1 w-16 rounded-full bg-accent" />
                     </div>
@@ -1095,8 +1716,12 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                       <div className="flex flex-col items-center justify-center py-12 space-y-4">
                         <AlertCircle className="h-12 w-12 text-destructive" />
                         <div className="text-center space-y-2">
-                          <p className="text-foreground">Payment initialization failed</p>
-                          <p className="text-sm text-muted-foreground">{paymentInitError}</p>
+                          <p className="text-foreground">
+                            Payment initialization failed
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {paymentInitError}
+                          </p>
                         </div>
                         <div className="flex gap-3">
                           <Button
@@ -1119,10 +1744,13 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                           </Button>
                         </div>
                       </div>
-                    ) : isCreatingPayment || !paymentClientSecret ? (
+                    ) : isCreatingPayment ||
+                      !paymentClientSecret ? (
                       <div className="flex flex-col items-center justify-center py-12 space-y-4">
                         <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                        <p className="text-muted-foreground">Preparing secure payment...</p>
+                        <p className="text-muted-foreground">
+                          Preparing secure payment...
+                        </p>
                       </div>
                     ) : (
                       <>
@@ -1133,7 +1761,7 @@ export function BuyTicketPage({ onNavigate, onBookingComplete, language }: BuyTi
                           onError={handlePaymentError}
                           customerEmail={formData.email}
                         />
-                        
+
                         <div className="mt-6">
                           <Button
                             type="button"

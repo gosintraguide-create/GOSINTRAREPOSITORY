@@ -4,7 +4,9 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Separator } from "./ui/separator";
-import { Calendar, Download, MapPin, Users, Clock, CheckCircle2, QrCode, Car, Mail, Phone, User, ArrowLeft } from "lucide-react";
+import { Badge } from "./ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
+import { Calendar, Download, MapPin, Users, Clock, CheckCircle2, QrCode, Car, Mail, Phone, User, ArrowLeft, MessageSquare } from "lucide-react";
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { toast } from "sonner@2.0.3";
 import { TicketCard } from "./TicketCard";
@@ -18,13 +20,14 @@ interface ManageBookingPageProps {
 export function ManageBookingPage({ onNavigate, language = "en" }: ManageBookingPageProps) {
   const content = getTranslation(language);
   const [bookingId, setBookingId] = useState("");
-  const [email, setEmail] = useState("");
+  const [lastName, setLastName] = useState("");
   const [loading, setLoading] = useState(false);
   const [booking, setBooking] = useState<any>(null);
+  const [contactDialogOpen, setContactDialogOpen] = useState(false);
 
   const handleLookup = async () => {
-    if (!bookingId.trim() || !email.trim()) {
-      toast.error("Please enter both booking ID and email");
+    if (!bookingId.trim() || !lastName.trim()) {
+      toast.error("Please enter both booking ID and last name");
       return;
     }
 
@@ -40,7 +43,7 @@ export function ManageBookingPage({ onNavigate, language = "en" }: ManageBooking
           },
           body: JSON.stringify({
             bookingId: bookingId.trim().toUpperCase(),
-            email: email.trim(),
+            lastName: lastName.trim(),
           }),
         }
       );
@@ -108,7 +111,7 @@ export function ManageBookingPage({ onNavigate, language = "en" }: ManageBooking
   const handleLogout = () => {
     setBooking(null);
     setBookingId("");
-    setEmail("");
+    setLastName("");
     sessionStorage.removeItem("currentBooking");
     toast.success("Logged out successfully");
   };
@@ -180,13 +183,13 @@ export function ManageBookingPage({ onNavigate, language = "en" }: ManageBooking
               </div>
 
               <div>
-                <Label htmlFor="email">{content.manageBooking.lastNameLabel}</Label>
+                <Label htmlFor="lastName">{content.manageBooking.lastNameLabel}</Label>
                 <Input
-                  id="email"
-                  type="email"
+                  id="lastName"
+                  type="text"
                   placeholder={content.manageBooking.lastNamePlaceholder}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
                   className="mt-1 border-border"
                   onKeyPress={(e) => e.key === "Enter" && handleLookup()}
                 />
@@ -194,7 +197,7 @@ export function ManageBookingPage({ onNavigate, language = "en" }: ManageBooking
 
               <Button
                 onClick={handleLookup}
-                disabled={loading || !bookingId.trim() || !email.trim()}
+                disabled={loading || !bookingId.trim() || !lastName.trim()}
                 className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
               >
                 {loading ? (
@@ -294,7 +297,7 @@ export function ManageBookingPage({ onNavigate, language = "en" }: ManageBooking
           )}
 
           <Button
-            onClick={() => onNavigate("about")}
+            onClick={() => setContactDialogOpen(true)}
             variant="outline"
             className="h-auto flex-col gap-2 py-6"
           >
@@ -513,6 +516,110 @@ export function ManageBookingPage({ onNavigate, language = "en" }: ManageBooking
             </div>
           </div>
         </Card>
+
+        {/* Contact Support Dialog */}
+        <Dialog open={contactDialogOpen} onOpenChange={setContactDialogOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Phone className="h-5 w-5 text-primary" />
+                Contact Support
+              </DialogTitle>
+              <DialogDescription>
+                Need help? We're here for you! Reach out through any of these channels.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4 pt-4">
+              {/* Email */}
+              <div className="flex items-start gap-4 rounded-lg border border-border p-4 transition-colors hover:bg-secondary/50">
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
+                  <Mail className="h-5 w-5 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="mb-1 text-foreground">Email Us</h4>
+                  <a 
+                    href={`mailto:${content.company.email}`}
+                    className="text-sm text-primary hover:underline"
+                  >
+                    {content.company.email}
+                  </a>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Response within 24 hours
+                  </p>
+                </div>
+              </div>
+
+              {/* Phone */}
+              <div className="flex items-start gap-4 rounded-lg border border-border p-4 transition-colors hover:bg-secondary/50">
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
+                  <Phone className="h-5 w-5 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="mb-1 text-foreground">Call Us</h4>
+                  <a 
+                    href={`tel:${content.company.phone}`}
+                    className="text-sm text-primary hover:underline"
+                  >
+                    {content.company.phone}
+                  </a>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {content.company.operatingHours}
+                  </p>
+                </div>
+              </div>
+
+              {/* WhatsApp */}
+              <div className="relative flex items-start gap-4 rounded-lg border-2 border-green-500 bg-green-50/50 p-4 shadow-sm transition-colors hover:bg-green-50">
+                <Badge className="absolute -right-2 -top-2 bg-green-600 text-white hover:bg-green-700">
+                  Recommended
+                </Badge>
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-green-600/10">
+                  <MessageSquare className="h-5 w-5 text-green-600" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="mb-1 text-foreground">WhatsApp</h4>
+                  <a 
+                    href={`https://wa.me/${content.company.whatsappNumber}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-green-700 hover:underline"
+                  >
+                    Chat with us
+                  </a>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Instant messaging support • Fastest response
+                  </p>
+                </div>
+              </div>
+
+              {/* Location */}
+              <div className="flex items-start gap-4 rounded-lg border border-border p-4 transition-colors hover:bg-secondary/50">
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
+                  <MapPin className="h-5 w-5 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="mb-1 text-foreground">Find Us</h4>
+                  <p className="text-sm text-foreground">
+                    {content.company.location}
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Available at all major attractions
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end">
+              <Button 
+                onClick={() => setContactDialogOpen(false)}
+                variant="outline"
+              >
+                Close
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

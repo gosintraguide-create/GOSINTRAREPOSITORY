@@ -1,13 +1,12 @@
 // Service Worker for Go Sintra PWA
-// Version 1.3.1 - Fixed missing icon references
+// Version 1.3.2 - Fixed script loading errors
 
-const CACHE_NAME = 'go-sintra-v5'; // Bumped to clear old cache with missing icons
+const CACHE_NAME = 'go-sintra-v6'; // Bumped to clear old cache
 const OFFLINE_URL = '/offline.html';
 
 // Core assets to cache for offline functionality
 const CORE_ASSETS = [
   '/',
-  '/index.html',
   '/offline.html',
   '/manifest.json',
   '/icon-72x72.png',
@@ -22,10 +21,14 @@ self.addEventListener('install', (event) => {
       console.log('[SW] Caching core assets');
       return cache.addAll(CORE_ASSETS).catch((error) => {
         console.error('[SW] Failed to cache some assets:', error);
-        // Continue even if some assets fail
+        // Continue even if some assets fail - don't block installation
       });
     }).then(() => {
       console.log('[SW] Service worker installed');
+      return self.skipWaiting();
+    }).catch((error) => {
+      console.error('[SW] Installation failed:', error);
+      // Still skip waiting even if caching failed
       return self.skipWaiting();
     })
   );

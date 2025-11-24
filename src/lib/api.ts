@@ -15,7 +15,11 @@ async function apiCall<T>(
 ): Promise<ApiResponse<T>> {
   try {
     const url = `${API_BASE_URL}${endpoint}`;
-    console.log(`🔗 API Call: ${options.method || 'GET'} ${url}`);
+    
+    // Only log API calls when not in silent mode
+    if (!silent) {
+      console.log(`🔗 API Call: ${options.method || 'GET'} ${url}`);
+    }
     
     const response = await fetch(url, {
       ...options,
@@ -26,23 +30,44 @@ async function apiCall<T>(
       },
     });
 
-    const data = await response.json();
+    // Check if response is JSON before parsing
+    const contentType = response.headers.get('content-type');
+    let data;
+    
+    if (contentType && contentType.includes('application/json')) {
+      data = await response.json();
+    } else {
+      // If not JSON, try to read as text for debugging
+      const text = await response.text();
+      if (!silent) {
+        console.error(`Non-JSON response from ${endpoint}:`, text.substring(0, 200));
+      }
+      data = { error: 'Server returned non-JSON response' };
+    }
 
     if (!response.ok) {
+      // More helpful error messages for common issues
+      if (response.status === 404) {
+        // Don't log 404 errors in silent mode (they have fallbacks)
+        if (!silent) {
+          console.error(`API Error (${endpoint}):`, {
+            status: response.status,
+            statusText: response.statusText,
+            error: data
+          });
+        }
+        return {
+          success: false,
+          error: 'Server endpoint not found. The backend service may be initializing. Please try again in a moment.',
+        };
+      }
+      
       if (!silent) {
         console.error(`API Error (${endpoint}):`, {
           status: response.status,
           statusText: response.statusText,
           error: data
         });
-      }
-      
-      // More helpful error messages for common issues
-      if (response.status === 404) {
-        return {
-          success: false,
-          error: 'Server endpoint not found. The backend service may be initializing. Please try again in a moment.',
-        };
       }
       
       return {

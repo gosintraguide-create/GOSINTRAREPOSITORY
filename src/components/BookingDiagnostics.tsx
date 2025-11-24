@@ -1,12 +1,18 @@
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
-import { AlertCircle, CheckCircle2, RefreshCw } from "lucide-react";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import { AlertCircle, CheckCircle2, RefreshCw, Search } from "lucide-react";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
+import { toast } from "sonner@2.0.3";
 
 export function BookingDiagnostics() {
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<any>(null);
+  const [searchId, setSearchId] = useState("");
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchResult, setSearchResult] = useState<any>(null);
 
   const runDiagnostic = async () => {
     setLoading(true);
@@ -112,6 +118,37 @@ export function BookingDiagnostics() {
         `Tracked prefixes: ${keysData.usedPrefixes.join(", ")}`,
       ],
     };
+  };
+
+  const searchBooking = async () => {
+    setSearchLoading(true);
+    setSearchResult(null);
+
+    try {
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/bookings/direct-lookup/${searchId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${publicAnonKey}`,
+          },
+        }
+      );
+      const data = await response.json();
+
+      if (data.found) {
+        setSearchResult(data.booking);
+        toast.success(`✅ Found booking: ${searchId}`);
+      } else {
+        setSearchResult({ error: data.message || "Booking not found" });
+        toast.error(`❌ ${data.message || "Booking not found"}`);
+      }
+    } catch (error) {
+      console.error("Search error:", error);
+      setSearchResult({ error: error instanceof Error ? error.message : String(error) });
+      toast.error("❌ Search failed");
+    } finally {
+      setSearchLoading(false);
+    }
   };
 
   return (
@@ -245,6 +282,53 @@ export function BookingDiagnostics() {
               )}
             </div>
           )}
+
+          <div className="mt-6">
+            <Label htmlFor="searchId">Search Booking by ID</Label>
+            <div className="flex items-center">
+              <Input
+                id="searchId"
+                value={searchId}
+                onChange={(e) => setSearchId(e.target.value)}
+                className="w-full"
+                placeholder="Enter booking ID"
+              />
+              <Button
+                onClick={searchBooking}
+                disabled={searchLoading}
+                className="ml-2"
+              >
+                {searchLoading && <RefreshCw className="mr-2 h-4 w-4 animate-spin" />}
+                {searchLoading ? "Searching..." : "Search"}
+              </Button>
+            </div>
+
+            {searchResult && (
+              <div className="mt-4">
+                {searchResult.error ? (
+                  <div className="flex items-start gap-3 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+                    <AlertCircle className="h-5 w-5 text-destructive mt-0.5" />
+                    <div className="flex-1">
+                      <p className="font-medium text-destructive">Error</p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {searchResult.error}
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-start gap-3 p-4 bg-green-50 border-green-200 rounded-lg">
+                    <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
+                    <div className="flex-1">
+                      <p className="font-medium text-green-900">Booking Found</p>
+                      <pre className="text-xs bg-muted p-3 rounded overflow-x-auto max-h-64">
+                        {JSON.stringify(searchResult, null, 2)}
+                      </pre>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </Card>
     </div>

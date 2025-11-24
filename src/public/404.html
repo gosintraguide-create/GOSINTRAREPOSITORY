@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0A4D5C" />
+    <!-- Modern PWA meta tags -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Hop On Sintra" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Favicon - Will be dynamically loaded by DynamicFavicon component -->
+    
+    <!-- Preconnect to external domains for better performance -->
+    <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
+    <link rel="preconnect" href="https://esm.sh" crossorigin />
+    <link rel="dns-prefetch" href="https://images.unsplash.com" />
+    <link rel="dns-prefetch" href="https://js.stripe.com" />
+    <link rel="preconnect" href="https://js.stripe.com" crossorigin />
+    
+    <!-- Initial meta tags (will be updated by SEOHead component) -->
+    <title>Hop On Sintra - Premium Hop-On/Hop-Off Day Pass | Explore Sintra Attractions</title>
+    <meta name="description" content="Explore Sintra's UNESCO World Heritage palaces with Hop On Sintra's premium hop-on/hop-off service. Guaranteed seating in small vehicles. Unlimited rides every 30 minutes. Book online!" />
+    
+    <!-- Redirect to index.html while preserving the path -->
+    <script>
+      // Preserve the current path and redirect to index.html
+      // The React app will handle the routing
+      sessionStorage.setItem('redirect', location.pathname + location.search + location.hash);
+      window.location.replace('/');
+    </script>
+  </head>
+  <body>
+    <div style="text-align: center; padding: 50px; font-family: sans-serif;">
+      <h1>Loading...</h1>
+      <p>Redirecting to Hop On Sintra...</p>
+    </div>
+  </body>
+</html>

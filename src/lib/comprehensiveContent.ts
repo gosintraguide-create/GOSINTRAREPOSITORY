@@ -1333,7 +1333,8 @@ export async function syncComprehensiveContentFromDatabase(): Promise<Comprehens
       console.log('ℹ️ No comprehensive content in database yet, using defaults or localStorage');
     }
   } catch (error) {
-    console.error('Failed to sync comprehensive content from database:', error);
+    // Silently handle errors - backend may not be ready yet
+    // Don't log errors to avoid confusing users
   }
   return loadComprehensiveContent();
 }

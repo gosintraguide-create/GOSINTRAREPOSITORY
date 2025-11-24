@@ -18,7 +18,12 @@ import {
   Phone,
   Sparkles,
   X,
+  RefreshCw,
+  MailCheck,
+  MailX,
 } from "lucide-react";
+import { toast } from "sonner@2.0.3";
+import { projectId, publicAnonKey } from "../utils/supabase/info";
 
 interface CompactBookingsListProps {
   bookings: any[];
@@ -31,6 +36,37 @@ export function CompactBookingsList({ bookings, onRefresh }: CompactBookingsList
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [expandedBookingId, setExpandedBookingId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [resendingEmail, setResendingEmail] = useState<string | null>(null);
+
+  // Resend confirmation email
+  const handleResendEmail = async (bookingId: string) => {
+    setResendingEmail(bookingId);
+    try {
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/bookings/${bookingId}/resend-email`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${publicAnonKey}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast.success("✅ Confirmation email resent successfully!");
+      } else {
+        toast.error(`❌ Failed to resend email: ${result.error || "Unknown error"}`);
+      }
+    } catch (error) {
+      console.error("Error resending email:", error);
+      toast.error("❌ Failed to resend email. Please try again.");
+    } finally {
+      setResendingEmail(null);
+    }
+  };
 
   const getFilteredBookings = () => {
     const today = new Date().toISOString().split("T")[0];
@@ -402,6 +438,57 @@ export function CompactBookingsList({ bookings, onRefresh }: CompactBookingsList
                             </div>
                           </div>
                         )}
+                      </div>
+                    </div>
+
+                    {/* Email Status & Resend Section */}
+                    <div className="mt-4 pt-4 border-t border-border">
+                      <div className="flex items-center justify-between gap-4 flex-wrap">
+                        <div className="flex items-center gap-3">
+                          {booking.emailSent === true ? (
+                            <>
+                              <MailCheck className="h-4 w-4 text-green-600" />
+                              <span className="text-sm text-foreground">Confirmation email sent</span>
+                            </>
+                          ) : booking.emailSent === false ? (
+                            <>
+                              <MailX className="h-4 w-4 text-red-600" />
+                              <span className="text-sm text-foreground">Email failed to send</span>
+                              {booking.emailError && (
+                                <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 text-xs">
+                                  {booking.emailError}
+                                </Badge>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              <AlertCircle className="h-4 w-4 text-yellow-600" />
+                              <span className="text-sm text-muted-foreground">Email status unknown</span>
+                            </>
+                          )}
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleResendEmail(booking.id);
+                          }}
+                          disabled={resendingEmail === booking.id}
+                          className="gap-2"
+                        >
+                          {resendingEmail === booking.id ? (
+                            <>
+                              <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                              Sending...
+                            </>
+                          ) : (
+                            <>
+                              <Mail className="h-3.5 w-3.5" />
+                              Resend Email
+                            </>
+                          )}
+                        </Button>
                       </div>
                     </div>
                   </div>

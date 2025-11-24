@@ -38,6 +38,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Card } from "./ui/card";
+import { Switch } from "./ui/switch";
 import {
   Tabs,
   TabsContent,
@@ -229,6 +230,8 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
   ] = useState(false);
   const [activeTab, setActiveTab] = useState("pickups");
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const [ticketPurchasesEnabled, setTicketPurchasesEnabled] =
+    useState(true);
 
   // Notification state
   const [lastPickupCount, setLastPickupCount] = useState(0);
@@ -311,6 +314,39 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
       }
     }
     loadPricingFromDB();
+
+    // Load ticket purchases enabled setting
+    async function loadTicketPurchasesSetting() {
+      try {
+        const response = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/settings/ticket-purchases-enabled`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${publicAnonKey}`,
+              "Content-Type": "application/json",
+            },
+          },
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setTicketPurchasesEnabled(data.enabled !== false); // Default to true if not set
+          console.log(
+            "✅ Loaded ticket purchases setting:",
+            data.enabled,
+          );
+        }
+      } catch (error) {
+        console.error(
+          "Error loading ticket purchases setting:",
+          error,
+        );
+        // Default to true on error for safety
+        setTicketPurchasesEnabled(true);
+      }
+    }
+    loadTicketPurchasesSetting();
   }, []);
 
   // Fetch bookings from server
@@ -425,6 +461,42 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
       toast.error(
         "Failed to save settings to database. Saved locally only.",
       );
+    }
+  };
+
+  const toggleTicketPurchases = async (enabled: boolean) => {
+    setTicketPurchasesEnabled(enabled);
+
+    try {
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/settings/ticket-purchases-enabled`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${publicAnonKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ enabled }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to save setting to database");
+      }
+
+      toast.success(
+        enabled
+          ? "✅ Ticket purchases enabled - Customers can now book!"
+          : "🔒 Ticket purchases disabled - All dates show as sold out",
+      );
+    } catch (error) {
+      console.error(
+        "Error saving ticket purchases setting:",
+        error,
+      );
+      toast.error("Failed to save setting");
+      // Revert on error
+      setTicketPurchasesEnabled(!enabled);
     }
   };
 
@@ -696,10 +768,15 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
 
     // Count today's bookings
     const today = new Date().toISOString().split("T")[0];
+    // Count bookings CREATED today (not scheduled for today)
     const todaysBookings =
-      bookingsResult?.bookings?.filter(
-        (b: any) => b.selectedDate === today,
-      ) || [];
+      bookingsResult?.bookings?.filter((b: any) => {
+        if (!b.createdAt) return false;
+        const createdDate = new Date(b.createdAt)
+          .toISOString()
+          .split("T")[0];
+        return createdDate === today;
+      }) || [];
     const currentBookingCount = todaysBookings.length;
 
     // Count unread messages
@@ -2630,6 +2707,49 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
               </div>
 
               <div className="space-y-6">
+                {/* Ticket Purchases Master Toggle */}
+                <div
+                  className={`rounded-lg border-2 p-4 transition-colors ${
+                    ticketPurchasesEnabled
+                      ? "border-green-200 bg-green-50"
+                      : "border-red-200 bg-red-50"
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Label
+                          htmlFor="ticket-purchases-toggle"
+                          className="text-base cursor-pointer"
+                        >
+                          Enable Ticket Purchases
+                        </Label>
+                        {ticketPurchasesEnabled ? (
+                          <CheckCircle2 className="h-5 w-5 text-green-600" />
+                        ) : (
+                          <Lock className="h-5 w-5 text-red-600" />
+                        )}
+                      </div>
+                      <p
+                        className={`text-sm ${
+                          ticketPurchasesEnabled
+                            ? "text-green-700"
+                            : "text-red-700"
+                        }`}
+                      >
+                        {ticketPurchasesEnabled
+                          ? "✅ Customers can purchase tickets and make bookings"
+                          : "🔒 All dates show as SOLD OUT - Safe for testing"}
+                      </p>
+                    </div>
+                    <Switch
+                      id="ticket-purchases-toggle"
+                      checked={ticketPurchasesEnabled}
+                      onCheckedChange={toggleTicketPurchases}
+                    />
+                  </div>
+                </div>
+
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
                     <Label htmlFor="basePrice">

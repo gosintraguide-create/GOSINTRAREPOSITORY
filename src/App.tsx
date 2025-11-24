@@ -211,6 +211,14 @@ export default function App() {
 
   // Handle URL-based page navigation
   useEffect(() => {
+    // Check if we were redirected from 404.html
+    const redirectPath = sessionStorage.getItem("redirect");
+    if (redirectPath && redirectPath !== "/") {
+      sessionStorage.removeItem("redirect");
+      // Update the URL without reload
+      window.history.replaceState({}, "", redirectPath);
+    }
+
     // Function to extract page from URL
     const getPageFromURL = () => {
       // First, check for clean URLs (pathname-based)

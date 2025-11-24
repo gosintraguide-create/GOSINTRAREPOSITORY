@@ -1375,6 +1375,49 @@ app.post("/make-server-3bd0ade8/pricing", async (c) => {
   }
 });
 
+// Get ticket purchases enabled setting
+app.get("/make-server-3bd0ade8/settings/ticket-purchases-enabled", async (c) => {
+  try {
+    console.log("🎫 Fetching ticket purchases enabled setting...");
+    const setting = await kvWithRetry.get("ticket_purchases_enabled");
+
+    // Default to true if not set
+    const enabled = setting !== null ? setting : true;
+    console.log("✅ Ticket purchases enabled:", enabled);
+
+    return c.json({ success: true, enabled });
+  } catch (error) {
+    console.error("❌ Error fetching ticket purchases setting:", error);
+    return c.json(
+      { success: false, error: "Failed to fetch setting", enabled: true },
+      500,
+    );
+  }
+});
+
+// Save ticket purchases enabled setting
+app.post("/make-server-3bd0ade8/settings/ticket-purchases-enabled", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { enabled } = body;
+    console.log("🎫 Saving ticket purchases enabled setting:", enabled);
+
+    await kvWithRetry.set("ticket_purchases_enabled", enabled);
+    console.log("✅ Ticket purchases setting saved successfully");
+
+    return c.json({ success: true, enabled });
+  } catch (error) {
+    console.error("❌ Error saving ticket purchases setting:", error);
+    return c.json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : "Failed to save setting",
+      },
+      500,
+    );
+  }
+});
+
 // Get availability for a specific date
 app.get(
   "/make-server-3bd0ade8/availability/:date",
@@ -1729,24 +1772,59 @@ app.get("/make-server-3bd0ade8/bookings", async (c) => {
   }
 });
 
-// Get booking by ID and email (customer portal login)
+// Direct booking lookup by ID (admin diagnostic tool)
+app.get("/make-server-3bd0ade8/bookings/direct-lookup/:id", async (c) => {
+  try {
+    const bookingId = c.req.param("id");
+    console.log(`🔍 Direct lookup for booking: ${bookingId}`);
+    
+    const booking = await kv.get(bookingId);
+    
+    if (!booking) {
+      return c.json({
+        success: false,
+        found: false,
+        message: `No booking found with ID: ${bookingId}`,
+      });
+    }
+    
+    console.log(`✅ Found booking via direct lookup: ${bookingId}`);
+    
+    return c.json({
+      success: true,
+      found: true,
+      booking,
+    });
+  } catch (error) {
+    console.error("Error in direct lookup:", error);
+    return c.json(
+      { success: false, error: "Failed to lookup booking" },
+      500,
+    );
+  }
+});
+
+// Get booking by ID and lastName (customer portal login)
 app.post("/make-server-3bd0ade8/bookings/lookup", async (c) => {
   try {
     const body = await c.req.json();
-    const { bookingId, email } = body;
+    const { bookingId, lastName, email } = body;
 
-    if (!bookingId || !email) {
+    // Support both lastName (new) and email (legacy)
+    const identifier = lastName || email;
+
+    if (!bookingId || !identifier) {
       return c.json(
         {
           success: false,
-          error: "Booking ID and email are required",
+          error: "Booking ID and last name are required",
         },
         400,
       );
     }
 
     console.log(
-      `🔍 Looking up booking: ${bookingId} for ${email}`,
+      `🔍 Looking up booking: ${bookingId} for ${identifier}`,
     );
 
     // Try to get booking directly (handles AA-####, AB-####, etc.)
@@ -1777,18 +1855,21 @@ app.post("/make-server-3bd0ade8/bookings/lookup", async (c) => {
       );
     }
 
-    // Verify email matches (case insensitive)
-    const bookingEmail =
-      booking.contactInfo?.email?.toLowerCase();
-    const inputEmail = email.toLowerCase().trim();
+    // Verify lastName matches (case insensitive)
+    // Extract last name from the contact name (assuming format: "First Last")
+    const contactName = booking.contactInfo?.name || "";
+    const nameParts = contactName.split(" ");
+    const bookingLastName = nameParts[nameParts.length - 1]?.toLowerCase();
+    const inputLastName = identifier.toLowerCase().trim();
 
-    if (bookingEmail !== inputEmail) {
-      console.log(`❌ Email mismatch for booking ${bookingId}`);
+    if (bookingLastName !== inputLastName) {
+      console.log(`❌ Last name mismatch for booking ${bookingId}`);
+      console.log(`   Expected: ${bookingLastName}, Got: ${inputLastName}`);
       return c.json(
         {
           success: false,
           error:
-            "Email does not match our records. Please check and try again.",
+            "Last name does not match our records. Please check and try again.",
         },
         401,
       );
@@ -2076,19 +2157,25 @@ app.post("/make-server-3bd0ade8/bookings", async (c) => {
     console.log(`✅ Booking ${bookingId} successfully saved to database`);
 
     // Track this prefix as used (for efficient admin queries)
-    const prefix = bookingId.split("-")[0];
-    if (
-      prefix &&
-      prefix.length === 2 &&
-      /^[A-Z]{2}$/.test(prefix)
-    ) {
-      const usedPrefixes =
-        (await kv.get("booking_used_prefixes")) || [];
-      if (!usedPrefixes.includes(prefix)) {
-        usedPrefixes.push(prefix);
-        await kv.set("booking_used_prefixes", usedPrefixes);
-        console.log(`📝 Tracking new prefix: ${prefix}`);
+    // Wrapped in try-catch to ensure this never breaks the booking flow
+    try {
+      const prefix = bookingId.split("-")[0];
+      if (
+        prefix &&
+        prefix.length === 2 &&
+        /^[A-Z]{2}$/.test(prefix)
+      ) {
+        const usedPrefixes =
+          (await kv.get("booking_used_prefixes")) || [];
+        if (!usedPrefixes.includes(prefix)) {
+          usedPrefixes.push(prefix);
+          await kv.set("booking_used_prefixes", usedPrefixes);
+          console.log(`📝 Tracking new prefix: ${prefix}`);
+        }
       }
+    } catch (prefixError) {
+      console.error(`⚠️ Failed to track prefix, but booking was saved:`, prefixError);
+      // Don't throw - booking is already saved, this is just an optimization
     }
 
     // Update availability - decrement seats for the specific time slot
@@ -2193,6 +2280,75 @@ app.get("/make-server-3bd0ade8/bookings/:id", async (c) => {
     console.error("Error fetching booking:", error);
     return c.json(
       { success: false, error: "Failed to fetch booking" },
+      500,
+    );
+  }
+});
+
+// Resend confirmation email for a booking
+app.post("/make-server-3bd0ade8/bookings/:id/resend-email", async (c) => {
+  try {
+    const bookingId = c.req.param("id");
+    
+    console.log(`📧 Resending confirmation email for booking: ${bookingId}`);
+    
+    // Get the booking
+    const booking = await kv.get(bookingId);
+    
+    if (!booking) {
+      console.error(`❌ Booking not found: ${bookingId}`);
+      return c.json(
+        { success: false, error: "Booking not found" },
+        404,
+      );
+    }
+
+    // Generate QR codes for all passengers
+    const qrCodes: string[] = [];
+    for (let i = 0; i < booking.passengers.length; i++) {
+      const qrData = `${bookingId}|${i}`;
+      const qrCode = await QRCode.toDataURL(qrData, {
+        width: 300,
+        margin: 2,
+        color: {
+          dark: "#0A4D5C",
+          light: "#FFFFFF",
+        },
+      });
+      qrCodes.push(qrCode);
+    }
+
+    console.log(`✅ Generated ${qrCodes.length} QR codes for resend`);
+
+    // Send the email
+    const emailResult = await sendBookingEmail(booking, qrCodes);
+
+    if (!emailResult.success) {
+      console.error(`❌ Failed to resend email: ${emailResult.error}`);
+      return c.json({
+        success: false,
+        error: emailResult.error || "Failed to send email",
+      });
+    }
+
+    // Update booking with email sent status
+    booking.emailSent = true;
+    booking.emailError = undefined;
+    booking.lastEmailSentAt = new Date().toISOString();
+    await kv.set(bookingId, booking);
+
+    console.log(`✅ Successfully resent confirmation email for booking ${bookingId}`);
+    
+    return c.json({
+      success: true,
+      message: "Confirmation email resent successfully",
+      emailId: emailResult.emailId,
+    });
+  } catch (error) {
+    console.error("❌ Error resending email:", error);
+    console.error("Error details:", error instanceof Error ? error.message : String(error));
+    return c.json(
+      { success: false, error: "Failed to resend email" },
       500,
     );
   }
