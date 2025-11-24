@@ -278,10 +278,14 @@ export function QRScannerPage({
           !result.booking.isExpired
         ) {
           toast.success("Valid pass scanned!");
-          // Show quick destination selector
+          // Show quick destination selector for first check-in
           setShowDestinationDialog(true);
         } else if (result.booking.alreadyCheckedIn) {
-          toast.warning("Pass already checked in today");
+          toast.success(
+            "Pass already checked in - update destination",
+          );
+          // Show destination selector to update destination
+          setShowDestinationDialog(true);
         } else if (result.booking.isExpired) {
           toast.error("Pass is expired");
         }
@@ -356,6 +360,9 @@ export function QRScannerPage({
     setShowDestinationDialog(false);
 
     try {
+      const isAlreadyCheckedIn =
+        scanResult.booking.alreadyCheckedIn;
+
       const response = await fetch(
         `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/checkin`,
         {
@@ -377,7 +384,13 @@ export function QRScannerPage({
       const result = await response.json();
 
       if (result.success) {
-        toast.success(`✅ Checked in to ${destination}!`);
+        if (isAlreadyCheckedIn) {
+          toast.success(
+            `🔄 Destination updated to ${destination}!`,
+          );
+        } else {
+          toast.success(`✅ Checked in to ${destination}!`);
+        }
 
         // Auto-reset to scan next passenger after successful check-in
         setTimeout(() => {
