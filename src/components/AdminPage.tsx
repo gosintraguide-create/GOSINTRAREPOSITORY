@@ -387,21 +387,210 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
           event: "*",
           schema: "public",
           table: "kv_store_3bd0ade8",
-          filter: "key=like.booking_%",
+          // Match booking IDs: AA-1234, AB-1234, etc. AND old booking_* format
+          filter: "key=like.%-%",
         },
-        (payload) => {
+        async (payload) => {
+          // Filter out non-booking keys (pickup requests, chat, etc.)
+          const key = payload.new?.key;
+          if (
+            !key ||
+            key.startsWith("PICKUP_") ||
+            key.startsWith("chat_") ||
+            key.startsWith("availability_") ||
+            key.startsWith("checkin_")
+          ) {
+            return; // Ignore non-booking changes
+          }
           console.log(
-            "Realtime booking change detected:",
+            "🔔 Realtime booking change detected:",
             payload,
           );
+
+          // Check if this is a new booking (INSERT event)
+          if (payload.eventType === "INSERT" && payload.new) {
+            const today = new Date()
+              .toISOString()
+              .split("T")[0];
+            const newBooking = payload.new.value;
+
+            // Check if booking was created today
+            if (newBooking?.createdAt) {
+              const createdDate = new Date(newBooking.createdAt)
+                .toISOString()
+                .split("T")[0];
+
+              if (createdDate === today) {
+                // Increment badge counter
+                setNewBookingsCount((prev) => prev + 1);
+
+                // Show toast notification
+                toast.success(
+                  `🎫 New booking received! ${newBooking.id || ""}`,
+                  { duration: 5000 },
+                );
+
+                // Browser notification
+                if (
+                  "Notification" in window &&
+                  Notification.permission === "granted"
+                ) {
+                  new Notification("New Booking", {
+                    body: `Booking ${newBooking.id} received from ${newBooking.passengers?.[0]?.firstName || "customer"}`,
+                    icon: "/favicon.ico",
+                    tag: "booking-notification",
+                  });
+                }
+              }
+            }
+          }
+
           // Reload bookings when any booking changes
-          fetchBookings();
+          await fetchBookings();
         },
       )
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
+    };
+  }, [isAuthenticated]);
+
+  // Set up realtime subscription for instant message notifications
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const supabase = createClient();
+    const messagesChannel = supabase
+      .channel("messages-changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "kv_store_3bd0ade8",
+          filter: "key=like.chat_%",
+        },
+        async (payload) => {
+          console.log(
+            "🔔 Realtime message change detected:",
+            payload,
+          );
+
+          // Check if this is a new message or conversation update
+          if (
+            payload.eventType === "INSERT" ||
+            payload.eventType === "UPDATE"
+          ) {
+            const key = payload.new?.key;
+
+            // If it's a conversation update, check for new unread messages
+            if (key?.startsWith("chat_conversation_")) {
+              const conversation = payload.new?.value;
+
+              if (conversation?.unreadByAdmin > 0) {
+                // Show toast notification
+                toast.info(
+                  `💬 New message from ${conversation.customerName || "customer"}!`,
+                  { duration: 5000 },
+                );
+
+                // Browser notification
+                if (
+                  "Notification" in window &&
+                  Notification.permission === "granted"
+                ) {
+                  new Notification("New Message", {
+                    body: `New message from ${conversation.customerName || "customer"}`,
+                    icon: "/favicon.ico",
+                    tag: "message-notification",
+                  });
+                }
+              }
+            }
+          }
+
+          // Reload conversations when any message-related change happens
+          await loadConversations();
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(messagesChannel);
+    };
+  }, [isAuthenticated]);
+
+  // Set up realtime subscription for instant pickup request notifications
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const supabase = createClient();
+    const pickupsChannel = supabase
+      .channel("pickups-changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "kv_store_3bd0ade8",
+          filter: "key=like.PICKUP_%",
+        },
+        async (payload) => {
+          console.log(
+            "🔔 Realtime pickup request change detected:",
+            payload,
+          );
+
+          // Check if this is a new pickup request (INSERT event)
+          if (payload.eventType === "INSERT" && payload.new) {
+            const today = new Date()
+              .toISOString()
+              .split("T")[0];
+            const newPickup = payload.new.value;
+
+            // Check if pickup was created today
+            if (newPickup?.createdAt) {
+              const createdDate = new Date(newPickup.createdAt)
+                .toISOString()
+                .split("T")[0];
+
+              if (
+                createdDate === today &&
+                newPickup.status === "pending"
+              ) {
+                // Increment badge counter
+                setNewPickupsCount((prev) => prev + 1);
+
+                // Show toast notification
+                toast.info(
+                  `🚗 New pickup request at ${newPickup.pickupLocation || "location"}!`,
+                  { duration: 5000 },
+                );
+
+                // Browser notification
+                if (
+                  "Notification" in window &&
+                  Notification.permission === "granted"
+                ) {
+                  new Notification("New Pickup Request", {
+                    body: `${newPickup.groupSize} passengers at ${newPickup.pickupLocation}`,
+                    icon: "/favicon.ico",
+                    tag: "pickup-notification",
+                  });
+                }
+              }
+            }
+          }
+
+          // Reload pickup requests from the PickupRequestsManagement component
+          // It will handle its own data refresh
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(pickupsChannel);
     };
   }, [isAuthenticated]);
 
