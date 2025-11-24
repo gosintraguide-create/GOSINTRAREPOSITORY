@@ -1,193 +1,118 @@
-# 🚀 Go Sintra Deployment Guide
+# Vercel Deployment Configuration
 
-> **Note:** This application was built in Figma Make. For Vercel-specific deployment instructions, see [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md)
+## Build Configuration
 
-## Quick Deploy Checklist
+### package.json
+```json
+"build": "tsc --noEmit && vite build --outDir dist"
+```
 
-### 1. Push to GitHub (2 minutes)
+This build command:
+1. ✅ Runs TypeScript type-checking first (`tsc --noEmit`)
+2. ✅ If types are valid, runs `vite build --outDir dist`
+3. ✅ Outputs everything to the `dist/` folder
+
+### vercel.json
+The `vercel.json` configuration handles:
+- ✅ SPA routing (all routes → `/index.html`)
+- ✅ Static asset serving (images, fonts, CSS, JS)
+- ✅ Service worker configuration
+- ✅ Security headers
+- ✅ Cache optimization
+
+### vite.config.ts
+- ✅ `outDir: "dist"` - Explicit output directory
+- ✅ `base: "/"` - Correct base path for deployment
+- ✅ `publicDir: "public"` - Copies public folder to build
+- ✅ Code splitting and optimization configured
+
+## How Routing Works
+
+1. **User visits `/attractions` on Vercel**
+2. **Vercel's routes in `vercel.json` catch the request**
+3. **Non-static files are served `/index.html`**
+4. **React app loads and reads `window.location.pathname`**
+5. **App.tsx's `useEffect` extracts the page from URL**
+6. **Correct component renders client-side**
+
+## Files Created/Updated
+
+### New Files
+- `/public/404.html` - Fallback redirect for missed routes
+- `/.vercelignore` - Exclude unnecessary files from deployment
+- `/DEPLOYMENT.md` - This documentation
+
+### Updated Files
+- `/package.json` - Build command with TypeScript checking
+- `/vercel.json` - Comprehensive routing and headers
+- `/vite.config.ts` - Added `base: "/"` for proper deployment
+
+## Deployment Steps
 
 ```bash
-git init
+# Commit all changes
 git add .
-git commit -m "Production ready deployment"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/go-sintra.git
-git push -u origin main
+git commit -m "Fix Vercel deployment with proper SPA routing"
+
+# Push to trigger Vercel deployment
+git push
 ```
 
-### 2. Deploy Frontend to Vercel (5 minutes)
+## Vercel Dashboard Settings
 
-1. **Go to:** https://vercel.com/new
-2. **Import** your GitHub repository
-3. **Add environment variables:**
-   ```
-   VITE_SUPABASE_URL=https://dwiznaefeqnduglmcivr.supabase.co
-   VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR3aXpuYWVmZXFuZHVnbG1jaXZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxNzc5NzYsImV4cCI6MjA3NTc1Mzk3Nn0.cTO16eeGusYnwjVwVVt1i4M8gQZ_MtDxyv9wYFHBVLo
-   VITE_STRIPE_PUBLISHABLE_KEY=pk_live_YOUR_KEY
-   ```
-4. **Click Deploy**
+**Framework Preset**: Other (or Vite)
+**Build Command**: `npm run build`
+**Output Directory**: `dist`
+**Install Command**: `npm install`
+**Node Version**: 18.x or higher
 
-### 3. Update Backend CORS (2 minutes)
-
-Edit `/supabase/functions/server/index.tsx`:
-
-```typescript
-app.use(
-  "*",
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:4173",
-      "https://YOUR-VERCEL-URL.vercel.app", // ← ADD YOUR URL
-    ],
-    credentials: true,
-  }),
-);
-```
-
-Deploy backend:
+## Testing Locally
 
 ```bash
-npx supabase functions deploy make-server-3bd0ade8
+# Build the production version
+npm run build
+
+# Preview the production build
+npm run preview
+
+# Test different routes
+# - http://localhost:4173/
+# - http://localhost:4173/attractions
+# - http://localhost:4173/buy-ticket
+# - http://localhost:4173/about
 ```
 
-### 4. Configure Stripe Webhook (3 minutes)
+## Common Issues & Solutions
 
-1. **Go to:** https://dashboard.stripe.com/webhooks
-2. **Add endpoint:** `https://dwiznaefeqnduglmcivr.supabase.co/functions/v1/make-server-3bd0ade8/webhook/stripe`
-3. **Select events:**
-   - `checkout.session.completed`
-   - `payment_intent.succeeded`
-   - `payment_intent.payment_failed`
-4. **Copy webhook secret** and add to Supabase environment variables
+### Issue: Pages other than home show 404
+**Solution**: The `vercel.json` routes configuration now handles this by serving `index.html` for all non-static routes.
 
----
+### Issue: Service worker not registering
+**Solution**: Special headers for `/sw.js` are configured in `vercel.json`.
 
-## Environment Variables
+### Issue: TypeScript errors break build
+**Solution**: Build command now runs `tsc --noEmit` first to catch type errors early.
 
-### Vercel (Frontend)
-
-```bash
-VITE_SUPABASE_URL=https://dwiznaefeqnduglmcivr.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-VITE_STRIPE_PUBLISHABLE_KEY=pk_live_...
-```
-
-### Supabase Edge Functions (Backend)
-
-```bash
-STRIPE_SECRET_KEY=sk_live_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-RESEND_API_KEY=re_...
-RESEND_FROM_EMAIL=bookings@gosintra.pt
-```
-
----
-
-## Post-Deployment Testing
-
-### Test Checklist
-
-- [ ] Homepage loads correctly
-- [ ] All navigation links work
-- [ ] Language selector works
-- [ ] Booking flow completes successfully
-- [ ] Payment processes (use test card: 4242 4242 4242 4242)
-- [ ] Email confirmation received
-- [ ] PDF ticket downloads
-- [ ] QR code visible on ticket
-- [ ] Admin panel accessible
-- [ ] Mobile responsive design
-- [ ] PWA installable
-
----
-
-## SEO & Performance
-
-### Included Optimizations
-
-- ✅ Structured data (JSON-LD)
-- ✅ Open Graph tags
-- ✅ Twitter Card tags
-- ✅ Sitemap.xml
-- ✅ Robots.txt
-- ✅ Canonical URLs
-- ✅ Meta descriptions
-- ✅ Image optimization
-- ✅ Code splitting
-- ✅ Lazy loading
-- ✅ Service worker caching
-- ✅ Compression headers
-
-### Performance Scores (Expected)
-
-- **Performance:** 90+
-- **Accessibility:** 95+
-- **Best Practices:** 95+
-- **SEO:** 100
-
----
+### Issue: Assets not loading
+**Solution**: Routes in `vercel.json` properly serve static assets from `/assets/` directory.
 
 ## Monitoring
 
-### Check Logs
+After deployment:
+1. ✅ Check Vercel deployment logs for any errors
+2. ✅ Test all major routes (home, attractions, buy-ticket, about, etc.)
+3. ✅ Verify service worker registration in DevTools
+4. ✅ Check Network tab for proper asset loading
+5. ✅ Test on mobile devices
 
-**Vercel:**
+## Environment Variables
 
-```bash
-vercel logs
-```
+The following environment variables are already configured:
+- SUPABASE_URL
+- SUPABASE_ANON_KEY
+- SUPABASE_SERVICE_ROLE_KEY
+- STRIPE_SECRET_KEY
+- STRIPE_PUBLISHABLE_KEY
+- OPENAI_API_KEY
 
-**Supabase:**
-
-```bash
-npx supabase functions logs make-server-3bd0ade8 --tail
-```
-
-### Analytics
-
-- Access: `https://your-url.vercel.app?page=analytics`
-- Monitor: Bookings, Revenue, Conversions
-
----
-
-## Support URLs
-
-- **Live Site:** https://your-url.vercel.app
-- **Admin:** https://your-url.vercel.app?page=admin
-- **Analytics:** https://your-url.vercel.app?page=analytics
-- **Operations:** https://your-url.vercel.app?page=operations
-- **QR Scanner:** https://your-url.vercel.app?page=qr-scanner
-
----
-
-## Troubleshooting
-
-### CORS Error
-
-Update backend CORS configuration with your Vercel URL and redeploy.
-
-### Payment Not Working
-
-Check Stripe webhook is configured and webhook secret is set in Supabase.
-
-### Email Not Sending
-
-Verify RESEND_API_KEY and RESEND_FROM_EMAIL are set in Supabase environment variables.
-
----
-
-## Next Steps
-
-1. ✅ Test all functionality
-2. ✅ Add Google Analytics (optional)
-3. ✅ Configure custom domain
-4. ✅ Set up error monitoring (Sentry)
-5. ✅ Upload PWA icons
-6. ✅ Test on real devices
-
----
-
-**Total deployment time: ~15 minutes**
-
-Good luck! 🚀
+Make sure these are set in Vercel Project Settings → Environment Variables.

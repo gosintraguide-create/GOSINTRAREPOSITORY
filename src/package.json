@@ -7,9 +7,9 @@
     "build": "tsc --noEmit && vite build --outDir dist",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
+    "test:build": "bash test-build.sh",
     "clean": "rm -rf build dist node_modules package-lock.json",
-    "fresh-install": "npm run clean && npm install",
-    "test-build": "npm run build && npm run preview"
+    "fresh-install": "npm run clean && npm install"
   },
   "dependencies": {
     "react": "^18.2.0",
