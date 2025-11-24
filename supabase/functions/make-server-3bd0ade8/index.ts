@@ -2,12 +2,12 @@ import { Hono } from "npm:hono";
 import { cors } from "npm:hono/cors";
 import { logger } from "npm:hono/logger";
 import { createClient } from "jsr:@supabase/supabase-js@2";
-import * as kv from "./kv_store.tsx";
+import * as kv from "./kv_store.ts";
 import QRCode from "npm:qrcode@1.5.4";
 import { PDFDocument, rgb } from "npm:pdf-lib@1.17.1";
 import Stripe from "npm:stripe@17.3.1";
-import { generateBookingConfirmationHTML } from "./email_template.tsx";
-import { cleanupDatabase, removeLegacyBranding, cleanupOldAvailability } from "./cleanup.tsx";
+import { generateBookingConfirmationHTML } from "./email_template.ts";
+import { cleanupDatabase, removeLegacyBranding, cleanupOldAvailability } from "./cleanup.ts";
 
 // Retry wrapper for KV store operations to handle transient connection errors
 async function withRetry<T>(

@@ -3,7 +3,7 @@
  * Run this to clean up old, unnecessary data from the KV store
  */
 
-import * as kv from "./kv_store.tsx";
+import * as kv from "./kv_store.ts";
 
 export async function cleanupDatabase() {
   console.log("🧹 Starting database cleanup...");
