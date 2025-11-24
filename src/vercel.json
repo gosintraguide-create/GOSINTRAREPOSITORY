@@ -3,5 +3,19 @@
   "outputDirectory": "build",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "routes": [
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|webp|woff|woff2|ttf|eot|json))",
+      "dest": "/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
   ]
 }
