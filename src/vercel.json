@@ -1,6 +1,7 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "build",
+  "cleanUrls": true,
   "rewrites": [
     {
       "source": "/((?!sw\\.js|manifest\\.json|offline\\.html|.*\\.(?:png|jpg|jpeg|svg|ico)).*)",
