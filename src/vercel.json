@@ -1,7 +1,9 @@
 {
+  "buildCommand": "npm run build",
+  "outputDirectory": "Build",
   "rewrites": [
     {
-      "source": "/:path*",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
