@@ -16,7 +16,7 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: 'Build',
+    outDir: 'build',
     sourcemap: false, // Disable sourcemaps in production for smaller bundle
     minify: 'terser',
     terserOptions: {

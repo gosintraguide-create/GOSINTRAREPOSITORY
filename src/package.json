@@ -7,7 +7,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
-    "clean": "rm -rf Build dist node_modules package-lock.json",
+    "clean": "rm -rf build dist node_modules package-lock.json",
     "fresh-install": "npm run clean && npm install",
     "test-build": "npm run build && npm run preview"
   },
