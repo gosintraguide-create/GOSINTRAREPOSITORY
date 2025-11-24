@@ -242,6 +242,65 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
   const [pickupRequests, setPickupRequests] = useState<any[]>(
     [],
   );
+  const [notificationSound, setNotificationSound] = useState<HTMLAudioElement | null>(null);
+  const [totalUnreadCount, setTotalUnreadCount] = useState(0);
+  const [showMobileGuide, setShowMobileGuide] = useState(() => {
+    return localStorage.getItem('hide-mobile-guide') !== 'true';
+  });
+  const [isIOS, setIsIOS] = useState(false);
+  const [isAndroid, setIsAndroid] = useState(false);
+
+  // Detect mobile device type
+  useEffect(() => {
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    setIsIOS(/iphone|ipad|ipod/.test(userAgent));
+    setIsAndroid(/android/.test(userAgent));
+  }, []);
+
+  // Mobile notification helper function
+  const sendMobileNotification = (type: 'booking' | 'message' | 'pickup', details: {
+    title: string;
+    body: string;
+    id?: string;
+  }) => {
+    console.log(`📱 Sending mobile notification: ${type}`, details);
+
+    // Update page title with unread count
+    const newTotal = newPickupsCount + newBookingsCount + (conversations.filter(c => c.unreadByAdmin > 0 && !c.archived).length);
+    setTotalUnreadCount(newTotal + 1);
+    document.title = newTotal > 0 ? `(${newTotal + 1}) Hop On Sintra Admin` : 'Hop On Sintra Admin';
+
+    // 1. Play notification sound (works on all mobile browsers)
+    if (notificationSound) {
+      notificationSound.play().catch(e => console.log('Could not play sound:', e));
+    }
+
+    // 2. Vibrate device (works on Android and some iOS)
+    if ('vibrate' in navigator) {
+      navigator.vibrate([200, 100, 200]); // Vibrate pattern: 200ms, pause 100ms, 200ms
+    }
+
+    // 3. Show persistent toast notification (longer duration for mobile)
+    const emoji = type === 'booking' ? '🎫' : type === 'message' ? '💬' : '🚗';
+    toast.success(`${emoji} ${details.title}`, {
+      duration: 10000, // 10 seconds for mobile
+      description: details.body,
+    });
+
+    // 4. Try desktop notification (works on Android Chrome, not iOS)
+    if ('Notification' in window && Notification.permission === 'granted') {
+      try {
+        new Notification(details.title, {
+          body: details.body,
+          icon: '/favicon.ico',
+          tag: `${type}-notification`,
+          requireInteraction: true, // Keeps notification visible until dismissed
+        });
+      } catch (e) {
+        console.log('Desktop notification not supported:', e);
+      }
+    }
+  };
 
   // Load settings from database and localStorage
   useEffect(() => {
@@ -349,6 +408,75 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     loadTicketPurchasesSetting();
   }, []);
 
+  // Initialize notification sound for mobile
+  useEffect(() => {
+    // Create notification sound (simple tone using Web Audio API)
+    const createNotificationSound = () => {
+      try {
+        const audio = new Audio();
+        // Use a data URI for a simple notification beep
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = 800; // Frequency in Hz
+        gainNode.gain.value = 0.3; // Volume
+        
+        const beepSound = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBziR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeyQFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFApGn+DyvmwhBjiR1/PMeywFJHfH8N2RQAoUXrTp66hVFA');
+        
+        setNotificationSound(beepSound);
+        console.log('📱 Notification sound initialized for mobile');
+      } catch (e) {
+        console.log('Could not initialize notification sound:', e);
+      }
+    };
+
+    createNotificationSound();
+  }, []);
+
+  // Keep screen awake on mobile (helps maintain real-time connection)
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    
+    let wakeLock: any = null;
+    
+    const requestWakeLock = async () => {
+      try {
+        if ('wakeLock' in navigator) {
+          wakeLock = await (navigator as any).wakeLock.request('screen');
+          console.log('📱 Screen wake lock activated - notifications will work while screen is on');
+          
+          wakeLock.addEventListener('release', () => {
+            console.log('📱 Screen wake lock released');
+          });
+        }
+      } catch (err) {
+        console.log('Wake lock not supported or failed:', err);
+      }
+    };
+    
+    requestWakeLock();
+    
+    // Re-request wake lock when page becomes visible again
+    const handleVisibilityChange = () => {
+      if (wakeLock !== null && document.visibilityState === 'visible') {
+        requestWakeLock();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (wakeLock !== null) {
+        wakeLock.release().catch(() => {});
+      }
+    };
+  }, [isAuthenticated]);
+
   // Fetch bookings from server
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -424,23 +552,12 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                 // Increment badge counter
                 setNewBookingsCount((prev) => prev + 1);
 
-                // Show toast notification
-                toast.success(
-                  `🎫 New booking received! ${newBooking.id || ""}`,
-                  { duration: 5000 },
-                );
-
-                // Browser notification
-                if (
-                  "Notification" in window &&
-                  Notification.permission === "granted"
-                ) {
-                  new Notification("New Booking", {
-                    body: `Booking ${newBooking.id} received from ${newBooking.passengers?.[0]?.firstName || "customer"}`,
-                    icon: "/favicon.ico",
-                    tag: "booking-notification",
-                  });
-                }
+                // Send mobile-friendly notification
+                sendMobileNotification('booking', {
+                  title: 'New Booking Received!',
+                  body: `Booking ${newBooking.id} from ${newBooking.passengers?.[0]?.firstName || "customer"}`,
+                  id: newBooking.id
+                });
               }
             }
           }
@@ -489,23 +606,12 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
               const conversation = payload.new?.value;
 
               if (conversation?.unreadByAdmin > 0) {
-                // Show toast notification
-                toast.info(
-                  `💬 New message from ${conversation.customerName || "customer"}!`,
-                  { duration: 5000 },
-                );
-
-                // Browser notification
-                if (
-                  "Notification" in window &&
-                  Notification.permission === "granted"
-                ) {
-                  new Notification("New Message", {
-                    body: `New message from ${conversation.customerName || "customer"}`,
-                    icon: "/favicon.ico",
-                    tag: "message-notification",
-                  });
-                }
+                // Send mobile-friendly notification
+                sendMobileNotification('message', {
+                  title: 'New Message Received!',
+                  body: `Message from ${conversation.customerName || "customer"}`,
+                  id: conversation.id
+                });
               }
             }
           }
@@ -562,23 +668,12 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                 // Increment badge counter
                 setNewPickupsCount((prev) => prev + 1);
 
-                // Show toast notification
-                toast.info(
-                  `🚗 New pickup request at ${newPickup.pickupLocation || "location"}!`,
-                  { duration: 5000 },
-                );
-
-                // Browser notification
-                if (
-                  "Notification" in window &&
-                  Notification.permission === "granted"
-                ) {
-                  new Notification("New Pickup Request", {
-                    body: `${newPickup.groupSize} passengers at ${newPickup.pickupLocation}`,
-                    icon: "/favicon.ico",
-                    tag: "pickup-notification",
-                  });
-                }
+                // Send mobile-friendly notification
+                sendMobileNotification('pickup', {
+                  title: 'New Pickup Request!',
+                  body: `${newPickup.groupSize} passengers at ${newPickup.pickupLocation}`,
+                  id: newPickup.id
+                });
               }
             }
           }
@@ -1123,6 +1218,20 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     lastMessageCount,
   ]);
 
+  // Update page title when notification counts change
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    
+    const unreadMessages = conversations.filter(c => c.unreadByAdmin > 0 && !c.archived).length;
+    const totalCount = newPickupsCount + newBookingsCount + unreadMessages;
+    
+    if (totalCount > 0) {
+      document.title = `(${totalCount}) Hop On Sintra Admin`;
+    } else {
+      document.title = 'Hop On Sintra Admin';
+    }
+  }, [isAuthenticated, newPickupsCount, newBookingsCount, conversations]);
+
   const loadConversations = async () => {
     setLoadingConversations(true);
 
@@ -1661,6 +1770,78 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
           </div>
         </div>
 
+        {/* Mobile-Friendly Notification Banner */}
+        {(newPickupsCount > 0 || newBookingsCount > 0 || conversations.filter(c => c.unreadByAdmin > 0 && !c.archived).length > 0) && (
+          <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-blue-500/10 border-2 border-blue-500 rounded-lg animate-pulse">
+            <div className="flex items-center gap-2 sm:gap-3 text-blue-700 dark:text-blue-300">
+              <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-blue-500 animate-bounce">
+                <span className="text-white text-sm sm:text-base">
+                  {newPickupsCount + newBookingsCount + conversations.filter(c => c.unreadByAdmin > 0 && !c.archived).length}
+                </span>
+              </div>
+              <div className="flex-1">
+                <p className="text-sm sm:text-base">
+                  <strong>You have new notifications!</strong>
+                </p>
+                <p className="text-xs sm:text-sm opacity-90 mt-0.5">
+                  {newPickupsCount > 0 && `${newPickupsCount} pickup${newPickupsCount > 1 ? 's' : ''} `}
+                  {newBookingsCount > 0 && `${newBookingsCount} booking${newBookingsCount > 1 ? 's' : ''} `}
+                  {conversations.filter(c => c.unreadByAdmin > 0 && !c.archived).length > 0 && `${conversations.filter(c => c.unreadByAdmin > 0 && !c.archived).length} message${conversations.filter(c => c.unreadByAdmin > 0 && !c.archived).length > 1 ? 's' : ''}`}
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  // Cycle through tabs with notifications
+                  if (newPickupsCount > 0) setActiveTab('pickups');
+                  else if (newBookingsCount > 0) setActiveTab('bookings');
+                  else if (conversations.filter(c => c.unreadByAdmin > 0 && !c.archived).length > 0) setActiveTab('messages');
+                }}
+                className="px-3 py-1.5 sm:px-4 sm:py-2 bg-blue-500 text-white rounded-md text-xs sm:text-sm hover:bg-blue-600 transition-colors"
+              >
+                View
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Mobile Setup Guide Banner */}
+        {showMobileGuide && (isIOS || isAndroid || window.innerWidth < 768) && (
+          <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-gradient-to-r from-teal-500/10 to-orange-500/10 border border-teal-500/50 rounded-lg">
+            <div className="flex items-start gap-2 sm:gap-3">
+              <div className="flex-shrink-0 text-2xl">📱</div>
+              <div className="flex-1">
+                <h3 className="text-sm sm:text-base font-semibold text-foreground mb-1.5">
+                  {isIOS ? 'iOS' : isAndroid ? 'Android' : 'Mobile'} Notifications Active!
+                </h3>
+                <div className="text-xs sm:text-sm text-muted-foreground space-y-1">
+                  <p>✅ Real-time push notifications enabled</p>
+                  <p>✅ Sound alerts for new bookings, messages & pickups</p>
+                  {isAndroid && <p>✅ Vibration enabled</p>}
+                  {isIOS && (
+                    <p className="text-amber-600 dark:text-amber-400">
+                      ⚠️ iOS: Keep this tab active for notifications
+                    </p>
+                  )}
+                  <p className="mt-2 text-xs opacity-75">
+                    💡 <strong>Tip:</strong> {isIOS ? 'Add to home screen for best experience' : 'Keep this tab open in background'}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setShowMobileGuide(false);
+                  localStorage.setItem('hide-mobile-guide', 'true');
+                }}
+                className="flex-shrink-0 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <svg className="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
+
         <Tabs
           defaultValue="pickups"
           value={activeTab}
@@ -1672,6 +1853,11 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
             } else if (tab === "bookings") {
               setNewBookingsCount(0);
             }
+            // Update page title to reflect cleared count
+            const unreadMessages = conversations.filter(c => c.unreadByAdmin > 0 && !c.archived).length;
+            const totalCount = newPickupsCount + newBookingsCount + unreadMessages;
+            const clearedTotal = tab === "pickups" ? totalCount - newPickupsCount : tab === "bookings" ? totalCount - newBookingsCount : totalCount;
+            document.title = clearedTotal > 0 ? `(${clearedTotal}) Hop On Sintra Admin` : 'Hop On Sintra Admin';
           }}
           className="w-full"
         >

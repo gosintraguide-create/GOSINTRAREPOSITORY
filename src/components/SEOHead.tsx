@@ -12,9 +12,9 @@ interface SEOHeadProps {
 }
 
 export function SEOHead({
-  title = "Hop On Sintra - Premium Hop-On/Hop-Off Day Pass",
-  description = "Explore Sintra's palaces and attractions with guaranteed seating in small vehicles. Unlimited rides, every 30 minutes. Book your day pass online.",
-  keywords = "Sintra tours, Sintra transport, hop on hop off Sintra, Pena Palace, Quinta da Regaleira, Sintra day pass, Portugal tours",
+  title = "Hop On Sintra - Premium Hop-On/Hop-Off Day Pass | Small Vehicle Tours",
+  description = "Explore Sintra's UNESCO World Heritage palaces and attractions with guaranteed seating in small vehicles. Premium hop-on/hop-off day pass with unlimited rides. Book your Sintra adventure online.",
+  keywords = "Sintra tours, Sintra transport, hop on hop off Sintra, Pena Palace, Quinta da Regaleira, Sintra day pass, Portugal tours, small vehicle tours, tuk tuk Sintra",
   ogImage = "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop",
   canonicalPath = "",
   language = "en",

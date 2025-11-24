@@ -1,11 +1,11 @@
 {
   "name": "Hop On Sintra - Day Pass Booking",
   "short_name": "Hop On Sintra",
-  "description": "Hop-on hop-off sightseeing day pass service in Sintra, Portugal. Book your unlimited rides day pass with guaranteed seating.",
+  "description": "Premium hop-on/hop-off day pass service in Sintra, Portugal. Explore UNESCO World Heritage sites with guaranteed seating in small vehicles.",
   "start_url": "/?source=pwa",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "theme_color": "#0A4D5C",
   "orientation": "portrait-primary",
   "scope": "/",
   "categories": ["travel", "tourism", "transportation"],
