@@ -1,0 +1,625 @@
+================================================================================
+HOP ON SINTRA - COMPLETE CODE EXPORT
+Generated: 2024-11-24
+================================================================================
+
+################################################################################
+# FILE: /package.json
+################################################################################
+{
+  "name": "hop-on-sintra",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "typescript": "^5.5.3",
+    "vite": "^5.4.2"
+  }
+}
+
+
+################################################################################
+# FILE: /vite.config.ts
+################################################################################
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+import { fileURLToPath } from "url";
+import { dirname, resolve } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+  publicDir: "public",
+  resolve: {
+    alias: {
+      "@": resolve(__dirname, "./"),
+    },
+  },
+  build: {
+    outDir: "build",
+    sourcemap: false,
+    minify: "terser",
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "react-vendor": ["react", "react-dom"],
+          "ui-vendor": ["lucide-react", "recharts"],
+          "radix-vendor": [
+            "@radix-ui/react-accordion",
+            "@radix-ui/react-alert-dialog",
+            "@radix-ui/react-dialog",
+            "@radix-ui/react-dropdown-menu",
+            "@radix-ui/react-popover",
+            "@radix-ui/react-select",
+            "@radix-ui/react-tabs",
+            "@radix-ui/react-tooltip",
+          ],
+          "form-vendor": ["react-hook-form", "zod"],
+          "stripe-vendor": ["@stripe/stripe-js"],
+        },
+        chunkFileNames: "assets/[name]-[hash].js",
+        entryFileNames: "assets/[name]-[hash].js",
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name === "sw.js") {
+            return "sw.js";
+          }
+          return "assets/[name]-[hash].[ext]";
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
+  },
+  optimizeDeps: {
+    include: [
+      "react",
+      "react-dom",
+      "lucide-react",
+      "@stripe/stripe-js",
+    ],
+  },
+  server: {
+    port: 5173,
+    open: true,
+  },
+  preview: {
+    port: 4173,
+  },
+});
+
+
+################################################################################
+# FILE: /vercel.json
+################################################################################
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "build",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/sw.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        },
+        {
+          "key": "Service-Worker-Allowed",
+          "value": "/"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    }
+  ]
+}
+
+
+################################################################################
+# FILE: /public/sw.js (SERVICE WORKER)
+################################################################################
+// Service Worker for Go Sintra PWA
+// Version 1.3.3 - Prevent service worker from caching itself
+
+const CACHE_NAME = 'go-sintra-v7';
+const OFFLINE_URL = '/offline.html';
+
+const CORE_ASSETS = [
+  '/',
+  '/offline.html',
+  '/manifest.json',
+  '/icon-72x72.png',
+];
+
+self.addEventListener('install', (event) => {
+  console.log('[SW] Installing service worker...');
+  
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log('[SW] Caching core assets');
+      return cache.addAll(CORE_ASSETS).catch((error) => {
+        console.error('[SW] Failed to cache some assets:', error);
+      });
+    }).then(() => {
+      console.log('[SW] Service worker installed');
+      return self.skipWaiting();
+    }).catch((error) => {
+      console.error('[SW] Installation failed:', error);
+      return self.skipWaiting();
+    })
+  );
+});
+
+self.addEventListener('activate', (event) => {
+  console.log('[SW] Activating service worker...');
+  
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME) {
+            console.log('[SW] Deleting old cache:', cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    }).then(() => {
+      console.log('[SW] Service worker activated');
+      return self.clients.claim();
+    })
+  );
+});
+
+self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  if (request.method !== 'GET') {
+    return;
+  }
+
+  if (!url.protocol.startsWith('http')) {
+    return;
+  }
+
+  if (url.pathname === '/sw.js') {
+    return;
+  }
+
+  if (url.href.includes('undefined') || url.href.includes('null')) {
+    console.error('[SW] BLOCKED invalid request with undefined/null:', url.href);
+    event.respondWith(
+      new Response('Invalid request - contains undefined parameter', {
+        status: 400,
+        statusText: 'Bad Request',
+      })
+    );
+    return;
+  }
+
+  if (url.pathname.includes('/functions/v1/')) {
+    event.respondWith(
+      fetch(request).catch(() => {
+        return new Response(
+          JSON.stringify({ 
+            error: 'Offline - Please check your internet connection',
+            offline: true 
+          }),
+          { 
+            status: 503,
+            headers: { 'Content-Type': 'application/json' }
+          }
+        );
+      })
+    );
+    return;
+  }
+
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(request, responseToCache);
+          });
+          return response;
+        })
+        .catch(() => {
+          return caches.match(request).then((cachedResponse) => {
+            if (cachedResponse) {
+              return cachedResponse;
+            }
+            return caches.match(OFFLINE_URL);
+          });
+        })
+    );
+    return;
+  }
+
+  event.respondWith(
+    caches.match(request).then((cachedResponse) => {
+      if (cachedResponse) {
+        fetch(request).then((response) => {
+          if (response.status === 200) {
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, responseToCache);
+            });
+          }
+        }).catch(() => {});
+        return cachedResponse;
+      }
+
+      return fetch(request).then((response) => {
+        if (!response || response.status !== 200) {
+          return response;
+        }
+
+        const responseToCache = response.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(request, responseToCache);
+        });
+
+        return response;
+      }).catch(() => {
+        return new Response('Offline - Content not available', {
+          status: 503,
+          statusText: 'Service Unavailable',
+        });
+      });
+    })
+  );
+});
+
+self.addEventListener('sync', (event) => {
+  console.log('[SW] Sync event:', event.tag);
+  
+  if (event.tag === 'sync-bookings') {
+    event.waitUntil(syncOfflineBookings());
+  }
+});
+
+async function syncOfflineBookings() {
+  console.log('[SW] Syncing offline bookings...');
+  
+  try {
+    console.log('[SW] Offline bookings synced');
+    
+    const clients = await self.clients.matchAll();
+    clients.forEach(client => {
+      client.postMessage({
+        type: 'SYNC_COMPLETE',
+        message: 'Offline bookings synced successfully'
+      });
+    });
+  } catch (error) {
+    console.error('[SW] Sync failed:', error);
+  }
+}
+
+self.addEventListener('message', (event) => {
+  console.log('[SW] Message received:', event.data);
+  
+  if (event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+  
+  if (event.data.type === 'CACHE_URLS') {
+    event.waitUntil(
+      caches.open(CACHE_NAME).then((cache) => {
+        return cache.addAll(event.data.urls);
+      })
+    );
+  }
+  
+  if (event.data.type === 'CLEAR_CACHE') {
+    event.waitUntil(
+      caches.delete(CACHE_NAME).then(() => {
+        console.log('[SW] Cache cleared');
+      })
+    );
+  }
+});
+
+console.log('[SW] Service Worker loaded');
+
+
+################################################################################
+# FILE: /tsconfig.json
+################################################################################
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
+
+
+################################################################################
+# FILE: /public/manifest.json
+################################################################################
+{
+  "name": "Hop On Sintra",
+  "short_name": "Hop On Sintra",
+  "description": "Hop-on/Hop-off Day Pass Service in Sintra, Portugal",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0A4D5C",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
+
+
+################################################################################
+# SERVICE WORKER REGISTRATION (from App.tsx lines 382-453)
+################################################################################
+
+// Register service worker for PWA functionality
+useEffect(() => {
+  // Only register service worker in production (when not on localhost)
+  const isProduction =
+    !window.location.hostname.includes("localhost") &&
+    !window.location.hostname.includes("127.0.0.1");
+
+  if ("serviceWorker" in navigator && isProduction) {
+    window.addEventListener("load", async () => {
+      try {
+        const registration =
+          await navigator.serviceWorker.register("/sw.js");
+
+        // Preload essential images for offline use
+        const preloadImages = [
+          "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwZW5hJTIwcGFsYWNlJTIwc2ludHJhfGVufDF8fHx8MTc2MDE0MDYwMnww&ixlib=rb-4.1.0&q=80&w=1080",
+          "https://images.unsplash.com/photo-1668377298351-3f7a745a56fe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxxdWludGElMjBkYSUyMHJlZ2FsZWlyYSUyMHNpbnRyYXxlbnwxfHx8fDE3NjMxNjg3Njl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+          "https://images.unsplash.com/photo-1651520011190-6f37b5213684?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb29yaXNoJTIwY2FzdGxlJTIwc2ludHJhfGVufDF8fHx8MTc2MzE2ODc2OXww&ixlib=rb-4.1.0&q=80&w=1080",
+          "https://images.unsplash.com/photo-1609137144813-7d9921338f24?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb25zZXJyYXRlJTIwcGFsYWNlJTIwc2ludHJhfGVufDF8fHx8MTc2MDE0MDYwM3ww&ixlib=rb-4.1.0&q=80&w=1080",
+          "https://images.unsplash.com/photo-1668945306762-a31d14d8a940?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzaW50cmElMjBwb3J0dWdhbCUyMHBhbGFjZXxlbnwxfHx8fDE3NjAxNDAyMDB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+          "https://images.unsplash.com/photo-1672692921041-f676e2cae79a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb252ZW50byUyMGNhcHVjaG9zJTIwc2ludHJhfGVufDF8fHx8MTc2MzE2NjU5OHww&ixlib=rb-4.1.0&q=80&w=1080",
+          "https://images.unsplash.com/photo-1700739745973-bbd552072e98?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjYWJvJTIwZGElMjByb2NhJTIwbGlnaHRob3VzZXxlbnwxfHx8fDE3NjMxNjY2MDN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+          "https://images.unsplash.com/photo-1670060434149-220a5fce89da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx2aWxsYSUyMHNhc3NldHRpJTIwc2ludHJhfGVufDF8fHx8MTc2MzE2NjYwNnww&ixlib=rb-4.1.0&q=80&w=1080",
+        ];
+
+        // Send message to service worker to cache images
+        if (registration.active) {
+          registration.active.postMessage({
+            type: "CACHE_URLS",
+            urls: preloadImages,
+          });
+        }
+
+        // Check for updates
+        registration.addEventListener("updatefound", () => {
+          const newWorker = registration.installing;
+          if (newWorker) {
+            newWorker.addEventListener("statechange", () => {
+              if (
+                newWorker.state === "installed" &&
+                navigator.serviceWorker.controller
+              ) {
+                // New service worker available
+                toast.info(
+                  "New version available! Refresh to update.",
+                  {
+                    duration: 10000,
+                    action: {
+                      label: "Refresh",
+                      onClick: () => window.location.reload(),
+                    },
+                  },
+                );
+              }
+            });
+          }
+        });
+      } catch (error) {
+        // Silently fail
+      }
+    });
+
+    // Listen for messages from service worker
+    navigator.serviceWorker.addEventListener(
+      "message",
+      (event) => {
+        if (event.data.type === "SYNC_COMPLETE") {
+          toast.success(event.data.message);
+        }
+      },
+    );
+  }
+}, []);
+
+
+################################################################################
+# CONSOLE LOGS - ACTUAL OUTPUT
+################################################################################
+
+SUCCESS LOGS:
+✅ LiveChat component mounted
+✅ Supabase project ID: dwiznaefeqnduglmcivr
+✅ WhatsApp number: +351932967279
+✅ [InstallPrompt] Registering beforeinstallprompt listener
+✅ [InstallPrompt] Listeners registered. Current state: {isInstalled: false, showPrompt: false, hasDeferredPrompt: false}
+✅ 🔍 Checking backend status...
+✅ 🚨 EMERGENCY CLEANUP: Scanning for invalid icon links...
+✅ EMERGENCY CLEANUP: No invalid links found
+✅ No invalid icon links found
+✅ Favicon updated with custom HOP ON icon
+✅ Backend is online: {status: 'ok', timestamp: '2025-11-24T16:28:20.298Z'}
+✅ Synced comprehensive content from database to localStorage
+✅ Synced comprehensive content from database on mount
+
+ERROR LOG:
+❌ A bad HTTP response code (404) was received when fetching the script.
+
+
+################################################################################
+# ISSUE ANALYSIS
+################################################################################
+
+ERROR: "A bad HTTP response code (404) was received when fetching the script."
+
+LOCATION: Browser console during service worker registration
+
+WHAT'S WORKING:
+- ✅ Pages load correctly (/blog, /attractions, /about)
+- ✅ Backend API is online and responding
+- ✅ Content syncs from database
+- ✅ No other JavaScript errors
+
+WHAT'S BROKEN:
+- ❌ Service worker registration throws 404
+
+ROOT CAUSE SUSPECTS:
+1. Service worker trying to cache itself (line 73 in sw.js now prevents this)
+2. Browser has old cached service worker with bad paths
+3. Build process not copying sw.js correctly
+4. Vite potentially hashing/moving the sw.js file during build
+
+FIXES APPLIED:
+1. ✅ Added skip for /sw.js in fetch handler (prevents caching itself)
+2. ✅ Bumped cache version to v7 (forces cache refresh)
+3. ✅ Added assetFileNames in vite.config.ts to keep sw.js at root without hash
+4. ✅ Vercel.json ensures proper SPA routing and sw.js headers
+
+
+################################################################################
+# DEBUGGING CHECKLIST
+################################################################################
+
+[ ] 1. Check if /public/sw.js exists in source code
+[ ] 2. Check if /build/sw.js exists after running `npm run build`
+[ ] 3. Check if https://your-domain.com/sw.js returns 200 (not 404)
+[ ] 4. Clear all browser service workers in DevTools → Application
+[ ] 5. Clear all caches in DevTools → Application → Cache Storage
+[ ] 6. Test in incognito window after deployment
+[ ] 7. Check Network tab for sw.js request (should be 200, not 404)
+[ ] 8. Verify assetFileNames in vite.config.ts is working correctly
+
+
+################################################################################
+# EXPECTED BEHAVIOR AFTER FIX
+################################################################################
+
+Console should show:
+[SW] Service Worker loaded
+[SW] Installing service worker...
+[SW] Caching core assets
+[SW] Service worker installed
+[SW] Activating service worker...
+[SW] Service worker activated
+
+No 404 errors should appear.
+
+
+################################################################################
+# END OF EXPORT
+################################################################################

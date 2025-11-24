@@ -1,0 +1,649 @@
+================================================================================
+HOP ON SINTRA - SERVICE WORKER 404 DEBUGGING REPORT
+Generated: 2024-11-24
+================================================================================
+
+ISSUE SUMMARY:
+--------------
+Service worker registration throwing 404 error:
+"A bad HTTP response code (404) was received when fetching the script."
+
+Browser console shows:
+- ✅ Backend is online
+- ✅ Pages load correctly (/blog, /attractions, /about)
+- ❌ Service worker 404 error during registration
+
+
+CURRENT FILE STRUCTURE:
+-----------------------
+/public/sw.js           <- Service Worker file (exists)
+/App.tsx                <- Registers SW at navigator.serviceWorker.register('/sw.js')
+/vite.config.ts         <- Build configuration
+/vercel.json            <- Deployment config
+
+
+================================================================================
+FILE 1: /public/sw.js (SERVICE WORKER)
+================================================================================
+
+// Service Worker for Go Sintra PWA
+// Version 1.3.3 - Prevent service worker from caching itself
+
+const CACHE_NAME = 'go-sintra-v7'; // Bumped to clear old cache and fix 404 errors
+const OFFLINE_URL = '/offline.html';
+
+// Core assets to cache for offline functionality
+const CORE_ASSETS = [
+  '/',
+  '/offline.html',
+  '/manifest.json',
+  '/icon-72x72.png',
+];
+
+// Install event - cache core assets
+self.addEventListener('install', (event) => {
+  console.log('[SW] Installing service worker...');
+  
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log('[SW] Caching core assets');
+      return cache.addAll(CORE_ASSETS).catch((error) => {
+        console.error('[SW] Failed to cache some assets:', error);
+        // Continue even if some assets fail - don't block installation
+      });
+    }).then(() => {
+      console.log('[SW] Service worker installed');
+      return self.skipWaiting();
+    }).catch((error) => {
+      console.error('[SW] Installation failed:', error);
+      // Still skip waiting even if caching failed
+      return self.skipWaiting();
+    })
+  );
+});
+
+// Activate event - clean up old caches
+self.addEventListener('activate', (event) => {
+  console.log('[SW] Activating service worker...');
+  
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME) {
+            console.log('[SW] Deleting old cache:', cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    }).then(() => {
+      console.log('[SW] Service worker activated');
+      return self.clients.claim();
+    })
+  );
+});
+
+// Fetch event - serve from cache, fallback to network
+self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // Skip non-GET requests
+  if (request.method !== 'GET') {
+    return;
+  }
+
+  // Skip chrome-extension and other non-http(s) requests
+  if (!url.protocol.startsWith('http')) {
+    return;
+  }
+
+  // Skip service worker itself to prevent caching loops
+  if (url.pathname === '/sw.js') {
+    return;
+  }
+
+  // CRITICAL FIX: Block any requests with "undefined" or "null" in URL
+  if (url.href.includes('undefined') || url.href.includes('null')) {
+    console.error('[SW] 🚨 BLOCKED invalid request with undefined/null:', url.href);
+    event.respondWith(
+      new Response('Invalid request - contains undefined parameter', {
+        status: 400,
+        statusText: 'Bad Request',
+      })
+    );
+    return;
+  }
+
+  // Skip API calls - always go to network (we want fresh data)
+  if (url.pathname.includes('/functions/v1/')) {
+    event.respondWith(
+      fetch(request).catch(() => {
+        return new Response(
+          JSON.stringify({ 
+            error: 'Offline - Please check your internet connection',
+            offline: true 
+          }),
+          { 
+            status: 503,
+            headers: { 'Content-Type': 'application/json' }
+          }
+        );
+      })
+    );
+    return;
+  }
+
+  // For navigation requests, use network-first strategy
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          // Clone and cache the response
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(request, responseToCache);
+          });
+          return response;
+        })
+        .catch(() => {
+          // Network failed, try cache
+          return caches.match(request).then((cachedResponse) => {
+            if (cachedResponse) {
+              return cachedResponse;
+            }
+            // If nothing in cache, show offline page
+            return caches.match(OFFLINE_URL);
+          });
+        })
+    );
+    return;
+  }
+
+  // For other requests, use cache-first strategy
+  event.respondWith(
+    caches.match(request).then((cachedResponse) => {
+      if (cachedResponse) {
+        // Return cached version and update cache in background
+        fetch(request).then((response) => {
+          if (response.status === 200) {
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, responseToCache);
+            });
+          }
+        }).catch(() => {
+          // Network failed, but we have cache so it's ok
+        });
+        return cachedResponse;
+      }
+
+      // Not in cache, fetch from network
+      return fetch(request).then((response) => {
+        // Don't cache if not successful
+        if (!response || response.status !== 200) {
+          return response;
+        }
+
+        // Clone and cache the response
+        const responseToCache = response.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(request, responseToCache);
+        });
+
+        return response;
+      }).catch(() => {
+        // Network failed and no cache - return offline response
+        return new Response('Offline - Content not available', {
+          status: 503,
+          statusText: 'Service Unavailable',
+        });
+      });
+    })
+  );
+});
+
+// Background sync for offline bookings
+self.addEventListener('sync', (event) => {
+  console.log('[SW] Sync event:', event.tag);
+  
+  if (event.tag === 'sync-bookings') {
+    event.waitUntil(syncOfflineBookings());
+  }
+});
+
+// Sync offline bookings when back online
+async function syncOfflineBookings() {
+  console.log('[SW] Syncing offline bookings...');
+  
+  try {
+    // Get offline queue from IndexedDB (if implemented)
+    // This would sync any bookings created while offline
+    // For now, just log
+    console.log('[SW] Offline bookings synced');
+    
+    // Notify all clients that sync is complete
+    const clients = await self.clients.matchAll();
+    clients.forEach(client => {
+      client.postMessage({
+        type: 'SYNC_COMPLETE',
+        message: 'Offline bookings synced successfully'
+      });
+    });
+  } catch (error) {
+    console.error('[SW] Sync failed:', error);
+  }
+}
+
+// Handle messages from the app
+self.addEventListener('message', (event) => {
+  console.log('[SW] Message received:', event.data);
+  
+  if (event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+  
+  if (event.data.type === 'CACHE_URLS') {
+    event.waitUntil(
+      caches.open(CACHE_NAME).then((cache) => {
+        return cache.addAll(event.data.urls);
+      })
+    );
+  }
+  
+  if (event.data.type === 'CLEAR_CACHE') {
+    event.waitUntil(
+      caches.delete(CACHE_NAME).then(() => {
+        console.log('[SW] Cache cleared');
+      })
+    );
+  }
+});
+
+console.log('[SW] Service Worker loaded');
+
+
+================================================================================
+FILE 2: /vite.config.ts (BUILD CONFIGURATION)
+================================================================================
+
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+import { fileURLToPath } from "url";
+import { dirname, resolve } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+  publicDir: "public", // Ensure public folder is copied to build output
+  resolve: {
+    alias: {
+      "@": resolve(__dirname, "./"),
+    },
+  },
+  build: {
+    outDir: "build",
+    sourcemap: false, // Disable sourcemaps in production for smaller bundle
+    minify: "terser",
+    terserOptions: {
+      compress: {
+        drop_console: true, // Remove console.logs in production
+        drop_debugger: true,
+      },
+    },
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "react-vendor": ["react", "react-dom"],
+          "ui-vendor": ["lucide-react", "recharts"],
+          "radix-vendor": [
+            "@radix-ui/react-accordion",
+            "@radix-ui/react-alert-dialog",
+            "@radix-ui/react-dialog",
+            "@radix-ui/react-dropdown-menu",
+            "@radix-ui/react-popover",
+            "@radix-ui/react-select",
+            "@radix-ui/react-tabs",
+            "@radix-ui/react-tooltip",
+          ],
+          "form-vendor": ["react-hook-form", "zod"],
+          "stripe-vendor": ["@stripe/stripe-js"],
+        },
+        // Optimize chunk file names
+        chunkFileNames: "assets/[name]-[hash].js",
+        entryFileNames: "assets/[name]-[hash].js",
+        assetFileNames: (assetInfo) => {
+          // Keep service worker at root level without hash
+          if (assetInfo.name === "sw.js") {
+            return "sw.js";
+          }
+          return "assets/[name]-[hash].[ext]";
+        },
+      },
+    },
+    // Increase chunk size warning limit
+    chunkSizeWarningLimit: 1000,
+  },
+  optimizeDeps: {
+    include: [
+      "react",
+      "react-dom",
+      "lucide-react",
+      "@stripe/stripe-js",
+    ],
+  },
+  server: {
+    port: 5173,
+    open: true,
+  },
+  preview: {
+    port: 4173,
+  },
+});
+
+
+================================================================================
+FILE 3: /App.tsx (SERVICE WORKER REGISTRATION - EXCERPT)
+================================================================================
+
+// Located around line 385-415 in App.tsx
+
+useEffect(() => {
+  const isProduction =
+    window.location.hostname !== "localhost" &&
+    !window.location.hostname.includes("127.0.0.1");
+
+  if ("serviceWorker" in navigator && isProduction) {
+    window.addEventListener("load", async () => {
+      try {
+        const registration =
+          await navigator.serviceWorker.register("/sw.js");
+
+        // Preload essential images for offline use
+        const preloadImages = [
+          "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwZW5hJTIwcGFsYWNlJTIwc2ludHJhfGVufDF8fHx8MTc2MDE0MDYwMnww&ixlib=rb-4.1.0&q=80&w=1080",
+          "https://images.unsplash.com/photo-1668377298351-3f7a745a56fe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxxdWludGElMjBkYSUyMHJlZ2FsZWlyYSUyMHNpbnRyYXxlbnwxfHx8fDE3NjMxNjg3Njl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+          "https://images.unsplash.com/photo-1651520011190-6f37b5213684?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb29yaXNoJTIwY2FzdGxlJTIwc2ludHJhfGVufDF8fHx8MTc2MzE2ODc2OXww&ixlib=rb-4.1.0&q=80&w=1080",
+          "https://images.unsplash.com/photo-1609137144813-7d9921338f24?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb25zZXJyYXRlJTIwcGFsYWNlJTIwc2ludHJhfGVufDF8fHx8MTc2MDE0MDYwM3ww&ixlib=rb-4.1.0&q=80&w=1080",
+          "https://images.unsplash.com/photo-1668945306762-a31d14d8a940?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzaW50cmElMjBwb3J0dWdhbCUyMHBhbGFjZXxlbnwxfHx8fDE3NjAxNDAyMDB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+          "https://images.unsplash.com/photo-1672692921041-f676e2cae79a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb252ZW50byUyMGNhcHVjaG9zJTIwc2ludHJhfGVufDF8fHx8MTc2MzE2NjU5OHww&ixlib=rb-4.1.0&q=80&w=1080",
+          "https://images.unsplash.com/photo-1700739745973-bbd552072e98?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjYWJvJTIwZGElMjByb2NhJTIwbGlnaHRob3VzZXxlbnwxfHx8fDE3NjMxNjY2MDN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+          "https://images.unsplash.com/photo-1670060434149-220a5fce89da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx2aWxsYSUyMHNhc3NldHRpJTIwc2ludHJhfGVufDF8fHx8MTc2MzE2NjYwNnww&ixlib=rb-4.1.0&q=80&w=1080",
+        ];
+
+        // Send message to service worker to cache images
+        if (registration.active) {
+          registration.active.postMessage({
+            type: "CACHE_URLS",
+            urls: preloadImages,
+          });
+        }
+
+        // Check for updates
+        registration.addEventListener("updatefound", () => {
+          const newWorker = registration.installing;
+          if (newWorker) {
+            newWorker.addEventListener("statechange", () => {
+              if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+                console.log("[SW] New version available - refresh to update");
+              }
+            });
+          }
+        });
+
+        console.log("[SW] Service worker registered successfully");
+      } catch (error) {
+        console.error("[SW] Service worker registration failed:", error);
+      }
+    });
+  }
+}, []);
+
+
+================================================================================
+FILE 4: /vercel.json (DEPLOYMENT CONFIGURATION)
+================================================================================
+
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "build",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/sw.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        },
+        {
+          "key": "Service-Worker-Allowed",
+          "value": "/"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    }
+  ]
+}
+
+
+================================================================================
+CONSOLE LOGS ANALYSIS:
+================================================================================
+
+SUCCESSFUL LOGS:
+- ✅ LiveChat component mounted
+- ✅ Supabase project ID: dwiznaefeqnduglmcivr
+- ✅ WhatsApp number: +351932967279
+- ✅ Backend is online: {status: 'ok', timestamp: '2025-11-24T16:28:20.298Z'}
+- ✅ Synced comprehensive content from database to localStorage
+- ✅ No invalid icon links found
+- ✅ Favicon updated with custom HOP ON icon
+
+ERROR LOG:
+- ❌ "A bad HTTP response code (404) was received when fetching the script."
+
+
+================================================================================
+DIAGNOSTIC ANALYSIS:
+================================================================================
+
+PROBLEM:
+The error message suggests the browser cannot find a script at the expected location.
+
+POTENTIAL CAUSES:
+1. Service worker trying to cache itself (fixed in v1.3.3)
+2. Old cached service worker with outdated paths
+3. Build process not copying sw.js to correct location
+4. Browser cache holding old service worker reference
+5. Vite build potentially hashing/moving the sw.js file
+
+FIXES APPLIED:
+1. ✅ Added skip for /sw.js in fetch handler (line 73 in sw.js)
+2. ✅ Bumped cache version to v7 to force refresh
+3. ✅ Added assetFileNames function in vite.config.ts to keep sw.js at root
+4. ✅ Vercel.json rewrites ensure SPA routing works
+
+
+================================================================================
+RECOMMENDED DEBUGGING STEPS:
+================================================================================
+
+STEP 1: Check if sw.js exists in production build
+-----------------------------------------------
+After build, verify file exists at:
+- /build/sw.js (local build folder)
+- https://your-domain.com/sw.js (production URL)
+
+Command to test:
+curl -I https://your-domain.com/sw.js
+
+
+STEP 2: Check browser service worker status
+-------------------------------------------
+1. Open Chrome DevTools
+2. Go to Application tab → Service Workers
+3. Look for registered service workers
+4. Check the scope and status
+5. Note any error messages
+
+
+STEP 3: Clear browser caches completely
+---------------------------------------
+1. DevTools → Application → Storage → Clear site data
+2. DevTools → Application → Service Workers → Unregister all
+3. DevTools → Application → Cache Storage → Delete all caches
+4. Hard refresh: Ctrl+Shift+R (Windows) or Cmd+Shift+R (Mac)
+
+
+STEP 4: Check Network tab for sw.js request
+-------------------------------------------
+1. Open DevTools → Network tab
+2. Filter by "sw.js"
+3. Refresh the page
+4. Check the request details:
+   - Request URL (should be https://your-domain.com/sw.js)
+   - Status code (should be 200, currently showing 404)
+   - Response headers
+   - Response body
+
+
+STEP 5: Verify build output
+---------------------------
+Run local build and check:
+npm run build
+ls -la build/sw.js
+cat build/sw.js | head -n 20
+
+
+STEP 6: Check if Vite is transforming sw.js
+-------------------------------------------
+Look in build output for:
+- sw.js (correct location)
+- assets/sw-[hash].js (wrong - means Vite is hashing it)
+
+If sw.js has a hash, the vite.config.ts fix may not be working.
+
+
+STEP 7: Alternative - Move sw.js to public folder
+-------------------------------------------------
+Current location: /public/sw.js ✅ (correct)
+Vite copies everything from /public to build root automatically.
+
+Verify this is working by checking build folder after:
+npm run build
+
+
+================================================================================
+ALTERNATIVE SOLUTIONS:
+================================================================================
+
+OPTION 1: Disable Service Worker Temporarily
+--------------------------------------------
+In App.tsx, add condition to disable:
+if (false && "serviceWorker" in navigator && isProduction) {
+This will help determine if other issues exist.
+
+
+OPTION 2: Use Vite PWA Plugin
+-----------------------------
+Replace manual service worker with official plugin:
+npm install vite-plugin-pwa -D
+
+Then in vite.config.ts:
+import { VitePWA } from 'vite-plugin-pwa'
+
+plugins: [
+  react(),
+  tailwindcss(),
+  VitePWA({
+    registerType: 'autoUpdate',
+    workbox: {
+      globPatterns: ['**/*.{js,css,html,ico,png,svg}']
+    }
+  })
+]
+
+
+OPTION 3: Add Service Worker to public directory explicitly
+-----------------------------------------------------------
+Ensure /public/sw.js is NOT being processed by Vite:
+
+Add to vite.config.ts:
+build: {
+  rollupOptions: {
+    external: ['/sw.js']
+  }
+}
+
+
+OPTION 4: Check if Vercel is serving the file
+---------------------------------------------
+Add a test file to verify Vercel config:
+/public/test.txt with content "TEST FILE"
+
+Then check:
+https://your-domain.com/test.txt
+
+If this 404s, the problem is Vercel configuration.
+If it works, the problem is specific to sw.js handling.
+
+
+================================================================================
+EXPECTED BEHAVIOR AFTER FIXES:
+================================================================================
+
+Console should show:
+- [SW] Service Worker loaded
+- [SW] Installing service worker...
+- [SW] Caching core assets
+- [SW] Service worker installed
+- [SW] Activating service worker...
+- [SW] Service worker activated
+- [SW] Service worker registered successfully
+
+No 404 errors should appear.
+
+
+================================================================================
+NEXT STEPS:
+================================================================================
+
+1. Deploy the current fixes (sw.js v1.3.3 + vite.config.ts changes)
+2. Clear browser cache completely
+3. Test in incognito window
+4. Check Network tab for sw.js request details
+5. If still failing, run diagnostics from STEP 1-7 above
+6. Report back with:
+   - Network tab screenshot showing sw.js request
+   - Service Worker panel screenshot
+   - Build folder contents (ls -la build/)
+
+
+================================================================================
+END OF REPORT
+================================================================================

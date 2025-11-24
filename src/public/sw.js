@@ -1,7 +1,7 @@
 // Service Worker for Go Sintra PWA
-// Version 1.3.2 - Fixed script loading errors
+// Version 1.3.3 - Prevent service worker from caching itself
 
-const CACHE_NAME = 'go-sintra-v6'; // Bumped to clear old cache
+const CACHE_NAME = 'go-sintra-v7'; // Bumped to clear old cache and fix 404 errors
 const OFFLINE_URL = '/offline.html';
 
 // Core assets to cache for offline functionality
@@ -67,6 +67,11 @@ self.addEventListener('fetch', (event) => {
 
   // Skip chrome-extension and other non-http(s) requests
   if (!url.protocol.startsWith('http')) {
+    return;
+  }
+
+  // Skip service worker itself to prevent caching loops
+  if (url.pathname === '/sw.js') {
     return;
   }
 

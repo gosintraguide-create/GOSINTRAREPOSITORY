@@ -17,11 +17,11 @@ export default defineConfig({
   },
   build: {
     outDir: "build",
-    sourcemap: false, // Disable sourcemaps in production for smaller bundle
+    sourcemap: false,
     minify: "terser",
     terserOptions: {
       compress: {
-        drop_console: true, // Remove console.logs in production
+        drop_console: true,
         drop_debugger: true,
       },
     },
@@ -43,19 +43,11 @@ export default defineConfig({
           "form-vendor": ["react-hook-form", "zod"],
           "stripe-vendor": ["@stripe/stripe-js"],
         },
-        // Optimize chunk file names
         chunkFileNames: "assets/[name]-[hash].js",
         entryFileNames: "assets/[name]-[hash].js",
-        assetFileNames: (assetInfo) => {
-          // Keep service worker at root level without hash
-          if (assetInfo.name === "sw.js") {
-            return "sw.js";
-          }
-          return "assets/[name]-[hash].[ext]";
-        },
+        assetFileNames: "assets/[name]-[hash].[ext]",
       },
     },
-    // Increase chunk size warning limit
     chunkSizeWarningLimit: 1000,
   },
   optimizeDeps: {
