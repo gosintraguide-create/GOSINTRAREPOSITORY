@@ -4,10 +4,13 @@
   "outputDirectory": "Build",
   "devCommand": "npm run dev",
   "installCommand": "npm install",
-  "rewrites": [
+  "routes": [
     {
-      "source": "/((?!sitemap\\.xml|robots\\.txt|manifest\\.json|sw\\.js|icon-.*\\.png|offline\\.html|assets/).*)",
-      "destination": "/index.html"
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ],
   "headers": [

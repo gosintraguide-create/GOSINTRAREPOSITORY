@@ -1257,7 +1257,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     conversationId: string,
   ) => {
     const result = await safeJsonFetch<any>(
-      `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/chat/messages/${conversationId}`,
+      `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/chat/${conversationId}/messages`,
       {
         method: "GET",
         headers: {
@@ -1276,7 +1276,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     if (!selectedConversation || !replyMessage.trim()) return;
 
     const result = await safeJsonFetch<any>(
-      `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/chat/send`,
+      `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/chat/message`,
       {
         method: "POST",
         headers: {
@@ -1285,8 +1285,9 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
         },
         body: JSON.stringify({
           conversationId: selectedConversation,
+          sender: "admin",
+          senderName: "Hop On Sintra Team",
           message: replyMessage,
-          isAdmin: true,
         }),
       },
     );
