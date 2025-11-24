@@ -16,7 +16,7 @@ export function AdminAccess({ onNavigate }: AdminAccessProps) {
       >
         <Settings className="h-5 w-5" />
       </button>
-      
+
       {/* Operations Button - Navigate to driver login */}
       <button
         onClick={() => onNavigate("driver-login")}
