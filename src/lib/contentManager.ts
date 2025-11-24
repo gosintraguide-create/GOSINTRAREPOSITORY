@@ -1,5 +1,5 @@
 // Central content management system for the website
-// Version: 2.0 - Updated branding to Hop On Sintra
+// Version: 2.1 - Updated Hero Image to prevent flashing
 import {
   getContent as getContentFromAPI,
   saveContent as saveContentToAPI,
@@ -22,6 +22,7 @@ export interface WebsiteContent {
       subtitle: string;
       ctaButton: string;
       benefitPills: Array<{ icon: string; text: string }>;
+      heroImage?: string; // Added to prevent flashing
     };
     // Quick Links Section
     quickLinks: {
@@ -327,36 +328,36 @@ export interface WebsiteContent {
       preferredPickupSpot: string;
       pickupPlaceholder: string;
       pickupHelpText: string;
-      vehicleDispatchSmall: string; // "Perfect! We'll dispatch an appropriate vehicle for your group of {quantity}"
-      vehicleDispatchLarge: string; // "Large group! You'll need {vehicles} vehicles coordinated to arrive together."
+      vehicleDispatchSmall: string; 
+      vehicleDispatchLarge: string; 
       vehicles: string;
-      dayPassPriceSummary: string; // "Day Pass"
-      dayPassWithGuided: string; // "(includes guided commentary)"
-      forGuests: string; // "for {quantity} {guest/guests}"
+      dayPassPriceSummary: string; 
+      dayPassWithGuided: string; 
+      forGuests: string; 
     };
     step2: {
-      title: string; // "Add Attraction Tickets?"
+      title: string; 
       description: string;
-      descriptionMultiple: string; // "Prices shown for X guests"
+      descriptionMultiple: string; 
       notAvailableMessage: string;
       comingSoonBadge: string;
       comingSoonMessage: string;
       comingSoonTip: string;
-      eachLabel: string; // "each"
+      eachLabel: string; 
       tipTitle: string;
-      tipMessage: string; // "You'll receive digital tickets via email along with your day pass QR code(s)"
+      tipMessage: string; 
       backButton: string;
       continueButton: string;
     };
     step3: {
-      title: string; // "Your Information"
+      title: string; 
       fullName: string;
       fullNamePlaceholder: string;
       email: string;
       emailPlaceholder: string;
       confirmEmail: string;
       confirmEmailPlaceholder: string;
-      qrCodeMessage: string; // "Your QR code will be sent here"
+      qrCodeMessage: string; 
       emailsDontMatch: string;
       backButton: string;
       continueButton: string;
@@ -365,16 +366,16 @@ export interface WebsiteContent {
       orderSummary: string;
       paymentDetails: string;
       startingAt: string;
-      dayPassWithQuantity: string; // "Day Pass (×{quantity})"
-      plusGuided: string; // "+ Guided"
+      dayPassWithQuantity: string; 
+      plusGuided: string; 
       attractionTickets: string;
       total: string;
-      benefit1: string; // "Unlimited hop-on/hop-off until 8:00 PM"
-      benefit2: string; // "Guaranteed seating in small vehicles"
-      benefit3: string; // "Flexible - use anytime during operating hours"
-      benefit4Single: string; // "QR code sent via email"
-      benefit4Multiple: string; // "{quantity} QR codes sent via email"
-      benefit5: string; // "Guided commentary included"
+      benefit1: string; 
+      benefit2: string; 
+      benefit3: string; 
+      benefit4Single: string; 
+      benefit4Multiple: string; 
+      benefit5: string; 
       paymentInitFailed: string;
       preparingPayment: string;
       retry: string;
@@ -392,7 +393,7 @@ export interface WebsiteContent {
       other: string;
     };
     timeSlots: {
-      guidedTourLabel: string; // "Guided Tour"
+      guidedTourLabel: string; 
     };
     passengersSelection: {
       yourInformation: string;
@@ -614,6 +615,8 @@ export const DEFAULT_CONTENT: WebsiteContent = {
         { icon: "Shield", text: "Local Guides" },
         { icon: "MapPin", text: "All Attractions" },
       ],
+      // UPDATED HERO IMAGE URL HERE
+      heroImage: "https://dwiznaefeqnduglmcivr.supabase.co/storage/v1/object/public/make-3bd0ade8-images/1762977905581_pena-palace-3.jpg",
     },
     // Quick Links Section
     quickLinks: {

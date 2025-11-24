@@ -66,20 +66,20 @@ interface AvailabilitySettings {
 }
 
 const DEFAULT_PRICING: PricingSettings = {
-  basePrice: 25,
+  basePrice: 15,
   guidedTourSurcharge: 5,
   attractions: {
     "pena-palace-park": {
       name: "Pena Palace Park Only",
-      price: 8,
+      price: 10,
     },
     "pena-palace-full": {
       name: "Pena Palace & Park",
-      price: 14,
+      price: 20,
     },
     "quinta-regaleira": {
       name: "Quinta da Regaleira",
-      price: 12,
+      price: 13,
     },
     "moorish-castle": { name: "Moorish Castle", price: 10 },
     "monserrate-palace": {
