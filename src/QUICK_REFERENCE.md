@@ -127,12 +127,19 @@ Database cleanup will **NEVER** remove:
 ## 💳 Payment Configuration
 
 **Service:** Stripe  
-**Secrets:** Already configured
-- `STRIPE_SECRET_KEY`
-- `STRIPE_PUBLISHABLE_KEY`
+**Mode:** TEST MODE (Test keys configured)  
+**Secrets:** Update in Supabase Dashboard
+- `STRIPE_SECRET_KEY` = `sk_test_51SHXlZ...` 
+- `STRIPE_PUBLISHABLE_KEY` = `pk_test_51SHXlZ...`
 
-**Test Mode:** Currently in test mode  
-**Live Mode:** Update keys in Supabase dashboard
+**Test Card:** 4242 4242 4242 4242  
+**Stripe Dashboard:** https://dashboard.stripe.com/test/payments  
+**Update Keys:** See `/UPDATE_STRIPE_KEYS.md`
+
+**To Switch to Live Mode:**
+1. Go to Supabase Dashboard → Edge Functions → Secrets
+2. Update both keys with `pk_live_` and `sk_live_` versions
+3. Redeploy edge function
 
 ---
 

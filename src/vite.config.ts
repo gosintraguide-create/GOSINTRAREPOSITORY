@@ -9,7 +9,7 @@ const __dirname = dirname(__filename);
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  publicDir: "public", // Ensure public folder is copied to build output
+  publicDir: "public", // Ensure public folder is copied to build output (includes sitemap.xml)
   base: "/", // Ensure base path is set correctly for deployment
   resolve: {
     alias: {

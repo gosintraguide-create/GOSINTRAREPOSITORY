@@ -1,483 +1,232 @@
-# ✅ Deployment Checklist - Go Sintra
+# 🚀 Deployment Checklist
 
-## Pre-Deployment (Do This First)
+## Two Things Ready to Deploy
 
-### 1. Test Build Locally
+### ✅ 1. Sitemap Generation (Automated)
+- [x] Script created: `/scripts/generate-sitemap.cjs`
+- [x] Package.json updated with prebuild script
+- [x] Sitemap.xml generated in `/public/sitemap.xml` (22 URLs)
+- [x] Vite config set to copy public folder
+- [x] Vercel config set to serve sitemap with correct headers
+- [x] .gitignore created (allows sitemap.xml)
+- [x] Documentation created
+- [ ] **ACTION NEEDED:** Commit and push to GitHub
+
+### ✅ 2. Stripe Test Mode Keys (Manual Update)
+- [x] New test keys documented
+- [x] Comprehensive guides created
+- [x] Helper script added (`npm run verify-stripe`)
+- [x] README updated
+- [x] Quick reference updated
+- [ ] **ACTION NEEDED:** Update keys in Supabase dashboard
+
+---
+
+## 📋 Deployment Steps
+
+### Step 1: Update Stripe Keys in Supabase (5 minutes)
+
+🔗 Go to: https://supabase.com/dashboard/project/dwiznaefeqnduglmcivr/settings/functions
+
+Update these secrets:
+
+| Secret Name | Value |
+|-------------|-------|
+| `STRIPE_PUBLISHABLE_KEY` | `pk_test_51SHXlZJVoVAJealRtS3M6i53Jz8uas7LUwsqs5lAdlLG64mxzYu8FCSwIjSdmY4GAc7XUyH6muXtVWdSSNg6l8LB00APHphxAH` |
+| `STRIPE_SECRET_KEY` | `sk_test_51SHXlZJVoVAJealRFRyHKeVmiVxMwaqvQBNO4BesEz4K2OKVD2OBaQFrd46TLTGtDbVJ7jZmk7TeSAmFugurxDkV00zzUFKm8z` |
+
+**See detailed guide:** `/STRIPE_TEST_MODE_SETUP.md`
+
+---
+
+### Step 2: Deploy Everything to Production (2-3 minutes)
 
 ```bash
-# Option A: Use the test script
-./test-build.sh        # Mac/Linux
-test-build.bat         # Windows
-
-# Option B: Manual test
-npm install
-npm run build
-ls -la dist/
-```
-
-**Expected Result:**
-- ✅ `dist/` folder created
-- ✅ `dist/index.html` exists
-- ✅ `dist/assets/` folder contains JS and CSS files
-
-### 2. Validate Configuration Files
-
-```bash
-# Check package.json is valid
-node -e "require('./package.json')"
-
-# Check vercel.json is valid
-node -e "require('./vercel.json')"
-
-# Both should output nothing if valid
-```
-
-### 3. Commit All Changes
-
-```bash
-git status
+# Add all new files
 git add .
-git commit -m "Fix vercel.json and prepare for deployment"
+
+# Commit with descriptive message
+git commit -m "Add automatic sitemap generation and switch to Stripe test mode
+
+- Created sitemap generation script (CommonJS format for Vercel compatibility)
+- Added comprehensive Stripe test mode documentation
+- Updated README and QUICK_REFERENCE with test mode info
+- Added helper script: npm run verify-stripe
+- Created .gitignore to ensure proper file tracking"
+
+# Push to trigger Vercel deployment
 git push origin main
 ```
 
 ---
 
-## Deployment Methods
-
-### Method 1: Automatic Deploy (Recommended)
-
-**Steps:**
-1. Push to GitHub (done above)
-2. Vercel auto-detects the push
-3. Build starts automatically
-4. Wait 3-5 minutes
-
-**Monitor:**
-- Go to Vercel Dashboard → Deployments
-- Watch the build progress
-- Check build logs if it fails
-
-### Method 2: Manual Redeploy
-
-**Steps:**
-1. Go to **Vercel Dashboard**
-2. Click **Deployments**
-3. Find latest deployment
-4. Click **"..."** menu
-5. Click **"Redeploy"**
-6. **Uncheck** "Use existing Build Cache"
-7. Click **"Redeploy"**
-
-### Method 3: Vercel CLI
-
-**Steps:**
-```bash
-# Install CLI (first time only)
-npm install -g vercel
-
-# Login (first time only)
-vercel login
-
-# Deploy
-vercel --prod
-```
-
----
-
-## During Deployment
-
-### What to Watch
-
-1. **Installation Phase** (1-2 min)
-   - Installing dependencies...
-   - ✓ Dependencies installed
-
-2. **Build Phase** (1-3 min)
-   - Running build command: npm run build
-   - vite building for production...
-   - ✓ X modules transformed
-   - ✓ built in Xs
-
-3. **Deployment Phase** (30 sec)
-   - Uploading build outputs...
-   - ✓ Deployment ready
-
-### Common Build Log Messages
-
-**✅ Good Messages:**
-```
-Installing dependencies...
-✓ Dependencies installed
-Running build command: npm run build
-vite v5.0.8 building for production...
-✓ 234 modules transformed.
-dist/index.html                  1.23 kB
-dist/assets/index-abc123.css    45.67 kB
-dist/assets/index-def456.js    234.56 kB
-✓ built in 8.42s
-Build Completed!
-```
-
-**❌ Bad Messages to Watch For:**
-```
-Error: Cannot find module 'X'
-→ Fix: npm install X, commit, push
-
-Failed to parse source for import analysis
-→ Fix: Check for syntax errors in code
-
-No Output Directory named "dist" found
-→ Fix: Already fixed! (vercel.json syntax)
-
-ENOENT: no such file or directory
-→ Fix: Check import paths are correct
-```
-
----
-
-## Post-Deployment Verification
-
-### 1. Basic Checks
-
-- [ ] Deployment shows "Ready" status in Vercel
-- [ ] Visit the Vercel URL - site loads
-- [ ] Homepage displays correctly
-- [ ] No console errors in browser DevTools
-
-### 2. Navigation Tests
-
-- [ ] Click "How It Works" - page loads
-- [ ] Click "Attractions" - page loads
-- [ ] Click "Buy Pass" - page loads
-- [ ] Click each attraction - detail pages load
-- [ ] Language selector works
-- [ ] Footer links work
-
-### 3. Functional Tests
-
-- [ ] Booking flow works
-  - [ ] Select pass type
-  - [ ] Choose date
-  - [ ] Add optional attractions
-  - [ ] Enter details
-  - [ ] Payment form loads (don't need to pay)
-  
-- [ ] Admin access
-  - [ ] Admin button visible (bottom-right)
-  - [ ] Login page loads
-  
-- [ ] PWA Features
-  - [ ] Service worker registers (check console)
-  - [ ] Install prompt shows (on mobile/compatible browsers)
-
-### 4. Performance Tests
-
-- [ ] Images load properly
-- [ ] Styles apply correctly
-- [ ] No layout shifts
-- [ ] Page transitions are smooth
-- [ ] Forms are responsive
-
-### 5. Mobile Tests
-
-- [ ] Site is mobile-responsive
-- [ ] Touch targets are adequate
-- [ ] Text is readable
-- [ ] PWA install prompt appears
-
----
-
-## Environment Variables Setup
-
-After successful deployment, add these in **Vercel Dashboard**:
-
-### Required Variables
-
-Go to **Settings** → **Environment Variables**:
-
-```
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key
-VITE_STRIPE_PUBLIC_KEY=pk_live_...
-```
-
-### How to Add
-
-1. Click **"Add New"**
-2. Enter **Name:** `VITE_SUPABASE_URL`
-3. Enter **Value:** (paste your Supabase URL)
-4. Select environments: **Production, Preview, Development**
-5. Click **"Save"**
-6. Repeat for each variable
-
-### After Adding Variables
-
-**Redeploy** to apply the new environment variables:
-- Click **Deployments** → **Redeploy**
-
----
-
-## Backend Configuration
-
-### Update Supabase Edge Function
-
-Update the CORS configuration with your Vercel URL:
-
-```typescript
-// In /supabase/functions/server/index.tsx
-const corsHeaders = {
-  'Access-Control-Allow-Origin': 'https://your-project.vercel.app',
-  // ... rest of headers
-}
-```
-
-Then deploy the updated function to Supabase.
-
-### Stripe Webhook
-
-Add your Vercel URL to Stripe webhook endpoints:
-
-1. Go to **Stripe Dashboard** → **Developers** → **Webhooks**
-2. Click **"Add endpoint"**
-3. URL: `https://your-project.vercel.app/api/stripe-webhook`
-4. Events: Select relevant events
-5. Copy the signing secret
-6. Add to Vercel env vars: `STRIPE_WEBHOOK_SECRET`
-
----
-
-## Custom Domain (Optional)
-
-### Add Domain in Vercel
-
-1. **Settings** → **Domains**
-2. Click **"Add"**
-3. Enter your domain: `gosintra.com`
-4. Follow DNS instructions
-
-### Update DNS Records
-
-Add these records at your domain registrar:
-
-```
-Type    Name    Value
-A       @       76.76.21.21
-CNAME   www     cname.vercel-dns.com
-```
-
-### Update CORS
-
-After adding domain, update Supabase CORS to include:
-- `https://gosintra.com`
-- `https://www.gosintra.com`
-
----
-
-## Performance Optimization
-
-### Enable Vercel Features
-
-1. **Analytics**
-   - Settings → Analytics → Enable
-   - Monitor real user performance
-
-2. **Speed Insights**
-   - Settings → Speed Insights → Enable
-   - Get Core Web Vitals data
-
-3. **Security Headers**
-   - Already configured in vercel.json ✅
-
-### Cache Configuration
-
-Already configured in vercel.json:
-- ✅ Static assets: 1 year cache
-- ✅ Service worker: no cache
-- ✅ HTML: no cache
-- ✅ Images: 1 year cache
-
----
-
-## Monitoring & Maintenance
-
-### Regular Checks
-
-**Daily:**
-- [ ] Check Vercel deployment status
-- [ ] Monitor error logs
-
-**Weekly:**
-- [ ] Review analytics
-- [ ] Check performance metrics
-- [ ] Test booking flow
-
-**Monthly:**
-- [ ] Update dependencies
-- [ ] Review and optimize images
-- [ ] Check SEO rankings
-
-### Where to Monitor
-
-**Vercel Dashboard:**
-- Deployments: Build history
-- Analytics: Traffic data
-- Logs: Error messages
-
-**Supabase Dashboard:**
-- Database: Booking data
-- Edge Functions: API logs
-- Storage: File uploads
-
-**Stripe Dashboard:**
-- Payments: Transaction history
-- Webhooks: Event delivery
-
----
-
-## Troubleshooting Deployment Issues
-
-### Build Fails
-
-**1. Check the error message in build logs**
-   - Go to Deployments → Click failed deployment
-   - Read the error carefully
-
-**2. Test locally first**
-   ```bash
-   npm run build
+### Step 3: Verify Sitemap Deployment (After Vercel build completes)
+
+**Watch build logs:**
+1. Go to https://vercel.com/dashboard
+2. Click on latest deployment
+3. View build logs
+4. Look for:
    ```
-   - If it fails locally, fix the issue before pushing
+   ✅ Sitemap generated successfully!
+      Location: /vercel/path0/public/sitemap.xml
+      Size: 3XXX bytes
+      URLs: 22 pages included
+   ```
 
-**3. Clear Vercel cache**
-   - Settings → Clear Build Cache
-   - Redeploy
-
-### Build Succeeds But Site Doesn't Work
-
-**1. Check environment variables**
-   - Verify all required vars are set
-   - Check for typos
-
-**2. Check browser console**
-   - Look for error messages
-   - Fix API endpoint issues
-
-**3. Check CORS**
-   - Verify Supabase allows your Vercel URL
-
-### Deployment is Slow
-
-**1. Check build logs**
-   - Look for slow dependencies
-   - Consider optimizing imports
-
-**2. Split code better**
-   - Already configured in vite.config.ts ✅
-
-**3. Reduce bundle size**
-   - Remove unused dependencies
-   - Lazy load heavy components
-
----
-
-## Success Criteria
-
-Your deployment is successful when:
-
-### Technical Checks
-- [x] Build completes without errors
-- [x] `dist/` folder is created and deployed
-- [x] Site is accessible at Vercel URL
-- [x] No 404 errors
-- [x] No console errors
-
-### Functional Checks
-- [ ] All pages load
-- [ ] Navigation works
-- [ ] Forms submit
-- [ ] Payments process
-- [ ] Admin panel accessible
-- [ ] PWA installs
-
-### Performance Checks
-- [ ] Lighthouse score > 90
-- [ ] First Contentful Paint < 2s
-- [ ] Time to Interactive < 3s
-- [ ] Images optimized
-- [ ] No layout shift
-
----
-
-## Quick Reference
-
-### One-Line Deploy
-
+**Test the live sitemap:**
 ```bash
-git add . && git commit -m "Deploy" && git push origin main
+# Should return 200 OK
+curl -I https://www.hoponsintra.com/sitemap.xml
 ```
 
-### Check Build Logs
+Or visit in browser: https://www.hoponsintra.com/sitemap.xml
+
+**Expected result:** XML file with all 22 URLs
+
+---
+
+### Step 4: Test Stripe Payment
+
+**After updating keys in Supabase (Step 1):**
+
+1. Go to: https://www.hoponsintra.com/buy-ticket
+2. Add a day pass to cart
+3. Enter details and proceed to payment
+4. Use test card:
+   - Card: **4242 4242 4242 4242**
+   - Expiry: **12/25**
+   - CVC: **123**
+   - ZIP: **12345**
+5. Complete payment
+6. Should see success page! ✅
+
+**Verify payment:**
+- Stripe Dashboard: https://dashboard.stripe.com/test/payments
+- Admin Panel: https://www.hoponsintra.com/admin (password: Sintra2025)
+
+---
+
+### Step 5: Submit Sitemap to Google (After sitemap is live)
+
+1. Go to: https://search.google.com/search-console
+2. Select property: hoponsintra.com
+3. Click "Sitemaps" in sidebar
+4. Enter: `sitemap.xml`
+5. Click "Submit"
+
+**Timeline:**
+- Sitemap discovered: ~24 hours
+- Pages indexed: 1-2 weeks
+
+---
+
+## ✅ Success Criteria
+
+### Sitemap:
+- [ ] Build completes without errors
+- [ ] Sitemap generation logs appear in Vercel build output
+- [ ] https://www.hoponsintra.com/sitemap.xml returns 200 OK (not 404)
+- [ ] XML file shows all 22 URLs
+- [ ] Content-Type header is `application/xml`
+- [ ] Google Search Console accepts the sitemap
+
+### Stripe:
+- [ ] Keys updated in Supabase dashboard
+- [ ] Both keys start with `test_` not `live_`
+- [ ] Test payment succeeds with 4242 4242 4242 4242
+- [ ] Payment appears in Stripe test dashboard
+- [ ] Booking appears in admin panel
+- [ ] No console errors during checkout
+
+---
+
+## 📚 Documentation Reference
+
+| Document | Purpose |
+|----------|---------|
+| `/ACTION_REQUIRED.md` | Quick overview of what needs to be done |
+| `/DEPLOY_SITEMAP_NOW.md` | Detailed sitemap deployment guide |
+| `/SITEMAP_TROUBLESHOOTING.md` | Troubleshooting if sitemap 404s |
+| `/STRIPE_TEST_MODE_SETUP.md` | Stripe setup with detailed steps |
+| `/UPDATE_STRIPE_KEYS.md` | Stripe troubleshooting and architecture |
+| `/STRIPE_KEYS_REFERENCE.txt` | Printable quick reference card |
+| This file | Complete deployment checklist |
+
+---
+
+## 🛠️ Helper Commands
 
 ```bash
-# Via CLI
-vercel logs
+# Display Stripe keys and checklist
+npm run verify-stripe
 
-# Or visit:
-# https://vercel.com/your-team/your-project/deployments
+# Generate sitemap manually (optional)
+node scripts/generate-sitemap.cjs
+
+# Build locally to test
+npm run build
+
+# Check if sitemap exists in dist
+ls -la dist/sitemap.xml
 ```
 
-### Rollback Deployment
+---
 
-1. Go to **Deployments**
-2. Find previous working deployment
-3. Click **"..."** → **"Promote to Production"**
+## ⚠️ Important Notes
+
+### About Git:
+- All files are tracked (not ignored)
+- Safe to commit - no sensitive data in code
+- Stripe keys are in environment variables only
+
+### About Test Mode:
+- No real charges will be made
+- Only test credit cards work
+- Separate Stripe dashboard for test data
+- Safe for development and QA testing
+
+### About Going Live:
+When ready for production:
+1. Get live Stripe keys (pk_live_ and sk_live_)
+2. Update in Supabase dashboard
+3. No code changes needed!
 
 ---
 
-## Getting Help
+## 🎯 Current Status
 
-### Before Asking for Help
+✅ **Ready to deploy:**
+- [x] Sitemap generation script (CommonJS)
+- [x] All documentation created
+- [x] .gitignore configured
+- [x] Helper scripts added
+- [x] README updated
 
-Gather this information:
-1. **Full build log** from Vercel
-2. **Output of** `npm run build` locally
-3. **Node version:** `node -v`
-4. **What you've tried** from this checklist
-
-### Where to Get Help
-
-- **Vercel Support:** https://vercel.com/support
-- **Vercel Docs:** https://vercel.com/docs
-- **This Project Docs:**
-  - [`WHAT_I_FIXED.md`](./WHAT_I_FIXED.md)
-  - [`VERCEL_TROUBLESHOOTING.md`](./VERCEL_TROUBLESHOOTING.md)
-  - [`FIX_NOW.md`](./FIX_NOW.md)
+⏳ **Waiting for you:**
+- [ ] Update Stripe keys in Supabase
+- [ ] Commit and push to GitHub
+- [ ] Wait for Vercel deployment
+- [ ] Test sitemap URL
+- [ ] Test payment flow
+- [ ] Submit sitemap to Google
 
 ---
 
-## Final Pre-Flight Check
+## ❓ Questions or Issues?
 
-Before you push to deploy, verify:
+**Sitemap returns 404?**
+→ See `/SITEMAP_TROUBLESHOOTING.md`
 
-- [ ] `npm run build` works locally
-- [ ] `vercel.json` is valid JSON
-- [ ] All changes are committed
-- [ ] Environment variables documented
-- [ ] Backend URLs updated
-- [ ] You have Vercel access
-- [ ] GitHub repo is connected to Vercel
+**Payment not working?**
+→ See `/UPDATE_STRIPE_KEYS.md` troubleshooting section
 
-## Ready to Deploy?
+**Need the Stripe keys again?**
+→ See `/STRIPE_KEYS_REFERENCE.txt`
 
-```bash
-git push origin main
-```
-
-Then watch your Vercel dashboard! 🚀
+**Build failing?**
+→ Check Vercel logs for errors, look for sitemap generation message
 
 ---
 
-**Last Updated:** January 17, 2025  
-**Status:** ✅ Ready for deployment  
-**Estimated Time:** 5-10 minutes for first deployment
+**Ready to deploy?** Follow Step 1 (update Stripe keys) and Step 2 (git push) above! 🚀

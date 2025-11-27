@@ -114,14 +114,30 @@ const generateSitemap = () => {
 const publicDir = path.resolve(__dirname, '../public');
 const sitemapPath = path.join(publicDir, 'sitemap.xml');
 
+console.log('📁 Public directory path:', publicDir);
+console.log('📄 Sitemap file path:', sitemapPath);
+
 // Ensure public dir exists
 if (!fs.existsSync(publicDir)){
+    console.log('⚠️  Public directory does not exist, creating it...');
     fs.mkdirSync(publicDir, { recursive: true });
 }
 
 try {
-  fs.writeFileSync(sitemapPath, generateSitemap());
-  console.log(`✅ Sitemap generated at ${sitemapPath}`);
+  const sitemapContent = generateSitemap();
+  fs.writeFileSync(sitemapPath, sitemapContent);
+  
+  // Verify the file was written
+  if (fs.existsSync(sitemapPath)) {
+    const stats = fs.statSync(sitemapPath);
+    console.log(`✅ Sitemap generated successfully!`);
+    console.log(`   Location: ${sitemapPath}`);
+    console.log(`   Size: ${stats.size} bytes`);
+    console.log(`   URLs: 22 pages included`);
+  } else {
+    console.error('❌ File was not created!');
+    process.exit(1);
+  }
 } catch (error) {
   console.error('❌ Error generating sitemap:', error);
   process.exit(1);

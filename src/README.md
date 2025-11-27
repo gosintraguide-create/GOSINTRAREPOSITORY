@@ -42,7 +42,7 @@ Go Sintra is a mobile-first PWA that enables tourists to purchase day passes for
 - GitHub account
 - Vercel account (free)
 - Supabase account (configured)
-- Stripe account (live mode)
+- Stripe account (test mode active - see `/STRIPE_TEST_MODE_SETUP.md`)
 
 ### Local Development
 
@@ -271,8 +271,9 @@ SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_ANON_KEY=your_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 SUPABASE_DB_URL=postgresql://...
-STRIPE_SECRET_KEY=sk_live_...
-STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_SECRET_KEY=sk_test_... # Currently in TEST MODE
+STRIPE_PUBLISHABLE_KEY=pk_test_... # Currently in TEST MODE
+STRIPE_WEBHOOK_SECRET=whsec_... # Use test webhook secret
 RESEND_API_KEY=re_...
 RESEND_FROM_EMAIL=bookings@yourdomain.com
 ```
