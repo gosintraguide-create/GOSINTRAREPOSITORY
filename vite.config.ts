@@ -2,6 +2,11 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import path from 'path';
 import fs from 'fs';
+import { fileURLToPath } from 'url';
+
+// --- FIX: Define __dirname for ES Modules ---
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // --- SITEMAP GENERATION LOGIC ---
 const BASE_URL = 'https://www.hoponsintra.com';
@@ -42,14 +47,18 @@ const sitemapPlugin = () => {
     name: 'sitemap-generator',
     buildStart() {
       try {
+        // Ensure we are writing to the correct public directory
         const publicDir = path.resolve(__dirname, 'public');
+        
         if (!fs.existsSync(publicDir)) {
           fs.mkdirSync(publicDir);
         }
-        fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), generateSitemapXml());
-        console.log('✅ Sitemap generated in public/sitemap.xml');
+        
+        const filePath = path.join(publicDir, 'sitemap.xml');
+        fs.writeFileSync(filePath, generateSitemapXml());
+        console.log(`✅ Sitemap generated at: ${filePath}`);
       } catch (error) {
-        console.error('⚠️ Failed to generate sitemap:', error);
+        console.error('❌ Failed to generate sitemap:', error);
       }
     }
   }
@@ -59,7 +68,7 @@ const sitemapPlugin = () => {
 export default defineConfig({
   plugins: [
     react(), 
-    sitemapPlugin() // Add the custom plugin here
+    sitemapPlugin()
   ],
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
