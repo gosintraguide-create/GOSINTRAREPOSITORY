@@ -1,4 +1,3 @@
-// scripts/generate-sitemap.js
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -16,14 +15,13 @@ const staticRoutes = [
   '/about',
   '/blog',
   '/private-tours',
-  '/sunset-special',
   '/request-pickup',
   '/manage-booking',
   '/privacy-policy',
   '/terms-of-service',
 ];
 
-// 2. Define your Attractions (from content)
+// 2. Define your Attractions
 const attractions = [
   'pena-palace',
   'quinta-regaleira',
@@ -35,11 +33,11 @@ const attractions = [
   'villa-sassetti',
 ];
 
-// 3. Define Default Blog Articles (Manually copied from defaults since we can't access localStorage here)
+// 3. Define Default Blog Articles
 const articles = [
-  'getting-to-sintra-from-lisbon',
-  'planning-perfect-day-sintra',
-  'sintra-on-budget'
+  'how-to-get-to-sintra',
+  'planning-your-perfect-day',
+  'pena-palace-complete-guide'
 ];
 
 const generateSitemap = () => {
@@ -50,39 +48,12 @@ const generateSitemap = () => {
 
   // Add Static Pages
   staticRoutes.forEach(route => {
-    // Set priority based on page importance
-    let priority = '0.7';
-    let changefreq = 'weekly';
-    
-    if (route === '') {
-      priority = '1.0';
-      changefreq = 'daily';
-    } else if (route === '/buy-ticket') {
-      priority = '0.9';
-      changefreq = 'daily';
-    } else if (route === '/attractions' || route === '/blog' || route === '/private-tours') {
-      priority = '0.9';
-      changefreq = 'weekly';
-    } else if (route === '/sunset-special') {
-      priority = '0.8';
-      changefreq = 'weekly';
-    } else if (route === '/manage-booking') {
-      priority = '0.6';
-      changefreq = 'weekly';
-    } else if (route === '/privacy-policy' || route === '/terms-of-service') {
-      priority = '0.3';
-      changefreq = 'yearly';
-    } else if (route === '/about') {
-      priority = '0.7';
-      changefreq = 'monthly';
-    }
-    
     xml += `
   <url>
     <loc>${BASE_URL}${route}</loc>
     <lastmod>${today}</lastmod>
-    <changefreq>${changefreq}</changefreq>
-    <priority>${priority}</priority>
+    <changefreq>weekly</changefreq>
+    <priority>${route === '' ? '1.0' : '0.8'}</priority>
   </url>`;
   });
 
@@ -93,7 +64,7 @@ const generateSitemap = () => {
     <loc>${BASE_URL}/${slug}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
   </url>`;
   });
 
