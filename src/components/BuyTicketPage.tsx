@@ -66,20 +66,20 @@ interface AvailabilitySettings {
 }
 
 const DEFAULT_PRICING: PricingSettings = {
-  basePrice: 15,
+  basePrice: 25,
   guidedTourSurcharge: 5,
   attractions: {
     "pena-palace-park": {
       name: "Pena Palace Park Only",
-      price: 10,
+      price: 8,
     },
     "pena-palace-full": {
       name: "Pena Palace & Park",
-      price: 20,
+      price: 14,
     },
     "quinta-regaleira": {
       name: "Quinta da Regaleira",
-      price: 13,
+      price: 12,
     },
     "moorish-castle": { name: "Moorish Castle", price: 10 },
     "monserrate-palace": {
@@ -227,13 +227,13 @@ export function BuyTicketPage({
 
         if (response.ok) {
           const data = await response.json();
-          if (data.pricing) {
+          if (data.success && data.pricing) {
             setPricing({
               ...DEFAULT_PRICING,
               ...data.pricing,
               attractions: {
                 ...DEFAULT_PRICING.attractions,
-                ...data.pricing.attractions,
+                ...(data.pricing.attractions || {}),
               },
             });
             // Save to localStorage for offline use

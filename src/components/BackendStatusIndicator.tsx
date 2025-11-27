@@ -41,12 +41,12 @@ export function BackendStatusIndicator() {
         console.log("✅ Backend is online:", data);
         setStatus("online");
       } else {
-        console.error("❌ Backend returned error:", response.status);
+        console.log("ℹ️ Backend not deployed (this is normal in development):", response.status);
         setStatus("offline");
         setErrorDetails(
           `Backend returned ${response.status}. ${
             response.status === 404
-              ? "Edge Function may not be deployed."
+              ? "Edge Function not deployed. App will work locally with cached data."
               : "Backend service error."
           }`
         );

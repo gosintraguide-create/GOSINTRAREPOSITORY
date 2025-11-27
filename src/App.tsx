@@ -24,6 +24,8 @@ import { Analytics } from "@vercel/analytics/react";
 const GA_MEASUREMENT_ID = "G-VM2HFTLH4R"; // Hop On Sintra GA4 Measurement ID
 const CLARITY_PROJECT_ID = ""; // Replace with your Clarity project ID (optional)
 
+// Build timestamp: Force rebuild
+
 // Lazy load page components for better performance
 const HomePage = lazy(() =>
   import("./components/HomePage").then((m) => ({

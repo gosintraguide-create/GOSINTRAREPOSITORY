@@ -16,21 +16,24 @@ interface BookingConfirmationPageProps {
 }
 
 export function BookingConfirmationPage({ onNavigate, booking, language }: BookingConfirmationPageProps) {
-  const [emailSent, setEmailSent] = useState(false);
+  // Initialize emailSent based on the booking prop, defaulting to false
+  // This avoids the "fake success" timeout that was previously used
+  const [emailSent, setEmailSent] = useState(booking?.emailSent || false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
 
   useEffect(() => {
     // Scroll to top
     window.scrollTo(0, 0);
     
-    // Simulate email sent status
-    setTimeout(() => setEmailSent(true), 1000);
+    // Update state if booking prop updates with email status
+    if (booking?.emailSent) {
+      setEmailSent(true);
+    }
   }, [booking]);
 
   const handleDownloadPDF = async () => {
     setDownloadingPdf(true);
     try {
-      
       const response = await fetch(
         `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/bookings/${booking.id}/pdf`,
         {
@@ -96,13 +99,6 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
 
   const handlePrint = () => {
     window.print();
-  };
-
-  const handleDownloadQR = (qrCode: string, passengerName: string) => {
-    const link = document.createElement('a');
-    link.download = `hoponsintra-qr-${passengerName.replace(/\s/g, '-')}.png`;
-    link.href = qrCode;
-    link.click();
   };
 
   return (

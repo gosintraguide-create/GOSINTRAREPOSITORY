@@ -22,7 +22,7 @@ export default defineConfig({
     minify: "terser",
     terserOptions: {
       compress: {
-        drop_console: true,
+        drop_console: false, // Keep console logs for debugging
         drop_debugger: true,
       },
     },
@@ -46,7 +46,24 @@ export default defineConfig({
         },
         chunkFileNames: "assets/[name]-[hash].js",
         entryFileNames: "assets/[name]-[hash].js",
-        assetFileNames: "assets/[name]-[hash].[ext]",
+        assetFileNames: (assetInfo) => {
+          // Don't hash these important files - keep original names
+          const keepOriginalName = [
+            'sitemap.xml',
+            'robots.txt',
+            'manifest.json',
+            '404.html',
+            'offline.html',
+            'sw.js'
+          ];
+          
+          if (assetInfo.name && keepOriginalName.some(name => assetInfo.name?.includes(name))) {
+            return '[name].[ext]';
+          }
+          
+          // Hash everything else
+          return 'assets/[name]-[hash].[ext]';
+        },
       },
     },
     chunkSizeWarningLimit: 1000,

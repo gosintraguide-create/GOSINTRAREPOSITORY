@@ -100,13 +100,13 @@ export function ManualBookingPage({ onNavigate }: ManualBookingPageProps) {
         
         if (response.ok) {
           const data = await response.json();
-          if (data.pricing) {
+          if (data.success && data.pricing) {
             setPricing({
               ...pricing,
               ...data.pricing,
               attractions: {
                 ...pricing.attractions,
-                ...data.pricing.attractions,
+                ...(data.pricing.attractions || {}),
               }
             });
             localStorage.setItem("admin-pricing", JSON.stringify(data.pricing));

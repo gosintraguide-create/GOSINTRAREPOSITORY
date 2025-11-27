@@ -6,6 +6,7 @@ import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { projectId, publicAnonKey } from '../utils/supabase/info';
+import { toast } from "sonner@2.0.3";
 
 interface RequestPickupPageProps {
   onNavigate: (page: string) => void;
@@ -37,28 +38,6 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
     if (size <= 4) return "UMM Jeep (4 passengers)";
     if (size <= 6) return "Premium Van (6 passengers)";
     return `${Math.ceil(size / 6)} vehicles`;
-  };
-
-  const getVehicleDescription = (size: number) => {
-    if (size <= 6) return getVehicleType(size);
-    
-    const vans = Math.floor(size / 6);
-    const remaining = size % 6;
-    
-    if (remaining === 0) {
-      return `${vans} Premium Van${vans > 1 ? 's' : ''} (6 passengers each)`;
-    }
-    
-    let description = `${vans} Premium Van${vans > 1 ? 's' : ''}`;
-    if (remaining <= 2) {
-      description += ` + 1 Tuk Tuk (${remaining} passenger${remaining > 1 ? 's' : ''})`;
-    } else if (remaining <= 4) {
-      description += ` + 1 UMM Jeep (${remaining} passengers)`;
-    } else {
-      description += ` + 1 Premium Van (${remaining} passengers)`;
-    }
-    
-    return description;
   };
 
   const handleVerifyBooking = async () => {
@@ -108,7 +87,10 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
   };
 
   const handleRequestPickup = async () => {
-    if (!location || !groupSize || !customerName || !customerPhone) return;
+    if (!location || !groupSize || !customerName || !customerPhone) {
+      toast.error("Please fill in all fields");
+      return;
+    }
     
     setStep("searching");
     
@@ -132,23 +114,24 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
         }
       );
 
-      if (response.ok) {
-        const result = await response.json();
-        
-        if (result.success) {
-          console.log('Pickup request created:', result.request.id);
-        }
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        console.log('Pickup request created:', result.request.id);
+        // ONLY proceed to confirmed screen if server actually succeeded
+        setTimeout(() => {
+          setStep("confirmed");
+        }, 1500);
       } else {
-        console.warn('Server unavailable, request will be processed locally');
+        console.error('Server error:', result.error);
+        toast.error(`Request failed: ${result.error || "Unknown error"}`);
+        setStep("request"); // Go back so they can retry
       }
     } catch (error) {
-      console.warn('Could not connect to server, request will be processed locally:', error);
+      console.error('Connection error:', error);
+      toast.error("Connection failed. Please check internet or try WhatsApp.");
+      setStep("request"); // Go back so they can retry
     }
-    
-    // Always show confirmation for better UX
-    setTimeout(() => {
-      setStep("confirmed");
-    }, 2000);
   };
 
   if (step === "verify") {
@@ -322,7 +305,7 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
                 <span>Pickup Location</span>
               </div>
               <p className="text-muted-foreground">
-                {locations.find(l => l.id === location)?.name}
+                {locations.find(l => l.id === location)?.name || location}
               </p>
             </div>
 
@@ -333,7 +316,7 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
                   <span>Destination</span>
                 </div>
                 <p className="text-muted-foreground">
-                  {locations.find(l => l.id === destination)?.name}
+                  {locations.find(l => l.id === destination)?.name || destination}
                 </p>
               </div>
             )}

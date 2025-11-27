@@ -120,8 +120,12 @@ export function HomePage({
 
         if (response.ok) {
           const data = await response.json();
-          if (data.pricing?.basePrice) {
-            setBasePrice(data.pricing.basePrice);
+          if (data.success && data.pricing) {
+            if (data.pricing.basePrice) {
+              setBasePrice(data.pricing.basePrice);
+            } else if (data.pricing.dayPass?.adult) {
+              setBasePrice(data.pricing.dayPass.adult);
+            }
             localStorage.setItem(
               "admin-pricing",
               JSON.stringify(data.pricing),
