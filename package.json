@@ -74,6 +74,6 @@
     },
     "scripts": {
         "dev": "vite",
-        "build": "node scripts/generate-sitemap.js && vite build"
+        "build": "vite build"
     }
 }
