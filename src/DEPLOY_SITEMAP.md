@@ -1,11 +1,12 @@
 # Deploy Sitemap Fix
 
 ## Current Status
-✅ Sitemap generation script created at `/scripts/generate-sitemap.js`  
+✅ Sitemap generation script created at `/scripts/generate-sitemap.cjs`  
 ✅ Package.json updated with `prebuild` script  
 ✅ Fresh sitemap.xml generated in `/public/sitemap.xml`  
 ✅ Vite config already set to preserve sitemap.xml filename  
 ✅ Vercel config already set to serve sitemap.xml with proper headers  
+✅ Using CommonJS (.cjs) for Vercel build compatibility  
 
 ## Why the 404 is happening
 The sitemap.xml file exists locally but hasn't been deployed to Vercel yet. You need to commit and push these changes to trigger a new Vercel deployment.
@@ -55,7 +56,7 @@ vercel --prod
 Every time Vercel builds your site:
 1. Runs `npm run build`
 2. Which runs `npm run prebuild` first
-3. Which executes `node scripts/generate-sitemap.js`
+3. Which executes `node scripts/generate-sitemap.cjs`
 4. Sitemap is generated with today's date
 5. Vite copies it from `/public/` to `/dist/`
 6. Vercel deploys `/dist/` to production
@@ -89,7 +90,14 @@ Google will start crawling your pages within a few days.
 
 **If you need to regenerate manually:**
 ```bash
-node scripts/generate-sitemap.js
+node scripts/generate-sitemap.cjs
 ```
 
 Then commit and push the updated file.
+
+## Why the Previous Error Happened
+
+The original error `Cannot find module '/vercel/path0/scripts/generate-sitemap.js'` occurred because:
+- The script used ES module syntax (`import`) with `.js` extension
+- Vercel's build environment had trouble resolving ES modules in the scripts folder
+- Solution: Converted to CommonJS (`.cjs`) which is universally compatible

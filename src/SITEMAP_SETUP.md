@@ -5,8 +5,9 @@ This project now includes automatic sitemap generation that runs before every bu
 
 ## Files Created/Modified
 
-### 1. `/scripts/generate-sitemap.js`
-- **Purpose**: Node.js script that generates a complete sitemap.xml file
+### 1. `/scripts/generate-sitemap.cjs`
+- **Purpose**: CommonJS Node.js script that generates a complete sitemap.xml file
+- **Format**: .cjs extension for compatibility with Vercel build environment
 - **When it runs**: Automatically before each build via the `prebuild` script
 - **What it includes**:
   - All static pages (home, attractions, buy-ticket, about, blog, etc.)
@@ -16,6 +17,7 @@ This project now includes automatic sitemap generation that runs before every bu
 
 ### 2. `/package.json`
 - **Modified**: Added `prebuild` script that runs the sitemap generator
+- **Script**: `"prebuild": "node scripts/generate-sitemap.cjs"`
 - **Build flow**: `npm run build` → runs `prebuild` → generates sitemap → compiles TypeScript → builds with Vite
 
 ### 3. `/public/robots.txt`
@@ -30,7 +32,7 @@ This project now includes automatic sitemap generation that runs before every bu
 
 1. **During Development**: 
    - The sitemap is not regenerated automatically
-   - You can manually run `node scripts/generate-sitemap.js` if needed
+   - You can manually run `node scripts/generate-sitemap.cjs` if needed
 
 2. **During Build**:
    ```bash
@@ -50,7 +52,7 @@ This project now includes automatic sitemap generation that runs before every bu
 ## Updating the Sitemap
 
 ### Adding New Pages
-Edit `/scripts/generate-sitemap.js` and add the route to the `staticRoutes` array:
+Edit `/scripts/generate-sitemap.cjs` and add the route to the `staticRoutes` array:
 
 ```javascript
 const staticRoutes = [
@@ -104,7 +106,11 @@ After deployment, verify the sitemap is accessible:
 
 To generate the sitemap manually without building:
 ```bash
-node scripts/generate-sitemap.js
+node scripts/generate-sitemap.cjs
 ```
 
 This creates/updates `/public/sitemap.xml` immediately.
+
+## Why .cjs Extension?
+
+The script uses `.cjs` (CommonJS) extension instead of `.js` to ensure compatibility with Vercel's build environment. Even though the project uses `"type": "module"` in package.json, the build script needs to run reliably across different Node.js versions and environments.

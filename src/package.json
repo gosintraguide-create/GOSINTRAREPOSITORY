@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "node scripts/generate-sitemap.js",
+    "prebuild": "node scripts/generate-sitemap.cjs",
     "build": "npm run prebuild && tsc --noEmit && vite build --outDir dist",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
