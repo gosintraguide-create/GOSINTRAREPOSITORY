@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build --outDir dist",
+    "prebuild": "node scripts/generate-sitemap.js",
+    "build": "npm run prebuild && tsc --noEmit && vite build --outDir dist",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
     "test:build": "bash test-build.sh",
