@@ -16,24 +16,21 @@ interface BookingConfirmationPageProps {
 }
 
 export function BookingConfirmationPage({ onNavigate, booking, language }: BookingConfirmationPageProps) {
-  // Initialize emailSent based on the booking prop, defaulting to false
-  // This avoids the "fake success" timeout that was previously used
-  const [emailSent, setEmailSent] = useState(booking?.emailSent || false);
+  const [emailSent, setEmailSent] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
 
   useEffect(() => {
     // Scroll to top
     window.scrollTo(0, 0);
     
-    // Update state if booking prop updates with email status
-    if (booking?.emailSent) {
-      setEmailSent(true);
-    }
+    // Simulate email sent status
+    setTimeout(() => setEmailSent(true), 1000);
   }, [booking]);
 
   const handleDownloadPDF = async () => {
     setDownloadingPdf(true);
     try {
+      
       const response = await fetch(
         `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/bookings/${booking.id}/pdf`,
         {
@@ -99,6 +96,13 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleDownloadQR = (qrCode: string, passengerName: string) => {
+    const link = document.createElement('a');
+    link.download = `hoponsintra-qr-${passengerName.replace(/\s/g, '-')}.png`;
+    link.href = qrCode;
+    link.click();
   };
 
   return (
@@ -243,6 +247,26 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
             ))}
           </div>
         </div>
+
+        {/* Profile Access Tip */}
+        <Card className="mb-6 border-accent/30 bg-accent/5 p-6">
+          <div className="flex items-start gap-4">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/20">
+              <Settings className="h-5 w-5 text-accent-foreground" />
+            </div>
+            <div className="flex-1">
+              <h3 className="mb-2 text-accent-foreground">💡 Quick Access Tip</h3>
+              <p className="text-muted-foreground">
+                For easier access during your visit, you can log into your temporary profile using your{" "}
+                <strong>Booking ID ({booking.id})</strong> and <strong>last name</strong>. 
+                This lets you request pickups and chat with support without entering your details each time.
+              </p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Look for the login button in the top navigation menu.
+              </p>
+            </div>
+          </div>
+        </Card>
 
         {/* How to Use */}
         <Card className="mb-6 p-6">

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { MessageCircle, X, Send, Car } from "lucide-react";
+import { MessageCircle, X, Send, Car, ArrowLeft } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Card } from "./ui/card";
@@ -7,6 +7,7 @@ import { loadContent, type WebsiteContent, DEFAULT_CONTENT } from "../lib/conten
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { createClient } from '../utils/supabase/client';
 import { toast } from "sonner@2.0.3";
+import { getSession } from "../lib/sessionManager";
 
 interface LiveChatProps {
   onNavigate: (page: string) => void;
@@ -38,6 +39,13 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
     console.log('WhatsApp number:', loadContent().company.whatsappNumber);
     
     setContent(loadContent());
+    
+    // Check for logged-in user session
+    const session = getSession();
+    if (session) {
+      setCustomerName(session.customerName);
+      setCustomerEmail(session.customerEmail);
+    }
     
     // Check if we have an existing conversation ID
     const savedConvId = localStorage.getItem("chatConversationId");
@@ -173,6 +181,17 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
     setIsOpen(false);
   };
 
+  const handleGoBack = () => {
+    // Reset chat state and return to contact options
+    setHasStartedChat(false);
+    setConversationId(null);
+    setMessages([]);
+    setCustomerName("");
+    setCustomerEmail("");
+    localStorage.removeItem("chatConversationId");
+    toast.success("Chat reset. Choose your preferred contact method.");
+  };
+
   const sendMessage = async () => {
     if (!message.trim() || !conversationId) return;
 
@@ -246,6 +265,15 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
           {/* Header */}
           <div className="flex items-center justify-between border-b border-border bg-accent p-3 sm:p-4">
             <div className="flex items-center gap-3">
+              {hasStartedChat && (
+                <button
+                  onClick={handleGoBack}
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-accent-foreground transition-colors hover:bg-accent-foreground/10"
+                  aria-label="Go back to contact options"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </button>
+              )}
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent-foreground/10">
                 <MessageCircle className="h-5 w-5 text-accent-foreground" />
               </div>
@@ -304,7 +332,11 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
                       onChange={(e) => setCustomerName(e.target.value)}
                       placeholder="John Smith"
                       className="mt-1 border-border"
+                      readOnly={!!getSession()}
                     />
+                    {getSession() && (
+                      <p className="mt-1 text-xs text-primary">✓ Auto-filled from your profile</p>
+                    )}
                   </div>
 
                   <div>
@@ -315,7 +347,11 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
                       onChange={(e) => setCustomerEmail(e.target.value)}
                       placeholder="john@example.com"
                       className="mt-1 border-border"
+                      readOnly={!!getSession()}
                     />
+                    {getSession() && (
+                      <p className="mt-1 text-xs text-primary">✓ Auto-filled from your profile</p>
+                    )}
                   </div>
 
                   <Button

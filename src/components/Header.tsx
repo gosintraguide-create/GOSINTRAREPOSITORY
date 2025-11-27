@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { LanguageSelector } from "./LanguageSelector";
 import { Logo } from "./Logo";
+import { UserProfile } from "./UserProfile";
 import { getUITranslation, getTranslation } from "../lib/translations";
 
 interface HeaderProps {
@@ -45,7 +46,7 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
             </button>
 
             {/* Desktop Navigation */}
-            <nav className="hidden items-center gap-6 md:flex ml-auto">
+            <nav className="hidden items-center gap-4 md:flex ml-auto">
               {navItems.map((item) => (
                 <button
                   key={item.id}
@@ -63,9 +64,10 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
                 currentLanguage={language}
                 onLanguageChange={onLanguageChange}
               />
+              <UserProfile onNavigate={onNavigate} language={language} />
               <Button 
                 size="lg"
-                className="ml-2 bg-accent hover:bg-accent/90 shadow-lg hover:shadow-xl transition-all hover:scale-105"
+                className="bg-accent hover:bg-accent/90 shadow-lg hover:shadow-xl transition-all hover:scale-105"
                 onClick={() => onNavigate("buy-ticket")}
               >
                 {t.buyTicket}
@@ -88,6 +90,10 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
         {isMenuOpen && (
           <div className="border-t border-border bg-white/95 backdrop-blur-sm md:hidden">
             <nav className="mx-auto max-w-7xl space-y-1 px-4 py-6 sm:px-6 lg:px-8">
+              <div className="flex items-center justify-center mb-4">
+                <UserProfile onNavigate={onNavigate} language={language} />
+              </div>
+
               <Button
                 onClick={() => {
                   onNavigate("buy-ticket");
