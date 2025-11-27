@@ -320,7 +320,7 @@ export function HomePage({
           <div className="relative min-h-[550px] sm:min-h-[620px] lg:min-h-[680px]">
             <div className="absolute inset-0">
               <ImageWithFallback
-                src={content.homepage.hero.heroImage || "https://images.unsplash.com/photo-1704312230001-8d9adfc76d39?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0dWslMjB0dWslMjBzaW50cmElMjBwb3J0dWdhbCUyMGNvbG9yZnVsJTIwcGFsYWNlfGVufDF8fHx8MTc2MjM2MTE4Nnww&ixlib=rb-4.1.0&q=80&w=1080"}
+                src="https://dwiznaefeqnduglmcivr.supabase.co/storage/v1/object/sign/make-3bd0ade8-images/1762977905581_pena-palace-3.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmFjMWMyYy1lNjZlLTQwYWEtYjcwNS1kNTcwYzA5NGZmYzMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtYWtlLTNiZDBhZGU4LWltYWdlcy8xNzYyOTc3OTA1NTgxX3BlbmEtcGFsYWNlLTMuanBnIiwiaWF0IjoxNzYyOTc3OTA1LCJleHAiOjIwNzgzMzc5MDV9.yMxtg8g3UvVUzf-xdAwUmGyjRATPWQwdvRlpIa8D7eY"
                 alt="Tuk tuk sightseeing in Sintra with colorful Pena Palace"
                 className="h-full w-full object-cover object-center"
               />

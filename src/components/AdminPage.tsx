@@ -1311,6 +1311,27 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     if (result?.success && result.messages) {
       setConversationMessages(result.messages);
     }
+
+    // Mark conversation as read
+    await fetch(
+      `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/chat/${conversationId}/mark-read`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${publicAnonKey}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    // Update local conversation state to clear unread badge
+    setConversations(prevConversations =>
+      prevConversations.map(conv =>
+        conv.id === conversationId
+          ? { ...conv, unreadByAdmin: 0 }
+          : conv
+      )
+    );
   };
 
   const handleSendReply = async () => {

@@ -88,10 +88,48 @@ export function EdgeFunctionHealthCheck() {
   };
 
   const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    toast.success("Copied to clipboard!");
-    setTimeout(() => setCopied(false), 2000);
+    // Try modern Clipboard API first
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text)
+        .then(() => {
+          setCopied(true);
+          toast.success("Copied to clipboard!");
+          setTimeout(() => setCopied(false), 2000);
+        })
+        .catch(() => {
+          // Fallback to older method
+          fallbackCopyText(text);
+        });
+    } else {
+      // Use fallback for non-secure contexts
+      fallbackCopyText(text);
+    }
+  };
+
+  const fallbackCopyText = (text: string) => {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    textArea.style.top = "-999999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      const successful = document.execCommand("copy");
+      if (successful) {
+        setCopied(true);
+        toast.success("Copied to clipboard!");
+        setTimeout(() => setCopied(false), 2000);
+      } else {
+        toast.error("Failed to copy. Please copy manually.");
+      }
+    } catch (err) {
+      toast.error("Failed to copy. Please copy manually.");
+    }
+
+    document.body.removeChild(textArea);
   };
 
   return (

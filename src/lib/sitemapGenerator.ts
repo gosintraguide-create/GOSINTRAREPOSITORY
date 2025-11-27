@@ -8,7 +8,9 @@ interface SitemapUrl {
 }
 
 export function generateSitemap(): string {
-  const baseUrl = 'https://www.hoponsintra.com';
+  const baseUrl = typeof window !== 'undefined' 
+    ? `${window.location.protocol}//${window.location.host}`
+    : 'https://www.hoponsintra.com';
   const urls: SitemapUrl[] = [];
 
   // Static pages

@@ -159,8 +159,44 @@ export function ImageManager() {
   };
 
   const copyUrl = (url: string) => {
-    navigator.clipboard.writeText(url);
-    toast.success("Image URL copied to clipboard!");
+    // Try modern Clipboard API first
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(url)
+        .then(() => {
+          toast.success("Image URL copied to clipboard!");
+        })
+        .catch(() => {
+          // Fallback to older method
+          fallbackCopyText(url);
+        });
+    } else {
+      // Use fallback for non-secure contexts
+      fallbackCopyText(url);
+    }
+  };
+
+  const fallbackCopyText = (text: string) => {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    textArea.style.top = "-999999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      const successful = document.execCommand("copy");
+      if (successful) {
+        toast.success("Image URL copied to clipboard!");
+      } else {
+        toast.error("Failed to copy. Please copy manually.");
+      }
+    } catch (err) {
+      toast.error("Failed to copy. Please copy manually.");
+    }
+
+    document.body.removeChild(textArea);
   };
 
   const formatFileSize = (bytes: number) => {

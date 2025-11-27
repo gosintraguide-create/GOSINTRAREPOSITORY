@@ -20,8 +20,20 @@ import {
 } from "../lib/sitemapGenerator";
 import { getPublishedArticles } from "../lib/blogManager";
 import { SEOAnalyzer } from "./SEOAnalyzer";
+import { useState, useEffect } from "react";
 
 export function SEOTools() {
+  const [sitemapUrl, setSitemapUrl] = useState('https://www.hoponsintra.com/sitemap.xml');
+  const [robotsUrl, setRobotsUrl] = useState('https://www.hoponsintra.com/robots.txt');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const baseUrl = `${window.location.protocol}//${window.location.host}`;
+      setSitemapUrl(`${baseUrl}/sitemap.xml`);
+      setRobotsUrl(`${baseUrl}/robots.txt`);
+    }
+  }, []);
+
   const handleDownloadSitemap = () => {
     downloadSitemap();
     toast.success("Sitemap downloaded successfully!");
@@ -34,8 +46,45 @@ export function SEOTools() {
 
   const handleCopySitemap = () => {
     const xml = generateSitemap();
-    navigator.clipboard.writeText(xml);
-    toast.success("Sitemap XML copied to clipboard!");
+    
+    // Try modern Clipboard API first
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(xml)
+        .then(() => {
+          toast.success("Sitemap XML copied to clipboard!");
+        })
+        .catch(() => {
+          // Fallback to older method
+          fallbackCopyText(xml);
+        });
+    } else {
+      // Use fallback for non-secure contexts
+      fallbackCopyText(xml);
+    }
+  };
+
+  const fallbackCopyText = (text: string) => {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    textArea.style.top = "-999999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      const successful = document.execCommand("copy");
+      if (successful) {
+        toast.success("Sitemap XML copied to clipboard!");
+      } else {
+        toast.error("Failed to copy. Please copy manually.");
+      }
+    } catch (err) {
+      toast.error("Failed to copy. Please copy manually.");
+    }
+
+    document.body.removeChild(textArea);
   };
 
   const publishedArticles = getPublishedArticles();
@@ -158,7 +207,7 @@ export function SEOTools() {
               <strong>Sitemap Location:</strong>
             </p>
             <code className="text-sm text-muted-foreground">
-              https://www.hoponsintra.com/sitemap.xml
+              {sitemapUrl}
             </code>
           </div>
         </Card>
@@ -189,7 +238,7 @@ export function SEOTools() {
               <strong>robots.txt Location:</strong>
             </p>
             <code className="text-sm text-muted-foreground">
-              https://www.hoponsintra.com/robots.txt
+              {robotsUrl}
             </code>
           </div>
         </Card>
