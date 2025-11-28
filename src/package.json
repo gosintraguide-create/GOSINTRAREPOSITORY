@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
     "test:build": "bash test-build.sh",
+    "validate:sitemap": "node scripts/validate-sitemap.js",
     "clean": "rm -rf build dist node_modules package-lock.json",
     "fresh-install": "npm run clean && npm install",
     "verify-stripe": "node scripts/verify-stripe.js"

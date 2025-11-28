@@ -89,7 +89,7 @@ Once you update the keys, the site will be in **TEST MODE**:
 ✅ **Safe to test** - No real charges  
 ✅ **Use test cards** - 4242 4242 4242 4242  
 ✅ **Separate dashboard** - dashboard.stripe.com/test  
-❌ **Real customers can't pay** - Only test cards work  
+��� **Real customers can't pay** - Only test cards work  
 
 ---
 
@@ -113,12 +113,50 @@ When ready for production:
 
 **Ready? Go update those keys now!** 🚀
 
+---
+
+## 🔧 Fixed: User Login Network Error ✅
+
+The user login (booking ID + last name) was showing "network error" because the endpoint was missing from the main server file.
+
+**What I fixed:**
+✅ **Added missing endpoint** - `/verify-booking-login` now exists in `/supabase/functions/server/index.tsx`  
+✅ **Enhanced error logging** - See exactly what's happening in browser console  
+✅ **Better error messages** - Distinguishes network vs server errors  
+
+**Files updated:**
+- `/supabase/functions/server/index.tsx` - Added verify-booking-login endpoint
+- `/lib/sessionManager.ts` - Enhanced logging
+- `/components/DriverLoginPage.tsx` - Enhanced logging
+
+**See full details:** `/LOGIN_FIX_APPLIED.md`
+
+**Deploy command:**
+```bash
+# All helper functions are now inlined in index.tsx
+supabase functions deploy server
+```
+
+**What was wrong:** Bundler couldn't find separate import files  
+**What I did:** Inlined all helper functions into `index.tsx` (single file)  
+**Status:** ✅ Ready to deploy - no import errors!
+
+**To test after deployment:**
+1. Create a test booking via admin panel or checkout
+2. Try logging in with booking ID + last name
+3. Should work! ✅
+
+---
+
+## 📦 Ready to Deploy
+
 The sitemap deployment and Stripe test mode setup are both ready to go. Just:
+
 1. Update the Stripe keys in Supabase (above)
 2. Commit and push all files to deploy the sitemap
 
 ```bash
 git add .
-git commit -m "Add sitemap generation and switch to Stripe test mode"
+git commit -m "Add sitemap generation, Stripe test mode, and enhanced login error logging"
 git push
 ```

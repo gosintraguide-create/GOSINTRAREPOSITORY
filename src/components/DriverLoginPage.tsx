@@ -37,19 +37,24 @@ export function DriverLoginPage({ onLoginSuccess }: DriverLoginPageProps) {
     setError('');
 
     try {
-      const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/drivers/login`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${publicAnonKey}`
-          },
-          body: JSON.stringify({ username, password })
-        }
-      );
+      console.log('🔐 Attempting driver login...', { username });
+      
+      const url = `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/drivers/login`;
+      console.log('📍 Login URL:', url);
+      
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${publicAnonKey}`
+        },
+        body: JSON.stringify({ username, password })
+      });
+
+      console.log('📡 Response status:', response.status);
 
       const data = await response.json();
+      console.log('📦 Response data:', data);
 
       if (!response.ok) {
         throw new Error(data.error || 'Login failed');
@@ -62,9 +67,21 @@ export function DriverLoginPage({ onLoginSuccess }: DriverLoginPageProps) {
         loginTime: new Date().toISOString()
       }));
 
+      console.log('✅ Login successful');
       onLoginSuccess(data.driver, data.token);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed');
+      console.error('❌ Login error:', err);
+      
+      // More detailed error messages
+      let errorMessage = 'Login failed';
+      
+      if (err instanceof TypeError && err.message.includes('fetch')) {
+        errorMessage = 'Network error: Cannot connect to server. Please check your internet connection.';
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

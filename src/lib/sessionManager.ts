@@ -80,23 +80,28 @@ export async function verifyAndLogin(
   publicAnonKey: string
 ): Promise<{ success: boolean; session?: UserSession; error?: string }> {
   try {
-    const response = await fetch(
-      `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/verify-booking-login`,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${publicAnonKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          bookingId: bookingId.trim().toUpperCase(),
-          lastName: lastName.trim(),
-        }),
-      }
-    );
+    console.log('🔐 Verifying booking login...', { bookingId: bookingId.trim().toUpperCase() });
+    
+    const url = `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/verify-booking-login`;
+    console.log('📍 Login URL:', url);
+    
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${publicAnonKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        bookingId: bookingId.trim().toUpperCase(),
+        lastName: lastName.trim(),
+      }),
+    });
+
+    console.log('📡 Response status:', response.status);
 
     if (!response.ok) {
       const result = await response.json();
+      console.log('❌ Error response:', result);
       return {
         success: false,
         error: result.error || 'Failed to verify booking',
@@ -104,6 +109,7 @@ export async function verifyAndLogin(
     }
 
     const result = await response.json();
+    console.log('📦 Success response:', result);
 
     if (result.success && result.booking) {
       const booking = result.booking;
@@ -127,6 +133,7 @@ export async function verifyAndLogin(
 
       saveSession(session);
 
+      console.log('✅ Login successful');
       return {
         success: true,
         session,
@@ -138,10 +145,21 @@ export async function verifyAndLogin(
       error: 'Invalid booking credentials',
     };
   } catch (error) {
-    console.error('Login error:', error);
+    console.error('❌ Login error:', error);
+    
+    // More detailed error messages
+    let errorMessage = 'Network error. Please try again.';
+    
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      errorMessage = 'Cannot connect to server. Please check your internet connection and try again.';
+      console.error('🔌 Network connectivity issue detected');
+    } else if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    
     return {
       success: false,
-      error: 'Network error. Please try again.',
+      error: errorMessage,
     };
   }
 }
