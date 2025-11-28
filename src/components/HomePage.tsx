@@ -408,25 +408,25 @@ export function HomePage({
         </div>
 
         {/* What Is Hop On Sintra - Explainer Section */}
-        <div className="relative bg-white py-10 sm:py-12">
+        <div className="relative bg-white py-16 sm:py-20 lg:py-24">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="grid items-center gap-6 lg:grid-cols-2 lg:gap-10">
+            <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
               {/* Left: Text Content */}
               <div>
-                <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2">
+                <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2">
                   <Car className="h-5 w-5 text-primary" />
                   <span className="text-primary">{legacyContent.homepage.hopOnHopOffDayPass}</span>
                 </div>
-                <h2 className="mb-3 text-foreground">
+                <h2 className="mb-4 text-foreground">
                   {legacyContent.homepage.unlimitedAdventureTitle}
                 </h2>
-                <p className="mb-3 text-lg text-muted-foreground">
+                <p className="mb-4 text-lg text-muted-foreground">
                   {legacyContent.homepage.serviceDescription}
                 </p>
-                <p className="mb-5 text-lg text-muted-foreground">
+                <p className="mb-6 text-lg text-muted-foreground">
                   {legacyContent.homepage.serviceDescription2}
                 </p>
-                <div className="grid gap-2.5 sm:grid-cols-2">
+                <div className="grid gap-4 sm:grid-cols-2">
                   <div className="flex items-start gap-3">
                     <CheckCircle className="mt-1 h-5 w-5 flex-shrink-0 text-accent" />
                     <div>
@@ -495,24 +495,24 @@ export function HomePage({
       )}
 
       {/* Steps Section - Detailed & Engaging */}
-      <section className="relative bg-gradient-to-b from-white via-secondary/20 to-white py-10 sm:py-14">
+      <section className="relative bg-gradient-to-b from-white via-secondary/20 to-white py-16 sm:py-20 lg:py-24">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-8 text-center">
+          <div className="mb-12 text-center">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-accent/10 px-4 py-2">
               <Star className="h-5 w-5 text-accent" />
               <span className="text-accent">
                 {t.easyAs1234}
               </span>
             </div>
-            <h2 className="text-foreground">
+            <h2 className="mb-4 text-foreground">
               {t.howItWorksTitle}
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
+            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
               {t.howItWorksSubtitle}
             </p>
           </div>
 
-          <div className="space-y-6 sm:space-y-12">
+          <div className="space-y-8">
             {/* Step 1 */}
             <div className="group relative">
               <div className="absolute left-6 top-16 hidden h-full w-1 bg-gradient-to-b from-accent via-primary to-accent opacity-20 md:block" />
@@ -783,9 +783,9 @@ export function HomePage({
       </section>
 
       {/* Features Grid - Why You'll Love It */}
-      <section className="border-y border-border bg-gradient-to-br from-secondary/30 via-white to-primary/5 py-10 sm:py-14">
+      <section className="border-y border-border bg-gradient-to-br from-secondary/30 via-white to-primary/5 py-16 sm:py-20 lg:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-8 text-center">
+          <div className="mb-12 text-center">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2">
               <Heart className="h-5 w-5 text-primary" />
               <span className="text-primary">
@@ -949,10 +949,10 @@ export function HomePage({
       </section>
 
       {/* Quick Links Section */}
-      <section className="bg-gradient-to-br from-primary via-primary/95 to-primary/90 py-8 sm:py-12">
+      <section className="bg-gradient-to-br from-primary via-primary/95 to-primary/90 py-16 sm:py-20 lg:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-6 text-center">
-            <h2 className="mb-2 text-white">{legacyContent.homepage.quickLinks.title}</h2>
+          <div className="mb-12 text-center">
+            <h2 className="mb-4 text-white">{legacyContent.homepage.quickLinks.title}</h2>
             <p className="text-white/90">{legacyContent.homepage.quickLinks.subtitle}</p>
           </div>
           <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">

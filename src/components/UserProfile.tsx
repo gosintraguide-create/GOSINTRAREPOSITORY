@@ -158,6 +158,18 @@ export function UserProfile({ onNavigate, language }: UserProfileProps) {
                 {isLoading ? "Verifying..." : "Login"}
               </Button>
 
+              <Button 
+                type="button" 
+                variant="outline" 
+                className="w-full border-accent text-accent hover:bg-accent hover:text-white"
+                onClick={() => {
+                  setIsLoginOpen(false);
+                  onNavigate("buy-ticket");
+                }}
+              >
+                Buy Day Pass
+              </Button>
+
               <p className="text-center text-xs text-muted-foreground">
                 Your profile will be accessible until the day after your visit date.
               </p>

@@ -876,10 +876,6 @@
     margin-block: calc(var(--spacing) * 6);
   }
 
-  .-mt-8 {
-    margin-top: calc(var(--spacing) * -8);
-  }
-
   .mt-0\.5 {
     margin-top: calc(var(--spacing) * .5);
   }
@@ -1245,6 +1241,10 @@
 
   .h-\[1\.15rem\] {
     height: 1.15rem;
+  }
+
+  .h-\[30px\] {
+    height: 30px;
   }
 
   .h-\[60vh\] {
@@ -3460,10 +3460,6 @@
     padding-block: calc(var(--spacing) * 8);
   }
 
-  .py-10 {
-    padding-block: calc(var(--spacing) * 10);
-  }
-
   .py-12 {
     padding-block: calc(var(--spacing) * 12);
   }
@@ -4574,6 +4570,12 @@
   }
 
   @media (hover: hover) {
+    .hover\:bg-accent:hover {
+      background-color: var(--accent);
+    }
+  }
+
+  @media (hover: hover) {
     .hover\:bg-accent-foreground\/10:hover {
       background-color: var(--accent-foreground);
     }
@@ -4896,6 +4898,12 @@
   @media (hover: hover) {
     .hover\:text-red-800:hover {
       color: var(--color-red-800);
+    }
+  }
+
+  @media (hover: hover) {
+    .hover\:text-white:hover {
+      color: var(--color-white);
     }
   }
 
@@ -5803,14 +5811,6 @@
   }
 
   @media (width >= 40rem) {
-    :where(.sm\:space-y-12 > :not(:last-child)) {
-      --tw-space-y-reverse: 0;
-      margin-block-start: calc(calc(var(--spacing) * 12) * var(--tw-space-y-reverse));
-      margin-block-end: calc(calc(var(--spacing) * 12) * calc(1 - var(--tw-space-y-reverse)));
-    }
-  }
-
-  @media (width >= 40rem) {
     .sm\:self-start {
       align-self: flex-start;
     }
@@ -5897,18 +5897,6 @@
   @media (width >= 40rem) {
     .sm\:py-8 {
       padding-block: calc(var(--spacing) * 8);
-    }
-  }
-
-  @media (width >= 40rem) {
-    .sm\:py-12 {
-      padding-block: calc(var(--spacing) * 12);
-    }
-  }
-
-  @media (width >= 40rem) {
-    .sm\:py-14 {
-      padding-block: calc(var(--spacing) * 14);
     }
   }
 
@@ -6006,6 +5994,12 @@
   @media (width >= 48rem) {
     .md\:left-auto {
       left: auto;
+    }
+  }
+
+  @media (width >= 48rem) {
+    .md\:ml-12 {
+      margin-left: calc(var(--spacing) * 12);
     }
   }
 
@@ -6170,6 +6164,12 @@
   }
 
   @media (width >= 64rem) {
+    .lg\:ml-16 {
+      margin-left: calc(var(--spacing) * 16);
+    }
+  }
+
+  @media (width >= 64rem) {
     .lg\:block {
       display: block;
     }
@@ -6266,8 +6266,8 @@
   }
 
   @media (width >= 64rem) {
-    .lg\:gap-10 {
-      gap: calc(var(--spacing) * 10);
+    .lg\:gap-12 {
+      gap: calc(var(--spacing) * 12);
     }
   }
 

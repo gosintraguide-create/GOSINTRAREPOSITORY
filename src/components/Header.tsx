@@ -22,7 +22,6 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
     { id: "attractions", label: t.attractions },
     { id: "private-tours", label: content.header.privateTours },
     { id: "blog", label: content.header.travelGuide },
-    { id: "manage-booking", label: t.manageBooking || "My Booking" },
     { id: "about", label: t.about },
   ];
 
@@ -31,7 +30,17 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
       {/* Desktop Header */}
       <header className="sticky top-0 z-50 border-b border-border bg-white/95 backdrop-blur-md shadow-sm">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 bg-[rgba(195,108,55,0)]">
-          <div className="flex h-20 items-center justify-between md:justify-between">
+          <div className="flex h-20 items-center justify-between md:justify-between relative">
+            {/* Mobile: Menu Button (top left) */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-primary hover:bg-secondary md:hidden relative z-10"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </Button>
+
             {/* Logo - centered on mobile, left-aligned on desktop */}
             <button
               onClick={() => {
@@ -40,18 +49,18 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
               }}
               className="group absolute left-1/2 -translate-x-1/2 md:relative md:left-auto md:translate-x-0 flex items-center transition-all hover:opacity-90"
             >
-              <div className="h-9 w-auto sm:h-10">
+              <div className="h-[30px] w-auto sm:h-10">
                 <Logo />
               </div>
             </button>
 
             {/* Desktop Navigation */}
-            <nav className="hidden items-center gap-4 md:flex ml-auto">
+            <nav className="hidden items-center gap-6 md:flex md:ml-12 lg:ml-16">
               {navItems.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => onNavigate(item.id)}
-                  className={`transition-all ${
+                  className={`transition-all whitespace-nowrap ${
                     currentPage === item.id
                       ? "text-primary"
                       : "text-muted-foreground hover:text-primary"
@@ -74,15 +83,10 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
               </Button>
             </nav>
 
-            {/* Mobile Menu Button */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-primary hover:bg-secondary md:hidden relative z-10"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </Button>
+            {/* Mobile: User Profile (top right) */}
+            <div className="md:hidden relative z-10">
+              <UserProfile onNavigate={onNavigate} language={language} />
+            </div>
           </div>
         </div>
 
@@ -90,10 +94,6 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
         {isMenuOpen && (
           <div className="border-t border-border bg-white/95 backdrop-blur-sm md:hidden">
             <nav className="mx-auto max-w-7xl space-y-1 px-4 py-6 sm:px-6 lg:px-8">
-              <div className="flex items-center justify-center mb-4">
-                <UserProfile onNavigate={onNavigate} language={language} />
-              </div>
-
               <Button
                 onClick={() => {
                   onNavigate("buy-ticket");

@@ -27,11 +27,11 @@ export function RouteOverview({ language = "en", onNavigate }: RouteOverviewProp
   ];
 
   return (
-    <section className="bg-gradient-to-b from-white to-gray-50 py-12 sm:py-16">
+    <section className="bg-gradient-to-b from-white to-gray-50 py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="mb-8 text-center">
-          <h2 className="mb-2">{content.routes.title}</h2>
+        <div className="mb-12 text-center">
+          <h2 className="mb-4">{content.routes.title}</h2>
           <p className="text-muted-foreground">
             {content.routes.subtitle}
           </p>
