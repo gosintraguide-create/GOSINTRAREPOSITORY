@@ -50,12 +50,19 @@ export function ManageBookingPage({ onNavigate, language = "en" }: ManageBooking
 
       const result = await response.json();
       
+      console.log('🔍 Booking lookup result:', { 
+        success: result.success, 
+        hasBooking: !!result.booking,
+        error: result.error 
+      });
+      
       if (result.success && result.booking) {
         setBooking(result.booking);
         toast.success("Booking found!");
         // Save to session for easy access
         sessionStorage.setItem("currentBooking", JSON.stringify(result.booking));
       } else {
+        console.error('❌ Booking lookup failed:', result.error);
         toast.error(result.error || "Booking not found");
       }
     } catch (error) {
@@ -193,6 +200,9 @@ export function ManageBookingPage({ onNavigate, language = "en" }: ManageBooking
                   className="mt-1 border-border"
                   onKeyPress={(e) => e.key === "Enter" && handleLookup()}
                 />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Enter your last name as it appears in your booking confirmation email
+                </p>
               </div>
 
               <Button

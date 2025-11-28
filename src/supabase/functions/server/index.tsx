@@ -2005,28 +2005,29 @@ app.post("/make-server-3bd0ade8/bookings/lookup", async (c) => {
       );
     }
 
+    const normalizedBookingId = bookingId.trim().toUpperCase();
     console.log(
-      `🔍 Looking up booking: ${bookingId} for ${identifier}`,
+      'Looking up booking:', normalizedBookingId, 'for', identifier
     );
 
     // Try to get booking directly (handles AA-####, AB-####, etc.)
-    let booking = await kv.get(bookingId);
+    let booking = await kv.get(normalizedBookingId);
 
     // Backwards compatibility: try old formats
     if (!booking) {
       // Try GS-#### format (old system)
-      if (!bookingId.includes("-")) {
-        booking = await kv.get(`GS-${bookingId}`);
+      if (!normalizedBookingId.includes("-")) {
+        booking = await kv.get(`GS-${normalizedBookingId}`);
       }
 
       // Try booking_* format (very old system)
       if (!booking) {
-        booking = await kv.get(`booking_${bookingId}`);
+        booking = await kv.get(`booking_${normalizedBookingId}`);
       }
     }
 
     if (!booking) {
-      console.log(`❌ Booking not found: ${bookingId}`);
+      console.log('Booking not found:', normalizedBookingId);
       return c.json(
         {
           success: false,
@@ -2037,27 +2038,41 @@ app.post("/make-server-3bd0ade8/bookings/lookup", async (c) => {
       );
     }
 
-    // Verify lastName matches (case insensitive)
-    // Extract last name from the contact name (assuming format: "First Last")
-    const contactName = booking.contactInfo?.name || "";
-    const nameParts = contactName.split(" ");
-    const bookingLastName = nameParts[nameParts.length - 1]?.toLowerCase();
+    // Verify lastName matches (case insensitive, flexible matching)
+    const contactName = (booking.contactInfo?.name || "").trim();
     const inputLastName = identifier.toLowerCase().trim();
 
-    if (bookingLastName !== inputLastName) {
-      console.log(`❌ Last name mismatch for booking ${bookingId}`);
-      console.log(`   Expected: ${bookingLastName}, Got: ${inputLastName}`);
-      return c.json(
-        {
-          success: false,
-          error:
-            "Last name does not match our records. Please check and try again.",
-        },
-        401,
-      );
+    if (!contactName) {
+      console.log('No contact name found for booking', normalizedBookingId);
+      // If no name stored, skip verification (legacy bookings)
+    } else {
+      // Split name and remove empty parts
+      const nameParts = contactName.split(/\s+/).filter((part) => part.length > 0);
+      
+      // Extract last name (last non-empty part)
+      const bookingLastName = nameParts.length > 0 
+        ? nameParts[nameParts.length - 1].toLowerCase() 
+        : "";
+
+      // Also check if input matches full name (for single-name users)
+      const fullNameMatch = contactName.toLowerCase() === inputLastName;
+      const lastNameMatch = bookingLastName === inputLastName;
+
+      if (!lastNameMatch && !fullNameMatch) {
+        console.log('Last name mismatch for booking', normalizedBookingId);
+        console.log('Contact name:', contactName);
+        console.log('Booking last name:', bookingLastName);
+        console.log('Input last name:', inputLastName);
+        /*
+        console.log(`   Full name: "${contactName}"`);
+        console.log(`   Expected last name: "${bookingLastName}"`);
+        console.log(`   Input: "${inputLastName}"`);
+        */
+        return c.json({ success: false, error: "Last name does not match our records. Please check and try again." }, 401);
+      }
     }
 
-    console.log(`✅ Booking found and verified: ${bookingId}`);
+    console.log('Booking found and verified:', normalizedBookingId);
 
     // Return booking data (without sensitive info)
     return c.json({
@@ -2633,17 +2648,36 @@ app.post("/make-server-3bd0ade8/verify-booking-login", async (c) => {
       return c.json({ success: false, error: "Booking not found" }, 404);
     }
 
-    // Extract last name from booking
-    const bookingName = booking.contactInfo?.name || "";
-    const bookingLastName = bookingName.split(" ").slice(-1)[0].toLowerCase();
+    // Extract and verify last name (flexible matching)
+    const bookingName = (booking.contactInfo?.name || "").trim();
     const inputLastName = lastName.trim().toLowerCase();
 
-    console.log('🔍 Verifying last name:', { bookingLastName, inputLastName });
+    if (!bookingName) {
+      console.log('⚠️ No contact name found for booking');
+      // Allow login if no name stored (legacy bookings)
+    } else {
+      // Split name and remove empty parts
+      const nameParts = bookingName.split(/\s+/).filter((part) => part.length > 0);
+      const bookingLastName = nameParts.length > 0 
+        ? nameParts[nameParts.length - 1].toLowerCase() 
+        : "";
 
-    // Verify last name matches
-    if (bookingLastName !== inputLastName) {
-      console.log('❌ Last name mismatch');
-      return c.json({ success: false, error: "Invalid credentials" }, 401);
+      // Check both full name and last name
+      const fullNameMatch = bookingName.toLowerCase() === inputLastName;
+      const lastNameMatch = bookingLastName === inputLastName;
+
+      console.log('🔍 Verifying last name:', { 
+        bookingName, 
+        bookingLastName, 
+        inputLastName,
+        fullNameMatch,
+        lastNameMatch
+      });
+
+      if (!lastNameMatch && !fullNameMatch) {
+        console.log('❌ Last name mismatch');
+        return c.json({ success: false, error: "Invalid credentials" }, 401);
+      }
     }
 
     console.log('✅ Login successful');
@@ -3535,6 +3569,153 @@ app.post(
     }
   },
 );
+
+// ============================================================
+// CONTACT FORM MANAGEMENT
+// ============================================================
+
+// Contact form submission
+app.post("/make-server-3bd0ade8/contact", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { name, email, subject, message } = body;
+
+    // Validate required fields
+    if (!name || !email || !message) {
+      return c.json(
+        {
+          success: false,
+          error: "Missing required fields (name, email, message)",
+        },
+        400,
+      );
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return c.json(
+        {
+          success: false,
+          error: "Invalid email format",
+        },
+        400,
+      );
+    }
+
+    const contactMessage = {
+      id: `contact_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      name,
+      email,
+      subject: subject || 'Contact Form Inquiry',
+      message,
+      timestamp: new Date().toISOString(),
+      read: false,
+    };
+
+    // Save to KV store
+    await kv.set(`contact_message_${contactMessage.id}`, contactMessage);
+
+    console.log("📧 Contact form submission received:", {
+      id: contactMessage.id,
+      name,
+      email,
+      subject: contactMessage.subject,
+    });
+
+    return c.json({
+      success: true,
+      messageId: contactMessage.id,
+    });
+  } catch (error) {
+    console.error("Error processing contact form:", error);
+    return c.json(
+      {
+        success: false,
+        error: "Failed to send message. Please try again.",
+      },
+      500,
+    );
+  }
+});
+
+// Get contact messages (admin only)
+app.get("/make-server-3bd0ade8/contact-messages", async (c) => {
+  try {
+    const messages = await kv.getByPrefix("contact_message_");
+    
+    // Sort by timestamp (newest first)
+    const sortedMessages = messages.sort((a: any, b: any) => {
+      return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+    });
+
+    return c.json({
+      success: true,
+      messages: sortedMessages,
+    });
+  } catch (error) {
+    console.error("Error fetching contact messages:", error);
+    return c.json(
+      {
+        success: false,
+        error: "Failed to load messages",
+      },
+      500,
+    );
+  }
+});
+
+// Mark contact message as read
+app.post("/make-server-3bd0ade8/contact-message/read", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { messageId } = body;
+
+    if (!messageId) {
+      return c.json(
+        {
+          success: false,
+          error: "Missing messageId",
+        },
+        400,
+      );
+    }
+
+    const message = await kv.get(`contact_message_${messageId}`);
+    
+    if (!message) {
+      return c.json(
+        {
+          success: false,
+          error: "Message not found",
+        },
+        404,
+      );
+    }
+
+    const updatedMessage = {
+      ...message,
+      read: true,
+      readAt: new Date().toISOString(),
+    };
+
+    await kv.set(`contact_message_${messageId}`, updatedMessage);
+
+    return c.json({
+      success: true,
+      message: updatedMessage,
+    });
+  } catch (error) {
+    console.error("Error marking message as read:", error);
+    return c.json(
+      {
+        success: false,
+        error: "Failed to update message",
+      },
+      500,
+    );
+  }
+});
 
 // ============================================================
 // PICKUP REQUEST MANAGEMENT

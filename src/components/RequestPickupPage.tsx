@@ -7,6 +7,7 @@ import { Input } from "./ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { getSession } from "../lib/sessionManager";
+import { toast } from "sonner@2.0.3";
 
 interface RequestPickupPageProps {
   onNavigate: (page: string) => void;
@@ -146,23 +147,32 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
         }
       );
 
-      if (response.ok) {
-        const result = await response.json();
-        
-        if (result.success) {
-          console.log('Pickup request created:', result.request.id);
-        }
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status}`);
+      }
+
+      const result = await response.json();
+      
+      if (result.success) {
+        console.log('Pickup request created:', result.request.id);
+        // ✅ Only show success if server confirms
+        setTimeout(() => {
+          setStep("confirmed");
+        }, 2000);
       } else {
-        console.warn('Server unavailable, request will be processed locally');
+        throw new Error(result.error || 'Failed to create pickup request');
       }
     } catch (error) {
-      console.warn('Could not connect to server, request will be processed locally:', error);
+      console.error('Pickup request failed:', error);
+      // ✅ Show error to user and return to form
+      setStep("request");
+      toast.error(
+        error instanceof Error 
+          ? `Unable to request pickup: ${error.message}` 
+          : "Failed to request pickup. Please try again or contact us via WhatsApp.",
+        { duration: 6000 }
+      );
     }
-    
-    // Always show confirmation for better UX
-    setTimeout(() => {
-      setStep("confirmed");
-    }, 2000);
   };
 
   if (step === "verify") {

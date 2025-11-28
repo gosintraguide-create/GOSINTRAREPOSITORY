@@ -10,6 +10,8 @@ import { useState, useEffect } from "react";
 import { loadContentWithLanguage, type WebsiteContent, DEFAULT_CONTENT } from "../lib/contentManager";
 import { getUITranslation } from "../lib/translations";
 import { motion } from "motion/react";
+import { toast } from "sonner@2.0.3";
+import { projectId, publicAnonKey } from '../utils/supabase/info';
 
 interface AboutPageProps {
   language?: string;
@@ -18,14 +20,56 @@ interface AboutPageProps {
 export function AboutPage({ language = "en" }: AboutPageProps) {
   const [content, setContent] = useState<WebsiteContent>(DEFAULT_CONTENT);
   const t = getUITranslation(language);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
 
   useEffect(() => {
     setContent(loadContentWithLanguage(language));
   }, [language]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert("Thank you for your message! We'll get back to you soon.");
+    setIsSubmitting(true);
+    
+    try {
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/contact`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${publicAnonKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status}`);
+      }
+
+      const result = await response.json();
+      
+      if (result.success) {
+        toast.success("Thank you for your message! We'll get back to you soon.");
+        setFormData({ name: '', email: '', subject: '', message: '' });
+      } else {
+        throw new Error(result.error || 'Failed to send message');
+      }
+    } catch (error) {
+      console.error('Contact form error:', error);
+      toast.error(
+        "Unable to send message. Please try WhatsApp or email us directly at info@hoponsintra.com",
+        { duration: 6000 }
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const perks = [
@@ -250,6 +294,8 @@ export function AboutPage({ language = "en" }: AboutPageProps) {
                         placeholder="Your name"
                         className="mt-2"
                         required
+                        value={formData.name}
+                        onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                       />
                     </div>
                     <div>
@@ -260,6 +306,8 @@ export function AboutPage({ language = "en" }: AboutPageProps) {
                         placeholder="your.email@example.com"
                         className="mt-2"
                         required
+                        value={formData.email}
+                        onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                       />
                     </div>
                   </div>
@@ -272,6 +320,8 @@ export function AboutPage({ language = "en" }: AboutPageProps) {
                       placeholder="How can we help?"
                       className="mt-2"
                       required
+                      value={formData.subject}
+                      onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
                     />
                   </div>
 
@@ -282,6 +332,8 @@ export function AboutPage({ language = "en" }: AboutPageProps) {
                       placeholder="Tell us what's on your mind..."
                       className="mt-2 min-h-[150px]"
                       required
+                      value={formData.message}
+                      onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
                     />
                   </div>
 
@@ -289,8 +341,9 @@ export function AboutPage({ language = "en" }: AboutPageProps) {
                     type="submit"
                     className="w-full sm:w-auto"
                     size="lg"
+                    disabled={isSubmitting}
                   >
-                    Send Message
+                    {isSubmitting ? 'Sending...' : 'Send Message'}
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </form>
