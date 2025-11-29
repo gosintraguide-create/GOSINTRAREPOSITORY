@@ -42,6 +42,7 @@
           "cmdk": "^1.1.1",
           "date-fns": "*",
           "embla-carousel-react": "^8.6.0",
+          "fs": "*",
           "hono": "*",
           "input-otp": "^1.4.2",
           "jsqr": "*",

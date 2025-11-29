@@ -3,12 +3,27 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { fileURLToPath } from "url";
 import { dirname, resolve } from "path";
+import { copyFileSync, existsSync } from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [
+    react(), 
+    tailwindcss(),
+    {
+      name: 'copy-sitemap',
+      closeBundle() {
+        const sourcePath = resolve(__dirname, 'public/sitemap.xml');
+        const destPath = resolve(__dirname, 'dist/sitemap.xml');
+        if (existsSync(sourcePath)) {
+          copyFileSync(sourcePath, destPath);
+          console.log('✅ Sitemap copied to dist/sitemap.xml');
+        }
+      }
+    }
+  ],
   publicDir: "public", // Ensure public folder is copied to build output (includes sitemap.xml)
   base: "/", // Ensure base path is set correctly for deployment
   resolve: {
