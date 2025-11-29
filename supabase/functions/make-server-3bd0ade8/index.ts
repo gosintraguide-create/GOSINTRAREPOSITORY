@@ -43,7 +43,7 @@ async function withRetry<T>(
     }
   }
   
-  throw lastError as Error;
+  throw lastError;
 }
 
 // Wrapped KV operations with retry logic
@@ -119,7 +119,7 @@ const stripe = stripeSecretKey
 // Generate unique Go Sintra booking ID with sequential letter prefixes
 async function getNextAvailablePrefix(): Promise<string> {
   const currentPrefixData = await kvWithRetry.get("booking_current_prefix");
-  let currentPrefix = (currentPrefixData as string) || "AA";
+  let currentPrefix = currentPrefixData || "AA";
 
   for (let num = 1000; num <= 9999; num++) {
     const testId = `${currentPrefix}-${num}`;
@@ -209,12 +209,11 @@ initializeDatabase();
 // Generate QR code
 async function generateQRCode(bookingId: string, passengerIndex: number): Promise<string> {
   const qrData = `${bookingId}|${passengerIndex}`;
-  // Use reduced complexity/size for QR code to save memory
   const qrCodeDataUrl = await QRCode.toDataURL(qrData, {
-    errorCorrectionLevel: "L", // Low error correction for smaller size
+    errorCorrectionLevel: "M",
     type: "image/png",
-    width: 150, // Reduced size
-    margin: 1,
+    width: 300,
+    margin: 2,
     color: { dark: "#0A4D5C", light: "#FFFFFF" },
   });
   return qrCodeDataUrl;
@@ -439,7 +438,7 @@ app.post("/make-server-3bd0ade8/bookings", async (c) => {
     // Track prefix
     try {
       const prefix = bookingId.split("-")[0];
-      const usedPrefixes = (await kv.get("booking_used_prefixes") as string[]) || [];
+      const usedPrefixes = (await kv.get("booking_used_prefixes")) || [];
       if (!usedPrefixes.includes(prefix)) {
         usedPrefixes.push(prefix);
         await kv.set("booking_used_prefixes", usedPrefixes);
@@ -498,7 +497,7 @@ app.post("/make-server-3bd0ade8/checkin", async (c) => {
     await kv.set(checkInKey, checkInRecord);
 
     const checkInsKey = `checkins_${bookingId}_${passengerIndex || 0}`;
-    const checkIns = (await kv.get(checkInsKey) as any[]) || [];
+    const checkIns = (await kv.get(checkInsKey)) || [];
     
     if (existingCheckIn) {
       checkIns[checkIns.length - 1] = checkInRecord;
@@ -510,11 +509,11 @@ app.post("/make-server-3bd0ade8/checkin", async (c) => {
     // Track stats
     const today = new Date().toISOString().split('T')[0];
     const destKey = `destination_${today}_${destination}`;
-    const destCount = (await kv.get(destKey) as number) || 0;
+    const destCount = (await kv.get(destKey)) || 0;
     await kv.set(destKey, destCount + 1);
 
     const destLogKey = `destination_log_${today}`;
-    const destLog = (await kv.get(destLogKey) as any[]) || [];
+    const destLog = (await kv.get(destLogKey)) || [];
     destLog.push({
       destination, timestamp: new Date().toISOString(), bookingId,
       passengerIndex: passengerIndex || 0, customerName: booking.contactInfo.name,
@@ -575,6 +574,7 @@ app.post("/make-server-3bd0ade8/verify-qr", async (c) => {
 // 1. Get All (Admin Panel)
 app.get("/make-server-3bd0ade8/pickup-requests", async (c) => {
   try {
+    // FIX: Look for UPPERCASE keys which are used during creation
     const requestsArray = await kv.getByPrefix("PICKUP_");
     const requests = (requestsArray || []).sort(
       (a: any, b: any) => new Date(b.requestTime).getTime() - new Date(a.requestTime).getTime(),
@@ -607,7 +607,7 @@ app.post("/make-server-3bd0ade8/pickup-requests", async (c) => {
     await kv.set(requestId, pickupRequest);
 
     // Maintain active list
-    const activeRequests = (await kv.get("active_pickup_requests") as string[]) || [];
+    const activeRequests = (await kv.get("active_pickup_requests")) || [];
     activeRequests.push(requestId);
     await kv.set("active_pickup_requests", activeRequests);
 
@@ -622,6 +622,7 @@ app.post("/make-server-3bd0ade8/pickup-requests", async (c) => {
 app.post("/make-server-3bd0ade8/pickup-requests/:id/cancel", async (c) => {
   try {
     const requestId = c.req.param("id");
+    // FIX: Look up ID directly
     const request = await kv.get(requestId); 
 
     if (!request) return c.json({ success: false, error: "Request not found" }, 404);
@@ -637,6 +638,7 @@ app.post("/make-server-3bd0ade8/pickup-requests/:id/cancel", async (c) => {
 app.post("/make-server-3bd0ade8/pickup-requests/:id/complete", async (c) => {
   try {
     const requestId = c.req.param("id");
+    // FIX: Look up ID directly
     const request = await kv.get(requestId);
 
     if (!request) return c.json({ success: false, error: "Request not found" }, 404);
@@ -657,6 +659,7 @@ app.post("/make-server-3bd0ade8/pickup-requests/:id/assign", async (c) => {
     const body = await c.req.json();
     const { driverId, driverName } = body;
 
+    // FIX: Look up ID directly
     const request = await kv.get(requestId);
 
     if (!request) return c.json({ success: false, error: "Request not found" }, 404);
@@ -698,44 +701,54 @@ app.post("/make-server-3bd0ade8/verify-booking", async (c) => {
   }
 });
 
+// Verify Booking with Last Name for Login
+app.post("/make-server-3bd0ade8/verify-booking-login", async (c) => {
+  try {
+    const { bookingId, lastName } = await c.req.json();
+    
+    if (!bookingId || !lastName) {
+      return c.json({ success: false, error: "Booking ID and last name are required" }, 400);
+    }
+
+    let booking = await kv.get(bookingId);
+    if (!booking) booking = await kv.get(`booking_${bookingId}`); // Check old format too
+
+    if (!booking) {
+      return c.json({ success: false, error: "Booking not found" }, 404);
+    }
+
+    // Extract last name from booking
+    const bookingName = booking.contactInfo?.name || "";
+    const bookingLastName = bookingName.split(" ").slice(-1)[0].toLowerCase();
+    const inputLastName = lastName.trim().toLowerCase();
+
+    // Verify last name matches
+    if (bookingLastName !== inputLastName) {
+      return c.json({ success: false, error: "Invalid credentials" }, 401);
+    }
+
+    // Return booking details for session
+    return c.json({
+      success: true,
+      booking: {
+        bookingId: booking.id,
+        customerName: bookingName,
+        customerEmail: booking.contactInfo?.email || "",
+        customerPhone: booking.contactInfo?.phone || "",
+        passes: booking.passengers?.length || 1,
+        visitDate: booking.visitDate || new Date().toISOString(),
+      },
+    });
+  } catch (error) {
+    console.error("Login verification error:", error);
+    return c.json({ success: false, error: "Verification failed" }, 500);
+  }
+});
+
 // Driver Management (Simplified for space, assuming standard kv getters)
 app.get("/make-server-3bd0ade8/drivers", async (c) => {
   const driversData = await kv.get("drivers_list");
   return c.json({ success: true, drivers: driversData || [] });
-});
-
-// Cleanup Endpoints
-app.post("/make-server-3bd0ade8/admin/cleanup/database", async (c) => {
-  try {
-    const body = await c.req.json();
-    if (body.password !== "Sintra2025") return c.json({ success: false, error: "Unauthorized" }, 401);
-    const results = await cleanupDatabase();
-    return c.json({ success: true, results });
-  } catch (error) {
-    return c.json({ success: false, error: String(error) }, 500);
-  }
-});
-
-app.post("/make-server-3bd0ade8/admin/cleanup/branding", async (c) => {
-  try {
-    const body = await c.req.json();
-    if (body.password !== "Sintra2025") return c.json({ success: false, error: "Unauthorized" }, 401);
-    const results = await removeLegacyBranding();
-    return c.json({ success: true, results });
-  } catch (error) {
-    return c.json({ success: false, error: String(error) }, 500);
-  }
-});
-
-app.post("/make-server-3bd0ade8/admin/cleanup/availability", async (c) => {
-  try {
-    const body = await c.req.json();
-    if (body.password !== "Sintra2025") return c.json({ success: false, error: "Unauthorized" }, 401);
-    const results = await cleanupOldAvailability();
-    return c.json({ success: true, results });
-  } catch (error) {
-    return c.json({ success: false, error: String(error) }, 500);
-  }
 });
 
 Deno.serve(app.fetch);
