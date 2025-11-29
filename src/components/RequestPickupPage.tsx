@@ -127,6 +127,16 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
     
     setStep("searching");
     
+    const requestData = {
+      customerName,
+      customerPhone,
+      pickupLocation: locations.find(l => l.id === location)?.name || location,
+      destination: locations.find(l => l.id === destination)?.name || destination || "",
+      groupSize: parseInt(groupSize),
+    };
+
+    console.log('🚗 Creating pickup request:', requestData);
+    
     try {
       // Send pickup request to backend
       const response = await fetch(
@@ -137,24 +147,24 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
             'Authorization': `Bearer ${publicAnonKey}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            customerName,
-            customerPhone,
-            pickupLocation: locations.find(l => l.id === location)?.name || location,
-            destination: locations.find(l => l.id === destination)?.name || destination,
-            groupSize: parseInt(groupSize),
-          }),
+          body: JSON.stringify(requestData),
         }
       );
 
+      console.log('📡 Server response status:', response.status);
+
       if (!response.ok) {
-        throw new Error(`Server error: ${response.status}`);
+        const errorText = await response.text();
+        console.error('❌ Server error response:', errorText);
+        throw new Error(`Server error: ${response.status} - ${errorText}`);
       }
 
       const result = await response.json();
+      console.log('✅ Pickup request result:', result);
       
       if (result.success) {
-        console.log('Pickup request created:', result.request.id);
+        console.log('✅ Pickup request created successfully:', result.request.id);
+        toast.success('Pickup request sent successfully!');
         // ✅ Only show success if server confirms
         setTimeout(() => {
           setStep("confirmed");
@@ -163,7 +173,7 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
         throw new Error(result.error || 'Failed to create pickup request');
       }
     } catch (error) {
-      console.error('Pickup request failed:', error);
+      console.error('❌ Pickup request failed:', error);
       // ✅ Show error to user and return to form
       setStep("request");
       toast.error(

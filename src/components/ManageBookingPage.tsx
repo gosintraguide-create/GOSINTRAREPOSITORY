@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -11,6 +11,7 @@ import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { toast } from "sonner@2.0.3";
 import { TicketCard } from "./TicketCard";
 import { getTranslation } from "../lib/translations";
+import { getSession } from "../lib/sessionManager";
 
 interface ManageBookingPageProps {
   onNavigate: (page: string) => void;
@@ -25,12 +26,18 @@ export function ManageBookingPage({ onNavigate, language = "en" }: ManageBooking
   const [booking, setBooking] = useState<any>(null);
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
 
-  const handleLookup = async () => {
-    if (!bookingId.trim() || !lastName.trim()) {
-      toast.error("Please enter both booking ID and last name");
-      return;
+  // Auto-load booking if user is logged in
+  useEffect(() => {
+    const session = getSession();
+    if (session && session.bookingId) {
+      setBookingId(session.bookingId);
+      setLastName(session.lastName);
+      // Automatically fetch the booking
+      fetchBooking(session.bookingId, session.lastName);
     }
+  }, []);
 
+  const fetchBooking = async (id: string, name: string) => {
     setLoading(true);
     try {
       const response = await fetch(
@@ -42,24 +49,16 @@ export function ManageBookingPage({ onNavigate, language = "en" }: ManageBooking
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            bookingId: bookingId.trim().toUpperCase(),
-            lastName: lastName.trim(),
+            bookingId: id.trim().toUpperCase(),
+            lastName: name.trim(),
           }),
         }
       );
 
       const result = await response.json();
       
-      console.log('🔍 Booking lookup result:', { 
-        success: result.success, 
-        hasBooking: !!result.booking,
-        error: result.error 
-      });
-      
       if (result.success && result.booking) {
         setBooking(result.booking);
-        toast.success("Booking found!");
-        // Save to session for easy access
         sessionStorage.setItem("currentBooking", JSON.stringify(result.booking));
       } else {
         console.error('❌ Booking lookup failed:', result.error);
@@ -70,6 +69,18 @@ export function ManageBookingPage({ onNavigate, language = "en" }: ManageBooking
       toast.error("Failed to look up booking. Please try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleLookup = async () => {
+    if (!bookingId.trim() || !lastName.trim()) {
+      toast.error("Please enter both booking ID and last name");
+      return;
+    }
+
+    await fetchBooking(bookingId, lastName);
+    if (booking) {
+      toast.success("Booking found!");
     }
   };
 

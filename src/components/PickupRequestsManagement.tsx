@@ -63,12 +63,11 @@ export function PickupRequestsManagement() {
           event: "*",
           schema: "public",
           table: "kv_store_3bd0ade8",
-          // FIX: Updated to match the uppercase keys used by the backend
-          filter: "key=like.PICKUP_%",
+          filter: "key=like.pickup_request:%",
         },
         (payload) => {
           console.log(
-            "Realtime pickup request change detected:",
+            "🔄 Realtime pickup request change detected:",
             payload,
           );
           // Reload requests when any pickup request changes

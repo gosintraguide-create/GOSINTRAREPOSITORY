@@ -681,7 +681,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
           event: "*",
           schema: "public",
           table: "kv_store_3bd0ade8",
-          filter: "key=like.PICKUP_%",
+          filter: "key=like.pickup_request:%",
         },
         async (payload) => {
           console.log(
@@ -691,31 +691,27 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
 
           // Check if this is a new pickup request (INSERT event)
           if (payload.eventType === "INSERT" && payload.new) {
-            const today = new Date()
-              .toISOString()
-              .split("T")[0];
             const newPickup = payload.new.value;
 
-            // Check if pickup was created today
-            if (newPickup?.createdAt) {
-              const createdDate = new Date(newPickup.createdAt)
-                .toISOString()
-                .split("T")[0];
+            // Check if this is a pending pickup request
+            if (newPickup?.status === "pending") {
+              console.log("✅ New pending pickup request detected:", newPickup);
+              
+              // Increment badge counter
+              setNewPickupsCount((prev) => prev + 1);
 
-              if (
-                createdDate === today &&
-                newPickup.status === "pending"
-              ) {
-                // Increment badge counter
-                setNewPickupsCount((prev) => prev + 1);
+              // Send mobile-friendly notification
+              sendMobileNotification('pickup', {
+                title: 'New Pickup Request!',
+                body: `${newPickup.groupSize} passengers at ${newPickup.pickupLocation}`,
+                id: newPickup.id
+              });
 
-                // Send mobile-friendly notification
-                sendMobileNotification('pickup', {
-                  title: 'New Pickup Request!',
-                  body: `${newPickup.groupSize} passengers at ${newPickup.pickupLocation}`,
-                  id: newPickup.id
-                });
-              }
+              // Show toast notification
+              toast.success(
+                `🚗 New pickup request: ${newPickup.groupSize} passengers at ${newPickup.pickupLocation}`,
+                { duration: 5000 }
+              );
             }
           }
 

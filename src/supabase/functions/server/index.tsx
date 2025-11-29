@@ -5050,7 +5050,6 @@ app.post("/make-server-3bd0ade8/pickup-requests", async (c) => {
       !customerName ||
       !customerPhone ||
       !pickupLocation ||
-      !destination ||
       !groupSize
     ) {
       return c.json(
@@ -5068,7 +5067,7 @@ app.post("/make-server-3bd0ade8/pickup-requests", async (c) => {
       customerName,
       customerPhone,
       pickupLocation,
-      destination,
+      destination: destination || "To be decided",
       groupSize,
       requestTime: new Date().toISOString(),
       status: "pending",
@@ -5076,6 +5075,13 @@ app.post("/make-server-3bd0ade8/pickup-requests", async (c) => {
     };
 
     await kv.set(`pickup_request:${requestId}`, request);
+
+    console.log(`✅ Pickup request created: ${requestId}`, {
+      customerName,
+      pickupLocation,
+      groupSize,
+      status: request.status
+    });
 
     return c.json({
       success: true,

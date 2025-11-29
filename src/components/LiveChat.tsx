@@ -32,6 +32,7 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
   const [hasStartedChat, setHasStartedChat] = useState(false);
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatWindowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     console.log('LiveChat component mounted');
@@ -45,9 +46,16 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
     if (session) {
       setCustomerName(session.customerName);
       setCustomerEmail(session.customerEmail);
+      
+      // Check if we have an existing conversation ID
+      const savedConvId = localStorage.getItem("chatConversationId");
+      if (!savedConvId) {
+        // Auto-start chat for logged-in users without an existing conversation
+        autoStartChatForLoggedInUser(session.customerName, session.customerEmail);
+      }
     }
     
-    // Check if we have an existing conversation ID
+    // Check if we have an existing conversation ID (for non-logged-in users or existing chats)
     const savedConvId = localStorage.getItem("chatConversationId");
     if (savedConvId) {
       setConversationId(savedConvId);
@@ -55,6 +63,37 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
       loadMessages(savedConvId);
     }
   }, []);
+  
+  const autoStartChatForLoggedInUser = async (name: string, email: string) => {
+    try {
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/chat/start`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${publicAnonKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            customerName: name,
+            customerEmail: email,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success && result.conversationId) {
+          setConversationId(result.conversationId);
+          setHasStartedChat(true);
+          localStorage.setItem("chatConversationId", result.conversationId);
+        }
+      }
+    } catch (error) {
+      console.error("Error auto-starting chat:", error);
+      // Silently fail - user can still manually start chat
+    }
+  };
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -244,6 +283,31 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
     return () => clearInterval(interval);
   }, [isOpen, conversationId]);
 
+  // Handle click outside to close chat
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        chatWindowRef.current &&
+        !chatWindowRef.current.contains(event.target as Node) &&
+        !(event.target as HTMLElement).closest('[aria-label="Toggle live chat"]')
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    // Add a small delay to prevent immediate closing when opening
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('mousedown', handleClickOutside);
+    }, 100);
+
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
+
   return (
     <>
       {/* Chat Bubble Button */}
@@ -261,7 +325,7 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
 
       {/* Chat Window */}
       {isOpen && (
-        <Card className="fixed bottom-20 right-4 z-40 flex w-[calc(100vw-2rem)] max-w-sm flex-col overflow-hidden border-border bg-card shadow-2xl sm:bottom-24 sm:right-6 sm:w-96">
+        <Card ref={chatWindowRef} className="fixed bottom-20 right-4 z-40 flex w-[calc(100vw-2rem)] max-w-sm flex-col overflow-hidden border-border bg-card shadow-2xl sm:bottom-24 sm:right-6 sm:w-96">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-border bg-accent p-3 sm:p-4">
             <div className="flex items-center gap-3">

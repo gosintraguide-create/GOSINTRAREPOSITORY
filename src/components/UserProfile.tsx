@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { User, LogOut, Calendar, Users, Mail, Phone, Ticket, Car, MessageCircle } from "lucide-react";
+import { User, LogOut, Ticket, Car, Map } from "lucide-react";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,
@@ -193,7 +193,7 @@ export function UserProfile({ onNavigate, language }: UserProfileProps) {
           </span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-72">
+      <DropdownMenuContent align="end" className="w-64">
         <DropdownMenuLabel>
           <div className="flex flex-col space-y-1">
             <p className="font-medium">{session.customerName}</p>
@@ -201,41 +201,6 @@ export function UserProfile({ onNavigate, language }: UserProfileProps) {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        
-        <div className="px-2 py-3 space-y-2 text-sm">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Ticket className="h-4 w-4" />
-            <span className="font-medium">Booking ID:</span>
-            <span className="ml-auto font-mono">{session.bookingId}</span>
-          </div>
-          
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Calendar className="h-4 w-4" />
-            <span className="font-medium">Visit Date:</span>
-          </div>
-          <div className="pl-6 text-xs">
-            {formatDate(session.visitDate)}
-          </div>
-          
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Users className="h-4 w-4" />
-            <span className="font-medium">Passes:</span>
-            <span className="ml-auto">{session.passes}</span>
-          </div>
-          
-          {session.customerPhone && (
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Phone className="h-4 w-4" />
-              <span className="text-xs">{session.customerPhone}</span>
-            </div>
-          )}
-        </div>
-
-        <DropdownMenuSeparator />
-        
-        <DropdownMenuLabel className="text-xs text-muted-foreground">
-          Quick Actions
-        </DropdownMenuLabel>
         
         <DropdownMenuItem onClick={() => {
           onNavigate("manage-booking");
@@ -251,6 +216,13 @@ export function UserProfile({ onNavigate, language }: UserProfileProps) {
           Request a Ride
         </DropdownMenuItem>
 
+        <DropdownMenuItem onClick={() => {
+          onNavigate("route-map");
+        }}>
+          <Map className="mr-2 h-4 w-4" />
+          View Stops Map
+        </DropdownMenuItem>
+
         <DropdownMenuSeparator />
 
         <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
@@ -260,7 +232,7 @@ export function UserProfile({ onNavigate, language }: UserProfileProps) {
 
         <div className="px-2 py-2">
           <p className="text-xs text-center text-muted-foreground">
-            Profile expires: {formatDate(session.expiresAt)}
+            Profile active until {formatDate(session.expiresAt)}
           </p>
         </div>
       </DropdownMenuContent>

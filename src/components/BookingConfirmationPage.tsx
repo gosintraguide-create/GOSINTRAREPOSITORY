@@ -107,7 +107,7 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-secondary/30 to-background py-12">
-      <div className="container max-w-4xl px-4">
+      <div className="mx-auto max-w-4xl px-4">
         
         {/* Success Header */}
         <div className="mb-8 text-center">
