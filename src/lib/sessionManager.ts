@@ -64,6 +64,8 @@ export function isLoggedIn(): boolean {
 export function clearSession(): void {
   try {
     localStorage.removeItem(SESSION_KEY);
+    // Also clear the chat conversation ID when user logs out
+    localStorage.removeItem('chatConversationId');
   } catch (error) {
     console.error('Failed to clear session:', error);
   }

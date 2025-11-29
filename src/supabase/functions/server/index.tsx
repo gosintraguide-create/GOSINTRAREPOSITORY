@@ -3232,13 +3232,30 @@ app.post("/make-server-3bd0ade8/verify-booking", async (c) => {
 
 // ========== CHAT ENDPOINTS ==========
 
-// Create new chat conversation
+// Create new chat conversation or resume existing one
 app.post("/make-server-3bd0ade8/chat/start", async (c) => {
   try {
     const body = await c.req.json();
     const { customerName, customerEmail } = body;
 
-    // Generate conversation ID
+    // Check if user already has an existing conversation (by email)
+    const allConversations = await kv.getByPrefix("chat_conversation_");
+    const existingConversation = allConversations?.find(
+      (conv: any) => conv.customerEmail?.toLowerCase() === customerEmail?.toLowerCase() && conv.status === "open"
+    );
+
+    if (existingConversation) {
+      console.log(
+        `💬 Resuming existing chat conversation: ${existingConversation.id} for ${customerEmail}`
+      );
+      return c.json({
+        success: true,
+        conversationId: existingConversation.id,
+        resumed: true,
+      });
+    }
+
+    // Generate conversation ID for new conversation
     const conversationId = `conv_${Date.now()}_${Math.random().toString(36).substring(7)}`;
 
     // Create conversation metadata
@@ -3262,7 +3279,7 @@ app.post("/make-server-3bd0ade8/chat/start", async (c) => {
     await kv.set(`chat_messages_${conversationId}`, []);
 
     console.log(
-      `💬 New chat conversation started: ${conversationId}`,
+      `💬 New chat conversation started: ${conversationId} for ${customerEmail}`,
     );
 
     return c.json({

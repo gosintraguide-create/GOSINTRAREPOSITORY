@@ -47,25 +47,24 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
       setCustomerName(session.customerName);
       setCustomerEmail(session.customerEmail);
       
-      // Check if we have an existing conversation ID
+      // Always check for existing conversation when user is logged in
+      // This will either resume an existing chat or create a new one
+      autoStartChatForLoggedInUser(session.customerName, session.customerEmail);
+    } else {
+      // For non-logged-in users, check localStorage
       const savedConvId = localStorage.getItem("chatConversationId");
-      if (!savedConvId) {
-        // Auto-start chat for logged-in users without an existing conversation
-        autoStartChatForLoggedInUser(session.customerName, session.customerEmail);
+      if (savedConvId) {
+        setConversationId(savedConvId);
+        setHasStartedChat(true);
+        loadMessages(savedConvId);
       }
     }
-    
-    // Check if we have an existing conversation ID (for non-logged-in users or existing chats)
-    const savedConvId = localStorage.getItem("chatConversationId");
-    if (savedConvId) {
-      setConversationId(savedConvId);
-      setHasStartedChat(true);
-      loadMessages(savedConvId);
-    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   
   const autoStartChatForLoggedInUser = async (name: string, email: string) => {
     try {
+      console.log(`🔍 Checking for existing conversation for ${email}...`);
       const response = await fetch(
         `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/chat/start`,
         {
@@ -84,9 +83,19 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
       if (response.ok) {
         const result = await response.json();
         if (result.success && result.conversationId) {
+          console.log(
+            result.resumed 
+              ? `✅ Resumed existing conversation: ${result.conversationId}` 
+              : `✅ Started new conversation: ${result.conversationId}`
+          );
           setConversationId(result.conversationId);
           setHasStartedChat(true);
           localStorage.setItem("chatConversationId", result.conversationId);
+          
+          // Load existing messages if conversation was resumed
+          if (result.resumed) {
+            loadMessages(result.conversationId);
+          }
         }
       }
     } catch (error) {
@@ -161,6 +170,15 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
   };
 
   const startConversation = async () => {
+    // Check if we already have a conversation ID (user went back and is resuming)
+    if (conversationId) {
+      // Just show the existing chat
+      setHasStartedChat(true);
+      loadMessages(conversationId);
+      toast.success("Welcome back! Resuming your conversation.");
+      return;
+    }
+
     if (!customerName.trim() || !customerEmail.trim()) {
       toast.error("Please enter your name and email");
       return;
@@ -192,7 +210,14 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
         setConversationId(result.conversationId);
         setHasStartedChat(true);
         localStorage.setItem("chatConversationId", result.conversationId);
-        toast.success("Chat started! We'll respond shortly.");
+        
+        // Load messages if resuming existing conversation
+        if (result.resumed) {
+          loadMessages(result.conversationId);
+          toast.success("Welcome back! Resuming your conversation.");
+        } else {
+          toast.success("Chat started! We'll respond shortly.");
+        }
       } else {
         throw new Error(result.error || "Failed to start chat");
       }
@@ -221,14 +246,10 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
   };
 
   const handleGoBack = () => {
-    // Reset chat state and return to contact options
+    // Go back to contact options screen without erasing the conversation
+    // The conversation is saved and will resume when they click "Start Web Chat" again
     setHasStartedChat(false);
-    setConversationId(null);
-    setMessages([]);
-    setCustomerName("");
-    setCustomerEmail("");
-    localStorage.removeItem("chatConversationId");
-    toast.success("Chat reset. Choose your preferred contact method.");
+    toast.info("Your conversation is saved.");
   };
 
   const sendMessage = async () => {
@@ -271,6 +292,31 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
       setMessage(messageText); // Restore the message
     }
   };
+
+  // When chat opens, check for logged-in user and ensure conversation is loaded
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const session = getSession();
+    if (session && !conversationId) {
+      // User is logged in but no conversation loaded - fetch it
+      console.log('Chat opened for logged-in user, loading conversation...');
+      autoStartChatForLoggedInUser(session.customerName, session.customerEmail);
+    } else if (!session && conversationId) {
+      // User logged out while chat was open - check if localStorage was cleared
+      const savedConvId = localStorage.getItem("chatConversationId");
+      if (!savedConvId) {
+        // Session and conversation were cleared (user logged out) - reset chat
+        console.log('User logged out, resetting chat state...');
+        setConversationId(null);
+        setHasStartedChat(false);
+        setMessages([]);
+        setCustomerName("");
+        setCustomerEmail("");
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, conversationId]);
 
   // Poll for new messages every 3 seconds when chat is open
   useEffect(() => {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { CheckCircle, Download, Mail, Calendar, Users, ArrowRight, Printer, AlertCircle, FileDown, Ticket, Home, Settings } from "lucide-react";
+import { CheckCircle, Download, Mail, Calendar, Users, ArrowRight, Printer, AlertCircle, FileDown, Ticket, Home, Settings, LogIn, Car, MessageCircle, MapPin } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Badge } from "./ui/badge";
@@ -8,6 +8,7 @@ import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { toast } from "sonner@2.0.3";
 import { TicketCard } from "./TicketCard";
 import { getTranslation } from "../lib/translations";
+import { getSession } from "../lib/sessionManager";
 
 interface BookingConfirmationPageProps {
   onNavigate: (page: string) => void;
@@ -18,6 +19,7 @@ interface BookingConfirmationPageProps {
 export function BookingConfirmationPage({ onNavigate, booking, language }: BookingConfirmationPageProps) {
   const [emailSent, setEmailSent] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     // Scroll to top
@@ -25,6 +27,10 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
     
     // Simulate email sent status
     setTimeout(() => setEmailSent(true), 1000);
+
+    // Check if user is logged in
+    const session = getSession();
+    setIsLoggedIn(!!session);
   }, [booking]);
 
   const handleDownloadPDF = async () => {
@@ -144,6 +150,52 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
           </Card>
         )}
 
+        {/* Login Prompt for non-logged-in users */}
+        {!isLoggedIn && (
+          <Card className="mb-6 border-accent bg-gradient-to-br from-accent/10 to-accent/5 p-6">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div className="flex items-start gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent/20 flex-shrink-0">
+                  <LogIn className="h-6 w-6 text-accent-foreground" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="mb-2 text-accent-foreground">🚀 Unlock Full Access</h3>
+                  <p className="mb-3 text-muted-foreground">
+                    Login now to access premium features during your visit:
+                  </p>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li className="flex items-center gap-2">
+                      <Car className="h-4 w-4 text-accent" />
+                      <span><strong>Request a pickup</strong> from any attraction in Sintra</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <MessageCircle className="h-4 w-4 text-accent" />
+                      <span><strong>Live chat support</strong> with saved conversation history</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-accent" />
+                      <span><strong>View your tickets</strong> and booking details anytime</span>
+                    </li>
+                  </ul>
+                  <p className="mt-3 text-sm text-muted-foreground">
+                    Use your <strong className="text-accent-foreground">Booking ID</strong> and <strong className="text-accent-foreground">last name</strong> to login instantly.
+                  </p>
+                </div>
+              </div>
+              <div className="flex-shrink-0">
+                <Button
+                  size="lg"
+                  onClick={() => onNavigate("login")}
+                  className="w-full gap-2 bg-accent hover:bg-accent/90 md:w-auto"
+                >
+                  <LogIn className="h-5 w-5" />
+                  Login Now
+                </Button>
+              </div>
+            </div>
+          </Card>
+        )}
+
         {/* Booking Summary */}
         <Card className="mb-6 p-6">
           <div className="mb-4 flex items-center justify-between">
@@ -248,25 +300,34 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
           </div>
         </div>
 
-        {/* Profile Access Tip */}
-        <Card className="mb-6 border-accent/30 bg-accent/5 p-6">
-          <div className="flex items-start gap-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/20">
-              <Settings className="h-5 w-5 text-accent-foreground" />
+        {/* Profile Access Tip - only show if already logged in */}
+        {isLoggedIn && (
+          <Card className="mb-6 border-accent/30 bg-accent/5 p-6">
+            <div className="flex items-start gap-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/20">
+                <CheckCircle className="h-5 w-5 text-accent-foreground" />
+              </div>
+              <div className="flex-1">
+                <h3 className="mb-2 text-accent-foreground">✅ You're Logged In!</h3>
+                <p className="text-muted-foreground">
+                  You have full access to all features including requesting pickups and live chat support. 
+                  Your tickets and booking details are saved to your profile.
+                </p>
+                <div className="mt-3 flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onNavigate("request-pickup")}
+                    className="gap-2"
+                  >
+                    <Car className="h-4 w-4" />
+                    Request Pickup
+                  </Button>
+                </div>
+              </div>
             </div>
-            <div className="flex-1">
-              <h3 className="mb-2 text-accent-foreground">💡 Quick Access Tip</h3>
-              <p className="text-muted-foreground">
-                For easier access during your visit, you can log into your temporary profile using your{" "}
-                <strong>Booking ID ({booking.id})</strong> and <strong>last name</strong>. 
-                This lets you request pickups and chat with support without entering your details each time.
-              </p>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Look for the login button in the top navigation menu.
-              </p>
-            </div>
-          </div>
-        </Card>
+          </Card>
+        )}
 
         {/* How to Use */}
         <Card className="mb-6 p-6">
