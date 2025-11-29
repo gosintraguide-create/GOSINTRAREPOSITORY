@@ -135,11 +135,21 @@ export function UserProfile({ onNavigate, language }: UserProfileProps) {
                 <Label htmlFor="bookingId">Booking ID</Label>
                 <Input
                   id="bookingId"
-                  placeholder="e.g., HOS-ABC123"
+                  placeholder="e.g., AB1234"
                   value={bookingId}
-                  onChange={(e) => setBookingId(e.target.value)}
+                  onChange={(e) => {
+                    let value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                    
+                    // Auto-format: 2 letters + dash + 4 numbers
+                    if (value.length > 2) {
+                      value = value.slice(0, 2) + '-' + value.slice(2, 6);
+                    }
+                    
+                    setBookingId(value);
+                  }}
                   className="uppercase"
                   disabled={isLoading}
+                  maxLength={7}
                 />
               </div>
 
