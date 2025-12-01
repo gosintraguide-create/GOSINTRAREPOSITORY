@@ -25,6 +25,11 @@ import {
 import { Calendar as CalendarComponent } from "./ui/calendar";
 import { Badge } from "./ui/badge";
 import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "./ui/collapsible";
+import {
   Calendar as CalendarIcon,
   Users,
   MapPin,
@@ -35,6 +40,7 @@ import {
   Check,
   ArrowRight,
   ChevronLeft,
+  ChevronDown,
   AlertCircle,
   Loader2,
   Car,
@@ -1049,21 +1055,7 @@ export function BuyTicketPage({
                       }
                     </Label>
 
-                    {/* Interactive Map */}
-                    <div className="mt-4 mb-4">
-                      <PickupLocationMap
-                        selectedLocation={
-                          formData.pickupLocation
-                        }
-                        onLocationSelect={(location) =>
-                          handleInputChange(
-                            "pickupLocation",
-                            location,
-                          )
-                        }
-                      />
-                    </div>
-
+                    {/* Dropdown Selector - PRIMARY ACTION */}
                     <Select
                       value={formData.pickupLocation}
                       onValueChange={(value) =>
@@ -1073,7 +1065,7 @@ export function BuyTicketPage({
                         )
                       }
                     >
-                      <SelectTrigger className="mt-2 border-border">
+                      <SelectTrigger className="mt-2 border-border h-12">
                         <SelectValue
                           placeholder={
                             t.buyTicket.dateSelection
@@ -1092,9 +1084,31 @@ export function BuyTicketPage({
                         ))}
                       </SelectContent>
                     </Select>
-                    <p className="mt-1 text-muted-foreground">
+                    <p className="mt-1.5 text-xs text-muted-foreground">
                       {t.buyTicket.dateSelection.pickupHelpText}
                     </p>
+
+                    {/* Interactive Map - COLLAPSIBLE REFERENCE */}
+                    <Collapsible className="mt-3">
+                      <CollapsibleTrigger className="flex items-center gap-2 text-xs text-primary hover:text-primary/80 transition-colors">
+                        <MapPin className="h-3.5 w-3.5" />
+                        <span>View route maps</span>
+                        <ChevronDown className="h-3.5 w-3.5 transition-transform data-[state=open]:rotate-180" />
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="mt-3">
+                        <PickupLocationMap
+                          selectedLocation={
+                            formData.pickupLocation
+                          }
+                          onLocationSelect={(location) =>
+                            handleInputChange(
+                              "pickupLocation",
+                              location,
+                            )
+                          }
+                        />
+                      </CollapsibleContent>
+                    </Collapsible>
                   </div>
 
                   <div className="space-y-2">
