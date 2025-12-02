@@ -556,8 +556,6 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
           event: "*",
           schema: "public",
           table: "kv_store_3bd0ade8",
-          // Match booking IDs: AA-1234, AB-1234, etc. AND old booking_* format
-          filter: "key=like.%-%",
         },
         async (payload) => {
           // Filter out non-booking keys (pickup requests, chat, etc.)
@@ -565,11 +563,17 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
           if (
             !key ||
             key.startsWith("PICKUP_") ||
+            key.startsWith("pickup_") ||
             key.startsWith("chat_") ||
             key.startsWith("availability_") ||
             key.startsWith("checkin_")
           ) {
             return; // Ignore non-booking changes
+          }
+          
+          // Only process keys that look like bookings (contain a dash, e.g., AA-1234)
+          if (!key.includes("-")) {
+            return;
           }
           console.log(
             "🔔 Realtime booking change detected:",
@@ -611,18 +615,22 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
         if (status === 'SUBSCRIBED') {
           console.log('✅ Bookings subscription active');
         } else if (status === 'CHANNEL_ERROR') {
-          console.error('❌ Bookings subscription error');
-          toast.error('Lost connection to booking updates. Refreshing...');
-          // Attempt to reload data
-          fetchBookings();
+          console.warn('⚠️ Bookings realtime error - falling back to polling');
         } else if (status === 'TIMED_OUT') {
           console.warn('⚠️ Bookings subscription timed out');
         }
       });
 
+    // Polling fallback: Only poll every 3 minutes since realtime is enabled
+    // This serves as a safety net in case realtime misses an update
+    const pollInterval = setInterval(() => {
+      fetchBookings();
+    }, 180000); // 3 minutes
+
     return () => {
       console.log('🔌 Unsubscribing from bookings channel');
       supabase.removeChannel(channel);
+      clearInterval(pollInterval);
     };
   }, [isAuthenticated]);
 
@@ -639,9 +647,13 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
           event: "*",
           schema: "public",
           table: "kv_store_3bd0ade8",
-          filter: "key=like.chat_%",
         },
         async (payload) => {
+          // Filter for chat-related keys only
+          const key = payload.new?.key;
+          if (!key || !key.startsWith("chat_")) {
+            return;
+          }
           console.log(
             "🔔 Realtime message change detected:",
             payload,
@@ -677,18 +689,22 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
         if (status === 'SUBSCRIBED') {
           console.log('✅ Messages subscription active');
         } else if (status === 'CHANNEL_ERROR') {
-          console.error('❌ Messages subscription error');
-          toast.error('Lost connection to message updates. Refreshing...');
-          // Attempt to reload data
-          loadConversations();
+          console.warn('⚠️ Messages realtime error - falling back to polling');
         } else if (status === 'TIMED_OUT') {
           console.warn('⚠️ Messages subscription timed out');
         }
       });
 
+    // Polling fallback: Only poll every 3 minutes since realtime is enabled
+    // This serves as a safety net in case realtime misses an update
+    const pollInterval = setInterval(() => {
+      loadConversations();
+    }, 180000); // 3 minutes
+
     return () => {
       console.log('🔌 Unsubscribing from messages channel');
       supabase.removeChannel(messagesChannel);
+      clearInterval(pollInterval);
     };
   }, [isAuthenticated]);
 
@@ -705,9 +721,13 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
           event: "*",
           schema: "public",
           table: "kv_store_3bd0ade8",
-          filter: "key=like.pickup_request:%",
         },
         async (payload) => {
+          // Filter for pickup request keys only
+          const key = payload.new?.key;
+          if (!key || !key.startsWith("pickup_request:")) {
+            return;
+          }
           console.log(
             "🔔 Realtime pickup request change detected:",
             payload,
@@ -747,12 +767,13 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
         if (status === 'SUBSCRIBED') {
           console.log('✅ Pickup requests subscription active');
         } else if (status === 'CHANNEL_ERROR') {
-          console.error('❌ Pickup requests subscription error');
-          toast.error('Lost connection to pickup request updates');
+          console.warn('⚠️ Pickup requests realtime error - falling back to polling');
         } else if (status === 'TIMED_OUT') {
           console.warn('⚠️ Pickup requests subscription timed out');
         }
       });
+
+    // Note: PickupRequestsManagement component handles its own realtime + polling fallback
 
     return () => {
       console.log('🔌 Unsubscribing from pickup requests channel');
@@ -1873,40 +1894,6 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
             </div>
           </div>
         </div>
-
-        {/* Mobile-Friendly Notification Banner */}
-        {(newPickupsCount > 0 || newBookingsCount > 0 || conversations.filter(c => c.unreadByAdmin > 0 && !c.archived).length > 0) && (
-          <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-blue-500/10 border-2 border-blue-500 rounded-lg animate-pulse">
-            <div className="flex items-center gap-2 sm:gap-3 text-blue-700 dark:text-blue-300">
-              <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-blue-500 animate-bounce">
-                <span className="text-white text-sm sm:text-base">
-                  {newPickupsCount + newBookingsCount + conversations.filter(c => c.unreadByAdmin > 0 && !c.archived).length}
-                </span>
-              </div>
-              <div className="flex-1">
-                <p className="text-sm sm:text-base">
-                  <strong>You have new notifications!</strong>
-                </p>
-                <p className="text-xs sm:text-sm opacity-90 mt-0.5">
-                  {newPickupsCount > 0 && `${newPickupsCount} pickup${newPickupsCount > 1 ? 's' : ''} `}
-                  {newBookingsCount > 0 && `${newBookingsCount} booking${newBookingsCount > 1 ? 's' : ''} `}
-                  {conversations.filter(c => c.unreadByAdmin > 0 && !c.archived).length > 0 && `${conversations.filter(c => c.unreadByAdmin > 0 && !c.archived).length} message${conversations.filter(c => c.unreadByAdmin > 0 && !c.archived).length > 1 ? 's' : ''}`}
-                </p>
-              </div>
-              <button
-                onClick={() => {
-                  // Cycle through tabs with notifications
-                  if (newPickupsCount > 0) setActiveTab('pickups');
-                  else if (newBookingsCount > 0) setActiveTab('bookings');
-                  else if (conversations.filter(c => c.unreadByAdmin > 0 && !c.archived).length > 0) setActiveTab('messages');
-                }}
-                className="px-3 py-1.5 sm:px-4 sm:py-2 bg-blue-500 text-white rounded-md text-xs sm:text-sm hover:bg-blue-600 transition-colors"
-              >
-                View
-              </button>
-            </div>
-          </div>
-        )}
 
         {/* Mobile Setup Guide Banner */}
         {showMobileGuide && (isIOS || isAndroid || window.innerWidth < 768) && (

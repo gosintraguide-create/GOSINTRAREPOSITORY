@@ -3,6 +3,7 @@ import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { QrCode, Ticket, Home, Users, Clock, CheckCircle2, MapPin, Car, AlertCircle, RefreshCw } from "lucide-react";
 import { projectId, publicAnonKey } from '../utils/supabase/info';
+import { createClient } from '../utils/supabase/client';
 import { toast } from "sonner@2.0.3";
 import { safeJsonFetch } from '../lib/apiErrorHandler';
 
@@ -127,12 +128,50 @@ export function OperationsPage({ onNavigate }: OperationsPageProps) {
     if (isAuthenticated) {
       loadPickupRequests();
       
-      // Poll for new requests every 10 seconds
+      // Set up realtime subscription for instant pickup request updates
+      const supabase = createClient();
+      const channel = supabase
+        .channel('operations-pickup-requests')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'kv_store_3bd0ade8',
+          },
+          (payload) => {
+            // Filter for pickup request keys only
+            const key = payload.new?.key;
+            if (!key || !key.startsWith('pickup_request:')) {
+              return;
+            }
+            
+            console.log('🚗 Realtime pickup request change detected in Operations:', payload);
+            // Reload requests when any pickup request changes
+            loadPickupRequests();
+          }
+        )
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            console.log('✅ Operations pickup requests subscription active');
+          } else if (status === 'CHANNEL_ERROR') {
+            console.warn('⚠️ Operations pickup requests realtime error - falling back to polling');
+          } else if (status === 'TIMED_OUT') {
+            console.warn('⚠️ Operations pickup requests subscription timed out');
+          }
+        });
+      
+      // Polling fallback: Only poll every 2 minutes since realtime is enabled
+      // This serves as a safety net in case realtime misses an update
       const interval = setInterval(() => {
         loadPickupRequests();
-      }, 10000);
+      }, 120000); // 2 minutes
 
-      return () => clearInterval(interval);
+      return () => {
+        console.log('🔌 Unsubscribing from operations pickup requests channel');
+        supabase.removeChannel(channel);
+        clearInterval(interval);
+      };
     }
   }, [isAuthenticated]);
 
@@ -298,7 +337,7 @@ export function OperationsPage({ onNavigate }: OperationsPageProps) {
           <div className="mt-4 flex items-start gap-2 rounded-lg border border-blue-200 bg-blue-50 p-3">
             <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0 text-blue-600" />
             <p className="text-sm text-blue-900">
-              <strong>Auto-refresh enabled:</strong> Pickup requests update every 10 seconds. Sound and browser notifications will alert you of new requests.
+              <strong>Real-time updates enabled:</strong> Pickup requests update instantly via realtime subscriptions. Sound and browser notifications will alert you of new requests.
             </p>
           </div>
         </div>

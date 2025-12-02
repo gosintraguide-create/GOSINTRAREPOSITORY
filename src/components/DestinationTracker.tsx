@@ -79,9 +79,14 @@ export function DestinationTracker({ autoRefresh = true, showDetails = false }: 
             event: '*',
             schema: 'public',
             table: 'kv_store_3bd0ade8',
-            filter: 'key=like.booking_%'
           },
           (payload) => {
+            // Filter for booking keys (check-ins are part of bookings)
+            const key = payload.new?.key;
+            if (!key || (!key.includes("-") && !key.startsWith("booking_"))) {
+              return;
+            }
+            
             console.log('📍 Realtime booking/check-in change detected:', payload);
             // Reload stats when any booking changes (check-ins are part of bookings)
             loadStats();
@@ -91,17 +96,22 @@ export function DestinationTracker({ autoRefresh = true, showDetails = false }: 
           if (status === 'SUBSCRIBED') {
             console.log('✅ Destination tracker subscription active');
           } else if (status === 'CHANNEL_ERROR') {
-            console.error('❌ Destination tracker subscription error');
-            // Attempt to reload stats
-            loadStats();
+            console.warn('⚠️ Destination tracker realtime error - falling back to polling');
           } else if (status === 'TIMED_OUT') {
             console.warn('⚠️ Destination tracker subscription timed out');
           }
         });
 
+      // Polling fallback: Only poll every 3 minutes since realtime is enabled
+      // This serves as a safety net in case realtime misses an update
+      const pollInterval = setInterval(() => {
+        loadStats();
+      }, 180000); // 3 minutes
+
       return () => {
         console.log('🔌 Unsubscribing from destination tracker channel');
         supabase.removeChannel(channel);
+        clearInterval(pollInterval);
       };
     }
   }, [autoRefresh, showDetails]);

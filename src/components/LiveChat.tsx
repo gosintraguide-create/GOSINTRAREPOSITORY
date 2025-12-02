@@ -122,9 +122,14 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
           event: '*',
           schema: 'public',
           table: 'kv_store_3bd0ade8',
-          filter: `key=eq.live_chat_${conversationId}`
         },
         (payload) => {
+          // Filter for this specific chat conversation
+          const key = payload.new?.key;
+          if (key !== `live_chat_${conversationId}`) {
+            return;
+          }
+          
           console.log('💬 Realtime chat message change detected:', payload);
           // Reload messages when conversation changes
           loadMessages(conversationId);
@@ -134,20 +139,22 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
         if (status === 'SUBSCRIBED') {
           console.log('✅ Chat subscription active for conversation:', conversationId);
         } else if (status === 'CHANNEL_ERROR') {
-          console.error('❌ Chat subscription error');
-          toast.error('Lost connection to chat. Trying to reconnect...', {
-            duration: 3000,
-          });
-          // Attempt to reload messages
-          loadMessages(conversationId);
+          console.warn('⚠️ Chat realtime error - falling back to polling');
         } else if (status === 'TIMED_OUT') {
           console.warn('⚠️ Chat subscription timed out');
         }
       });
 
+    // Polling fallback: Only poll every 2 minutes since realtime is enabled
+    // This serves as a safety net in case realtime misses an update
+    const pollInterval = setInterval(() => {
+      loadMessages(conversationId);
+    }, 120000); // 2 minutes
+
     return () => {
       console.log('🔌 Unsubscribing from chat channel:', conversationId);
       supabase.removeChannel(channel);
+      clearInterval(pollInterval);
     };
   }, [conversationId]);
 

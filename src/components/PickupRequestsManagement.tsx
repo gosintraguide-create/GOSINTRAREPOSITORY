@@ -49,6 +49,8 @@ export function PickupRequestsManagement() {
   const [filter, setFilter] = useState<
     "all" | "pending" | "accepted" | "completed"
   >("pending");
+  const [realtimeStatus, setRealtimeStatus] = useState<string>("connecting");
+  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
 
   useEffect(() => {
     loadRequests();
@@ -63,32 +65,45 @@ export function PickupRequestsManagement() {
           event: "*",
           schema: "public",
           table: "kv_store_3bd0ade8",
-          filter: "key=like.pickup_request:%",
         },
         (payload) => {
+          // Filter for pickup request keys only
+          const key = payload.new?.key;
+          if (!key || !key.startsWith("pickup_request:")) {
+            return;
+          }
+          
           console.log(
             "🔄 Realtime pickup request change detected:",
             payload,
           );
+          
+          setLastUpdate(new Date());
           // Reload requests when any pickup request changes
           loadRequests();
         },
       )
       .subscribe((status) => {
+        setRealtimeStatus(status);
         if (status === 'SUBSCRIBED') {
           console.log('✅ Pickup requests management subscription active');
         } else if (status === 'CHANNEL_ERROR') {
-          console.error('❌ Pickup requests management subscription error');
-          // Attempt to reload data
-          loadRequests();
+          console.warn('⚠️ Pickup requests realtime error - falling back to polling');
         } else if (status === 'TIMED_OUT') {
           console.warn('⚠️ Pickup requests management subscription timed out');
         }
       });
 
+    // Polling fallback: Only poll every 2 minutes since realtime is enabled
+    // This serves as a safety net in case realtime misses an update
+    const pollInterval = setInterval(() => {
+      loadRequests();
+    }, 120000); // 2 minutes
+
     return () => {
       console.log('🔌 Unsubscribing from pickup requests management channel');
       supabase.removeChannel(channel);
+      clearInterval(pollInterval);
     };
   }, []);
 
@@ -211,6 +226,16 @@ export function PickupRequestsManagement() {
 
   return (
     <div className="space-y-6">
+      {/* Realtime Status Diagnostic */}
+      <Alert className={realtimeStatus === 'SUBSCRIBED' ? 'border-green-500 bg-green-50' : 'border-orange-500 bg-orange-50'}>
+        <AlertCircle className={`h-4 w-4 ${realtimeStatus === 'SUBSCRIBED' ? 'text-green-600' : 'text-orange-600'}`} />
+        <AlertDescription className={realtimeStatus === 'SUBSCRIBED' ? 'text-green-800' : 'text-orange-800'}>
+          {realtimeStatus === 'SUBSCRIBED' ? '✅ Live updates active' : `⚠️ Realtime status: ${realtimeStatus}`}
+          {' • Last update: '}{lastUpdate.toLocaleTimeString()}
+          {' • Requests: '}{requests.length}
+        </AlertDescription>
+      </Alert>
+
       {/* Destination Tracker */}
       <DestinationTracker
         autoRefresh={true}

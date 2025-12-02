@@ -136,6 +136,7 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
     };
 
     console.log('🚗 Creating pickup request:', requestData);
+    console.log('📍 API endpoint:', `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/pickup-requests`);
     
     try {
       // Send pickup request to backend
@@ -152,6 +153,7 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
       );
 
       console.log('📡 Server response status:', response.status);
+      console.log('📡 Server response headers:', Object.fromEntries(response.headers.entries()));
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -161,6 +163,8 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
 
       const result = await response.json();
       console.log('✅ Pickup request result:', result);
+      console.log('✅ Request ID:', result.request?.id);
+      console.log('✅ Request status:', result.request?.status);
       
       if (result.success) {
         console.log('✅ Pickup request created successfully:', result.request.id);
@@ -176,6 +180,11 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
       }
     } catch (error) {
       console.error('❌ Pickup request failed:', error);
+      console.error('❌ Error details:', {
+        name: error instanceof Error ? error.name : 'Unknown',
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      });
       // ✅ Show error to user and return to form
       setStep("request");
       toast.error(
