@@ -82,14 +82,25 @@ export function DestinationTracker({ autoRefresh = true, showDetails = false }: 
             filter: 'key=like.booking_%'
           },
           (payload) => {
-            console.log('Realtime booking/check-in change detected:', payload);
+            console.log('📍 Realtime booking/check-in change detected:', payload);
             // Reload stats when any booking changes (check-ins are part of bookings)
             loadStats();
           }
         )
-        .subscribe();
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            console.log('✅ Destination tracker subscription active');
+          } else if (status === 'CHANNEL_ERROR') {
+            console.error('❌ Destination tracker subscription error');
+            // Attempt to reload stats
+            loadStats();
+          } else if (status === 'TIMED_OUT') {
+            console.warn('⚠️ Destination tracker subscription timed out');
+          }
+        });
 
       return () => {
+        console.log('🔌 Unsubscribing from destination tracker channel');
         supabase.removeChannel(channel);
       };
     }

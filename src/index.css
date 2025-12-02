@@ -6712,6 +6712,29 @@ html {
   animation: 2s ease-in-out infinite bounce;
 }
 
+[data-sonner-toaster] {
+  z-index: 999999 !important;
+}
+
+[data-sonner-toast] {
+  border: 1px solid var(--border) !important;
+  background: #fff !important;
+  font-size: .95rem !important;
+  box-shadow: 0 10px 25px -5px #0000001a, 0 8px 10px -6px #0000001a !important;
+}
+
+[data-sonner-toast][data-type="success"] {
+  border-left: 4px solid #22c55e !important;
+}
+
+[data-sonner-toast][data-type="error"] {
+  border-left: 4px solid #ef4444 !important;
+}
+
+[data-sonner-toast][data-type="warning"] {
+  border-left: 4px solid #f59e0b !important;
+}
+
 @media print {
   header, footer, button:not(.print-keep), .no-print {
     display: none !important;

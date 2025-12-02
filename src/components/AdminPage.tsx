@@ -607,9 +607,21 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
           await fetchBookings();
         },
       )
-      .subscribe();
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('✅ Bookings subscription active');
+        } else if (status === 'CHANNEL_ERROR') {
+          console.error('❌ Bookings subscription error');
+          toast.error('Lost connection to booking updates. Refreshing...');
+          // Attempt to reload data
+          fetchBookings();
+        } else if (status === 'TIMED_OUT') {
+          console.warn('⚠️ Bookings subscription timed out');
+        }
+      });
 
     return () => {
+      console.log('🔌 Unsubscribing from bookings channel');
       supabase.removeChannel(channel);
     };
   }, [isAuthenticated]);
@@ -661,9 +673,21 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
           await loadConversations();
         },
       )
-      .subscribe();
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('✅ Messages subscription active');
+        } else if (status === 'CHANNEL_ERROR') {
+          console.error('❌ Messages subscription error');
+          toast.error('Lost connection to message updates. Refreshing...');
+          // Attempt to reload data
+          loadConversations();
+        } else if (status === 'TIMED_OUT') {
+          console.warn('⚠️ Messages subscription timed out');
+        }
+      });
 
     return () => {
+      console.log('🔌 Unsubscribing from messages channel');
       supabase.removeChannel(messagesChannel);
     };
   }, [isAuthenticated]);
@@ -719,9 +743,19 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
           // It will handle its own data refresh
         },
       )
-      .subscribe();
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('✅ Pickup requests subscription active');
+        } else if (status === 'CHANNEL_ERROR') {
+          console.error('❌ Pickup requests subscription error');
+          toast.error('Lost connection to pickup request updates');
+        } else if (status === 'TIMED_OUT') {
+          console.warn('⚠️ Pickup requests subscription timed out');
+        }
+      });
 
     return () => {
+      console.log('🔌 Unsubscribing from pickup requests channel');
       supabase.removeChannel(pickupsChannel);
     };
   }, [isAuthenticated]);

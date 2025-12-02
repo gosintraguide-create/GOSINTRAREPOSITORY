@@ -183,6 +183,30 @@ html {
   animation: bounce 2s ease-in-out infinite;
 }
 
+/* Toast notifications - Ensure proper visibility */
+[data-sonner-toaster] {
+  z-index: 999999 !important;
+}
+
+[data-sonner-toast] {
+  background: white !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+  font-size: 0.95rem !important;
+}
+
+[data-sonner-toast][data-type="success"] {
+  border-left: 4px solid #22c55e !important;
+}
+
+[data-sonner-toast][data-type="error"] {
+  border-left: 4px solid #ef4444 !important;
+}
+
+[data-sonner-toast][data-type="warning"] {
+  border-left: 4px solid #f59e0b !important;
+}
+
 /* Print styles for QR codes */
 @media print {
   /* Hide navigation, footer, and unnecessary elements */

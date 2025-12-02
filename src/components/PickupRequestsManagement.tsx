@@ -74,9 +74,20 @@ export function PickupRequestsManagement() {
           loadRequests();
         },
       )
-      .subscribe();
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('✅ Pickup requests management subscription active');
+        } else if (status === 'CHANNEL_ERROR') {
+          console.error('❌ Pickup requests management subscription error');
+          // Attempt to reload data
+          loadRequests();
+        } else if (status === 'TIMED_OUT') {
+          console.warn('⚠️ Pickup requests management subscription timed out');
+        }
+      });
 
     return () => {
+      console.log('🔌 Unsubscribing from pickup requests management channel');
       supabase.removeChannel(channel);
     };
   }, []);

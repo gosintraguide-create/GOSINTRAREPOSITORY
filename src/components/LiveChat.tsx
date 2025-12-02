@@ -125,14 +125,28 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
           filter: `key=eq.live_chat_${conversationId}`
         },
         (payload) => {
-          console.log('Realtime chat message change detected:', payload);
+          console.log('💬 Realtime chat message change detected:', payload);
           // Reload messages when conversation changes
           loadMessages(conversationId);
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('✅ Chat subscription active for conversation:', conversationId);
+        } else if (status === 'CHANNEL_ERROR') {
+          console.error('❌ Chat subscription error');
+          toast.error('Lost connection to chat. Trying to reconnect...', {
+            duration: 3000,
+          });
+          // Attempt to reload messages
+          loadMessages(conversationId);
+        } else if (status === 'TIMED_OUT') {
+          console.warn('⚠️ Chat subscription timed out');
+        }
+      });
 
     return () => {
+      console.log('🔌 Unsubscribing from chat channel:', conversationId);
       supabase.removeChannel(channel);
     };
   }, [conversationId]);

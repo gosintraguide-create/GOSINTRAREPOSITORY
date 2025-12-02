@@ -164,11 +164,13 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
       
       if (result.success) {
         console.log('✅ Pickup request created successfully:', result.request.id);
-        toast.success('Pickup request sent successfully!');
+        toast.success('🚗 Pickup request sent successfully!', {
+          duration: 4000,
+        });
         // ✅ Only show success if server confirms
         setTimeout(() => {
           setStep("confirmed");
-        }, 2000);
+        }, 2500);
       } else {
         throw new Error(result.error || 'Failed to create pickup request');
       }
