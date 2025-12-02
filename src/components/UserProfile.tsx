@@ -33,11 +33,23 @@ export function UserProfile({ onNavigate, language }: UserProfileProps) {
   const [bookingId, setBookingId] = useState("");
   const [lastName, setLastName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState<string | null>(null);
 
   useEffect(() => {
     // Check for existing session on mount
     const currentSession = getSession();
     setSession(currentSession);
+
+    // Listen for session changes (login/logout from other components)
+    const handleSessionChange = (event: CustomEvent) => {
+      setSession(event.detail);
+    };
+
+    window.addEventListener('sessionChanged', handleSessionChange as EventListener);
+    
+    return () => {
+      window.removeEventListener('sessionChanged', handleSessionChange as EventListener);
+    };
   }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -59,6 +71,12 @@ export function UserProfile({ onNavigate, language }: UserProfileProps) {
         setBookingId("");
         setLastName("");
         toast.success(`Welcome back, ${result.session.customerName}!`);
+        
+        // If there's a pending navigation, navigate after login
+        if (pendingNavigation) {
+          onNavigate(pendingNavigation);
+          setPendingNavigation(null);
+        }
       } else {
         toast.error(result.error || "Invalid booking credentials");
       }
@@ -66,6 +84,17 @@ export function UserProfile({ onNavigate, language }: UserProfileProps) {
       toast.error("Failed to login. Please try again.");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleProtectedNavigation = (page: string) => {
+    if (!session) {
+      // Store the intended destination and show login dialog
+      setPendingNavigation(page);
+      setIsLoginOpen(true);
+    } else {
+      // Already logged in, navigate directly
+      onNavigate(page);
     }
   };
 
@@ -109,19 +138,25 @@ export function UserProfile({ onNavigate, language }: UserProfileProps) {
               Login to Profile
             </DropdownMenuItem>
             
-            <DropdownMenuItem onClick={() => onNavigate("manage-booking")}>
+            <DropdownMenuItem onClick={() => handleProtectedNavigation("manage-booking")}>
               <Ticket className="mr-2 h-4 w-4" />
               My Booking
             </DropdownMenuItem>
             
-            <DropdownMenuItem onClick={() => onNavigate("request-pickup")}>
+            <DropdownMenuItem onClick={() => handleProtectedNavigation("request-pickup")}>
               <Car className="mr-2 h-4 w-4" />
               Request a Ride
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
+        <Dialog open={isLoginOpen} onOpenChange={(open) => {
+          setIsLoginOpen(open);
+          if (!open) {
+            // Clear pending navigation if dialog is closed
+            setPendingNavigation(null);
+          }
+        }}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>Access Your Booking</DialogTitle>

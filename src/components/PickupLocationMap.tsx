@@ -290,61 +290,51 @@ export function PickupLocationMap({ selectedLocation, onLocationSelect }: Pickup
 
   return (
     <div className="space-y-3">
-      {/* Info header */}
-      <div className="rounded-lg bg-primary/5 border border-primary/20 p-2">
-        <p className="text-xs text-muted-foreground">
-          <Info className="inline h-3 w-3 mr-1 text-primary" />
-          <strong className="text-foreground">Two circular routes</strong> • No need to change vehicles • Click to view details
+      {/* Compact info header */}
+      <div className="rounded bg-primary/5 border border-primary/20 px-2 py-1">
+        <p className="text-[10px] text-muted-foreground">
+          <Info className="inline h-2.5 w-2.5 mr-1 text-primary" />
+          Two circular routes • Click any stop to select
         </p>
       </div>
 
-      {/* Route 1 */}
-      <div className="space-y-2">
-        <div className="flex items-center gap-2 px-1">
-          <div className="flex items-center gap-1.5">
-            <div className="h-3 w-3 rounded-full bg-primary" />
-            <span className="text-xs text-primary">Route 1</span>
-          </div>
-          <div className="text-[10px] text-muted-foreground">Train Station → Historical Center North → Moorish Castle → Pena → Historical Center South</div>
-        </div>
-        {renderRoute(ROUTE_1_DETAILS, 1, '#0A4D5C')}
-        <div className="flex items-center gap-1 px-1 py-1">
-          <div className="flex-1 h-px bg-gradient-to-r from-primary/30 to-transparent" />
-          <span className="text-[10px] text-muted-foreground">loops back</span>
-        </div>
-      </div>
-
-      {/* Route 2 */}
-      <div className="space-y-2">
-        <div className="flex items-center gap-2 px-1">
-          <div className="flex items-center gap-1.5">
-            <div className="h-3 w-3 rounded-full bg-accent" />
-            <span className="text-xs text-accent">Route 2</span>
-          </div>
-          <div className="text-[10px] text-muted-foreground">Regaleira → Seteais → Monserrate → Train Station → Historical Center North</div>
-        </div>
-        {renderRoute(ROUTE_2_DETAILS, 2, '#D97843')}
-        <div className="flex items-center gap-1 px-1 py-1">
-          <div className="flex-1 h-px bg-gradient-to-r from-accent/30 to-transparent" />
-          <span className="text-[10px] text-muted-foreground">loops back</span>
-        </div>
-      </div>
-
-      {/* Summary footer - only show if selected and not expanded */}
+      {/* Selected pickup summary - more prominent - MOVED TO TOP */}
       {selectedLocation !== "other" && !expandedLocation && (
-        <div className="rounded-lg border border-primary/20 bg-primary/5 p-2">
-          <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary flex-shrink-0">
-              <MapPin className="h-3 w-3 text-white" />
+        <div className="rounded-lg border-2 border-primary bg-primary/5 p-3">
+          <div className="flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary flex-shrink-0">
+              <MapPin className="h-4 w-4 text-white" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs text-foreground truncate">
-                Pickup: {[...ROUTE_1_DETAILS, ...ROUTE_2_DETAILS].find(loc => loc.id === selectedLocation)?.name}
+              <p className="text-[10px] text-muted-foreground mb-0.5">Your Pickup Location</p>
+              <p className="text-sm text-foreground font-medium truncate">
+                {[...ROUTE_1_DETAILS, ...ROUTE_2_DETAILS].find(loc => loc.id === selectedLocation)?.name}
               </p>
             </div>
           </div>
         </div>
       )}
+
+      {/* Compact Routes Container */}
+      <div className="space-y-1.5">
+        {/* Route 1 */}
+        <div className="space-y-1">
+          <div className="flex items-center gap-1.5 px-1">
+            <div className="h-2 w-2 rounded-full bg-primary" />
+            <span className="text-[10px] text-primary">Route 1</span>
+          </div>
+          {renderRoute(ROUTE_1_DETAILS, 1, '#0A4D5C')}
+        </div>
+
+        {/* Route 2 */}
+        <div className="space-y-1">
+          <div className="flex items-center gap-1.5 px-1">
+            <div className="h-2 w-2 rounded-full bg-accent" />
+            <span className="text-[10px] text-accent">Route 2</span>
+          </div>
+          {renderRoute(ROUTE_2_DETAILS, 2, '#D97843')}
+        </div>
+      </div>
     </div>
   );
 }

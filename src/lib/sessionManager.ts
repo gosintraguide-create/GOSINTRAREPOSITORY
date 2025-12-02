@@ -19,6 +19,8 @@ const SESSION_KEY = 'hop_on_sintra_user_session';
 export function saveSession(session: UserSession): void {
   try {
     localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    // Dispatch custom event to notify components of session change
+    window.dispatchEvent(new CustomEvent('sessionChanged', { detail: session }));
   } catch (error) {
     console.error('Failed to save session:', error);
   }
@@ -66,9 +68,50 @@ export function clearSession(): void {
     localStorage.removeItem(SESSION_KEY);
     // Also clear the chat conversation ID when user logs out
     localStorage.removeItem('chatConversationId');
+    // Dispatch custom event to notify components of session change
+    window.dispatchEvent(new CustomEvent('sessionChanged', { detail: null }));
   } catch (error) {
     console.error('Failed to clear session:', error);
   }
+}
+
+/**
+ * Create session directly from booking data (used after purchase)
+ */
+export function createSessionFromBooking(booking: any): UserSession {
+  // Extract customer info - handle both old and new booking formats
+  const customerName = booking.contactInfo?.name || booking.customerName || '';
+  const customerEmail = booking.contactInfo?.email || booking.customerEmail || '';
+  const customerPhone = booking.contactInfo?.phone || booking.customerPhone || '';
+  const bookingId = booking.id || booking.bookingId || '';
+  const visitDate = booking.selectedDate || booking.visitDate || '';
+  const passes = booking.passengers?.length || booking.passes || booking.quantity || 1;
+  
+  // Extract last name from full name
+  const nameParts = customerName.trim().split(' ');
+  const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : '';
+  
+  // Calculate session expiration (day after visit date at 11:59 PM)
+  const visitDateObj = new Date(visitDate);
+  const expiresAt = new Date(visitDateObj);
+  expiresAt.setDate(expiresAt.getDate() + 1);
+  expiresAt.setHours(23, 59, 59, 999);
+
+  const session: UserSession = {
+    bookingId,
+    lastName,
+    customerName,
+    customerEmail,
+    customerPhone,
+    passes,
+    visitDate,
+    expiresAt: expiresAt.toISOString(),
+  };
+
+  saveSession(session);
+  console.log('✅ Auto-login successful after booking:', bookingId);
+  
+  return session;
 }
 
 /**

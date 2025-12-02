@@ -1830,6 +1830,12 @@
     margin-block-end: calc(calc(var(--spacing) * 1) * calc(1 - var(--tw-space-y-reverse)));
   }
 
+  :where(.space-y-1\.5 > :not(:last-child)) {
+    --tw-space-y-reverse: 0;
+    margin-block-start: calc(calc(var(--spacing) * 1.5) * var(--tw-space-y-reverse));
+    margin-block-end: calc(calc(var(--spacing) * 1.5) * calc(1 - var(--tw-space-y-reverse)));
+  }
+
   :where(.space-y-2 > :not(:last-child)) {
     --tw-space-y-reverse: 0;
     margin-block-start: calc(calc(var(--spacing) * 2) * var(--tw-space-y-reverse));
@@ -2852,17 +2858,6 @@
     }
   }
 
-  .from-accent\/30 {
-    --tw-gradient-from: var(--accent);
-    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .from-accent\/30 {
-      --tw-gradient-from: color-mix(in oklab, var(--accent) 30%, transparent);
-    }
-  }
-
   .from-black\/20 {
     --tw-gradient-from: #0003;
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
@@ -2951,17 +2946,6 @@
   @supports (color: color-mix(in lab, red, red)) {
     .from-primary\/10 {
       --tw-gradient-from: color-mix(in oklab, var(--primary) 10%, transparent);
-    }
-  }
-
-  .from-primary\/30 {
-    --tw-gradient-from: var(--primary);
-    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .from-primary\/30 {
-      --tw-gradient-from: color-mix(in oklab, var(--primary) 30%, transparent);
     }
   }
 
@@ -5314,6 +5298,10 @@
 
   .data-\[state\=closed\]\:zoom-out-95[data-state="closed"] {
     --tw-exit-scale: .95;
+  }
+
+  .data-\[state\=open\]\:rotate-180[data-state="open"] {
+    rotate: 180deg;
   }
 
   .data-\[state\=open\]\:animate-accordion-down[data-state="open"] {

@@ -7,20 +7,6 @@
       "destination": "/index.html"
     }
   ],
-  "routes": [
-    {
-      "src": "/sitemap.xml",
-      "dest": "/sitemap.xml",
-      "headers": {
-        "Content-Type": "application/xml; charset=utf-8",
-        "Cache-Control": "public, max-age=0, must-revalidate"
-      }
-    },
-    {
-      "src": "/robots.txt",
-      "dest": "/robots.txt"
-    }
-  ],
   "headers": [
     {
       "source": "/sitemap.xml",

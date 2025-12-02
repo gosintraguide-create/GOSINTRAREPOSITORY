@@ -14,6 +14,7 @@ import { GoogleAnalytics } from "./components/GoogleAnalytics";
 import { MicrosoftClarity } from "./components/MicrosoftClarity";
 import { loadContentWithLanguage } from "./lib/contentManager";
 import { trackPageView } from "./lib/analytics";
+import { createSessionFromBooking } from "./lib/sessionManager";
 import { Toaster } from "./components/ui/sonner";
 import { toast } from "sonner@2.0.3";
 import { Analytics } from "@vercel/analytics/react";
@@ -722,8 +723,23 @@ export default function App() {
           <BuyTicketPage
             onNavigate={handleNavigate}
             onBookingComplete={(booking) => {
+              console.log('🎫 Booking complete, auto-logging in user...');
               setBookingData(booking);
-              setCurrentPage("booking-confirmation");
+              // Automatically log in the user with their new booking
+              try {
+                createSessionFromBooking(booking);
+                console.log('✅ Session created, showing toast...');
+                toast.success("🎉 You're now logged in!", {
+                  duration: 4000,
+                });
+              } catch (error) {
+                console.error('❌ Error creating session:', error);
+                toast.error("Login failed. Please try again.");
+              }
+              // Small delay to ensure toast renders before navigation
+              setTimeout(() => {
+                setCurrentPage("booking-confirmation");
+              }, 100);
             }}
             language={language}
           />
@@ -965,7 +981,17 @@ export default function App() {
       <DynamicFavicon />
 
       {/* Toast notifications */}
-      <Toaster position="top-center" richColors />
+      <Toaster 
+        position="top-center" 
+        richColors 
+        expand={true}
+        closeButton
+        toastOptions={{
+          style: {
+            zIndex: 9999,
+          },
+        }}
+      />
 
       {/* Vercel Analytics */}
       <Analytics />
