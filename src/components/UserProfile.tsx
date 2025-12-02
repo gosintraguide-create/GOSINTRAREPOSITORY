@@ -229,10 +229,8 @@ export function UserProfile({ onNavigate, language }: UserProfileProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
-            <User className="h-4 w-4" />
-          </div>
+        <Button variant="default" size="sm" className="flex items-center gap-2 bg-primary text-white hover:bg-primary/90">
+          <User className="h-4 w-4" />
           <span className="hidden md:inline max-w-[120px] truncate">
             {session.customerName.split(' ')[0]}
           </span>

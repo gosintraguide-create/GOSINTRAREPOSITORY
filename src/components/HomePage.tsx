@@ -97,6 +97,7 @@ export function HomePage({
   const [isIOS, setIsIOS] = useState(false);
   const [isSafari, setIsSafari] = useState(false);
   const [showInstallCard, setShowInstallCard] = useState(false);
+  const [showFloatingButton, setShowFloatingButton] = useState(false);
   const t = getUITranslation(language);
   // Use editable content from admin panel
   const content = useEditableContent();
@@ -309,6 +310,30 @@ export function HomePage({
       Date.now().toString(),
     );
   };
+
+  // Track scroll position to show/hide floating button (mobile only)
+  useEffect(() => {
+    const handleScroll = () => {
+      const heroSectionHeight = 700; // Approximate height where main CTAs become out of view
+      const scrollPosition = window.scrollY;
+      
+      // Only show on mobile (< 768px) and when scrolled past hero section
+      const isMobile = window.innerWidth < 768;
+      const shouldShow = isMobile && scrollPosition > heroSectionHeight;
+      
+      setShowFloatingButton(shouldShow);
+    };
+
+    // Check on mount and scroll
+    handleScroll();
+    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('resize', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
+  }, []);
 
   return (
     <div className="flex-1">
@@ -1076,6 +1101,21 @@ export function HomePage({
 
       {/* TEMPORARY TESTING ACCESS - REMOVE IN PRODUCTION */}
       <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2"></div>
+
+      {/* Floating Buy Day Pass Button - Mobile Only */}
+      {showFloatingButton && (
+        <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 md:hidden">
+          <Button
+            size="lg"
+            className="h-12 animate-in slide-in-from-bottom-2 gap-2 bg-accent px-6 text-white shadow-2xl transition-all hover:scale-105 hover:bg-accent/90"
+            onClick={() => onNavigate("buy-ticket")}
+          >
+            <Ticket className="h-4 w-4" />
+            Buy Day Pass
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

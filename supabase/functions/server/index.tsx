@@ -2883,14 +2883,47 @@ app.post("/make-server-3bd0ade8/checkin", async (c) => {
     // Add to destination log
     const destLogKey = `destination_log_${today}`;
     const destLog = (await kv.get(destLogKey)) || [];
-    destLog.push({
-      destination,
-      timestamp: new Date().toISOString(),
-      bookingId,
-      passengerIndex: passengerIndex || 0,
-      customerName: booking.contactInfo.name,
-      isUpdate: !!existingCheckIn,
-    });
+    
+    if (existingCheckIn) {
+      // Update existing entry instead of adding a duplicate
+      const existingIndex = destLog.findIndex(
+        (entry: any) => entry.bookingId === bookingId && entry.passengerIndex === (passengerIndex || 0)
+      );
+      
+      if (existingIndex >= 0) {
+        // Update the existing entry with new destination
+        destLog[existingIndex] = {
+          destination,
+          timestamp: destLog[existingIndex].timestamp, // Keep original timestamp
+          updatedAt: new Date().toISOString(), // Add update timestamp
+          bookingId,
+          passengerIndex: passengerIndex || 0,
+          customerName: booking.contactInfo.name,
+          isUpdate: true,
+        };
+        console.log(`🔄 Updated destination log entry for ${booking.contactInfo.name} to ${destination}`);
+      } else {
+        // Fallback: entry not found, add new one
+        destLog.push({
+          destination,
+          timestamp: new Date().toISOString(),
+          bookingId,
+          passengerIndex: passengerIndex || 0,
+          customerName: booking.contactInfo.name,
+          isUpdate: true,
+        });
+      }
+    } else {
+      // New check-in, add new entry
+      destLog.push({
+        destination,
+        timestamp: new Date().toISOString(),
+        bookingId,
+        passengerIndex: passengerIndex || 0,
+        customerName: booking.contactInfo.name,
+        isUpdate: false,
+      });
+    }
     await kv.set(destLogKey, destLog);
 
     return c.json({
@@ -3762,7 +3795,7 @@ app.post("/make-server-3bd0ade8/pickup-requests", async (c) => {
 
     // Generate pickup request ID
     const timestamp = Date.now();
-    const requestId = `PICKUP_${timestamp}`;
+    const requestId = `REQ${timestamp}`;
     const requestTime = new Date().toISOString();
 
     const pickupRequest = {
@@ -3781,8 +3814,8 @@ app.post("/make-server-3bd0ade8/pickup-requests", async (c) => {
       vehiclesNeeded: Math.ceil(parseInt(groupSize) / 6),
     };
 
-    // Store the pickup request
-    await kv.set(requestId, pickupRequest);
+    // Store the pickup request with consistent key format
+    await kv.set(`pickup_request:${requestId}`, pickupRequest);
 
     // Also add to active requests list for easy querying
     const activeRequests =

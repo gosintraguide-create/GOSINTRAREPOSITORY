@@ -1661,6 +1661,10 @@
     touch-action: none;
   }
 
+  .resize {
+    resize: both;
+  }
+
   .resize-none {
     resize: none;
   }
@@ -4301,6 +4305,10 @@
 
   .running {
     animation-play-state: running;
+  }
+
+  .slide-in-from-bottom-2 {
+    --tw-enter-translate-y: calc(2 * var(--spacing));
   }
 
   @media (hover: hover) {
