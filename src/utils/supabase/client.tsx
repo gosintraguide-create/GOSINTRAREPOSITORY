@@ -1,9 +1,10 @@
 /**
  * Supabase Client with Realtime Configuration
+ * Version: 2024-12-02 - Fixed realtime connection monitoring
  * 
  * This singleton client provides:
  * - Realtime subscriptions for instant updates
- * - Connection status monitoring
+ * - Connection status monitoring via subscription callbacks
  * - Automatic error logging
  * 
  * Active Subscriptions:
@@ -11,6 +12,8 @@
  * - PickupRequestsManagement: Pickup Requests
  * - LiveChat: Chat Messages
  * - DestinationTracker: Check-in Statistics
+ * 
+ * Each subscription monitors its own status via the subscribe() callback
  */
 
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
@@ -32,19 +35,8 @@ export function createClient() {
         persistSession: false
       }
     });
-
-    // Log connection status changes for debugging
-    supabaseClient.realtime.onOpen(() => {
-      console.log('🟢 Realtime connection established');
-    });
-
-    supabaseClient.realtime.onClose(() => {
-      console.log('🔴 Realtime connection closed');
-    });
-
-    supabaseClient.realtime.onError((error) => {
-      console.error('❌ Realtime connection error:', error);
-    });
+    
+    console.log('✅ Supabase client created with realtime enabled');
   }
   return supabaseClient;
 }
