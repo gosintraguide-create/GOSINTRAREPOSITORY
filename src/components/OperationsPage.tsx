@@ -154,11 +154,8 @@ export function OperationsPage({ onNavigate }: OperationsPageProps) {
         .subscribe((status) => {
           if (status === 'SUBSCRIBED') {
             console.log('✅ Operations pickup requests subscription active');
-          } else if (status === 'CHANNEL_ERROR') {
-            console.warn('⚠️ Operations pickup requests realtime error - falling back to polling');
-          } else if (status === 'TIMED_OUT') {
-            console.warn('⚠️ Operations pickup requests subscription timed out');
           }
+          // Silently handle errors - polling will handle updates
         });
       
       // Polling fallback: Only poll every 2 minutes since realtime is enabled

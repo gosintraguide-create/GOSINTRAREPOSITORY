@@ -646,3 +646,104 @@ export function searchArticles(query: string): BlogArticle[] {
     article.tags.some(tag => tag.toLowerCase().includes(lowerQuery))
   );
 }
+
+// Server-sync functions for fetching/saving blog data
+export async function loadArticlesFromServer(projectId: string, publicAnonKey: string): Promise<BlogArticle[]> {
+  try {
+    const response = await fetch(
+      `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/blog-articles`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${publicAnonKey}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.ok) {
+      const result = await response.json();
+      if (result.success && result.articles && result.articles.length > 0) {
+        // Cache in localStorage for faster subsequent loads
+        localStorage.setItem("blog-articles", JSON.stringify(result.articles));
+        return result.articles;
+      }
+    }
+  } catch (error) {
+    console.error("Error loading articles from server:", error);
+  }
+
+  // Fall back to localStorage or defaults
+  return loadArticles();
+}
+
+export async function saveArticlesToServer(articles: BlogArticle[], projectId: string, publicAnonKey: string): Promise<boolean> {
+  try {
+    const response = await fetch(
+      `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/blog-articles`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${publicAnonKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ articles }),
+      }
+    );
+
+    return response.ok;
+  } catch (error) {
+    console.error("Error saving articles to server:", error);
+    return false;
+  }
+}
+
+export async function loadCategoriesFromServer(projectId: string, publicAnonKey: string): Promise<BlogCategory[]> {
+  try {
+    const response = await fetch(
+      `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/blog-categories`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${publicAnonKey}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.ok) {
+      const result = await response.json();
+      if (result.success && result.categories && result.categories.length > 0) {
+        // Cache in localStorage
+        localStorage.setItem("blog-categories", JSON.stringify(result.categories));
+        return result.categories;
+      }
+    }
+  } catch (error) {
+    console.error("Error loading categories from server:", error);
+  }
+
+  // Fall back to localStorage or defaults
+  return loadCategories();
+}
+
+export async function saveCategoriesToServer(categories: BlogCategory[], projectId: string, publicAnonKey: string): Promise<boolean> {
+  try {
+    const response = await fetch(
+      `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/blog-categories`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${publicAnonKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ categories }),
+      }
+    );
+
+    return response.ok;
+  } catch (error) {
+    console.error("Error saving categories to server:", error);
+    return false;
+  }
+}

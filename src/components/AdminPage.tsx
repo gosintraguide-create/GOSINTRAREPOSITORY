@@ -85,6 +85,7 @@ import { FeatureFlagManager } from "./FeatureFlagManager";
 import { DatabaseCleanup } from "./DatabaseCleanup";
 import { BookingDiagnostics } from "./BookingDiagnostics";
 import { SunsetSpecialManager } from "./SunsetSpecialManager";
+import { BookingLogs } from "./BookingLogs";
 import {
   LineChart,
   Line,
@@ -614,11 +615,8 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
       .subscribe((status) => {
         if (status === 'SUBSCRIBED') {
           console.log('✅ Bookings subscription active');
-        } else if (status === 'CHANNEL_ERROR') {
-          console.warn('⚠️ Bookings realtime error - falling back to polling');
-        } else if (status === 'TIMED_OUT') {
-          console.warn('⚠️ Bookings subscription timed out');
         }
+        // Silently handle errors - polling will handle updates
       });
 
     // Polling fallback: Only poll every 3 minutes since realtime is enabled
@@ -688,11 +686,8 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
       .subscribe((status) => {
         if (status === 'SUBSCRIBED') {
           console.log('✅ Messages subscription active');
-        } else if (status === 'CHANNEL_ERROR') {
-          console.warn('⚠️ Messages realtime error - falling back to polling');
-        } else if (status === 'TIMED_OUT') {
-          console.warn('⚠️ Messages subscription timed out');
         }
+        // Silently handle errors - polling will handle updates
       });
 
     // Polling fallback: Only poll every 3 minutes since realtime is enabled
@@ -766,11 +761,8 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
       .subscribe((status) => {
         if (status === 'SUBSCRIBED') {
           console.log('✅ Pickup requests subscription active');
-        } else if (status === 'CHANNEL_ERROR') {
-          console.warn('⚠️ Pickup requests realtime error - falling back to polling');
-        } else if (status === 'TIMED_OUT') {
-          console.warn('⚠️ Pickup requests subscription timed out');
         }
+        // Silently handle errors - polling will handle updates
       });
 
     // Note: PickupRequestsManagement component handles its own realtime + polling fallback
@@ -2148,6 +2140,23 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                         <span>Tags</span>
                         <span className="text-xs text-muted-foreground">
                           Manage blog tags
+                        </span>
+                      </div>
+                    </Button>
+
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-3"
+                      onClick={() => {
+                        setActiveTab("logs");
+                        setMoreMenuOpen(false);
+                      }}
+                    >
+                      <FileText className="h-5 w-5" />
+                      <div className="flex flex-col items-start">
+                        <span>Booking Logs</span>
+                        <span className="text-xs text-muted-foreground">
+                          View booking history & trip records
                         </span>
                       </div>
                     </Button>
@@ -3553,6 +3562,11 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
           {/* ====== TAGS TAB ====== */}
           <TabsContent value="tags" className="space-y-6">
             <TagManagement />
+          </TabsContent>
+
+          {/* ====== LOGS TAB ====== */}
+          <TabsContent value="logs" className="space-y-6">
+            <BookingLogs />
           </TabsContent>
 
           {/* ====== CLEANUP TAB ====== */}

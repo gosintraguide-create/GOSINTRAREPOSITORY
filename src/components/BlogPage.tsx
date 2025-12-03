@@ -21,11 +21,14 @@ import {
   getPublishedArticles,
   getArticlesByCategory,
   searchArticles,
+  loadArticlesFromServer,
+  loadCategoriesFromServer,
   type BlogArticle,
   type BlogCategory,
 } from "../lib/blogManager";
 import { loadContentWithLanguage } from "../lib/contentManager";
 import { motion } from "motion/react";
+import { projectId, publicAnonKey } from "../utils/supabase/info";
 
 interface BlogPageProps {
   onNavigate: (page: string, data?: any) => void;
@@ -49,24 +52,39 @@ export function BlogPage({
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    const loadedArticles = getPublishedArticles();
-    const loadedCategories = loadCategories();
-    setArticles(loadedArticles);
-    setCategories(loadedCategories);
-    setFilteredArticles(loadedArticles);
+    const loadData = async () => {
+      // Load from server first (which will cache to localStorage)
+      const loadedArticles = await loadArticlesFromServer(projectId, publicAnonKey);
+      const loadedCategories = await loadCategoriesFromServer(projectId, publicAnonKey);
+      
+      const publishedArticles = loadedArticles.filter(article => article.isPublished);
+      setArticles(publishedArticles);
+      setCategories(loadedCategories);
+      setFilteredArticles(publishedArticles);
+    };
+    
+    loadData();
   }, []);
 
   useEffect(() => {
     let filtered = articles;
 
+    // Filter by category
     if (selectedCategory !== "all") {
-      filtered = getArticlesByCategory(selectedCategory);
+      filtered = filtered.filter(article => article.category === selectedCategory);
     }
 
+    // Filter by search query
     if (searchQuery.trim()) {
-      filtered = searchArticles(searchQuery);
+      const lowerQuery = searchQuery.toLowerCase();
+      filtered = filtered.filter(article => 
+        article.title.toLowerCase().includes(lowerQuery) ||
+        article.excerpt.toLowerCase().includes(lowerQuery) ||
+        article.tags.some(tag => tag.toLowerCase().includes(lowerQuery))
+      );
     }
 
+    // Sort by publish date
     filtered = [...filtered].sort(
       (a, b) =>
         new Date(b.publishDate).getTime() -

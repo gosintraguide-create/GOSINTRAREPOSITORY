@@ -1393,6 +1393,88 @@ app.post("/make-server-3bd0ade8/content", async (c) => {
   }
 });
 
+// Get blog articles
+app.get("/make-server-3bd0ade8/blog-articles", async (c) => {
+  try {
+    console.log("📚 Fetching blog articles from database...");
+    const articles = await kv.get("blog_articles");
+
+    if (articles) {
+      console.log(`✅ Found ${articles.length || 0} blog articles in database`);
+      return c.json({ success: true, articles });
+    } else {
+      console.log("⚠️ No blog articles found in database");
+      return c.json({ success: true, articles: [] });
+    }
+  } catch (error) {
+    console.error("❌ Error fetching blog articles:", error);
+    return c.json(
+      { success: false, error: "Failed to fetch blog articles" },
+      500
+    );
+  }
+});
+
+// Save blog articles
+app.post("/make-server-3bd0ade8/blog-articles", async (c) => {
+  try {
+    const body = await c.req.json();
+    console.log(`📝 Saving ${body.articles?.length || 0} blog articles to database...`);
+
+    await kv.set("blog_articles", body.articles);
+    console.log("✅ Blog articles saved successfully");
+
+    return c.json({ success: true });
+  } catch (error) {
+    console.error("❌ Error saving blog articles:", error);
+    return c.json(
+      { success: false, error: "Failed to save blog articles" },
+      500
+    );
+  }
+});
+
+// Get blog categories
+app.get("/make-server-3bd0ade8/blog-categories", async (c) => {
+  try {
+    console.log("🏷️ Fetching blog categories from database...");
+    const categories = await kv.get("blog_categories");
+
+    if (categories) {
+      console.log(`✅ Found ${categories.length || 0} blog categories in database`);
+      return c.json({ success: true, categories });
+    } else {
+      console.log("⚠️ No blog categories found in database");
+      return c.json({ success: true, categories: [] });
+    }
+  } catch (error) {
+    console.error("❌ Error fetching blog categories:", error);
+    return c.json(
+      { success: false, error: "Failed to fetch blog categories" },
+      500
+    );
+  }
+});
+
+// Save blog categories
+app.post("/make-server-3bd0ade8/blog-categories", async (c) => {
+  try {
+    const body = await c.req.json();
+    console.log(`📝 Saving ${body.categories?.length || 0} blog categories to database...`);
+
+    await kv.set("blog_categories", body.categories);
+    console.log("✅ Blog categories saved successfully");
+
+    return c.json({ success: true });
+  } catch (error) {
+    console.error("❌ Error saving blog categories:", error);
+    return c.json(
+      { success: false, error: "Failed to save blog categories" },
+      500
+    );
+  }
+});
+
 // Get comprehensive website content
 app.get(
   "/make-server-3bd0ade8/comprehensive-content",
@@ -1949,6 +2031,109 @@ app.get("/make-server-3bd0ade8/bookings", async (c) => {
     console.error("Error fetching bookings:", error);
     return c.json(
       { success: false, error: "Failed to fetch bookings" },
+      500,
+    );
+  }
+});
+
+// Get booking logs with trip records (admin analytics)
+app.get("/make-server-3bd0ade8/booking-logs", async (c) => {
+  try {
+    console.log("📊 Fetching booking logs with trip records...");
+
+    // Get all bookings
+    const oldBookings = await kv.getByPrefix("booking_");
+    const gsBookings = await kv.getByPrefix("GS-");
+    const gstBookings = await kv.getByPrefix("GST-");
+
+    const allBookings = [...oldBookings, ...gsBookings, ...gstBookings];
+    console.log(`Found ${allBookings.length} total bookings`);
+
+    // Get all pickup requests to associate with bookings
+    const allPickups = await kv.getByPrefix("PICKUP_");
+    console.log(`Found ${allPickups.length} pickup requests`);
+
+    // Process each booking to create log entry
+    const logs = await Promise.all(
+      allBookings.map(async (booking: any) => {
+        // Extract booking ID/code
+        const bookingId = booking.id || booking.bookingId || "unknown";
+        const bookingCode = bookingId.startsWith("GST-") 
+          ? bookingId 
+          : bookingId.startsWith("GS-")
+          ? bookingId
+          : `GST-${bookingId.split("_")[1] || bookingId}`;
+
+        // Get check-in count
+        const checkInKeys = booking.passes 
+          ? Array.from({ length: booking.passes }, (_, i) => 
+              `checkin_${bookingId}_${i + 1}`
+            )
+          : [];
+        
+        const checkIns = await kv.mget(checkInKeys);
+        const checkInCount = checkIns.filter((ci: any) => ci?.checkedIn).length;
+
+        // Find associated trips (pickup requests)
+        const customerPhone = booking.contactInfo?.phone || booking.customerPhone || "";
+        const customerName = booking.contactInfo?.name || booking.customerName || "";
+        
+        // Match trips by phone number or name
+        const associatedTrips = allPickups.filter((pickup: any) => {
+          const pickupPhone = pickup.customerPhone || "";
+          const pickupName = pickup.customerName || "";
+          
+          return (
+            (customerPhone && pickupPhone.includes(customerPhone.replace(/\s/g, ""))) ||
+            (customerName && pickupName.toLowerCase() === customerName.toLowerCase())
+          );
+        });
+
+        // Format trip records
+        const trips = associatedTrips.map((pickup: any) => ({
+          id: pickup.id || pickup.requestId || "unknown",
+          timestamp: pickup.timestamp || pickup.createdAt || new Date().toISOString(),
+          pickupLocation: pickup.pickupLocation || "Unknown",
+          destination: pickup.destination || "",
+          groupSize: pickup.groupSize || 1,
+          status: pickup.status || "completed",
+        }));
+
+        return {
+          bookingId,
+          bookingCode,
+          customerName: booking.contactInfo?.name || booking.customerName || "Unknown",
+          customerEmail: booking.contactInfo?.email || booking.customerEmail || "",
+          customerPhone,
+          purchaseDate: booking.createdAt || booking.timestamp || new Date().toISOString(),
+          passDate: booking.selectedDate || booking.passDate || new Date().toISOString(),
+          totalPrice: booking.totalPrice || 0,
+          passes: booking.passes || booking.dayPassCount || 1,
+          guidedTour: booking.guidedTour || false,
+          attractions: booking.attractions || [],
+          trips,
+          checkInCount,
+        };
+      })
+    );
+
+    // Sort by purchase date (newest first)
+    logs.sort((a, b) => 
+      new Date(b.purchaseDate).getTime() - new Date(a.purchaseDate).getTime()
+    );
+
+    console.log(`✅ Processed ${logs.length} booking logs`);
+
+    return c.json({
+      success: true,
+      logs,
+      totalBookings: logs.length,
+      totalTrips: logs.reduce((sum, log) => sum + log.trips.length, 0),
+    });
+  } catch (error) {
+    console.error("❌ Error fetching booking logs:", error);
+    return c.json(
+      { success: false, error: "Failed to fetch booking logs" },
       500,
     );
   }

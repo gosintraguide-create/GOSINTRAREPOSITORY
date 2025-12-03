@@ -87,11 +87,8 @@ export function PickupRequestsManagement() {
         setRealtimeStatus(status);
         if (status === 'SUBSCRIBED') {
           console.log('✅ Pickup requests management subscription active');
-        } else if (status === 'CHANNEL_ERROR') {
-          console.warn('⚠️ Pickup requests realtime error - falling back to polling');
-        } else if (status === 'TIMED_OUT') {
-          console.warn('⚠️ Pickup requests management subscription timed out');
         }
+        // Silently handle errors - polling will handle updates
       });
 
     // Polling fallback: Only poll every 2 minutes since realtime is enabled
@@ -226,16 +223,6 @@ export function PickupRequestsManagement() {
 
   return (
     <div className="space-y-6">
-      {/* Realtime Status Diagnostic */}
-      <Alert className={realtimeStatus === 'SUBSCRIBED' ? 'border-green-500 bg-green-50' : 'border-orange-500 bg-orange-50'}>
-        <AlertCircle className={`h-4 w-4 ${realtimeStatus === 'SUBSCRIBED' ? 'text-green-600' : 'text-orange-600'}`} />
-        <AlertDescription className={realtimeStatus === 'SUBSCRIBED' ? 'text-green-800' : 'text-orange-800'}>
-          {realtimeStatus === 'SUBSCRIBED' ? '✅ Live updates active' : `⚠️ Realtime status: ${realtimeStatus}`}
-          {' • Last update: '}{lastUpdate.toLocaleTimeString()}
-          {' • Requests: '}{requests.length}
-        </AlertDescription>
-      </Alert>
-
       {/* Destination Tracker */}
       <DestinationTracker
         autoRefresh={true}
@@ -243,7 +230,7 @@ export function PickupRequestsManagement() {
       />
 
       {/* Header Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card
           className={
             pendingCount > 0 ? "border-yellow-500 border-2" : ""

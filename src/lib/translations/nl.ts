@@ -60,36 +60,9 @@ export const nl: WebsiteContent = {
     realTimeTrackingTitle: "Real-Time Voertuigtracking",
     realTimeTrackingSubtitle: "Zie je rit aankomen",
     
-    // Why You'll Love It section
-    whatMakesDifferentTitle: "Wat Ons Anders Maakt",
-    whatMakesDifferentSubtitle: "Dit is niet zomaar vervoer—het is deel van het avontuur! ✨",
-    
-    intimateAdventuresTitle: "Intieme Avonturen",
-    intimateAdventuresDescription: "Slechts 2-6 gasten per voertuig betekent dat je echt van de rit zult genieten! Geen drukke tourbussen, alleen gezellige verkenning.",
-    
-    professionalDriverGuidesTitle: "Professionele Chauffeur-Gidsen",
-    professionalDriverGuidesDescription: "Elke tuk tuk, vintage jeep en busje wordt bestuurd door een gecertificeerde lokale gids die Sintra door en door kent. Krijg inzichten die je in geen enkele reisgids vindt!",
-    
-    yourTimeYourWayTitle: "Jouw Tijd, Op Jouw Manier",
-    yourTimeYourWayDescription: "Iets Instagram-waardig gezien? Stap uit! Neem je tijd, maak die foto's en neem de volgende rit wanneer je klaar bent.",
-    
-    neverRushTitle: "Nooit Meer Haasten",
-    neverRushDescription: "Voertuigen rijden elke 30 minuten de hele dag (9-19 uur). Een gemist? Geen zorgen, er komt er snel weer een!",
-    
-    guaranteedSeatsTitle: "Gegarandeerde Zitplaatsen",
-    guaranteedSeatsDescription: "In tegenstelling tot openbaar vervoer wacht uw stoel op u. Vooraf geboekt, stressvrij, comfortabel—zoals reizen zou moeten zijn!",
-    
     // Price badge
     priceFrom: "Vanaf",
     pricePerPerson: "per persoon",
-    
-    // On-demand pickup tip (Step 4)
-    cantSeeVehicle: "Geen voertuig in de buurt?",
-    requestPickupTip: "Vraag een on-demand ophaling aan vanaf uw boekingsbevestiging. We sturen er een naar uw locatie met live tracking—geen extra kosten!",
-    
-    // On-Demand Pickup Feature (Feature 6)
-    onDemandPickupTitle: "On-Demand Ophaalservice",
-    onDemandPickupDescription: "Geen voertuig in de buurt? Vraag een on-demand ophaling aan vanaf uw boekingsbevestiging. We sturen er een naar uw exacte locatie met live tracking—inbegrepen in uw pas!",
     
     // Final CTA Section
     finalCtaTitle: "Klaar voor de Beste Dag Ooit?",

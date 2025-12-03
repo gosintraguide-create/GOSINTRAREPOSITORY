@@ -1,33 +1,9 @@
-import { useState, useEffect, useRef } from "react";
-import { Save, Plus, Trash2, Edit, Eye, EyeOff, Calendar, Tag as TagIcon } from "lucide-react";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Textarea } from "./ui/textarea";
-import { Card } from "./ui/card";
-import { Badge } from "./ui/badge";
-import { Switch } from "./ui/switch";
-import { Alert, AlertDescription } from "./ui/alert";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "./ui/dialog";
 import { toast } from "sonner@2.0.3";
 import {
   loadArticles,
   loadCategories,
   saveArticles,
+  saveArticlesToServer,
   generateSlug,
   estimateReadTime,
   type BlogArticle,
@@ -36,6 +12,8 @@ import {
 import { InternalLinkHelper } from "./InternalLinkHelper";
 import { loadBlogTags } from "../lib/blogTags";
 import { ImageSelector } from "./ImageSelector";
+import { Alert, AlertDescription } from "./ui/alert";
+import { projectId, publicAnonKey } from "../utils/supabase/info";
 
 export function BlogEditor() {
   const [articles, setArticles] = useState<BlogArticle[]>([]);
@@ -135,6 +113,7 @@ export function BlogEditor() {
 
     setArticles(newArticles);
     saveArticles(newArticles);
+    saveArticlesToServer(newArticles, projectId, publicAnonKey);
     setIsEditing(false);
     setEditingArticle(null);
     toast.success("Article saved successfully!");
@@ -151,6 +130,7 @@ export function BlogEditor() {
     const newArticles = articles.filter(a => a.id !== articleToDelete);
     setArticles(newArticles);
     saveArticles(newArticles);
+    saveArticlesToServer(newArticles, projectId, publicAnonKey);
     setShowDeleteConfirm(false);
     setArticleToDelete(null);
     toast.success("Article deleted");
@@ -197,6 +177,7 @@ export function BlogEditor() {
     if (confirm("This will reset all articles to the default set. Are you sure?")) {
       setArticles(DEFAULT_ARTICLES);
       saveArticles(DEFAULT_ARTICLES);
+      saveArticlesToServer(DEFAULT_ARTICLES, projectId, publicAnonKey);
       toast.success("Articles reset to defaults");
     }
   };

@@ -86,41 +86,6 @@ export interface UITranslations {
   tips: string;
   buyAttractionTicket: string;
   
-  // HomePage specific
-  easyAs1234: string;
-  howItWorksTitle: string;
-  howItWorksSubtitle: string;
-  step1Title: string;
-  step1Description: string;
-  step1Badge: string;
-  step2Title: string;
-  step2Description: string;
-  step2Badge: string;
-  step3Title: string;
-  step3Description: string;
-  step3Badge: string;
-  step4Title: string;
-  step4Description: string;
-  step4Badge: string;
-  
-  // Install App Card
-  installAppTitle: string;
-  installAppDescription: string;
-  installAppFaster: string;
-  installAppOffline: string;
-  installAppSmoother: string;
-  installAppButton: string;
-  installAppButtonShort: string;
-  installAppLater: string;
-  installAppMaybeLater: string;
-  iosInstructions: string;
-  iosStep1: string;
-  iosStep2: string;
-  iosStep3: string;
-  viewInstructions: string;
-  chromeIosWarning: string;
-  chromeIosMessage: string;
-  
   // Features section
   whyYouLoveIt: string;
   startingAt: string;

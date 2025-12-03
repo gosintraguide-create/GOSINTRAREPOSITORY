@@ -55,32 +55,9 @@ export interface WebsiteContent {
     requestPickupSubtitle: string;
     realTimeTrackingTitle: string;
     realTimeTrackingSubtitle: string;
-    // Why You'll Love It section
-    whatMakesDifferentTitle: string;
-    whatMakesDifferentSubtitle: string;
-    intimateAdventuresTitle: string;
-    intimateAdventuresDescription: string;
-    professionalDriverGuidesTitle: string;
-    professionalDriverGuidesDescription: string;
-    yourTimeYourWayTitle: string;
-    yourTimeYourWayDescription: string;
-    neverRushTitle: string;
-    neverRushDescription: string;
-    guaranteedSeatsTitle: string;
-    guaranteedSeatsDescription: string;
-    // Pro tip
-    proTipTitle: string;
-    proTipNoVehicle: string;
-    proTipDescription: string;
     // Price badge
     priceFrom: string;
     pricePerPerson: string;
-    // On-demand pickup tip (Step 4)
-    cantSeeVehicle: string;
-    requestPickupTip: string;
-    // On-Demand Pickup Feature (Feature 6)
-    onDemandPickupTitle: string;
-    onDemandPickupDescription: string;
     // Final CTA Section
     finalCtaTitle: string;
     finalCtaSubtitle: string;
@@ -674,41 +651,9 @@ export const DEFAULT_CONTENT: WebsiteContent = {
     realTimeTrackingTitle: "Real-Time Tracking",
     realTimeTrackingSubtitle:
       "Track your vehicle in real-time and know exactly where it is.",
-    // Why You'll Love It section
-    whatMakesDifferentTitle: "What Makes Us Different",
-    whatMakesDifferentSubtitle:
-      "Experience Sintra like never before with our premium service.",
-    intimateAdventuresTitle: "Intimate Adventures",
-    intimateAdventuresDescription:
-      "Skip the crowds and enjoy small, intimate tours with professional guides.",
-    professionalDriverGuidesTitle: "Professional Driver-Guides",
-    professionalDriverGuidesDescription:
-      "Every vehicle is driven by a certified professional guide with deep local knowledge and years of experience showing visitors the best of Sintra.",
-    yourTimeYourWayTitle: "Your Time, Your Way",
-    yourTimeYourWayDescription:
-      "Hop off at any attraction, spend as long as you want, then hop back on. Your day, your pace.",
-    neverRushTitle: "Never Rush",
-    neverRushDescription:
-      "Enjoy a relaxed and stress-free experience with our flexible service.",
-    guaranteedSeatsTitle: "Guaranteed Seats",
-    guaranteedSeatsDescription:
-      "Every guest has a guaranteed seat in a small, intimate vehicle. No standing, no overcrowding.",
-    // Pro tip
-    proTipTitle: "Pro Tip",
-    proTipNoVehicle: "No vehicle needed!",
-    proTipDescription:
-      "Our service includes transportation to all major Sintra attractions, so you don't need to worry about renting a vehicle.",
     // Price badge
     priceFrom: "From",
     pricePerPerson: "per person",
-    // On-demand pickup tip (Step 4)
-    cantSeeVehicle: "Can't see your vehicle?",
-    requestPickupTip:
-      "Request pickup to have a vehicle dispatched to your location.",
-    // On-Demand Pickup Feature (Feature 6)
-    onDemandPickupTitle: "On-Demand Pickup",
-    onDemandPickupDescription:
-      "Request a vehicle to be dispatched to your location for a seamless start to your adventure.",
     // Final CTA Section
     finalCtaTitle: "Ready to Start Your Adventure?",
     finalCtaSubtitle:

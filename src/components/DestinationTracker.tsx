@@ -95,11 +95,8 @@ export function DestinationTracker({ autoRefresh = true, showDetails = false }: 
         .subscribe((status) => {
           if (status === 'SUBSCRIBED') {
             console.log('✅ Destination tracker subscription active');
-          } else if (status === 'CHANNEL_ERROR') {
-            console.warn('⚠️ Destination tracker realtime error - falling back to polling');
-          } else if (status === 'TIMED_OUT') {
-            console.warn('⚠️ Destination tracker subscription timed out');
           }
+          // Silently handle errors - polling will handle updates
         });
 
       // Polling fallback: Only poll every 3 minutes since realtime is enabled

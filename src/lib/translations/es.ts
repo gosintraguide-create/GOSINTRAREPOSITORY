@@ -60,36 +60,9 @@ export const es: WebsiteContent = {
     realTimeTrackingTitle: "Seguimiento de Vehículos en Tiempo Real",
     realTimeTrackingSubtitle: "Ve tu transporte llegando",
     
-    // Why You'll Love It section
-    whatMakesDifferentTitle: "Lo Que Nos Hace Diferentes",
-    whatMakesDifferentSubtitle: "¡Esto no es solo transporte—es parte de la aventura! ✨",
-    
-    intimateAdventuresTitle: "Aventuras Íntimas",
-    intimateAdventuresDescription: "¡Solo 2-6 pasajeros por vehículo significa que realmente disfrutarás el viaje! Sin multitudes de autobuses turísticos, solo exploración acogedora.",
-    
-    professionalDriverGuidesTitle: "Conductores-Guías Profesionales",
-    professionalDriverGuidesDescription: "Cada tuk tuk, jeep vintage y furgoneta es conducido por un guía local certificado que conoce Sintra al dedillo. ¡Obtén perspectivas que no encontrarás en ninguna guía!",
-    
-    yourTimeYourWayTitle: "Tu Tiempo, a Tu Manera",
-    yourTimeYourWayDescription: "¿Viste algo digno de Instagram? ¡Bájate! Tómate tu tiempo, toma esas fotos y coge el próximo viaje cuando estés listo.",
-    
-    neverRushTitle: "Nunca Más Te Apresures",
-    neverRushDescription: "Los vehículos pasan cada 30 minutos durante todo el día (9h-19h). ¿Perdiste uno? ¡No te preocupes, otro viene pronto!",
-    
-    guaranteedSeatsTitle: "Asientos Garantizados",
-    guaranteedSeatsDescription: "A diferencia del transporte público, tu asiento te está esperando. Pre-reservado, sin estrés, cómodo—¡como debería ser viajar!",
-    
     // Price badge
     priceFrom: "Desde",
     pricePerPerson: "por persona",
-    
-    // On-demand pickup tip (Step 4)
-    cantSeeVehicle: "¿No ves un vehículo cerca?",
-    requestPickupTip: "Solicita una recogida a demanda desde tu confirmación de reserva. ¡Enviaremos uno a tu ubicación con seguimiento en vivo—sin cargo extra!",
-    
-    // On-Demand Pickup Feature (Feature 6)
-    onDemandPickupTitle: "Servicio de Recogida a Demanda",
-    onDemandPickupDescription: "¿No ves un vehículo cerca? Solicita una recogida a demanda desde tu confirmación de reserva. ¡Enviaremos uno a tu ubicación exacta con seguimiento en vivoincluido en tu pase!",
     
     // Final CTA Section
     finalCtaTitle: "¿Listo para el Mejor Día de Tu Vida?",

@@ -27,7 +27,7 @@ export function RouteOverview({ language = "en", onNavigate }: RouteOverviewProp
   ];
 
   return (
-    <section className="bg-gradient-to-b from-white to-gray-50 py-16 sm:py-20 lg:py-24">
+    <section className="bg-gradient-to-b from-white to-gray-50 py-16 sm:py-20 lg:py-24 pb-8 sm:pb-10 lg:pb-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="mb-12 text-center">
@@ -140,23 +140,6 @@ export function RouteOverview({ language = "en", onNavigate }: RouteOverviewProp
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Info Card */}
-        <div className="mt-8 rounded-xl border border-primary/20 bg-primary/5 p-4">
-          <div className="flex items-start gap-3">
-            <div className="mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
-              <MapPin className="h-4 w-4 text-primary" />
-            </div>
-            <div className="flex-1">
-              <p className="mb-1 text-sm text-foreground">
-                <strong>{content.routes.onePassBothRoutes}</strong>
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {content.routes.onePassDescription}
-              </p>
             </div>
           </div>
         </div>

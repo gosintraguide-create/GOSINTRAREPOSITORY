@@ -60,25 +60,6 @@ export const pt: WebsiteContent = {
     realTimeTrackingTitle: "Rastreamento de Veículos em Tempo Real",
     realTimeTrackingSubtitle: "Veja o seu transporte a chegar",
     
-    // Why You'll Love It section
-    whatMakesDifferentTitle: "O Que Nos Torna Diferentes",
-    whatMakesDifferentSubtitle: "Isto não é apenas transporte—é parte da aventura! ✨",
-    
-    intimateAdventuresTitle: "Aventuras Íntimas",
-    intimateAdventuresDescription: "Apenas 2-6 passageiros por veículo significa que vai realmente aproveitar a viagem! Sem multidões de autocarros turísticos, apenas exploração acolhedora.",
-    
-    professionalDriverGuidesTitle: "Motoristas-Guias Profissionais",
-    professionalDriverGuidesDescription: "Cada tuk tuk, jipe vintage e carrinha é conduzido por um guia local certificado que conhece Sintra de dentro para fora. Obtenha insights que não encontrará em nenhum guia!",
-    
-    yourTimeYourWayTitle: "O Seu Tempo, à Sua Maneira",
-    yourTimeYourWayDescription: "Viu algo digno de Instagram? Desça! Tire o seu tempo, tire essas fotos e apanhe a próxima viagem quando estiver pronto.",
-    
-    neverRushTitle: "Nunca Mais Se Apresse",
-    neverRushDescription: "Os veículos passam a cada 30 minutos durante todo o dia (9h-19h). Perdeu um? Não se preocupe, outro está a chegar em breve!",
-    
-    guaranteedSeatsTitle: "Lugares Garantidos",
-    guaranteedSeatsDescription: "Ao contrário do transporte público, o seu lugar está à sua espera. Pré-reservado, sem stress, confortável—como as viagens devem ser!",
-    
     // Price badge
     priceFrom: "Desde",
     pricePerPerson: "por pessoa",
@@ -109,14 +90,6 @@ export const pt: WebsiteContent = {
     sunsetSpecialErrorNotFound: "ID de reserva não encontrado. Verifique e tente novamente.",
     sunsetSpecialErrorUnableToVerify: "Não foi possível verificar o ID de reserva. Tente novamente.",
     sunsetSpecialBookingVerified: "Reserva verificada! A redirecionar...",
-    
-    // On-demand pickup tip (Step 4)
-    cantSeeVehicle: "Não vê um veículo por perto?",
-    requestPickupTip: "Solicite uma recolha a pedido da sua confirmação de reserva. Enviaremos um para a sua localização com rastreamento ao vivo—sem custos extra!",
-    
-    // On-Demand Pickup Feature (Feature 6)
-    onDemandPickupTitle: "Serviço de Recolha a Pedido",
-    onDemandPickupDescription: "Não vê um veículo por perto? Solicite uma recolha a pedido da sua confirmação de reserva. Enviaremos um para a sua localização exata com rastreamento ao vivo—incluído no seu passe!",
     
     // Final CTA Section
     finalCtaTitle: "Pronto para o Melhor Dia de Sempre?",

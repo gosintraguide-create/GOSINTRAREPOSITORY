@@ -60,36 +60,9 @@ export const de: WebsiteContent = {
     realTimeTrackingTitle: "Echtzeit-Fahrzeugverfolgung",
     realTimeTrackingSubtitle: "Sehen Sie Ihre Fahrt ankommen",
     
-    // Why You'll Love It section
-    whatMakesDifferentTitle: "Was Uns Anders Macht",
-    whatMakesDifferentSubtitle: "Das ist nicht nur Transport—es ist Teil des Abenteuers! ✨",
-    
-    intimateAdventuresTitle: "Intime Abenteuer",
-    intimateAdventuresDescription: "Nur 2-6 Gäste pro Fahrzeug bedeutet, dass Sie die Fahrt wirklich genießen werden! Keine Touristenbus-Menschenmengen, nur gemütliche Erkundung.",
-    
-    professionalDriverGuidesTitle: "Professionelle Fahrer-Guides",
-    professionalDriverGuidesDescription: "Jeder Tuk Tuk, Vintage-Jeep und Van wird von einem zertifizierten lokalen Guide gefahren, der Sintra in- und auswendig kennt. Erhalten Sie Einblicke, die Sie in keinem Reiseführer finden!",
-    
-    yourTimeYourWayTitle: "Ihre Zeit, Auf Ihre Weise",
-    yourTimeYourWayDescription: "Etwas Instagram-Würdiges entdeckt? Aussteigen! Nehmen Sie sich Zeit, machen Sie diese Fotos und nehmen Sie die nächste Fahrt, wenn Sie bereit sind.",
-    
-    neverRushTitle: "Nie Mehr Hetzen",
-    neverRushDescription: "Fahrzeuge fahren alle 30 Minuten den ganzen Tag (9-19 Uhr). Eins verpasst? Keine Sorge, das nächste kommt bald!",
-    
-    guaranteedSeatsTitle: "Garantierte Sitzplätze",
-    guaranteedSeatsDescription: "Im Gegensatz zu öffentlichen Verkehrsmitteln wartet Ihr Sitzplatz auf Sie. Vorab gebucht, stressfrei, bequem—so sollte Reisen sein!",
-    
     // Price badge
     priceFrom: "Ab",
     pricePerPerson: "pro Person",
-    
-    // On-demand pickup tip (Step 4)
-    cantSeeVehicle: "Kein Fahrzeug in der Nähe?",
-    requestPickupTip: "Fordern Sie eine On-Demand-Abholung von Ihrer Buchungsbestätigung an. Wir senden eines zu Ihrem Standort mit Live-Tracking—keine zusätzlichen Kosten!",
-    
-    // On-Demand Pickup Feature (Feature 6)
-    onDemandPickupTitle: "On-Demand Abholservice",
-    onDemandPickupDescription: "Kein Fahrzeug in der Nähe? Fordern Sie eine On-Demand-Abholung von Ihrer Buchungsbestätigung an. Wir senden eines zu Ihrem genauen Standort mit Live-Tracking—in Ihrem Pass enthalten!",
     
     // Final CTA Section
     finalCtaTitle: "Bereit für den Besten Tag Aller Zeiten?",

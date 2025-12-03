@@ -25,11 +25,13 @@ export function ManageBookingPage({ onNavigate, language = "en" }: ManageBooking
   const [loading, setLoading] = useState(false);
   const [booking, setBooking] = useState<any>(null);
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
+  const [hasSession, setHasSession] = useState(false);
 
   // Auto-load booking if user is logged in
   useEffect(() => {
     const session = getSession();
     if (session && session.bookingId) {
+      setHasSession(true);
       setBookingId(session.bookingId);
       setLastName(session.lastName);
       // Automatically fetch the booking
@@ -158,6 +160,22 @@ export function ManageBookingPage({ onNavigate, language = "en" }: ManageBooking
     today.setHours(0, 0, 0, 0);
     return bookingDate >= today;
   };
+
+  // If logged in user is loading their booking, show a loading state instead of login form
+  if (!booking && hasSession && loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 py-12 sm:py-20">
+        <div className="mx-auto max-w-md px-4">
+          <Card className="border-border p-8">
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+              <p className="text-muted-foreground">Loading your booking...</p>
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   if (!booking) {
     // Login Form

@@ -807,12 +807,23 @@ export function BuyTicketPage({
                     </h2>
                   </div>
                   <div className="h-1 w-16 rounded-full bg-accent" />
-                  <p className="mt-4 text-muted-foreground whitespace-pre-line">
-                    {
-                      t.buyTicket.dateSelection
-                        .planYourVisitDescription
-                    }
-                  </p>
+                  
+                  {/* Insight Tour Highlight */}
+                  <div className="mt-6 rounded-lg border-2 border-accent/30 bg-gradient-to-br from-accent/10 to-accent/5 p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-accent text-white">
+                        <AlertCircle className="h-5 w-5" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-semibold text-accent mb-2">
+                          {t.buyTicket.timeSlots.guidedTourLabel}
+                        </p>
+                        <p className="text-sm text-foreground/80">
+                          Some start times include our Insight Tour, a longer, more detailed ride where your driver shares the stories and history behind Sintra's monuments. Look for time slots marked with the Insight Tour badge below.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="space-y-6">

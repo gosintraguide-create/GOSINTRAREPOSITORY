@@ -60,30 +60,6 @@ export const en: WebsiteContent = {
     realTimeTrackingTitle: "Real-Time Vehicle Tracking",
     realTimeTrackingSubtitle: "See your ride arriving",
     
-    // Why You'll Love It section
-    whatMakesDifferentTitle: "What Makes Us Different",
-    whatMakesDifferentSubtitle: "This isn't just transportation—it's part of the adventure! ✨",
-    
-    intimateAdventuresTitle: "Intimate Adventures",
-    intimateAdventuresDescription: "Just 2-6 guests per vehicle means you'll actually enjoy the ride! No tour bus crowds, just cozy exploration.",
-    
-    professionalDriverGuidesTitle: "Professional Driver-Guides",
-    professionalDriverGuidesDescription: "Every tuk tuk, vintage jeep, and van is driven by a certified local guide who knows Sintra inside out. Get insights you won't find in any guidebook!",
-    
-    yourTimeYourWayTitle: "Your Time, Your Way",
-    yourTimeYourWayDescription: "Spotted something Instagram-worthy? Hop off! Take your time, snap those photos, and catch the next ride when you're ready.",
-    
-    neverRushTitle: "Never Rush Again",
-    neverRushDescription: "Vehicles pass every 30 minutes all day long (9am-7pm). Missed one? No worries, another's coming soon!",
-    
-    guaranteedSeatsTitle: "Guaranteed Seats",
-    guaranteedSeatsDescription: "Unlike public transport, your seat is waiting for you. Pre-booked, stress-free, comfortable—the way travel should be!",
-    
-    // Pro tip
-    proTipTitle: "💡 Tip",
-    proTipNoVehicle: "Can't see a vehicle nearby?",
-    proTipDescription: "Can't see a vehicle nearby? Request an on-demand pickup from your booking confirmation. We'll send one to your location with live tracking—no extra charge!",
-    
     // Price badge
     priceFrom: "From",
     pricePerPerson: "per person",
@@ -114,14 +90,6 @@ export const en: WebsiteContent = {
     sunsetSpecialErrorNotFound: "Booking ID not found. Please check and try again.",
     sunsetSpecialErrorUnableToVerify: "Unable to verify booking ID. Please try again.",
     sunsetSpecialBookingVerified: "Booking verified! Redirecting...",
-    
-    // On-demand pickup tip (Step 4)
-    cantSeeVehicle: "Can't see a vehicle nearby?",
-    requestPickupTip: "Request an on-demand pickup from your booking confirmation. We'll send one to your location with live tracking—no extra charge!",
-    
-    // On-Demand Pickup Feature (Feature 6)
-    onDemandPickupTitle: "On-Demand Pickup Service",
-    onDemandPickupDescription: "Can't see a vehicle nearby? Request an on-demand pickup from your booking confirmation. We'll send one to your exact location with live tracking—included in your pass!",
     
     // Final CTA Section
     finalCtaTitle: "Ready for the Best Day Ever?",

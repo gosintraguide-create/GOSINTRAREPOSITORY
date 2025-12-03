@@ -60,36 +60,9 @@ export const it: WebsiteContent = {
     realTimeTrackingTitle: "Tracciamento Veicoli in Tempo Reale",
     realTimeTrackingSubtitle: "Vedi arrivare il tuo viaggio",
     
-    // Why You'll Love It section
-    whatMakesDifferentTitle: "Cosa Ci Rende Diversi",
-    whatMakesDifferentSubtitle: "Questo non è solo trasporto—è parte dell'avventura! ✨",
-    
-    intimateAdventuresTitle: "Avventure Intime",
-    intimateAdventuresDescription: "Solo 2-6 ospiti per veicolo significa che ti godrai davvero il viaggio! Nessuna folla di autobus turistici, solo esplorazione accogliente.",
-    
-    professionalDriverGuidesTitle: "Autisti-Guide Professioniste",
-    professionalDriverGuidesDescription: "Ogni tuk tuk, jeep d'epoca e furgone è guidato da una guida locale certificata che conosce Sintra come le proprie tasche. Ottieni intuizioni che non troverai in nessuna guida!",
-    
-    yourTimeYourWayTitle: "Il Tuo Tempo, a Modo Tuo",
-    yourTimeYourWayDescription: "Hai visto qualcosa degno di Instagram? Scendi! Prenditi il tuo tempo, scatta quelle foto e prendi la prossima corsa quando sei pronto.",
-    
-    neverRushTitle: "Mai Più Fretta",
-    neverRushDescription: "I veicoli passano ogni 30 minuti tutto il giorno (9-19). Ne hai perso uno? Nessun problema, un altro arriva presto!",
-    
-    guaranteedSeatsTitle: "Posti Garantiti",
-    guaranteedSeatsDescription: "A differenza dei trasporti pubblici, il tuo posto ti aspetta. Pre-prenotato, senza stress, confortevole—come dovrebbero essere i viaggi!",
-    
     // Price badge
     priceFrom: "Da",
     pricePerPerson: "per persona",
-    
-    // On-demand pickup tip (Step 4)
-    cantSeeVehicle: "Non vedi un veicolo nelle vicinanze?",
-    requestPickupTip: "Richiedi un ritiro su richiesta dalla tua conferma di prenotazione. Ne invieremo uno alla tua posizione con tracciamento in tempo reale—senza costi aggiuntivi!",
-    
-    // On-Demand Pickup Feature (Feature 6)
-    onDemandPickupTitle: "Servizio di Ritiro su Richiesta",
-    onDemandPickupDescription: "Non vedi un veicolo nelle vicinanze? Richiedi un ritiro su richiesta dalla tua conferma di prenotazione. Ne invieremo uno alla tua posizione esatta con tracciamento in tempo reale—incluso nel tuo pass!",
     
     // Final CTA Section
     finalCtaTitle: "Pronto per il Miglior Giorno di Sempre?",

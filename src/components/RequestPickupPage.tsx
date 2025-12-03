@@ -22,7 +22,28 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
   const [location, setLocation] = useState<string>("");
   const [destination, setDestination] = useState<string>("");
   const [customerName, setCustomerName] = useState<string>("");
-  const [customerPhone, setCustomerPhone] = useState<string>("");
+  const [phonePrefix, setPhonePrefix] = useState<string>("+351");
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
+
+  // Parse phone number into prefix and number
+  const parsePhoneNumber = (fullPhone: string) => {
+    if (!fullPhone) return { prefix: "+351", number: "" };
+    
+    // Common country codes (sorted by length, longest first for accurate matching)
+    const prefixes = ["+1", "+7", "+20", "+27", "+30", "+31", "+32", "+33", "+34", "+351", "+352", "+353", "+354", "+355", "+356", "+357", "+358", "+39", "+40", "+41", "+43", "+44", "+45", "+46", "+47", "+48", "+49", "+60", "+61", "+62", "+63", "+64", "+65", "+66", "+81", "+82", "+84", "+86", "+90", "+91", "+92", "+93", "+94", "+95", "+98", "+212", "+213", "+216", "+218", "+220", "+221", "+222", "+223", "+224", "+225", "+226", "+227", "+228", "+229", "+230", "+231", "+232", "+233", "+234", "+235", "+236", "+237", "+238", "+239", "+240", "+241", "+242", "+243", "+244", "+245", "+246", "+248", "+249", "+250", "+251", "+252", "+253", "+254", "+255", "+256", "+257", "+258", "+260", "+261", "+262", "+263", "+264", "+265", "+266", "+267", "+268", "+269", "+290", "+291", "+297", "+298", "+299", "+350", "+370", "+371", "+372", "+373", "+374", "+375", "+376", "+377", "+378", "+380", "+381", "+382", "+383", "+385", "+386", "+387", "+389", "+420", "+421", "+423", "+500", "+501", "+502", "+503", "+504", "+505", "+506", "+507", "+508", "+509", "+590", "+591", "+592", "+593", "+594", "+595", "+596", "+597", "+598", "+599", "+670", "+672", "+673", "+674", "+675", "+676", "+677", "+678", "+679", "+680", "+681", "+682", "+683", "+684", "+685", "+686", "+687", "+688", "+689", "+690", "+691", "+692", "+850", "+852", "+853", "+855", "+856", "+880", "+886", "+960", "+961", "+962", "+963", "+964", "+965", "+966", "+967", "+968", "+970", "+971", "+972", "+973", "+974", "+975", "+976", "+977", "+992", "+993", "+994", "+995", "+996", "+998"];
+    
+    for (const prefix of prefixes) {
+      if (fullPhone.startsWith(prefix)) {
+        return {
+          prefix,
+          number: fullPhone.slice(prefix.length).trim().replace(/\s/g, "")
+        };
+      }
+    }
+    
+    // Default to Portugal if no match
+    return { prefix: "+351", number: fullPhone.replace(/^\+/, "").replace(/\s/g, "") };
+  };
 
   useEffect(() => {
     // Check if user is logged in, auto-fill and skip verification
@@ -30,7 +51,14 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
     if (session) {
       setBookingCode(session.bookingId);
       setCustomerName(session.customerName);
-      setCustomerPhone(session.customerPhone);
+      
+      // Parse phone number into prefix and number
+      if (session.customerPhone) {
+        const parsed = parsePhoneNumber(session.customerPhone);
+        setPhonePrefix(parsed.prefix);
+        setPhoneNumber(parsed.number);
+      }
+      
       setGroupSize(String(session.passes));
       setIsVerified(true);
       setStep("request");
@@ -106,7 +134,14 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
         if (result.success && result.booking) {
           setIsVerified(true);
           setCustomerName(result.booking.customerName || "");
-          setCustomerPhone(result.booking.customerPhone || "");
+          
+          // Parse phone number into prefix and number
+          if (result.booking.customerPhone) {
+            const parsed = parsePhoneNumber(result.booking.customerPhone);
+            setPhonePrefix(parsed.prefix);
+            setPhoneNumber(parsed.number);
+          }
+          
           setGroupSize(String(result.booking.passes || 1));
           setStep("request");
           window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -123,9 +158,11 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
   };
 
   const handleRequestPickup = async () => {
-    if (!location || !groupSize || !customerName || !customerPhone) return;
+    if (!location || !groupSize || !customerName || !phoneNumber) return;
     
     setStep("searching");
+    
+    const customerPhone = `${phonePrefix} ${phoneNumber}`;
     
     const requestData = {
       customerName,
@@ -463,14 +500,42 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
               {/* Customer Phone */}
               <div className="space-y-2">
                 <Label htmlFor="customer-phone">Phone Number</Label>
-                <Input
-                  id="customer-phone"
-                  type="tel"
-                  placeholder="+351 XXX XXX XXX"
-                  value={customerPhone}
-                  onChange={(e) => setCustomerPhone(e.target.value)}
-                  className="border-border"
-                />
+                <div className="flex">
+                  <Input
+                    type="text"
+                    placeholder="+351"
+                    value={phonePrefix}
+                    onChange={(e) => {
+                      let value = e.target.value;
+                      // Ensure it starts with +
+                      if (!value.startsWith('+')) {
+                        value = '+' + value.replace(/\+/g, '');
+                      }
+                      // Only allow + and digits
+                      value = value.replace(/[^\d+]/g, '');
+                      // Limit to reasonable length (+ followed by up to 4 digits)
+                      if (value.length <= 5) {
+                        setPhonePrefix(value);
+                      }
+                    }}
+                    className="w-[100px] rounded-r-none border-r-0 border-border text-center"
+                    maxLength={5}
+                  />
+                  <Input
+                    id="customer-phone"
+                    type="tel"
+                    placeholder="123456789"
+                    value={phoneNumber}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, '');
+                      if (value.length <= 12) {
+                        setPhoneNumber(value);
+                      }
+                    }}
+                    className="flex-1 rounded-l-none border-border"
+                    maxLength={12}
+                  />
+                </div>
               </div>
 
               {/* Group Size */}
@@ -598,7 +663,7 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
                 size="lg"
                 className="w-full bg-accent hover:bg-accent/90"
                 onClick={handleRequestPickup}
-                disabled={!location || !groupSize || !customerName || !customerPhone}
+                disabled={!location || !groupSize || !customerName || !phoneNumber}
               >
                 <Car className="mr-2 h-5 w-5" />
                 Request Pickup

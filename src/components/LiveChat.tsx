@@ -138,21 +138,16 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
       .subscribe((status) => {
         if (status === 'SUBSCRIBED') {
           console.log('✅ Chat subscription active for conversation:', conversationId);
-        } else if (status === 'CHANNEL_ERROR') {
-          console.warn('⚠️ Chat realtime error - falling back to polling');
-        } else if (status === 'TIMED_OUT') {
-          console.warn('⚠️ Chat subscription timed out');
         }
+        // Silently handle errors - polling will handle message updates
       });
 
-    // Polling fallback: Only poll every 2 minutes since realtime is enabled
-    // This serves as a safety net in case realtime misses an update
+    // Polling as primary method: Check for new messages every 3 seconds
     const pollInterval = setInterval(() => {
       loadMessages(conversationId);
-    }, 120000); // 2 minutes
+    }, 3000);
 
     return () => {
-      console.log('🔌 Unsubscribing from chat channel:', conversationId);
       supabase.removeChannel(channel);
       clearInterval(pollInterval);
     };
@@ -337,17 +332,6 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, conversationId]);
-
-  // Poll for new messages every 3 seconds when chat is open
-  useEffect(() => {
-    if (!isOpen || !conversationId) return;
-
-    const interval = setInterval(() => {
-      loadMessages(conversationId);
-    }, 3000);
-
-    return () => clearInterval(interval);
   }, [isOpen, conversationId]);
 
   // Handle click outside to close chat

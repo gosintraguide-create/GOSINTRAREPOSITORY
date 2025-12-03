@@ -203,7 +203,7 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
   };
 
   return (
-    <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
+    <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12">
       <div className="relative overflow-hidden rounded-xl bg-white shadow-lg border border-gray-200">
         <div className="grid lg:grid-cols-2 gap-0">
           {/* Left: Carousel */}

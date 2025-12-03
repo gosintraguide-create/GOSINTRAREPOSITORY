@@ -60,36 +60,9 @@ export const fr: WebsiteContent = {
     realTimeTrackingTitle: "Suivi des Véhicules en Temps Réel",
     realTimeTrackingSubtitle: "Voyez votre transport arriver",
     
-    // Why You'll Love It section
-    whatMakesDifferentTitle: "Ce Qui Nous Rend Différents",
-    whatMakesDifferentSubtitle: "Ce n'est pas seulement du transport—c'est partie de l'aventure! ✨",
-    
-    intimateAdventuresTitle: "Aventures Intimistes",
-    intimateAdventuresDescription: "Seulement 2-6 passagers par véhicule signifie que vous apprécierez vraiment le trajet! Pas de foule de bus touristiques, juste une exploration chaleureuse.",
-    
-    professionalDriverGuidesTitle: "Chauffeurs-Guides Professionnels",
-    professionalDriverGuidesDescription: "Chaque tuk tuk, jeep vintage et van est conduit par un guide local certifié qui connaît Sintra sur le bout des doigts. Obtenez des informations que vous ne trouverez dans aucun guide!",
-    
-    yourTimeYourWayTitle: "Votre Temps, à Votre Façon",
-    yourTimeYourWayDescription: "Vu quelque chose digne d'Instagram? Descendez! Prenez votre temps, prenez ces photos et reprenez le prochain trajet quand vous êtes prêt.",
-    
-    neverRushTitle: "Ne Vous Précipitez Plus Jamais",
-    neverRushDescription: "Les véhicules passent toutes les 30 minutes toute la journée (9h-19h). Vous en avez manqué un? Pas de souci, un autre arrive bientôt!",
-    
-    guaranteedSeatsTitle: "Sièges Garantis",
-    guaranteedSeatsDescription: "Contrairement aux transports publics, votre siège vous attend. Pré-réservé, sans stress, confortable—comme les voyages devraient être !",
-    
     // Price badge
     priceFrom: "À partir de",
     pricePerPerson: "par personne",
-    
-    // On-demand pickup tip (Step 4)
-    cantSeeVehicle: "Vous ne voyez pas de véhicule à proximité?",
-    requestPickupTip: "Demandez une prise en charge à la demande depuis votre confirmation de réservation. Nous en enverrons un à votre emplacement avec suivi en direct—sans frais supplémentaires!",
-    
-    // On-Demand Pickup Feature (Feature 6)
-    onDemandPickupTitle: "Service de Prise en Charge à la Demande",
-    onDemandPickupDescription: "Vous ne voyez pas de véhicule à proximité? Demandez une prise en charge à la demande depuis votre confirmation de réservation. Nous en enverrons un à votre emplacement exact avec suivi en direct—inclus dans votre pass!",
     
     // Final CTA Section
     finalCtaTitle: "Prêt pour le Meilleur Jour de Votre Vie?",
