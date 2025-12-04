@@ -33,12 +33,35 @@ export interface ComprehensiveContent {
       heroImage?: string;
       explainerImage?: string;
     };
+    productCards: {
+      daypass: {
+        images: Array<{ src: string; alt: string }>;
+        title: string;
+        description: string;
+        features: string[];
+        buttonText: string;
+      };
+      travelGuide: {
+        images: Array<{ src: string; alt: string }>;
+        title: string;
+        description: string;
+        content: string;
+        buttonText: string;
+      };
+      monuments: {
+        images: Array<{ src: string; alt: string }>;
+        title: string;
+        description: string;
+        content: string;
+        buttonText: string;
+      };
+    };
     quickLinks: {
       title: string;
       subtitle: string;
-      attractions: { title: string; subtitle: string };
-      travelGuide: { title: string; subtitle: string };
-      privateTours: { title: string; subtitle: string };
+      attractions: { title: string; subtitle: string; imageUrl?: string };
+      travelGuide: { title: string; subtitle: string; imageUrl?: string };
+      privateTours: { title: string; subtitle: string; imageUrl?: string };
     };
     whyChoose: {
       title: string;
@@ -125,6 +148,7 @@ export interface ComprehensiveContent {
         parkOnlyPrice?: number;
         heroImage?: string;
         cardImage?: string;
+        gallery?: string[];
       };
     };
     attractionDetailPage: {
@@ -510,12 +534,105 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
       heroImage: "https://images.unsplash.com/photo-1704312230001-8d9adfc76d39?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0dWslMjB0dWslMjBzaW50cmElMjBwb3J0dWdhbCUyMGNvbG9yZnVsJTIwcGFsYWNlfGVufDF8fHx8MTc2MjM2MTE4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
       explainerImage: "https://images.unsplash.com/photo-1730911454981-545ef4ebdef9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzaW50cmElMjBwZW5hJTIwcGFsYWNlJTIwc2NlbmljJTIwdmlld3xlbnwxfHx8fDE3NjIzNjExODZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
     },
+    productCards: {
+      daypass: {
+        images: [
+          {
+            src: "https://dwiznaefeqnduglmcivr.supabase.co/storage/v1/object/sign/make-3bd0ade8-images/1762977905581_pena-palace-3.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmFjMWMyYy1lNjZlLTQwYWEtYjcwNS1kNTcwYzA5NGZmYzMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtYWtlLTNiZDBhZGU4LWltYWdlcy8xNzYyOTc3OTA1NTgxX3BlbmEtcGFsYWNlLTMuanBnIiwiaWF0IjoxNzYyOTc3OTA1LCJleHAiOjIwNzgzMzc5MDV9.yMxtg8g3UvVUzf-xdAwUmGyjRATPWQwdvRlpIa8D7eY",
+            alt: "Colorful Pena Palace in Sintra",
+          },
+          {
+            src: "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=800&h=500&fit=crop",
+            alt: "Tuk Tuk exploring Sintra",
+          },
+          {
+            src: "https://images.unsplash.com/photo-1609137144813-7d9921338f24?w=800&h=500&fit=crop",
+            alt: "Quinta da Regaleira",
+          },
+          {
+            src: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&h=500&fit=crop",
+            alt: "Sintra Mountains view",
+          },
+        ],
+        title: "Full Day Pass",
+        description: "Unlimited rides across all Sintra attractions",
+        features: [
+          "Unlimited hop-on hop-off rides",
+          "Guaranteed seats - no waiting",
+          "Professional driver-guides",
+          "Service 9am - 7pm daily",
+          "Small groups (max 8 people)",
+          "Real-time vehicle tracking",
+        ],
+        buttonText: "Book Your Pass",
+      },
+      travelGuide: {
+        images: [
+          {
+            src: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&h=500&fit=crop",
+            alt: "Sintra travel guide",
+          },
+          {
+            src: "https://images.unsplash.com/photo-1488085061387-422e29b40080?w=800&h=500&fit=crop",
+            alt: "Travel planning",
+          },
+          {
+            src: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&h=500&fit=crop",
+            alt: "Local tips and guides",
+          },
+          {
+            src: "https://images.unsplash.com/photo-1455849318743-b2233052fcff?w=800&h=500&fit=crop",
+            alt: "Sintra exploration",
+          },
+        ],
+        title: "Sintra Travel Guide",
+        description: "Expert tips, local insights, and hidden gems",
+        content: "Discover the best of Sintra with our comprehensive travel guides. From the best time to visit each palace to secret viewpoints locals love, our blog shares insider knowledge to help you make the most of your Sintra adventure.",
+        buttonText: "Read Travel Guides",
+      },
+      monuments: {
+        images: [
+          {
+            src: "https://dwiznaefeqnduglmcivr.supabase.co/storage/v1/object/sign/make-3bd0ade8-images/1762977905581_pena-palace-3.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmFjMWMyYy1lNjZlLTQwYWEtYjcwNS1kNTcwYzA5NGZmYzMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtYWtlLTNiZDBhZGU4LWltYWdlcy8xNzYyOTc3OTA1NTgxX3BlbmEtcGFsYWNlLTMuanBnIiwiaWF0IjoxNzYyOTc3OTA1LCJleHAiOjIwNzgzMzc5MDV9.yMxtg8g3UvVUzf-xdAwUmGyjRATPWQwdvRlpIa8D7eY",
+            alt: "Pena Palace",
+          },
+          {
+            src: "https://images.unsplash.com/photo-1609137144813-7d9921338f24?w=800&h=500&fit=crop",
+            alt: "Quinta da Regaleira",
+          },
+          {
+            src: "https://images.unsplash.com/photo-1562979314-bee7453e911c?w=800&h=500&fit=crop",
+            alt: "Moorish Castle",
+          },
+          {
+            src: "https://images.unsplash.com/photo-1555881490-a0b9f8f4b6b5?w=800&h=500&fit=crop",
+            alt: "Monserrate Palace",
+          },
+        ],
+        title: "Sintra's Top Attractions",
+        description: "Explore UNESCO World Heritage monuments",
+        content: "Sintra is home to some of Portugal's most spectacular palaces and gardens. From the colorful Pena Palace perched atop the hills to the mystical Quinta da Regaleira with its enchanting gardens, each monument tells a unique story.",
+        buttonText: "View All Attractions",
+      },
+    },
     quickLinks: {
       title: "Explore More",
       subtitle: "Discover attractions, tips, and personalized tours",
-      attractions: { title: "Explore Attractions", subtitle: "UNESCO sites & palaces" },
-      travelGuide: { title: "Travel Guide", subtitle: "Tips & local secrets" },
-      privateTours: { title: "Prefer a Private Tour?", subtitle: "Exclusive personalized experience" },
+      attractions: { 
+        title: "Explore Attractions", 
+        subtitle: "UNESCO sites & palaces",
+        imageUrl: "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=200&h=200&fit=crop"
+      },
+      travelGuide: { 
+        title: "Travel Guide", 
+        subtitle: "Tips & local secrets",
+        imageUrl: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=200&h=200&fit=crop"
+      },
+      privateTours: { 
+        title: "Prefer a Private Tour?", 
+        subtitle: "Exclusive personalized experience",
+        imageUrl: "https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?w=200&h=200&fit=crop"
+      },
     },
     whyChoose: {
       title: "Why Choose Hop On Sintra?",
@@ -723,6 +840,12 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
         ],
         price: 14,
         parkOnlyPrice: 8,
+        gallery: [
+          "https://images.unsplash.com/photo-1650462817648-106f4640e636?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwZW5hJTIwcGFsYWNlJTIwc2ludHJhfGVufDF8fHx8MTc2NDc4MDE1M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+          "https://images.unsplash.com/photo-1697394494123-c6c1323a14f7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzaW50cmElMjBwYWxhY2UlMjBwb3J0dWdhbHxlbnwxfHx8fDE3NjQ3ODAxNTR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+          "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+          "https://images.unsplash.com/photo-1564415315949-7a0c4c73aab4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+        ],
       },
       "quinta-regaleira": {
         name: "Quinta da Regaleira",
@@ -743,7 +866,11 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
           "Allow time to explore all the hidden corners",
           "The Initiation Well is a must-see photo spot",
         ],
-        price: 12,
+        gallery: [
+          "https://images.unsplash.com/photo-1668377298351-3f7a745a56fe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxxdWludGElMjByZWdhbGVpcmElMjBzaW50cmF8ZW58MXx8fHwxNzY0NzgwMTU0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+          "https://images.unsplash.com/photo-1697394492565-daa47c160723?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxpbml0aWF0aW9uJTIwd2VsbCUyMHNpbnRyYXxlbnwxfHx8fDE3NjQ3ODAxNTV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+          "https://images.unsplash.com/photo-1632733033743-4f953afcfb1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyZWdhbGVpcmElMjBwYWxhY2UlMjBnYXJkZW58ZW58MXx8fHwxNzY0NzgzMTM4fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+        ],
       },
       "moorish-castle": {
         name: "Moorish Castle",
@@ -765,6 +892,11 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
           "Bring water and sun protection",
         ],
         price: 10,
+        gallery: [
+          "https://images.unsplash.com/photo-1651520011190-6f37b5213684?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb29yaXNoJTIwY2FzdGxlJTIwc2ludHJhfGVufDF8fHx8MTc2NDc4MzM2OHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+          "https://images.unsplash.com/photo-1643230683412-c1569b742ece?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjYXN0bGUlMjB3YWxscyUyMHNpbnRyYXxlbnwxfHx8fDE3NjQ3ODMzNzR8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+          "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+        ],
       },
       "monserrate-palace": {
         name: "Monserrate Palace",
@@ -786,6 +918,11 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
           "Bring a picnic to enjoy in the gardens",
         ],
         price: 10,
+        gallery: [
+          "https://images.unsplash.com/photo-1711743167330-65c9988061ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb25zZXJyYXRlJTIwcGFsYWNlJTIwc2ludHJhfGVufDF8fHx8MTc2NDc4MzM2OXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+          "https://images.unsplash.com/photo-1700960681503-fc8084cb5c0c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb25zZXJyYXRlJTIwZ2FyZGVuJTIwcG9ydHVnYWx8ZW58MXx8fHwxNzY0NzgzMzc1fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+          "https://images.unsplash.com/photo-1564415315949-7a0c4c73aab4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+        ],
       },
       "sintra-palace": {
         name: "Sintra National Palace",
@@ -807,6 +944,11 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
           "Combine with exploring Sintra's cafes and shops",
         ],
         price: 10,
+        gallery: [
+          "https://images.unsplash.com/photo-1692651763114-6b36c2df12f7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzaW50cmElMjBuYXRpb25hbCUyMHBhbGFjZXxlbnwxfHx8fDE3NjQ3ODMzNjl8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+          "https://images.unsplash.com/photo-1636889758899-292204ded803?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzaW50cmElMjBwYWxhY2UlMjBjaGltbmV5c3xlbnwxfHx8fDE3NjQ3ODMzNzV8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+          "https://images.unsplash.com/photo-1650462817648-106f4640e636?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwZW5hJTIwcGFsYWNlJTIwc2ludHJhfGVufDF8fHx8MTc2NDc4MDE1M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+        ],
       },
       "convento-capuchos": {
         name: "Convento dos Capuchos",
@@ -828,6 +970,11 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
           "Perfect for those seeking peace and quiet",
         ],
         price: 8,
+        gallery: [
+          "https://images.unsplash.com/photo-1672692921041-f676e2cae79a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb252ZW50byUyMGNhcHVjaG9zJTIwc2ludHJhfGVufDF8fHx8MTc2NDc4MzM2OXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+          "https://images.unsplash.com/photo-1609609384840-76bd28640700?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjYXB1Y2hvcyUyMG1vbmFzdGVyeSUyMHBvcnR1Z2FsfGVufDF8fHx8MTc2NDc4MzM3Nnww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+          "https://images.unsplash.com/photo-1697394492565-daa47c160723?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxpbml0aWF0aW9uJTIwd2VsbCUyMHNpbnRyYXxlbnwxfHx8fDE3NjQ3ODAxNTV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+        ],
       },
       "cabo-da-roca": {
         name: "Cabo da Roca",
@@ -849,6 +996,11 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
           "Get your certificate to prove you've been",
         ],
         price: 0,
+        gallery: [
+          "https://images.unsplash.com/photo-1714199523808-7c368a194395?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjYWJvJTIwZGElMjByb2NhJTIwcG9ydHVnYWx8ZW58MXx8fHwxNzY0NzgzMzcwfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+          "https://images.unsplash.com/photo-1637876236319-a6b2ff03e633?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyb2NhJTIwY2FwZSUyMGxpZ2h0aG91c2V8ZW58MXx8fHwxNzY0NzgzMzc2fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+          "https://images.unsplash.com/photo-1668377298351-3f7a745a56fe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxxdWludGElMjByZWdhbGVpcmElMjBzaW50cmF8ZW58MXx8fHwxNzY0NzgwMTU0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+        ],
       },
       "villa-sassetti": {
         name: "Villa Sassetti",
@@ -870,6 +1022,11 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
           "Great for avoiding tourist crowds",
         ],
         price: 0,
+        gallery: [
+          "https://images.unsplash.com/photo-1670060434149-220a5fce89da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx2aWxsYSUyMHNhc3NldHRpJTIwc2ludHJhfGVufDF8fHx8MTc2NDc4MzM3MHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+          "https://images.unsplash.com/photo-1761810949094-34664fb67082?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzaW50cmElMjBmb3Jlc3QlMjB0cmFpbHxlbnwxfHx8fDE3NjQ3ODMzNzZ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+          "https://images.unsplash.com/photo-1632733033743-4f953afcfb1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyZWdhbGVpcmElMjBwYWxhY2UlMjBnYXJkZW58ZW58MXx8fHwxNzY0NzgzMTM4fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+        ],
       },
     },
     attractionDetailPage: {

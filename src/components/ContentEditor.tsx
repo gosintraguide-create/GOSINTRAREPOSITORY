@@ -33,6 +33,7 @@ import {
 } from "./ui/accordion";
 import { ImageSelector } from "./ImageSelector";
 import { SUPPORTED_LANGUAGES } from "../lib/autoTranslate";
+import { ProductCardEditor } from "./ProductCardEditor";
 
 export function ContentEditor() {
   const [content, setContent] = useState<ComprehensiveContent>(DEFAULT_COMPREHENSIVE_CONTENT);
@@ -734,26 +735,6 @@ export function ContentEditor() {
                   </div>
                 )}
               </div>
-              <div>
-                <Label>Explainer Section Image</Label>
-                <p className="mb-2 text-sm text-muted-foreground">
-                  Image shown in the "What Is Hop On Sintra" section (e.g., palace view)
-                </p>
-                <Input
-                  value={content.homepage.hero.explainerImage || ""}
-                  onChange={(e) => updateContent(["homepage", "hero", "explainerImage"], e.target.value)}
-                  placeholder="Enter Unsplash image URL"
-                />
-                {content.homepage.hero.explainerImage && (
-                  <div className="mt-2 overflow-hidden rounded-lg border border-border">
-                    <img 
-                      src={content.homepage.hero.explainerImage} 
-                      alt="Explainer preview" 
-                      className="h-32 w-full object-cover"
-                    />
-                  </div>
-                )}
-              </div>
             </div>
           </Card>
 
@@ -802,352 +783,57 @@ export function ContentEditor() {
             </div>
           </Card>
 
+          <ProductCardEditor
+            content={content}
+            updateContent={updateContent}
+            updateArrayItem={updateArrayItem}
+            addArrayItem={addArrayItem}
+            removeArrayItem={removeArrayItem}
+          />
+
           <Card className="p-6">
-            <h3 className="mb-4 text-foreground">Service Features (Bullet Points)</h3>
-            <div className="space-y-6">
+            <h3 className="mb-4 text-foreground">Final CTA Section</h3>
+            <p className="mb-4 text-sm text-muted-foreground">
+              This is the bottom call-to-action section with the booking button
+            </p>
+            <div className="space-y-4">
               <div>
-                <Label>Service Description (Paragraph 1)</Label>
-                <Textarea
-                  value={mainContent.homepage.serviceDescription}
+                <Label>CTA Title</Label>
+                <Input
+                  value={mainContent.homepage.finalCtaTitle}
                   onChange={(e) => 
-                    updateContent(["homepage", "serviceDescription"], e.target.value)
+                    updateContent(["homepage", "finalCtaTitle"], e.target.value)
                   }
-                  rows={3}
                 />
               </div>
-
               <div>
-                <Label>Service Description (Paragraph 2)</Label>
+                <Label>CTA Subtitle</Label>
                 <Textarea
-                  value={mainContent.homepage.serviceDescription2}
+                  value={mainContent.homepage.finalCtaSubtitle}
                   onChange={(e) => 
-                    updateContent(["homepage", "serviceDescription2"], e.target.value)
+                    updateContent(["homepage", "finalCtaSubtitle"], e.target.value)
                   }
-                  rows={3}
-                />
-              </div>
-
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium text-foreground">1. Unlimited Rides</h4>
-                <div className="grid gap-4">
-                  <div>
-                    <Label>Title</Label>
-                    <Input
-                      value={mainContent.homepage.unlimitedRidesTitle}
-                      onChange={(e) => 
-                        updateContent(["homepage", "unlimitedRidesTitle"], e.target.value)
-                      }
-                    />
-                  </div>
-                  <div>
-                    <Label>Subtitle</Label>
-                    <Input
-                      value={mainContent.homepage.unlimitedRidesSubtitle}
-                      onChange={(e) => 
-                        updateContent(["homepage", "unlimitedRidesSubtitle"], e.target.value)
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium text-foreground">2. Frequent Service</h4>
-                <div className="grid gap-4">
-                  <div>
-                    <Label>Title</Label>
-                    <Input
-                      value={mainContent.homepage.frequentServiceTitle}
-                      onChange={(e) => 
-                        updateContent(["homepage", "frequentServiceTitle"], e.target.value)
-                      }
-                    />
-                  </div>
-                  <div>
-                    <Label>Subtitle</Label>
-                    <Input
-                      value={mainContent.homepage.frequentServiceSubtitle}
-                      onChange={(e) => 
-                        updateContent(["homepage", "frequentServiceSubtitle"], e.target.value)
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium text-foreground">3. Small Groups</h4>
-                <div className="grid gap-4">
-                  <div>
-                    <Label>Title</Label>
-                    <Input
-                      value={mainContent.homepage.smallGroupsTitle}
-                      onChange={(e) => 
-                        updateContent(["homepage", "smallGroupsTitle"], e.target.value)
-                      }
-                    />
-                  </div>
-                  <div>
-                    <Label>Subtitle</Label>
-                    <Input
-                      value={mainContent.homepage.smallGroupsSubtitle}
-                      onChange={(e) => 
-                        updateContent(["homepage", "smallGroupsSubtitle"], e.target.value)
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium text-foreground">4. Professional Guides</h4>
-                <div className="grid gap-4">
-                  <div>
-                    <Label>Title</Label>
-                    <Input
-                      value={mainContent.homepage.professionalGuidesTitle}
-                      onChange={(e) => 
-                        updateContent(["homepage", "professionalGuidesTitle"], e.target.value)
-                      }
-                    />
-                  </div>
-                  <div>
-                    <Label>Subtitle</Label>
-                    <Input
-                      value={mainContent.homepage.professionalGuidesSubtitle}
-                      onChange={(e) => 
-                        updateContent(["homepage", "professionalGuidesSubtitle"], e.target.value)
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium text-foreground">5. Request Pickup</h4>
-                <div className="grid gap-4">
-                  <div>
-                    <Label>Title</Label>
-                    <Input
-                      value={mainContent.homepage.requestPickupTitle}
-                      onChange={(e) => 
-                        updateContent(["homepage", "requestPickupTitle"], e.target.value)
-                      }
-                    />
-                  </div>
-                  <div>
-                    <Label>Subtitle</Label>
-                    <Input
-                      value={mainContent.homepage.requestPickupSubtitle}
-                      onChange={(e) => 
-                        updateContent(["homepage", "requestPickupSubtitle"], e.target.value)
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium text-foreground">6. Real-Time Tracking</h4>
-                <div className="grid gap-4">
-                  <div>
-                    <Label>Title</Label>
-                    <Input
-                      value={mainContent.homepage.realTimeTrackingTitle}
-                      onChange={(e) => 
-                        updateContent(["homepage", "realTimeTrackingTitle"], e.target.value)
-                      }
-                    />
-                  </div>
-                  <div>
-                    <Label>Subtitle</Label>
-                    <Input
-                      value={mainContent.homepage.realTimeTrackingSubtitle}
-                      onChange={(e) => 
-                        updateContent(["homepage", "realTimeTrackingSubtitle"], e.target.value)
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6">
-            <h3 className="mb-4 text-foreground">Quick Links Section</h3>
-            <div className="space-y-4">
-              <div>
-                <Label>Section Title</Label>
-                <Input
-                  value={content.homepage.quickLinks.title}
-                  onChange={(e) => updateContent(["homepage", "quickLinks", "title"], e.target.value)}
-                />
-              </div>
-              <div>
-                <Label>Section Subtitle</Label>
-                <Input
-                  value={content.homepage.quickLinks.subtitle}
-                  onChange={(e) => updateContent(["homepage", "quickLinks", "subtitle"], e.target.value)}
-                />
-              </div>
-              <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <Label>Attractions - Title</Label>
-                  <Input
-                    value={content.homepage.quickLinks.attractions.title}
-                    onChange={(e) => updateContent(["homepage", "quickLinks", "attractions", "title"], e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label>Attractions - Subtitle</Label>
-                  <Input
-                    value={content.homepage.quickLinks.attractions.subtitle}
-                    onChange={(e) => updateContent(["homepage", "quickLinks", "attractions", "subtitle"], e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label>Travel Guide - Title</Label>
-                  <Input
-                    value={content.homepage.quickLinks.travelGuide.title}
-                    onChange={(e) => updateContent(["homepage", "quickLinks", "travelGuide", "title"], e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label>Travel Guide - Subtitle</Label>
-                  <Input
-                    value={content.homepage.quickLinks.travelGuide.subtitle}
-                    onChange={(e) => updateContent(["homepage", "quickLinks", "travelGuide", "subtitle"], e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label>Private Tours - Title</Label>
-                  <Input
-                    value={content.homepage.quickLinks.privateTours.title}
-                    onChange={(e) => updateContent(["homepage", "quickLinks", "privateTours", "title"], e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label>Private Tours - Subtitle</Label>
-                  <Input
-                    value={content.homepage.quickLinks.privateTours.subtitle}
-                    onChange={(e) => updateContent(["homepage", "quickLinks", "privateTours", "subtitle"], e.target.value)}
-                  />
-                </div>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6">
-            <h3 className="mb-4 text-foreground">Why Choose Section</h3>
-            <div className="space-y-4">
-              <div>
-                <Label>Title</Label>
-                <Input
-                  value={content.homepage.whyChoose.title}
-                  onChange={(e) => updateContent(["homepage", "whyChoose", "title"], e.target.value)}
-                />
-              </div>
-              <div>
-                <Label>Subtitle</Label>
-                <Textarea
-                  value={content.homepage.whyChoose.subtitle}
-                  onChange={(e) => updateContent(["homepage", "whyChoose", "subtitle"], e.target.value)}
-                  rows={2}
-                />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6">
-            <h3 className="mb-4 text-foreground">Features</h3>
-            <Accordion type="single" collapsible className="w-full">
-              {content.homepage.features.map((feature, index) => (
-                <AccordionItem key={index} value={`feature-${index}`}>
-                  <AccordionTrigger>
-                    {feature.title || `Feature ${index + 1}`}
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <div className="space-y-4 pt-4">
-                      <div>
-                        <Label>Icon Name</Label>
-                        <Input
-                          value={feature.icon}
-                          onChange={(e) => 
-                            updateArrayItem(["homepage", "features"], index, "icon", e.target.value)
-                          }
-                        />
-                      </div>
-                      <div>
-                        <Label>Title</Label>
-                        <Input
-                          value={feature.title}
-                          onChange={(e) => 
-                            updateArrayItem(["homepage", "features"], index, "title", e.target.value)
-                          }
-                        />
-                      </div>
-                      <div>
-                        <Label>Description</Label>
-                        <Textarea
-                          value={feature.description}
-                          onChange={(e) => 
-                            updateArrayItem(["homepage", "features"], index, "description", e.target.value)
-                          }
-                          rows={3}
-                        />
-                      </div>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => removeArrayItem(["homepage", "features"], index)}
-                      >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Remove Feature
-                      </Button>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-            <Button
-              variant="outline"
-              className="mt-4"
-              onClick={() => 
-                addArrayItem(["homepage", "features"], {
-                  title: "New Feature",
-                  description: "Description here",
-                  icon: "Star"
-                })
-              }
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Add Feature
-            </Button>
-          </Card>
-
-          <Card className="p-6">
-            <h3 className="mb-4 text-foreground">Call to Action</h3>
-            <div className="space-y-4">
-              <div>
-                <Label>Title</Label>
-                <Input
-                  value={content.homepage.callToAction.title}
-                  onChange={(e) => updateContent(["homepage", "callToAction", "title"], e.target.value)}
-                />
-              </div>
-              <div>
-                <Label>Description</Label>
-                <Textarea
-                  value={content.homepage.callToAction.description}
-                  onChange={(e) => updateContent(["homepage", "callToAction", "description"], e.target.value)}
                   rows={2}
                 />
               </div>
               <div>
-                <Label>Button Text</Label>
+                <Label>CTA Button Text</Label>
                 <Input
-                  value={content.homepage.callToAction.buttonText}
-                  onChange={(e) => updateContent(["homepage", "callToAction", "buttonText"], e.target.value)}
+                  value={mainContent.homepage.finalCtaButton}
+                  onChange={(e) => 
+                    updateContent(["homepage", "finalCtaButton"], e.target.value)
+                  }
+                  placeholder="e.g., Get Your Day Pass"
+                />
+              </div>
+              <div>
+                <Label>CTA Subtext (below button)</Label>
+                <Input
+                  value={mainContent.homepage.finalCtaSubtext}
+                  onChange={(e) => 
+                    updateContent(["homepage", "finalCtaSubtext"], e.target.value)
+                  }
+                  placeholder="e.g., No booking fees"
                 />
               </div>
             </div>

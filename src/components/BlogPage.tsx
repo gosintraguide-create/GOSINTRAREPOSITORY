@@ -29,6 +29,7 @@ import {
 import { loadContentWithLanguage } from "../lib/contentManager";
 import { motion } from "motion/react";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
+import { SmallSpinner } from "./LoadingIndicator";
 
 interface BlogPageProps {
   onNavigate: (page: string, data?: any) => void;
@@ -50,17 +51,25 @@ export function BlogPage({
   const [selectedCategory, setSelectedCategory] =
     useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
-      // Load from server first (which will cache to localStorage)
-      const loadedArticles = await loadArticlesFromServer(projectId, publicAnonKey);
-      const loadedCategories = await loadCategoriesFromServer(projectId, publicAnonKey);
-      
-      const publishedArticles = loadedArticles.filter(article => article.isPublished);
-      setArticles(publishedArticles);
-      setCategories(loadedCategories);
-      setFilteredArticles(publishedArticles);
+      setIsLoading(true);
+      try {
+        // Load from server first (which will cache to localStorage)
+        const loadedArticles = await loadArticlesFromServer(projectId, publicAnonKey);
+        const loadedCategories = await loadCategoriesFromServer(projectId, publicAnonKey);
+        
+        const publishedArticles = loadedArticles.filter(article => article.isPublished);
+        setArticles(publishedArticles);
+        setCategories(loadedCategories);
+        setFilteredArticles(publishedArticles);
+      } catch (error) {
+        console.error("Error loading blog data:", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
     
     loadData();
@@ -225,7 +234,16 @@ export function BlogPage({
       {/* Articles Grid */}
       <section className="py-16 sm:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          {filteredArticles.length === 0 ? (
+          {isLoading ? (
+            <div className="py-20 text-center">
+              <div className="flex flex-col items-center gap-4">
+                <SmallSpinner className="h-12 w-12" />
+                <p className="text-muted-foreground">
+                  Loading articles...
+                </p>
+              </div>
+            </div>
+          ) : filteredArticles.length === 0 ? (
             <div className="py-20 text-center">
               <BookOpen className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
               <h3 className="mb-2 text-foreground">

@@ -9,16 +9,24 @@ interface ProductCardProps {
   basePrice: number;
   language?: string;
   productType?: "daypass" | "insight-tour" | "monuments";
+  customImages?: Array<{ src: string; alt: string }>;
+  customContent?: {
+    title?: string;
+    description?: string;
+    features?: string[];
+    buttonText?: string;
+  };
 }
 
-export function ProductCard({ onNavigate, basePrice, language = "en", productType = "daypass" }: ProductCardProps) {
+export function ProductCard({ onNavigate, basePrice, language = "en", productType = "daypass", customImages, customContent }: ProductCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
 
   const childPrice = (basePrice * 0.5).toFixed(2);
+  const isPriceLoaded = basePrice > 0;
 
-  const productImages = {
+  const defaultProductImages = {
     daypass: [
       {
         src: "https://dwiznaefeqnduglmcivr.supabase.co/storage/v1/object/sign/make-3bd0ade8-images/1762977905581_pena-palace-3.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmFjMWMyYy1lNjZlLTQwYWEtYjcwNS1kNTcwYzA5NGZmYzMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtYWtlLTNiZDBhZGU4LWltYWdlcy8xNzYyOTc3OTA1NTgxX3BlbmEtcGFsYWNlLTMuanBnIiwiaWF0IjoxNzYyOTc3OTA1LCJleHAiOjIwNzgzMzc5MDV9.yMxtg8g3UvVUzf-xdAwUmGyjRATPWQwdvRlpIa8D7eY",
@@ -75,7 +83,7 @@ export function ProductCard({ onNavigate, basePrice, language = "en", productTyp
     ],
   };
 
-  const images = productImages[productType];
+  const images = customImages || defaultProductImages[productType];
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % images.length);
@@ -415,7 +423,13 @@ export function ProductCard({ onNavigate, basePrice, language = "en", productTyp
   };
 
   const langContent = translations[language as keyof typeof translations] || translations.en;
-  const t = langContent[productType];
+  const defaultContent = langContent[productType];
+  const t = customContent ? {
+    title: customContent.title || defaultContent.title,
+    description: customContent.description || defaultContent.description,
+    features: customContent.features || defaultContent.features,
+    bookNow: customContent.buttonText || defaultContent.bookNow,
+  } : defaultContent;
 
   return (
     <Card className="w-full bg-white shadow-xl border-0 overflow-hidden group flex flex-col h-full gap-0">
@@ -427,11 +441,11 @@ export function ProductCard({ onNavigate, basePrice, language = "en", productTyp
         onTouchEnd={handleTouchEnd}
       >
         <div 
-          className="flex h-full transition-transform duration-500 ease-out"
+          className="flex h-full transition-transform duration-500 ease-out w-full"
           style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
         >
           {images.map((image, index) => (
-            <div key={index} className="min-w-full h-full flex-shrink-0">
+            <div key={index} className="min-w-full h-full flex-shrink-0 w-full">
               <ImageWithFallback
                 src={image.src}
                 alt={image.alt}
@@ -498,14 +512,29 @@ export function ProductCard({ onNavigate, basePrice, language = "en", productTyp
 
         {/* Pricing Section */}
         <div className="border-t border-border pt-3 mt-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs text-muted-foreground">{langContent.adult}</span>
-            <span className="text-lg font-bold text-primary">€{basePrice}</span>
-          </div>
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs text-muted-foreground">{langContent.child}</span>
-            <span className="text-lg font-bold text-primary">€{childPrice}</span>
-          </div>
+          {isPriceLoaded ? (
+            <>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs text-muted-foreground">{langContent.adult}</span>
+                <span className="text-lg font-bold text-primary">€{basePrice}</span>
+              </div>
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xs text-muted-foreground">{langContent.child}</span>
+                <span className="text-lg font-bold text-primary">€{childPrice}</span>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs text-muted-foreground">{langContent.adult}</span>
+                <div className="h-7 w-16 bg-gray-200 animate-pulse rounded"></div>
+              </div>
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xs text-muted-foreground">{langContent.child}</span>
+                <div className="h-7 w-16 bg-gray-200 animate-pulse rounded"></div>
+              </div>
+            </>
+          )}
 
           {/* Book Now Button */}
           <Button

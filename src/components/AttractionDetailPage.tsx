@@ -1,47 +1,109 @@
-import { Clock, MapPin, ArrowLeft, Star, Check, Lightbulb, ChevronRight, Calendar, Ticket, ShoppingCart, Camera } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  Camera,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  Lightbulb,
+  MapPin,
+  Star,
+  Ticket,
+} from "lucide-react";
 import { Button } from "./ui/button";
-import { Card } from "./ui/card";
 import { Badge } from "./ui/badge";
+import { Card } from "./ui/card";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useState, useEffect } from "react";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { loadComprehensiveContent, type ComprehensiveContent, DEFAULT_COMPREHENSIVE_CONTENT } from "../lib/comprehensiveContent";
+import {
+  loadComprehensiveContent,
+  type ComprehensiveContent,
+  DEFAULT_COMPREHENSIVE_CONTENT,
+} from "../lib/comprehensiveContent";
 import { motion } from "motion/react";
+import Slider from "react-slick";
+import "../styles/slick-custom.css";
 
 interface AttractionDetailPageProps {
   onNavigate: (page: string) => void;
   attractionId: string;
 }
 
-export function AttractionDetailPage({ onNavigate, attractionId }: AttractionDetailPageProps) {
-  const [content, setContent] = useState<ComprehensiveContent>(DEFAULT_COMPREHENSIVE_CONTENT);
+// Custom arrow components for the carousel
+const PrevArrow = ({ onClick }: { onClick?: () => void }) => (
+  <button
+    onClick={onClick}
+    className="absolute left-2 sm:left-4 top-1/2 z-50 flex h-8 w-8 sm:h-10 sm:w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-primary shadow-lg transition-all hover:bg-white hover:scale-110"
+    aria-label="Previous image"
+    type="button"
+  >
+    <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+  </button>
+);
+
+const NextArrow = ({ onClick }: { onClick?: () => void }) => (
+  <button
+    onClick={onClick}
+    className="absolute right-2 sm:right-4 top-1/2 z-50 flex h-8 w-8 sm:h-10 sm:w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-primary shadow-lg transition-all hover:bg-white hover:scale-110"
+    aria-label="Next image"
+    type="button"
+  >
+    <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
+  </button>
+);
+
+export function AttractionDetailPage({
+  onNavigate,
+  attractionId,
+}: AttractionDetailPageProps) {
+  const [content, setContent] = useState<ComprehensiveContent>(
+    DEFAULT_COMPREHENSIVE_CONTENT,
+  );
   const [ticketQuantity, setTicketQuantity] = useState(1);
   const [selectedOption, setSelectedOption] = useState("");
 
   // Fallback images for attractions without uploaded images
   const attractionFallbackImages: { [key: string]: string } = {
-    "pena-palace": "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwZW5hJTIwcGFsYWNlJTIwc2ludHJhfGVufDF8fHx8MTc2MDE0MDYwMnww&ixlib=rb-4.1.0&q=80&w=1080",
-    "quinta-regaleira": "https://images.unsplash.com/photo-1668377298351-3f7a745a56fe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxxdWludGElMjBkYSUyMHJlZ2FsZWlyYSUyMHNpbnRyYXxlbnwxfHx8fDE3NjMxNjg3Njl8MA&ixlib=rb-4.1.0&q=80&w=1080",
-    "moorish-castle": "https://images.unsplash.com/photo-1651520011190-6f37b5213684?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb29yaXNoJTIwY2FzdGxlJTIwc2ludHJhfGVufDF8fHx8MTc2MzE2ODc2OXww&ixlib=rb-4.1.0&q=80&w=1080",
-    "monserrate-palace": "https://images.unsplash.com/photo-1609137144813-7d9921338f24?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb25zZXJyYXRlJTIwcGFsYWNlJTIwc2ludHJhfGVufDF8fHx8MTc2MDE0MDYwM3ww&ixlib=rb-4.1.0&q=80&w=1080",
-    "sintra-palace": "https://images.unsplash.com/photo-1668945306762-a31d14d8a940?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHNpbnRyYSUyMHBvcnR1Z2FsJTIwcGFsYWNlfGVufDF8fHx8MTc2MDE0MDIwMHww&ixlib=rb-4.1.0&q=80&w=1080",
-    "convento-capuchos": "https://images.unsplash.com/photo-1672692921041-f676e2cae79a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb252ZW50byUyMGNhcHVjaG9zJTIwc2ludHJhfGVufDF8fHx8MTc2MzE2NjU5OHww&ixlib=rb-4.1.0&q=80&w=1080",
-    "cabo-da-roca": "https://images.unsplash.com/photo-1700739745973-bbd552072e98?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjYWJvJTIwZGElMjByb2NhJTIwbGlnaHRob3VzZXxlbnwxfHx8fDE3NjMxNjY2MDN8MA&ixlib=rb-4.1.0&q=80&w=1080",
-    "villa-sassetti": "https://images.unsplash.com/photo-1670060434149-220a5fce89da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx2aWxsYSUyMHNhc3NldHRpJTIwc2ludHJhfGVufDF8fHx8MTc2MzE2NjYwNnww&ixlib=rb-4.1.0&q=80&w=1080",
+    "pena-palace":
+      "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwZW5hJTIwcGFsYWNlJTIwc2ludHJhfGVufDF8fHx8MTc2MDE0MDYwMnww&ixlib=rb-4.1.0&q=80&w=1080",
+    "quinta-regaleira":
+      "https://images.unsplash.com/photo-1668377298351-3f7a745a56fe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxxdWludGElMjBkYSUyMHJlZ2FsZWlyYSUyMHNpbnRyYXxlbnwxfHx8fDE3NjMxNjg3Njl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    "moorish-castle":
+      "https://images.unsplash.com/photo-1651520011190-6f37b5213684?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb29yaXNoJTIwY2FzdGxlJTIwc2ludHJhfGVufDF8fHx8MTc2MzE2ODc2OXww&ixlib=rb-4.1.0&q=80&w=1080",
+    "monserrate-palace":
+      "https://images.unsplash.com/photo-1609137144813-7d9921338f24?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb25zZXJyYXRlJTIwcGFsYWNlJTIwc2ludHJhfGVufDF8fHx8MTc2MDE0MDYwM3ww&ixlib=rb-4.1.0&q=80&w=1080",
+    "sintra-palace":
+      "https://images.unsplash.com/photo-1668945306762-a31d14d8a940?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHNpbnRyYSUyMHBvcnR1Z2FsJTIwcGFsYWNlfGVufDF8fHx8MTc2MDE0MDIwMHww&ixlib=rb-4.1.0&q=80&w=1080",
+    "convento-capuchos":
+      "https://images.unsplash.com/photo-1672692921041-f676e2cae79a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb252ZW50byUyMGNhcHVjaG9zJTIwc2ludHJhfGVufDF8fHx8MTc2MzE2NjU5OHww&ixlib=rb-4.1.0&q=80&w=1080",
+    "cabo-da-roca":
+      "https://images.unsplash.com/photo-1700739745973-bbd552072e98?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjYWJvJTIwZGElMjByb2NhJTIwbGlnaHRob3VzZXxlbnwxfHx8fDE3NjMxNjY2MDN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    "villa-sassetti":
+      "https://images.unsplash.com/photo-1670060434149-220a5fce89da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx2aWxsYSUyMHNhc3NldHRpJTIwc2ludHJhfGVufDF8fHx8MTc2MzE2NjYwNnww&ixlib=rb-4.1.0&q=80&w=1080",
   };
 
   useEffect(() => {
     setContent(loadComprehensiveContent());
-  }, []);
 
-  const attraction = content.attractions.attractionDetails[attractionId];
+    // Debug: log the gallery URLs
+    const freshContent = loadComprehensiveContent();
+    console.log(
+      "Attraction gallery URLs:",
+      freshContent.attractions.attractionDetails[attractionId]
+        ?.gallery,
+    );
+  }, [attractionId]);
+
+  const attraction =
+    content.attractions.attractionDetails[attractionId];
 
   if (!attraction) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <h2 className="mb-4 text-foreground">Attraction not found</h2>
+          <h2 className="mb-4 text-foreground">
+            Attraction not found
+          </h2>
           <Button onClick={() => onNavigate("attractions")}>
             Back to Attractions
           </Button>
@@ -58,13 +120,17 @@ export function AttractionDetailPage({ onNavigate, attractionId }: AttractionDet
 
   const getCurrentPrice = () => {
     if (attraction.parkOnlyPrice) {
-      return selectedOption === "parkOnly" ? attraction.parkOnlyPrice : attraction.price;
+      return selectedOption === "parkOnly"
+        ? attraction.parkOnlyPrice
+        : attraction.price;
     }
     return attraction.price;
   };
 
   const handlePurchase = () => {
-    alert(`Booking ${ticketQuantity} ticket(s) for ${attraction.name}. Total: €${getCurrentPrice() * ticketQuantity}`);
+    alert(
+      `Booking ${ticketQuantity} ticket(s) for ${attraction.name}. Total: €${getCurrentPrice() * ticketQuantity}`,
+    );
   };
 
   return (
@@ -84,39 +150,49 @@ export function AttractionDetailPage({ onNavigate, attractionId }: AttractionDet
       </div>
 
       {/* Hero Section */}
-      <section className="relative h-[60vh] min-h-[500px] overflow-hidden">
+      <section className="relative h-[50vh] min-h-[400px] sm:h-[60vh] sm:min-h-[500px] overflow-hidden">
         <ImageWithFallback
-          src={attraction.heroImage || attractionFallbackImages[attractionId] || "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1920&h=1080&fit=crop"}
+          src={
+            attraction.heroImage ||
+            attractionFallbackImages[attractionId] ||
+            "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1920&h=1080&fit=crop"
+          }
           alt={attraction.name}
           className="h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/20" />
 
         <div className="absolute inset-0 flex items-end">
-          <div className="w-full pb-12 sm:pb-16">
+          <div className="w-full pb-8 sm:pb-12 md:pb-16">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <motion.div
-                className="mb-4 flex flex-wrap gap-3"
+                className="mb-3 sm:mb-4 flex flex-wrap gap-2 sm:gap-3"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
               >
-                <div className="flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 backdrop-blur-sm">
-                  <Ticket className="h-4 w-4 text-white" />
-                  <span className="text-white">€{getCurrentPrice()}</span>
+                <div className="flex items-center gap-1.5 sm:gap-2 rounded-full bg-white/20 px-3 py-1.5 sm:px-4 sm:py-2 backdrop-blur-sm">
+                  <Ticket className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
+                  <span className="text-sm sm:text-base text-white">
+                    €{getCurrentPrice()}
+                  </span>
                 </div>
-                <div className="flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 backdrop-blur-sm">
-                  <Clock className="h-4 w-4 text-white" />
-                  <span className="text-white">{attraction.duration}</span>
+                <div className="flex items-center gap-1.5 sm:gap-2 rounded-full bg-white/20 px-3 py-1.5 sm:px-4 sm:py-2 backdrop-blur-sm">
+                  <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
+                  <span className="text-sm sm:text-base text-white">
+                    {attraction.duration}
+                  </span>
                 </div>
-                <div className="flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 backdrop-blur-sm">
-                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                  <span className="text-white">Must-See!</span>
+                <div className="flex items-center gap-1.5 sm:gap-2 rounded-full bg-white/20 px-3 py-1.5 sm:px-4 sm:py-2 backdrop-blur-sm">
+                  <Star className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-yellow-400 text-yellow-400" />
+                  <span className="text-sm sm:text-base text-white">
+                    Must-See!
+                  </span>
                 </div>
               </motion.div>
 
               <motion.h1
-                className="mb-4 text-white"
+                className="mb-3 sm:mb-4 text-white"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
@@ -125,7 +201,7 @@ export function AttractionDetailPage({ onNavigate, attractionId }: AttractionDet
               </motion.h1>
 
               <motion.p
-                className="max-w-3xl text-xl text-white/90"
+                className="max-w-3xl text-base sm:text-lg md:text-xl text-white/90"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
@@ -138,23 +214,86 @@ export function AttractionDetailPage({ onNavigate, attractionId }: AttractionDet
       </section>
 
       {/* Main Content */}
-      <section className="py-16 sm:py-20">
+      <section className="py-8 sm:py-12 md:py-16 lg:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-8 lg:grid-cols-3">
+          <div className="grid gap-6 sm:gap-8 lg:grid-cols-3">
             {/* Left Column - Information */}
-            <div className="space-y-8 lg:col-span-2">
+            <div className="space-y-6 sm:space-y-8 lg:col-span-2 min-w-0">
               {/* Description */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
               >
-                <Badge className="mb-4">About This Gem</Badge>
-                <h2 className="mb-4 text-foreground">What Makes It Special</h2>
-                <p className="text-lg text-muted-foreground">
+                <Badge className="mb-3 sm:mb-4">
+                  About This Gem
+                </Badge>
+                <h2 className="mb-3 sm:mb-4 text-foreground">
+                  What Makes It Special
+                </h2>
+                <p className="text-base sm:text-lg text-muted-foreground">
                   {attraction.longDescription}
                 </p>
               </motion.div>
+
+              {/* Image Gallery Carousel */}
+              {attraction.gallery &&
+                attraction.gallery.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.05 }}
+                    className="mb-6 sm:mb-8"
+                  >
+                    <Badge className="mb-3 sm:mb-4">
+                      <Camera className="mr-1 h-3 w-3" />
+                      Gallery
+                    </Badge>
+                    <div className="w-full max-w-full overflow-hidden rounded-xl sm:rounded-2xl shadow-lg bg-gray-100">
+                      <div className="w-full max-w-full">
+                        <Slider
+                          dots={true}
+                          infinite={true}
+                          speed={500}
+                          slidesToShow={1}
+                          slidesToScroll={1}
+                          arrows={true}
+                          autoplay={true}
+                          autoplaySpeed={4000}
+                          prevArrow={<PrevArrow />}
+                          nextArrow={<NextArrow />}
+                          adaptiveHeight={false}
+                          cssEase="ease-in-out"
+                        >
+                          {attraction.gallery.map(
+                            (image, index) => (
+                              <div
+                                key={index}
+                                className="w-full"
+                              >
+                                <div className="h-[250px] sm:h-[350px] lg:h-[450px] w-full bg-gray-200">
+                                  <img
+                                    src={image}
+                                    alt={`${attraction.name} - Image ${index + 1}`}
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                      console.error(
+                                        `Failed to load image: ${image}`,
+                                      );
+                                      e.currentTarget.src =
+                                        'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23ddd" width="400" height="300"/%3E%3Ctext fill="%23999" font-family="sans-serif" font-size="18" dy="10.5" font-weight="bold" x="50%25" y="50%25" text-anchor="middle"%3EImage unavailable%3C/text%3E%3C/svg%3E';
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            ),
+                          )}
+                        </Slider>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
 
               {/* Opening Hours & Ticket Info - Mobile Only */}
               <div className="space-y-6 lg:hidden">
@@ -170,9 +309,13 @@ export function AttractionDetailPage({ onNavigate, attractionId }: AttractionDet
                       <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
                         <Clock className="h-5 w-5 text-primary" />
                       </div>
-                      <h4 className="text-foreground">Opening Hours</h4>
+                      <h4 className="text-foreground">
+                        Opening Hours
+                      </h4>
                     </div>
-                    <p className="text-muted-foreground">{attraction.hours}</p>
+                    <p className="text-muted-foreground">
+                      {attraction.hours}
+                    </p>
                   </Card>
                 </motion.div>
 
@@ -188,22 +331,34 @@ export function AttractionDetailPage({ onNavigate, attractionId }: AttractionDet
                       <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                         <Ticket className="h-6 w-6 text-primary" />
                       </div>
-                      <h3 className="text-foreground">Ticket Information</h3>
+                      <h3 className="text-foreground">
+                        Ticket Information
+                      </h3>
                     </div>
 
                     <div className="mb-6 rounded-xl bg-secondary/30 p-6 text-center">
-                      <div className="mb-2 text-sm text-muted-foreground">Entrance Ticket</div>
-                      <div className="mb-4 text-3xl text-foreground">
-                        €{attraction.parkOnlyPrice ? attraction.parkOnlyPrice : attraction.price}
+                      <div className="mb-2 text-sm text-muted-foreground">
+                        Entrance Ticket
                       </div>
-                      <Badge variant="outline" className="text-muted-foreground">
+                      <div className="mb-4 text-3xl text-foreground">
+                        €
+                        {attraction.parkOnlyPrice
+                          ? attraction.parkOnlyPrice
+                          : attraction.price}
+                      </div>
+                      <Badge
+                        variant="outline"
+                        className="text-muted-foreground"
+                      >
                         Online Booking Coming Soon
                       </Badge>
                     </div>
 
                     <div className="mb-6 space-y-2 rounded-xl bg-primary/5 p-4">
                       <p className="text-sm text-muted-foreground">
-                        Attraction tickets are not yet available for online purchase. You can buy tickets at the entrance.
+                        Attraction tickets are not yet available
+                        for online purchase. You can buy tickets
+                        at the entrance.
                       </p>
                     </div>
 
@@ -212,7 +367,10 @@ export function AttractionDetailPage({ onNavigate, attractionId }: AttractionDet
                         💡 Get There Easily!
                       </h4>
                       <p className="mb-3 text-sm text-muted-foreground">
-                        Book a Hop On Sintra day pass for unlimited transport between all attractions with professional driver-guides!
+                        Book a Hop On Sintra day pass for
+                        unlimited transport between all
+                        attractions with professional
+                        driver-guides!
                       </p>
                       <Button
                         size="lg"
@@ -235,23 +393,29 @@ export function AttractionDetailPage({ onNavigate, attractionId }: AttractionDet
                 transition={{ delay: 0.1 }}
               >
                 <Badge className="mb-4">Highlights</Badge>
-                <h3 className="mb-4 text-foreground">Don't Miss These!</h3>
+                <h3 className="mb-4 text-foreground">
+                  Don't Miss These!
+                </h3>
                 <div className="grid gap-3">
-                  {attraction.highlights.map((highlight, index) => (
-                    <motion.div
-                      key={index}
-                      className="flex items-start gap-3 rounded-xl border bg-white p-4 transition-all hover:shadow-lg"
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: index * 0.05 }}
-                    >
-                      <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary">
-                        <Check className="h-4 w-4 text-white" />
-                      </div>
-                      <span className="text-foreground">{highlight}</span>
-                    </motion.div>
-                  ))}
+                  {attraction.highlights.map(
+                    (highlight, index) => (
+                      <motion.div
+                        key={index}
+                        className="flex items-start gap-3 rounded-xl border bg-white p-4 transition-all hover:shadow-lg"
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: index * 0.05 }}
+                      >
+                        <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary">
+                          <Check className="h-4 w-4 text-white" />
+                        </div>
+                        <span className="text-foreground">
+                          {highlight}
+                        </span>
+                      </motion.div>
+                    ),
+                  )}
                 </div>
               </motion.div>
 
@@ -263,7 +427,9 @@ export function AttractionDetailPage({ onNavigate, attractionId }: AttractionDet
                 transition={{ delay: 0.2 }}
               >
                 <Badge className="mb-4">Pro Tips</Badge>
-                <h3 className="mb-4 text-foreground">Insider Advice</h3>
+                <h3 className="mb-4 text-foreground">
+                  Insider Advice
+                </h3>
                 <div className="grid gap-3">
                   {attraction.tips.map((tip, index) => (
                     <motion.div
@@ -296,9 +462,13 @@ export function AttractionDetailPage({ onNavigate, attractionId }: AttractionDet
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10">
                       <Camera className="h-5 w-5 text-accent" />
                     </div>
-                    <h4 className="text-foreground">Time Needed</h4>
+                    <h4 className="text-foreground">
+                      Time Needed
+                    </h4>
                   </div>
-                  <p className="text-muted-foreground">{attraction.duration}</p>
+                  <p className="text-muted-foreground">
+                    {attraction.duration}
+                  </p>
                 </Card>
               </motion.div>
             </div>
@@ -317,9 +487,13 @@ export function AttractionDetailPage({ onNavigate, attractionId }: AttractionDet
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
                       <Clock className="h-5 w-5 text-primary" />
                     </div>
-                    <h4 className="text-foreground">Opening Hours</h4>
+                    <h4 className="text-foreground">
+                      Opening Hours
+                    </h4>
                   </div>
-                  <p className="text-muted-foreground">{attraction.hours}</p>
+                  <p className="text-muted-foreground">
+                    {attraction.hours}
+                  </p>
                 </Card>
 
                 {/* Ticket Information Card */}
@@ -328,22 +502,34 @@ export function AttractionDetailPage({ onNavigate, attractionId }: AttractionDet
                     <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                       <Ticket className="h-6 w-6 text-primary" />
                     </div>
-                    <h3 className="text-foreground">Ticket Information</h3>
+                    <h3 className="text-foreground">
+                      Ticket Information
+                    </h3>
                   </div>
 
                   <div className="mb-6 rounded-xl bg-secondary/30 p-6 text-center">
-                    <div className="mb-2 text-sm text-muted-foreground">Entrance Ticket</div>
-                    <div className="mb-4 text-3xl text-foreground">
-                      €{attraction.parkOnlyPrice ? attraction.parkOnlyPrice : attraction.price}
+                    <div className="mb-2 text-sm text-muted-foreground">
+                      Entrance Ticket
                     </div>
-                    <Badge variant="outline" className="text-muted-foreground">
+                    <div className="mb-4 text-3xl text-foreground">
+                      €
+                      {attraction.parkOnlyPrice
+                        ? attraction.parkOnlyPrice
+                        : attraction.price}
+                    </div>
+                    <Badge
+                      variant="outline"
+                      className="text-muted-foreground"
+                    >
                       Online Booking Coming Soon
                     </Badge>
                   </div>
 
                   <div className="mb-6 space-y-2 rounded-xl bg-primary/5 p-4">
                     <p className="text-sm text-muted-foreground">
-                      Attraction tickets are not yet available for online purchase. You can buy tickets at the entrance.
+                      Attraction tickets are not yet available
+                      for online purchase. You can buy tickets
+                      at the entrance.
                     </p>
                   </div>
 
@@ -352,7 +538,10 @@ export function AttractionDetailPage({ onNavigate, attractionId }: AttractionDet
                       💡 Get There Easily!
                     </h4>
                     <p className="mb-3 text-sm text-muted-foreground">
-                      Book a Hop On Sintra day pass for unlimited transport between all attractions with professional driver-guides!
+                      Book a Hop On Sintra day pass for
+                      unlimited transport between all
+                      attractions with professional
+                      driver-guides!
                     </p>
                     <Button
                       size="lg"

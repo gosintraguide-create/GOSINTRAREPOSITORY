@@ -21,7 +21,7 @@ export function BackendStatusIndicator() {
       console.log("🔍 Checking backend status...");
       
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
 
       const response = await fetch(
         `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/health`,
@@ -52,16 +52,16 @@ export function BackendStatusIndicator() {
         );
       }
     } catch (error) {
-      console.error("❌ Backend check failed:", error);
+      console.warn("⚠️ Backend check failed:", error);
       setStatus("offline");
       
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
-          setErrorDetails("Backend timeout. Service may be starting up or not deployed.");
-        } else if (error.message.includes("Failed to fetch")) {
+          setErrorDetails("Backend timeout (5s). Service may be cold-starting or not deployed.");
+        } else if (error.message.includes("Failed to fetch") || error.message.includes("NetworkError")) {
           setErrorDetails("Cannot reach backend. Edge Function may not be deployed.");
         } else {
-          setErrorDetails(error.message);
+          setErrorDetails(error.message || "Unknown error");
         }
       } else {
         setErrorDetails("Unknown connection error");

@@ -8,14 +8,21 @@ interface InfoCardProps {
   onNavigate: (page: string) => void;
   language?: string;
   cardType: "travel-guide" | "monuments";
+  customImages?: Array<{ src: string; alt: string }>;
+  customContent?: {
+    title?: string;
+    description?: string;
+    content?: string;
+    buttonText?: string;
+  };
 }
 
-export function InfoCard({ onNavigate, language = "en", cardType }: InfoCardProps) {
+export function InfoCard({ onNavigate, language = "en", cardType, customImages, customContent }: InfoCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
 
-  const cardImages = {
+  const defaultCardImages = {
     "travel-guide": [
       {
         src: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&h=500&fit=crop",
@@ -54,7 +61,7 @@ export function InfoCard({ onNavigate, language = "en", cardType }: InfoCardProp
     ],
   };
 
-  const images = cardImages[cardType];
+  const images = customImages || defaultCardImages[cardType];
 
   const translations = {
     en: {
@@ -158,7 +165,13 @@ export function InfoCard({ onNavigate, language = "en", cardType }: InfoCardProp
   };
 
   const langContent = translations[language as keyof typeof translations] || translations.en;
-  const t = langContent[cardType];
+  const defaultContent = langContent[cardType];
+  const t = customContent ? {
+    title: customContent.title || defaultContent.title,
+    description: customContent.description || defaultContent.description,
+    content: customContent.content || defaultContent.content,
+    learnMore: customContent.buttonText || defaultContent.learnMore,
+  } : defaultContent;
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % images.length);
@@ -211,11 +224,11 @@ export function InfoCard({ onNavigate, language = "en", cardType }: InfoCardProp
         onTouchEnd={handleTouchEnd}
       >
         <div 
-          className="flex h-full transition-transform duration-500 ease-out"
+          className="flex h-full transition-transform duration-500 ease-out w-full"
           style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
         >
           {images.map((image, index) => (
-            <div key={index} className="min-w-full h-full flex-shrink-0">
+            <div key={index} className="min-w-full h-full flex-shrink-0 w-full">
               <ImageWithFallback
                 src={image.src}
                 alt={image.alt}

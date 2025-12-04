@@ -18,6 +18,7 @@ import { createSessionFromBooking } from "./lib/sessionManager";
 import { Toaster } from "./components/ui/sonner";
 import { toast } from "sonner@2.0.3";
 import { Analytics } from "@vercel/analytics/react";
+import { LoadingIndicator } from "./components/LoadingIndicator";
 
 // Analytics Configuration
 // Get your free Google Analytics ID: https://analytics.google.com/
@@ -150,13 +151,9 @@ const SunsetSpecialPurchasePage = lazy(() =>
   ),
 );
 
-// Loading fallback component
+// Loading fallback component for lazy-loaded pages
 function PageLoader() {
-  return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-    </div>
-  );
+  return <LoadingIndicator type="spinner" fullScreen />;
 }
 
 // Detect user's browser language and map to supported languages
@@ -185,6 +182,7 @@ function detectBrowserLanguage(): string {
 }
 
 export default function App() {
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [currentPage, setCurrentPage] = useState("home");
   const [language, setLanguage] = useState(() => {
     // Priority: 1. Saved language, 2. Browser language, 3. Default to English
@@ -211,6 +209,14 @@ export default function App() {
     }
     return null;
   });
+
+  // Hide initial loading screen after a short delay
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsInitialLoad(false);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Handle URL-based page navigation
   useEffect(() => {
@@ -881,13 +887,17 @@ export default function App() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col">
-      {/* SEO Meta Tags */}
-      {currentPage !== "admin" &&
-        currentPage !== "analytics" &&
-        currentPage !== "operations" &&
-        currentPage !== "manual-booking" &&
-        currentPage !== "qr-scanner" &&
+    <>
+      {/* Initial Loading Screen */}
+      {isInitialLoad && <LoadingIndicator type="both" fullScreen />}
+
+      <div className="flex min-h-screen flex-col">
+        {/* SEO Meta Tags */}
+        {currentPage !== "admin" &&
+          currentPage !== "analytics" &&
+          currentPage !== "operations" &&
+          currentPage !== "manual-booking" &&
+          currentPage !== "qr-scanner" &&
         currentPage !== "diagnostics" &&
         currentPage !== "driver-login" &&
         currentPage !== "driver-dashboard" && (
@@ -1002,5 +1012,6 @@ export default function App() {
       {/* Microsoft Clarity */}
       <MicrosoftClarity projectId={CLARITY_PROJECT_ID} />
     </div>
+    </>
   );
 }

@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner@2.0.3";
 import {
   loadArticles,
@@ -14,6 +15,29 @@ import { loadBlogTags } from "../lib/blogTags";
 import { ImageSelector } from "./ImageSelector";
 import { Alert, AlertDescription } from "./ui/alert";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
+import { Button } from "./ui/button";
+import { Card } from "./ui/card";
+import { Badge } from "./ui/badge";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import { Textarea } from "./ui/textarea";
+import { Switch } from "./ui/switch";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { Plus, Edit, Trash2, Save, Calendar, Tag as TagIcon } from "lucide-react";
 
 export function BlogEditor() {
   const [articles, setArticles] = useState<BlogArticle[]>([]);

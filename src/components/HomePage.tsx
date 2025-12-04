@@ -373,7 +373,7 @@ export function HomePage({
             >
               <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl sm:h-20 sm:w-20">
                 <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=200&h=200&fit=crop"
+                  src={legacyContent.homepage.quickLinks.attractions.imageUrl || "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=200&h=200&fit=crop"}
                   alt="Attractions"
                   className="h-full w-full object-cover"
                 />
@@ -396,7 +396,7 @@ export function HomePage({
             >
               <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl sm:h-20 sm:w-20">
                 <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=200&h=200&fit=crop"
+                  src={legacyContent.homepage.quickLinks.travelGuide.imageUrl || "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=200&h=200&fit=crop"}
                   alt="Travel Guide"
                   className="h-full w-full object-cover"
                 />
@@ -419,7 +419,7 @@ export function HomePage({
             >
               <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl sm:h-20 sm:w-20">
                 <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?w=200&h=200&fit=crop"
+                  src={legacyContent.homepage.quickLinks.privateTours.imageUrl || "https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?w=200&h=200&fit=crop"}
                   alt="Private Tours"
                   className="h-full w-full object-cover"
                 />

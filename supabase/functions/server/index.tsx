@@ -15,9 +15,26 @@ function generateBookingConfirmationHTML(data: any): string {
     formattedDate,
     totalPrice,
     dayPassCount,
+    guidedTour,
+    selectedDate,
   } = data;
 
   const bookingIdShort = bookingId.split("_")[1] || bookingId;
+  
+  // Extract time from selectedDate if it's an ISO string with time
+  let insightTourTime = '';
+  if (guidedTour && selectedDate) {
+    try {
+      const dateObj = new Date(selectedDate);
+      insightTourTime = dateObj.toLocaleTimeString('en-US', { 
+        hour: 'numeric', 
+        minute: '2-digit',
+        hour12: true 
+      });
+    } catch (e) {
+      insightTourTime = '9:00 AM'; // fallback
+    }
+  }
 
   return `
 <!DOCTYPE html>
@@ -79,6 +96,13 @@ function generateBookingConfirmationHTML(data: any): string {
           <li>Guaranteed seating - no overcrowding</li>
         </ul>
       </div>
+      ${guidedTour ? `<div style="background-color: #fff4ed; border: 2px solid #D97843; padding: 20px; border-radius: 8px; margin: 25px 0;">
+        <h3 style="margin: 0 0 12px 0; font-size: 18px; color: #D97843;">🌟 Insight Tour - Important Pickup Information</h3>
+        <p style="margin: 0 0 12px 0; color: #2d3436; font-size: 15px; font-weight: 600;">Your guided tour departs at ${insightTourTime}</p>
+        <p style="margin: 0 0 15px 0; color: #2d3436; font-size: 14px; line-height: 1.8;"><strong>📍 Meeting Point:</strong> Historical Center of Sintra (downtown area near the main square)</p>
+        <p style="margin: 0; color: #2d3436; font-size: 14px; line-height: 1.8;"><strong>⏰ Please arrive 10 minutes early</strong> to ensure a prompt departure. Look for our vehicle with the Hop On Sintra branding and show your ticket to the driver.</p>
+        <p style="margin: 12px 0 0 0; color: #2d3436; font-size: 13px; font-style: italic;">💡 This information is also included in your PDF ticket attachment.</p>
+      </div>` : ''}
       <div style="background-color: #fef3e7; border: 1px solid #D97843; padding: 20px; border-radius: 8px; margin: 25px 0;">
         <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #0A4D5C;">🚙 What to Expect</h3>
         <p style="margin: 0; color: #2d3436; font-size: 14px; line-height: 1.8;">Your pass includes rides on our fleet of tuk tuks, UMM jeeps, and other comfortable vehicles - all driven by professional guides who know Sintra's history and hidden gems. Hop on, hop off as many times as you like at any of our designated stops.</p>
@@ -392,6 +416,8 @@ async function generateBookingId(): Promise<string> {
 // Initialize database on startup (only runs once per database)
 async function initializeDatabase() {
   try {
+    console.log("🔧 Checking database initialization...");
+    
     // Check if database has already been initialized
     const dbInitialized = await kvWithRetry.get("db_initialized");
 
@@ -435,11 +461,14 @@ async function initializeDatabase() {
     console.log("✅ Database initialization complete");
   } catch (error) {
     console.error("❌ Error initializing database:", error);
+    // Don't throw - allow server to start even if init fails
   }
 }
 
-// Call initialization (will only run once per database)
-initializeDatabase();
+// Call initialization asynchronously (non-blocking)
+initializeDatabase().catch((error) => {
+  console.error("❌ Database initialization failed:", error);
+});
 
 // Generate QR code function
 async function generateQRCode(
@@ -697,6 +726,73 @@ async function generateBookingPDF(
       });
 
       yPos -= 70;
+
+      // === INSIGHT TOUR PICKUP INFORMATION ===
+      if (booking.guidedTour) {
+        // Extract time from booking
+        let insightTourTime = '';
+        try {
+          const dateObj = new Date(booking.selectedDate);
+          insightTourTime = dateObj.toLocaleTimeString('en-US', { 
+            hour: 'numeric', 
+            minute: '2-digit',
+            hour12: true 
+          });
+        } catch (e) {
+          insightTourTime = '9:00 AM';
+        }
+
+        // Draw terracotta background box
+        page.drawRectangle({
+          x: 60,
+          y: yPos - 75,
+          width: width - 120,
+          height: 85,
+          color: rgb(1, 0.957, 0.929), // #FFF4ED
+          borderColor: rgb(0.851, 0.471, 0.263), // #D97843
+          borderWidth: 2,
+        });
+
+        // INSIGHT TOUR PICKUP INFO title
+        page.drawText("INSIGHT TOUR PICKUP INFO", {
+          x: width / 2 - 75,
+          y: yPos - 20,
+          size: 11,
+          color: rgb(0.851, 0.471, 0.263), // Terracotta
+        });
+
+        yPos -= 40;
+
+        // Departure time
+        page.drawText(`Departs at ${insightTourTime}`, {
+          x: width / 2 - 60,
+          y: yPos,
+          size: 12,
+          color: rgb(0.039, 0.302, 0.361), // Teal
+        });
+
+        yPos -= 20;
+
+        // Meeting point
+        page.drawText("Meeting Point: Historical Center of Sintra", {
+          x: width / 2 - 120,
+          y: yPos,
+          size: 10,
+          color: rgb(0.176, 0.204, 0.212),
+        });
+
+        yPos -= 18;
+
+        // Arrival instruction
+        page.drawText("Please arrive 10 minutes early", {
+          x: width / 2 - 85,
+          y: yPos,
+          size: 10,
+          color: rgb(0.176, 0.204, 0.212),
+        });
+
+        yPos -= 35;
+      }
 
       // === INSTRUCTIONS ===
       // HOW TO USE = 10 chars * 6 ≈ 60

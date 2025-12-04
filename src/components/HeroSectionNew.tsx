@@ -4,6 +4,7 @@ import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { ProductCard } from "./ProductCard";
 import { InfoCard } from "./InfoCard";
 import type { WebsiteContent } from "../lib/contentManager";
+import { useEditableContent } from "../lib/useEditableContent";
 
 interface HeroSectionProps {
   onNavigate: (page: string) => void;
@@ -22,6 +23,8 @@ export function HeroSection({
   legacyContent,
   content,
 }: HeroSectionProps) {
+  const editableContent = useEditableContent();
+  
   return (
     <section className="relative overflow-hidden">
       <div className="relative">
@@ -101,31 +104,50 @@ export function HeroSection({
       {/* Product Card Section - Underneath Hero */}
       <div className="relative bg-secondary/20 py-8 sm:py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          {priceLoaded && (
-            <div className="grid gap-6 sm:gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-              {/* Day Pass Card */}
-              <ProductCard
-                onNavigate={onNavigate}
-                basePrice={basePrice}
-                language={language}
-                productType="daypass"
-              />
+          <div className="grid gap-6 sm:gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            {/* Day Pass Card */}
+            <ProductCard
+              onNavigate={onNavigate}
+              basePrice={basePrice}
+              language={language}
+              productType="daypass"
+              customImages={editableContent.homepage?.productCards?.daypass?.images}
+              customContent={editableContent.homepage?.productCards?.daypass ? {
+                title: editableContent.homepage.productCards.daypass.title,
+                description: editableContent.homepage.productCards.daypass.description,
+                features: editableContent.homepage.productCards.daypass.features,
+                buttonText: editableContent.homepage.productCards.daypass.buttonText,
+              } : undefined}
+            />
 
-              {/* Travel Guide Card */}
-              <InfoCard
-                onNavigate={onNavigate}
-                language={language}
-                cardType="travel-guide"
-              />
+            {/* Travel Guide Card */}
+            <InfoCard
+              onNavigate={onNavigate}
+              language={language}
+              cardType="travel-guide"
+              customImages={editableContent.homepage?.productCards?.travelGuide?.images}
+              customContent={editableContent.homepage?.productCards?.travelGuide ? {
+                title: editableContent.homepage.productCards.travelGuide.title,
+                description: editableContent.homepage.productCards.travelGuide.description,
+                content: editableContent.homepage.productCards.travelGuide.content,
+                buttonText: editableContent.homepage.productCards.travelGuide.buttonText,
+              } : undefined}
+            />
 
-              {/* Monuments Card */}
-              <InfoCard
-                onNavigate={onNavigate}
-                language={language}
-                cardType="monuments"
-              />
-            </div>
-          )}
+            {/* Monuments Card */}
+            <InfoCard
+              onNavigate={onNavigate}
+              language={language}
+              cardType="monuments"
+              customImages={editableContent.homepage?.productCards?.monuments?.images}
+              customContent={editableContent.homepage?.productCards?.monuments ? {
+                title: editableContent.homepage.productCards.monuments.title,
+                description: editableContent.homepage.productCards.monuments.description,
+                content: editableContent.homepage.productCards.monuments.content,
+                buttonText: editableContent.homepage.productCards.monuments.buttonText,
+              } : undefined}
+            />
+          </div>
         </div>
       </div>
     </section>

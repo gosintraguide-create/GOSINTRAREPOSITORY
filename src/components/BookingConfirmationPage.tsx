@@ -234,6 +234,30 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
           </div>
         </Card>
 
+        {/* Insight Tour Pickup Information */}
+        {booking.guidedTour && (
+          <Alert className="mb-6 border-secondary bg-secondary/10">
+            <Car className="h-5 w-5 text-secondary" />
+            <AlertDescription>
+              <div className="space-y-2">
+                <p className="font-semibold text-secondary text-lg">🌟 Insight Tour - Important Pickup Information</p>
+                <p className="text-foreground">
+                  <strong>Your guided tour departs at {new Date(booking.selectedDate).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}</strong>
+                </p>
+                <p className="text-foreground">
+                  <strong>📍 Meeting Point:</strong> Historical Center of Sintra (downtown area near the main square)
+                </p>
+                <p className="text-foreground">
+                  <strong>⏰ Please arrive 10 minutes early</strong> to ensure a prompt departure. Look for our vehicle with the Hop On Sintra branding and show your ticket to the driver.
+                </p>
+                <p className="text-sm text-muted-foreground italic mt-2">
+                  💡 This information is also included in your PDF ticket attachment and confirmation email.
+                </p>
+              </div>
+            </AlertDescription>
+          </Alert>
+        )}
+
         {/* Tickets */}
         <div className="mb-6">
           <div className="mb-4 flex items-center justify-between flex-wrap gap-2">
