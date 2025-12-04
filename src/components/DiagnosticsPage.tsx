@@ -334,7 +334,7 @@ export function DiagnosticsPage({
       for (let i = 0; i < passengerCount; i++) {
         passengers.push({
           name: names[i % names.length],
-          type: i < passengerCount - 1 ? "Adult" : "Child",
+          type: "Adult",
         });
       }
 

@@ -3,6 +3,7 @@ import { Check, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { getComponentTranslation } from "../lib/translations/components";
 
 interface ProductCardProps {
   onNavigate: (page: string) => void;
@@ -23,8 +24,8 @@ export function ProductCard({ onNavigate, basePrice, language = "en", productTyp
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
 
-  const childPrice = (basePrice * 0.5).toFixed(2);
   const isPriceLoaded = basePrice > 0;
+  const t = getComponentTranslation(language);
 
   const defaultProductImages = {
     daypass: [
@@ -118,313 +119,17 @@ export function ProductCard({ onNavigate, basePrice, language = "en", productTyp
     setTouchEnd(0);
   };
 
-  const translations = {
-    en: {
-      daypass: {
-        title: "Full Day Pass",
-        description: "Unlimited rides across all Sintra attractions",
-        features: [
-          "Unlimited hop-on hop-off rides",
-          "Guaranteed seats - no waiting",
-          "Professional driver-guides",
-          "Service 9am - 7pm daily",
-          "Small groups (max 8 people)",
-          "Real-time vehicle tracking",
-        ],
-        bookNow: "Book Your Pass",
-      },
-      "insight-tour": {
-        title: "Insight Tour",
-        description: "Deep dive into Sintra's history and culture",
-        features: [
-          "Expert local guide",
-          "In-depth historical narratives",
-          "Skip-the-line monument access",
-          "Small intimate groups",
-          "Hidden gems & local stories",
-          "Full day experience",
-        ],
-        bookNow: "Book Insight Tour",
-      },
-      monuments: {
-        title: "Monument Tickets",
-        description: "Skip the line at Sintra's top attractions",
-        features: [
-          "Pena Palace entry",
-          "Quinta da Regaleira",
-          "Moorish Castle access",
-          "Monserrate Palace",
-          "Priority entrance",
-          "Valid for one day",
-        ],
-        bookNow: "Buy Tickets",
-      },
-      adult: "Adult",
-      child: "Child (5-12 yrs)",
-    },
-    pt: {
-      daypass: {
-        title: "Passe de Dia Inteiro",
-        description: "Viagens ilimitadas por todas as atrações de Sintra",
-        features: [
-          "Viagens ilimitadas hop-on hop-off",
-          "Lugares garantidos - sem espera",
-          "Motoristas-guias profissionais",
-          "Serviço 9h - 19h diariamente",
-          "Grupos pequenos (máx. 8 pessoas)",
-          "Rastreamento em tempo real",
-        ],
-        bookNow: "Reserve o Seu Passe",
-      },
-      "insight-tour": {
-        title: "Tour Insight",
-        description: "Mergulho profundo na história e cultura de Sintra",
-        features: [
-          "Guia local especialista",
-          "Narrativas históricas detalhadas",
-          "Acesso sem fila aos monumentos",
-          "Grupos pequenos e íntimos",
-          "Joias escondidas e histórias locais",
-          "Experiência de dia inteiro",
-        ],
-        bookNow: "Reservar Tour Insight",
-      },
-      monuments: {
-        title: "Bilhetes para Monumentos",
-        description: "Evite filas nas principais atrações de Sintra",
-        features: [
-          "Entrada no Palácio da Pena",
-          "Quinta da Regaleira",
-          "Acesso ao Castelo dos Mouros",
-          "Palácio de Monserrate",
-          "Entrada prioritária",
-          "Válido por um dia",
-        ],
-        bookNow: "Comprar Bilhetes",
-      },
-      adult: "Adulto",
-      child: "Criança (5-12 anos)",
-    },
-    es: {
-      daypass: {
-        title: "Pase de Día Completo",
-        description: "Viajes ilimitados por todas las atracciones de Sintra",
-        features: [
-          "Viajes ilimitados hop-on hop-off",
-          "Asientos garantizados - sin espera",
-          "Conductores-guías profesionales",
-          "Servicio 9am - 7pm diariamente",
-          "Grupos pequeños (máx. 8 personas)",
-          "Seguimiento en tiempo real",
-        ],
-        bookNow: "Reserve Su Pase",
-      },
-      "insight-tour": {
-        title: "Tour Insight",
-        description: "Inmersión profunda en la historia y cultura de Sintra",
-        features: [
-          "Guía local experto",
-          "Narrativas históricas detalladas",
-          "Acceso sin colas a monumentos",
-          "Grupos pequeños e íntimos",
-          "Gemas ocultas e historias locales",
-          "Experiencia de día completo",
-        ],
-        bookNow: "Reservar Tour Insight",
-      },
-      monuments: {
-        title: "Entradas a Monumentos",
-        description: "Evite las colas en las principales atracciones de Sintra",
-        features: [
-          "Entrada al Palacio de Pena",
-          "Quinta da Regaleira",
-          "Acceso al Castillo de los Moros",
-          "Palacio de Monserrate",
-          "Entrada prioritaria",
-          "Válido por un día",
-        ],
-        bookNow: "Comprar Entradas",
-      },
-      adult: "Adulto",
-      child: "Niño (5-12 años)",
-    },
-    fr: {
-      daypass: {
-        title: "Pass Journée Complète",
-        description: "Trajets illimités dans toutes les attractions de Sintra",
-        features: [
-          "Trajets illimités hop-on hop-off",
-          "Places garanties - pas d'attente",
-          "Chauffeurs-guides professionnels",
-          "Service 9h - 19h quotidiennement",
-          "Petits groupes (max. 8 personnes)",
-          "Suivi en temps réel",
-        ],
-        bookNow: "Réservez Votre Pass",
-      },
-      "insight-tour": {
-        title: "Tour Insight",
-        description: "Plongée profonde dans l'histoire et la culture de Sintra",
-        features: [
-          "Guide local expert",
-          "Récits historiques approfondis",
-          "Accès coupe-file aux monuments",
-          "Petits groupes intimes",
-          "Joyaux cachés et histoires locales",
-          "Expérience d'une journée complète",
-        ],
-        bookNow: "Réserver Tour Insight",
-      },
-      monuments: {
-        title: "Billets pour Monuments",
-        description: "Évitez les files aux principales attractions de Sintra",
-        features: [
-          "Entrée au Palais de Pena",
-          "Quinta da Regaleira",
-          "Accès au Château des Maures",
-          "Palais de Monserrate",
-          "Entrée prioritaire",
-          "Valable un jour",
-        ],
-        bookNow: "Acheter Billets",
-      },
-      adult: "Adulte",
-      child: "Enfant (5-12 ans)",
-    },
-    de: {
-      daypass: {
-        title: "Ganztagespass",
-        description: "Unbegrenzte Fahrten zu allen Sintra Sehenswürdigkeiten",
-        features: [
-          "Unbegrenzte Hop-on Hop-off Fahrten",
-          "Garantierte Plätze - keine Wartezeit",
-          "Professionelle Fahrer-Guides",
-          "Service 9-19 Uhr täglich",
-          "Kleine Gruppen (max. 8 Personen)",
-          "Echtzeit-Tracking",
-        ],
-        bookNow: "Buchen Sie Ihren Pass",
-      },
-      "insight-tour": {
-        title: "Insight Tour",
-        description: "Tiefer Einblick in Sintras Geschichte und Kultur",
-        features: [
-          "Experte lokaler Führer",
-          "Ausführliche historische Erzählungen",
-          "Bevorzugter Monumentzugang",
-          "Kleine intime Gruppen",
-          "Versteckte Juwelen & lokale Geschichten",
-          "Ganztägiges Erlebnis",
-        ],
-        bookNow: "Insight Tour Buchen",
-      },
-      monuments: {
-        title: "Monumenttickets",
-        description: "Überspringen Sie die Warteschlange bei Sintras Top-Attraktionen",
-        features: [
-          "Pena-Palast Eintritt",
-          "Quinta da Regaleira",
-          "Maurische Burg Zugang",
-          "Monserrate-Palast",
-          "Bevorzugter Einlass",
-          "Einen Tag gültig",
-        ],
-        bookNow: "Tickets Kaufen",
-      },
-      adult: "Erwachsene",
-      child: "Kind (5-12 Jahre)",
-    },
-    nl: {
-      daypass: {
-        title: "Hele Dag Pas",
-        description: "Onbeperkt reizen naar alle Sintra attracties",
-        features: [
-          "Onbeperkt hop-on hop-off reizen",
-          "Gegarandeerde plaatsen - geen wachten",
-          "Professionele chauffeur-gidsen",
-          "Service 9-19 uur dagelijks",
-          "Kleine groepen (max. 8 personen)",
-          "Real-time tracking",
-        ],
-        bookNow: "Boek Uw Pas",
-      },
-      "insight-tour": {
-        title: "Insight Tour",
-        description: "Diepgaande duik in Sintra's geschiedenis en cultuur",
-        features: [
-          "Expert lokale gids",
-          "Diepgaande historische verhalen",
-          "Sla-de-rij-over monumententoegang",
-          "Kleine intieme groepen",
-          "Verborgen pareltjes & lokale verhalen",
-          "Hele dag ervaring",
-        ],
-        bookNow: "Boek Insight Tour",
-      },
-      monuments: {
-        title: "Monumenttickets",
-        description: "Sla de rij over bij Sintra's topattracties",
-        features: [
-          "Pena Paleis toegang",
-          "Quinta da Regaleira",
-          "Moorse Kasteel toegang",
-          "Monserrate Paleis",
-          "Prioritaire toegang",
-          "Geldig voor één dag",
-        ],
-        bookNow: "Koop Tickets",
-      },
-      adult: "Volwassene",
-      child: "Kind (5-12 jaar)",
-    },
-    it: {
-      daypass: {
-        title: "Pass Giornaliero",
-        description: "Viaggi illimitati a tutte le attrazioni di Sintra",
-        features: [
-          "Viaggi illimitati hop-on hop-off",
-          "Posti garantiti - nessuna attesa",
-          "Autisti-guide professionali",
-          "Servizio 9-19 quotidiano",
-          "Piccoli gruppi (max. 8 persone)",
-          "Tracciamento in tempo reale",
-        ],
-        bookNow: "Prenota Il Tuo Pass",
-      },
-      "insight-tour": {
-        title: "Tour Insight",
-        description: "Immersione profonda nella storia e cultura di Sintra",
-        features: [
-          "Guida locale esperta",
-          "Narrazioni storiche approfondite",
-          "Accesso salta-fila ai monumenti",
-          "Piccoli gruppi intimi",
-          "Gemme nascoste e storie locali",
-          "Esperienza di un'intera giornata",
-        ],
-        bookNow: "Prenota Tour Insight",
-      },
-      monuments: {
-        title: "Biglietti Monumenti",
-        description: "Salta la fila alle principali attrazioni di Sintra",
-        features: [
-          "Ingresso Palazzo Pena",
-          "Quinta da Regaleira",
-          "Accesso Castello dei Mori",
-          "Palazzo di Monserrate",
-          "Ingresso prioritario",
-          "Valido per un giorno",
-        ],
-        bookNow: "Acquista Biglietti",
-      },
-      adult: "Adulto",
-      child: "Bambino (5-12 anni)",
-    },
-  };
-
-  const langContent = translations[language as keyof typeof translations] || translations.en;
-  const defaultContent = langContent[productType];
-  const t = customContent ? {
+  // Map product type to translation key
+  const productTypeMap = {
+    "daypass": "daypass",
+    "insight-tour": "insightTour",
+    "monuments": "monuments",
+  } as const;
+  
+  const translationKey = productTypeMap[productType];
+  const defaultContent = t.productCard[translationKey];
+  
+  const content = customContent ? {
     title: customContent.title || defaultContent.title,
     description: customContent.description || defaultContent.description,
     features: customContent.features || defaultContent.features,
@@ -490,15 +195,15 @@ export function ProductCard({ onNavigate, basePrice, language = "en", productTyp
 
       {/* Header */}
       <div className="bg-gradient-to-r from-primary to-primary/90 px-5 py-3">
-        <h4 className="text-white mb-0.5">{t.title}</h4>
-        <p className="text-white/90 text-xs">{t.description}</p>
+        <h4 className="text-white mb-0.5">{content.title}</h4>
+        <p className="text-white/90 text-xs">{content.description}</p>
       </div>
 
       {/* Content */}
       <div className="p-5 flex flex-col flex-1">
         {/* Features List */}
         <div className="space-y-2 flex-1">
-          {t.features.map((feature, index) => (
+          {content.features.map((feature, index) => (
             <div key={index} className="flex items-start gap-2.5">
               <div className="flex-shrink-0 mt-0.5">
                 <div className="h-4 w-4 rounded-full bg-accent/10 flex items-center justify-center">
@@ -513,27 +218,14 @@ export function ProductCard({ onNavigate, basePrice, language = "en", productTyp
         {/* Pricing Section */}
         <div className="border-t border-border pt-3 mt-4">
           {isPriceLoaded ? (
-            <>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs text-muted-foreground">{langContent.adult}</span>
-                <span className="text-lg font-bold text-primary">€{basePrice}</span>
-              </div>
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs text-muted-foreground">{langContent.child}</span>
-                <span className="text-lg font-bold text-primary">€{childPrice}</span>
-              </div>
-            </>
+            <div className="flex items-center justify-center mb-3">
+              <span className="text-2xl font-bold text-primary">€{basePrice}</span>
+              <span className="text-xs text-muted-foreground ml-2">per pass</span>
+            </div>
           ) : (
-            <>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs text-muted-foreground">{langContent.adult}</span>
-                <div className="h-7 w-16 bg-gray-200 animate-pulse rounded"></div>
-              </div>
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs text-muted-foreground">{langContent.child}</span>
-                <div className="h-7 w-16 bg-gray-200 animate-pulse rounded"></div>
-              </div>
-            </>
+            <div className="flex items-center justify-center mb-3">
+              <div className="h-8 w-24 bg-gray-200 animate-pulse rounded"></div>
+            </div>
           )}
 
           {/* Book Now Button */}
@@ -542,7 +234,7 @@ export function ProductCard({ onNavigate, basePrice, language = "en", productTyp
             className="h-11 w-full bg-accent text-white hover:bg-accent/90 shadow-md text-sm"
             size="lg"
           >
-            {t.bookNow}
+            {content.bookNow}
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </div>

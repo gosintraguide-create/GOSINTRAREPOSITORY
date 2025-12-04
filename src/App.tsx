@@ -811,7 +811,7 @@ export default function App() {
         return <OperationsPage onNavigate={handleNavigate} />;
       case "manual-booking":
         return (
-          <ManualBookingPage onNavigate={handleNavigate} />
+          <ManualBookingPage onNavigate={handleNavigate} language={language} />
         );
       case "qr-scanner":
         return <QRScannerPage onNavigate={handleNavigate} />;

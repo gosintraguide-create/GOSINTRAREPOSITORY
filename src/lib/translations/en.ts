@@ -13,7 +13,7 @@ export const en: WebsiteContent = {
     // Hero Section
     hero: {
       title: "Discover Sintra Your Way",
-      subtitle: "Hop-on/hop-off day pass with guaranteed seats and professional local guides. Unlimited rides in small tuk tuks and vintage jeeps.",
+      subtitle: "Hop-on/hop-off day pass with guaranteed seats and professional driver-guides. Unlimited rides in small tuk tuks and vintage jeeps. New departure every 30 minutes.",
       ctaButton: "Book Your Day Pass",
       benefitPills: [
         { icon: "Users", text: "Small Groups (2-6)" },

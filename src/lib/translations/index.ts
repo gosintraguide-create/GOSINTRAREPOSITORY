@@ -99,6 +99,86 @@ export interface UITranslations {
   planningYourVisit: string;
   browseTravelGuidesDescription: string;
   readTravelGuides: string;
+  
+  // Additional common phrases
+  perPass: string;
+  quantity: string;
+  each: string;
+  back: string;
+  next: string;
+  
+  // ProductCard translations
+  productCard: {
+    daypass: {
+      title: string;
+      description: string;
+      features: string[];
+      bookNow: string;
+    };
+    insightTour: {
+      title: string;
+      description: string;
+      features: string[];
+      bookNow: string;
+    };
+    monuments: {
+      title: string;
+      description: string;
+      features: string[];
+      bookNow: string;
+    };
+  };
+  
+  // BookingCard translations
+  bookingCard: {
+    title: string;
+    selectDate: string;
+    quantity: string;
+    total: string;
+    bookNow: string;
+  };
+  
+  // ManualBookingPage translations
+  manualBooking: {
+    title: string;
+    subtitle: string;
+    step1Title: string;
+    step1Description: string;
+    customerName: string;
+    customerNamePlaceholder: string;
+    customerEmail: string;
+    customerEmailPlaceholder: string;
+    nextDetails: string;
+    step2Title: string;
+    step2Description: string;
+    selectPasses: string;
+    tapToAdjust: string;
+    nextAddons: string;
+    step3Title: string;
+    step3Description: string;
+    guidedTour: string;
+    guidedTourDescription: string;
+    attractions: string;
+    selectAttractions: string;
+    step4Title: string;
+    step4Description: string;
+    paymentMethod: string;
+    cash: string;
+    card: string;
+    createBooking: string;
+    bookingCreated: string;
+    shareIdWithCustomer: string;
+    customer: string;
+    totalPaid: string;
+    payment: string;
+    ticketsSentTo: string;
+    passengersCheckedIn: string;
+    createAnother: string;
+    backToAdmin: string;
+    errorCreatingBooking: string;
+    pleaseTryAgain: string;
+    goBack: string;
+  };
 }
 
 export const uiTranslations: { [key: string]: UITranslations } = {

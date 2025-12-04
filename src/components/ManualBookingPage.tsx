@@ -9,9 +9,11 @@ import { Badge } from "./ui/badge";
 import { CheckCircle, Loader2, ArrowLeft, User, Users, Ticket, CreditCard, Banknote, Plus, Minus, ArrowRight, Baby } from "lucide-react";
 import { format } from "date-fns";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
+import { getComponentTranslation } from "../lib/translations/components";
 
 interface ManualBookingPageProps {
   onNavigate: (page: string) => void;
+  language?: string;
 }
 
 interface PricingSettings {
@@ -50,7 +52,7 @@ const ATTRACTION_CARDS = [
   { id: "villa-sassetti", emoji: "🏛️", shortName: "Villa Sassetti" },
 ];
 
-export function ManualBookingPage({ onNavigate }: ManualBookingPageProps) {
+export function ManualBookingPage({ onNavigate, language }: ManualBookingPageProps) {
   // Block search engines from indexing this page
   useEffect(() => {
     const metaRobots = document.querySelector('meta[name="robots"]');
@@ -74,9 +76,7 @@ export function ManualBookingPage({ onNavigate }: ManualBookingPageProps) {
   const [formData, setFormData] = useState({
     customerName: "",
     customerEmail: "",
-    adults: 1,
-    children: 0,
-    infants: 0,
+    quantity: 1,
     guidedTour: false,
     selectedAttractions: [] as string[],
     paymentMethod: "cash" as "cash" | "card",
@@ -135,22 +135,18 @@ export function ManualBookingPage({ onNavigate }: ManualBookingPageProps) {
     let total = 0;
     
     // Base prices
-    total += formData.adults * pricing.basePrice;
-    total += formData.children * (pricing.basePrice * 0.5);
-    // Infants are free
+    total += formData.quantity * pricing.basePrice;
     
     // Guided tour
     if (formData.guidedTour) {
-      const totalPeople = formData.adults + formData.children;
-      total += totalPeople * pricing.guidedTourSurcharge;
+      total += formData.quantity * pricing.guidedTourSurcharge;
     }
     
     // Attractions
-    const totalPeople = formData.adults + formData.children;
     formData.selectedAttractions.forEach(attractionId => {
       const attraction = pricing.attractions[attractionId];
       if (attraction) {
-        total += attraction.price * totalPeople;
+        total += attraction.price * formData.quantity;
       }
     });
     
@@ -169,14 +165,8 @@ export function ManualBookingPage({ onNavigate }: ManualBookingPageProps) {
       
       // Build passengers array
       const passengers = [];
-      for (let i = 0; i < formData.adults; i++) {
+      for (let i = 0; i < formData.quantity; i++) {
         passengers.push({ name: formData.customerName, type: "adult" });
-      }
-      for (let i = 0; i < formData.children; i++) {
-        passengers.push({ name: `Child ${i + 1}`, type: "child" });
-      }
-      for (let i = 0; i < formData.infants; i++) {
-        passengers.push({ name: `Infant ${i + 1}`, type: "infant" });
       }
       
       const bookingData = {
@@ -211,7 +201,7 @@ export function ManualBookingPage({ onNavigate }: ManualBookingPageProps) {
           const driverSession = localStorage.getItem('driver_session');
           if (driverSession) {
             const { driver } = JSON.parse(driverSession);
-            const quantity = formData.adults + formData.children + formData.infants;
+            const quantity = formData.quantity;
             
             // Record the sale
             await fetch(
@@ -256,9 +246,7 @@ export function ManualBookingPage({ onNavigate }: ManualBookingPageProps) {
     setFormData({
       customerName: "",
       customerEmail: "",
-      adults: 1,
-      children: 0,
-      infants: 0,
+      quantity: 1,
       guidedTour: false,
       selectedAttractions: [],
       paymentMethod: "cash",
@@ -275,7 +263,7 @@ export function ManualBookingPage({ onNavigate }: ManualBookingPageProps) {
                formData.customerEmail.trim() && 
                formData.customerEmail.includes("@");
       case 2:
-        return (formData.adults + formData.children) > 0;
+        return formData.quantity > 0;
       default:
         return true;
     }
@@ -315,7 +303,7 @@ export function ManualBookingPage({ onNavigate }: ManualBookingPageProps) {
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Passengers:</span>
                 <span className="text-foreground">
-                  {formData.adults}A {formData.children > 0 && `${formData.children}C`} {formData.infants > 0 && `${formData.infants}I`}
+                  {formData.quantity}A
                 </span>
               </div>
               <div className="flex justify-between border-t border-border pt-3 mt-3">
@@ -358,7 +346,7 @@ export function ManualBookingPage({ onNavigate }: ManualBookingPageProps) {
   }
 
   const totalPrice = calculatePrice();
-  const totalPassengers = formData.adults + formData.children + formData.infants;
+  const totalPassengers = formData.quantity;
 
   return (
     <div className="min-h-screen bg-secondary/30 py-8">
@@ -474,86 +462,18 @@ export function ManualBookingPage({ onNavigate }: ManualBookingPageProps) {
                     <Button
                       variant="outline"
                       size="icon"
-                      onClick={() => setFormData({ ...formData, adults: Math.max(0, formData.adults - 1) })}
+                      onClick={() => setFormData({ ...formData, quantity: Math.max(0, formData.quantity - 1) })}
                       className="h-12 w-12"
                     >
                       <Minus className="h-5 w-5" />
                     </Button>
                     <span className="text-2xl w-12 text-center text-foreground">
-                      {formData.adults}
+                      {formData.quantity}
                     </span>
                     <Button
                       variant="outline"
                       size="icon"
-                      onClick={() => setFormData({ ...formData, adults: formData.adults + 1 })}
-                      className="h-12 w-12"
-                    >
-                      <Plus className="h-5 w-5" />
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-
-              {/* Children */}
-              <Card className="border-2 border-accent/20 p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-2xl">👶</span>
-                      <h3 className="text-foreground">Child</h3>
-                    </div>
-                    <p className="text-sm text-muted-foreground">€{(pricing.basePrice * 0.5).toFixed(2)} (50% off)</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setFormData({ ...formData, children: Math.max(0, formData.children - 1) })}
-                      className="h-12 w-12"
-                    >
-                      <Minus className="h-5 w-5" />
-                    </Button>
-                    <span className="text-2xl w-12 text-center text-foreground">
-                      {formData.children}
-                    </span>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setFormData({ ...formData, children: formData.children + 1 })}
-                      className="h-12 w-12"
-                    >
-                      <Plus className="h-5 w-5" />
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-
-              {/* Infants */}
-              <Card className="border-2 border-green-200 p-4 bg-green-50">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-2xl">🍼</span>
-                      <h3 className="text-foreground">Infant</h3>
-                    </div>
-                    <p className="text-sm text-green-700">FREE</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setFormData({ ...formData, infants: Math.max(0, formData.infants - 1) })}
-                      className="h-12 w-12"
-                    >
-                      <Minus className="h-5 w-5" />
-                    </Button>
-                    <span className="text-2xl w-12 text-center text-foreground">
-                      {formData.infants}
-                    </span>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setFormData({ ...formData, infants: formData.infants + 1 })}
+                      onClick={() => setFormData({ ...formData, quantity: formData.quantity + 1 })}
                       className="h-12 w-12"
                     >
                       <Plus className="h-5 w-5" />
