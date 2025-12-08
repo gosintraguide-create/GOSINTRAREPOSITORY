@@ -28,6 +28,7 @@ import "../styles/slick-custom.css";
 interface AttractionDetailPageProps {
   onNavigate: (page: string) => void;
   attractionId: string;
+  language?: string;
 }
 
 // Custom arrow components for the carousel
@@ -56,6 +57,7 @@ const NextArrow = ({ onClick }: { onClick?: () => void }) => (
 export function AttractionDetailPage({
   onNavigate,
   attractionId,
+  language,
 }: AttractionDetailPageProps) {
   const [content, setContent] = useState<ComprehensiveContent>(
     DEFAULT_COMPREHENSIVE_CONTENT,
@@ -84,7 +86,7 @@ export function AttractionDetailPage({
   };
 
   useEffect(() => {
-    const freshContent = loadComprehensiveContentForLanguage(language);
+    const freshContent = loadComprehensiveContentForLanguage(language || "en");
     setContent(freshContent);
 
     // Debug: log the gallery URLs
