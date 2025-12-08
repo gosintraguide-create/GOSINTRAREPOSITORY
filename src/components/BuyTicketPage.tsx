@@ -819,7 +819,7 @@ export function BuyTicketPage({
                           {t.buyTicket.timeSlots.guidedTourLabel}
                         </p>
                         <p className="text-sm text-foreground/80">
-                          Some start times include our Insight Tour, a longer, more detailed ride where your driver shares the stories and history behind Sintra's monuments. Look for time slots marked with the Insight Tour badge below.
+                          {t.buyTicket.timeSlots.guidedTourDescription}
                         </p>
                       </div>
                     </div>
@@ -1103,7 +1103,7 @@ export function BuyTicketPage({
                     <Collapsible className="mt-3">
                       <CollapsibleTrigger className="flex items-center gap-2 text-xs text-primary hover:text-primary/80 transition-colors">
                         <MapPin className="h-3.5 w-3.5" />
-                        <span>View route maps</span>
+                        <span>{t.buyTicket?.timeSlots?.viewRouteMaps || "View route maps"}</span>
                         <ChevronDown className="h-3.5 w-3.5 transition-transform data-[state=open]:rotate-180" />
                       </CollapsibleTrigger>
                       <CollapsibleContent className="mt-3">
@@ -1117,6 +1117,7 @@ export function BuyTicketPage({
                               location,
                             )
                           }
+                          language={language}
                         />
                       </CollapsibleContent>
                     </Collapsible>

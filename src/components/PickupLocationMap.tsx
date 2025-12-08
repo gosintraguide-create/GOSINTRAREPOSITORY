@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { MapPin, Clock, Info, CheckCircle2 } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { getTranslation } from "../lib/translations";
 
 interface PickupLocationMapProps {
   selectedLocation: string;
   onLocationSelect?: (location: string) => void;
+  language?: string;
 }
 
 const LOCATION_DETAILS = [
@@ -124,8 +126,28 @@ const ROUTE_2_DETAILS = [
   },
 ];
 
-export function PickupLocationMap({ selectedLocation, onLocationSelect }: PickupLocationMapProps) {
+export function PickupLocationMap({ selectedLocation, onLocationSelect, language }: PickupLocationMapProps) {
   const [expandedLocation, setExpandedLocation] = useState<string | null>(null);
+  const t = getTranslation(language);
+
+  // Map location IDs to translation keys
+  const getLocationData = (locationId: string) => {
+    if (!t.buyTicket?.routeMap?.locations) return null;
+    
+    const keyMap: Record<string, keyof typeof t.buyTicket.routeMap.locations> = {
+      'sintra-train-station': 'sintraTrainStation',
+      'center-2': 'historicalCenterNorth',
+      'center-1': 'historicalCenterSouth',
+      'moorish-castle': 'moorishCastle',
+      'pena-palace': 'penaPalace',
+      'quinta-regaleira': 'quintaRegaleira',
+      'seteais': 'seteais',
+      'monserrate-palace': 'monserratePalace',
+    };
+    
+    const key = keyMap[locationId];
+    return key ? t.buyTicket.routeMap.locations[key] : null;
+  };
 
   const handleLocationClick = (locationId: string) => {
     // Toggle expansion
@@ -154,6 +176,7 @@ export function PickupLocationMap({ selectedLocation, onLocationSelect }: Pickup
             const isSelected = selectedLocation === location.id;
             const isExpanded = expandedLocation === location.id;
             const isLast = index === routeDetails.length - 1;
+            const locationData = getLocationData(location.id);
             
             return (
               <div key={`${routeNumber}-${location.id}`} className="relative">
@@ -202,23 +225,23 @@ export function PickupLocationMap({ selectedLocation, onLocationSelect }: Pickup
                                 <div className="h-2 w-2 rounded-full" style={{ backgroundColor: '#0A4D5C' }} />
                                 <div className="h-2 w-2 rounded-full" style={{ backgroundColor: '#D97843' }} />
                               </div>
-                              <span className="text-[10px] text-muted-foreground">Both routes</span>
+                              <span className="text-[10px] text-muted-foreground">{t.buyTicket?.routeMap?.bothRoutesLabel || "Both routes"}</span>
                             </div>
                           )}
                           {isSelected && (
                             <span className="text-[10px] bg-accent/10 text-accent px-1.5 py-0.5 rounded flex items-center gap-0.5">
                               <CheckCircle2 className="h-2.5 w-2.5" />
-                              Pickup
+                              {t.buyTicket?.routeMap?.pickupLabel || "Pickup"}
                             </span>
                           )}
                         </div>
                         <h4 className={`text-sm truncate ${
                           isSelected ? 'text-accent' : 'text-foreground'
                         }`}>
-                          {location.name}
+                          {locationData?.name || location.name}
                         </h4>
                         <p className="text-xs text-muted-foreground truncate">
-                          {location.description}
+                          {locationData?.description || location.description}
                         </p>
                       </div>
                       <div className={`transform transition-transform duration-200 flex-shrink-0 ${
@@ -239,14 +262,14 @@ export function PickupLocationMap({ selectedLocation, onLocationSelect }: Pickup
                         <div className="relative h-32 overflow-hidden">
                           <ImageWithFallback
                             src={location.image}
-                            alt={location.name}
+                            alt={locationData?.name || location.name}
                             className="h-full w-full object-cover"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                           <div className="absolute bottom-2 left-2 right-2">
                             <div className="flex items-center gap-1.5 text-white">
                               <Clock className="h-3 w-3" />
-                              <span className="text-xs">Every 30 min • 9 AM - 7 PM</span>
+                              <span className="text-xs">{t.buyTicket?.routeMap?.frequencyLabel || "Every 30 min • 9 AM - 7 PM"}</span>
                             </div>
                           </div>
                         </div>
@@ -254,13 +277,13 @@ export function PickupLocationMap({ selectedLocation, onLocationSelect }: Pickup
                         {/* Location info */}
                         <div className="p-2 space-y-2">
                           <p className="text-xs text-muted-foreground">
-                            {location.info}
+                            {locationData?.info || location.info}
                           </p>
 
                           {/* Highlights */}
                           <div className="space-y-1">
                             <div className="grid gap-1">
-                              {location.highlights.map((highlight, idx) => (
+                              {(locationData?.highlights || location.highlights).map((highlight, idx) => (
                                 <div key={idx} className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                   <div className="h-1 w-1 rounded-full bg-accent flex-shrink-0" />
                                   <span>{highlight}</span>
@@ -294,7 +317,7 @@ export function PickupLocationMap({ selectedLocation, onLocationSelect }: Pickup
       <div className="rounded bg-primary/5 border border-primary/20 px-2 py-1">
         <p className="text-[10px] text-muted-foreground">
           <Info className="inline h-2.5 w-2.5 mr-1 text-primary" />
-          Two circular routes • Click any stop to select
+          {t.buyTicket?.routeMap?.infoHeader || "Two circular routes • Click any stop to select"}
         </p>
       </div>
 
@@ -306,9 +329,13 @@ export function PickupLocationMap({ selectedLocation, onLocationSelect }: Pickup
               <MapPin className="h-4 w-4 text-white" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] text-muted-foreground mb-0.5">Your Pickup Location</p>
+              <p className="text-[10px] text-muted-foreground mb-0.5">{t.buyTicket?.routeMap?.yourPickupLocation || "Your Pickup Location"}</p>
               <p className="text-sm text-foreground font-medium truncate">
-                {[...ROUTE_1_DETAILS, ...ROUTE_2_DETAILS].find(loc => loc.id === selectedLocation)?.name}
+                {(() => {
+                  const loc = [...ROUTE_1_DETAILS, ...ROUTE_2_DETAILS].find(loc => loc.id === selectedLocation);
+                  const locData = loc ? getLocationData(loc.id) : null;
+                  return locData?.name || loc?.name;
+                })()}
               </p>
             </div>
           </div>
@@ -321,7 +348,7 @@ export function PickupLocationMap({ selectedLocation, onLocationSelect }: Pickup
         <div className="space-y-1">
           <div className="flex items-center gap-1.5 px-1">
             <div className="h-2 w-2 rounded-full bg-primary" />
-            <span className="text-[10px] text-primary">Route 1</span>
+            <span className="text-[10px] text-primary">{t.buyTicket?.routeMap?.route1Label || "Route 1"}</span>
           </div>
           {renderRoute(ROUTE_1_DETAILS, 1, '#0A4D5C')}
         </div>
@@ -330,7 +357,7 @@ export function PickupLocationMap({ selectedLocation, onLocationSelect }: Pickup
         <div className="space-y-1">
           <div className="flex items-center gap-1.5 px-1">
             <div className="h-2 w-2 rounded-full bg-accent" />
-            <span className="text-[10px] text-accent">Route 2</span>
+            <span className="text-[10px] text-accent">{t.buyTicket?.routeMap?.route2Label || "Route 2"}</span>
           </div>
           {renderRoute(ROUTE_2_DETAILS, 2, '#D97843')}
         </div>

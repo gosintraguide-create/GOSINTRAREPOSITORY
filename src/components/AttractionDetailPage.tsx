@@ -17,6 +17,7 @@ import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useState, useEffect } from "react";
 import {
   loadComprehensiveContent,
+  loadComprehensiveContentForLanguage,
   type ComprehensiveContent,
   DEFAULT_COMPREHENSIVE_CONTENT,
 } from "../lib/comprehensiveContent";
@@ -83,16 +84,16 @@ export function AttractionDetailPage({
   };
 
   useEffect(() => {
-    setContent(loadComprehensiveContent());
+    const freshContent = loadComprehensiveContentForLanguage(language);
+    setContent(freshContent);
 
     // Debug: log the gallery URLs
-    const freshContent = loadComprehensiveContent();
     console.log(
       "Attraction gallery URLs:",
       freshContent.attractions.attractionDetails[attractionId]
         ?.gallery,
     );
-  }, [attractionId]);
+  }, [attractionId, language]);
 
   const attraction =
     content.attractions.attractionDetails[attractionId];

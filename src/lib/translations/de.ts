@@ -494,6 +494,67 @@ export const de: WebsiteContent = {
     },
     timeSlots: {
       guidedTourLabel: "Insight Tour",
+      guidedTourDescription: "Einige Startzeiten beinhalten unsere Insight Tour, eine längere, detailliertere Fahrt, bei der Ihr Fahrer die Geschichten und die Geschichte hinter Sintras Monumenten teilt. Suchen Sie nach Zeitfenstern, die mit dem Insight Tour-Abzeichen unten markiert sind.",
+      viewRouteMaps: "Routenkarten anzeigen",
+    },
+    routeMap: {
+      bothRoutesLabel: "Beide Routen",
+      pickupLabel: "Abholung",
+      frequencyLabel: "Alle 30 Min. • 9 - 19 Uhr",
+      infoHeader: "Zwei Rundrouten • Klicken Sie auf eine Haltestelle zum Auswählen",
+      yourPickupLocation: "Ihr Abholort",
+      route1Label: "Route 1",
+      route2Label: "Route 2",
+      locations: {
+        sintraTrainStation: {
+          name: "Bahnhof Sintra",
+          description: "Verbindungspunkt für beide Routen",
+          info: "Im Herzen von Sintra gelegen, nur wenige Schritte vom historischen Zentrum entfernt. Unsere Fahrzeuge holen direkt vor dem Haupteingang des Bahnhofs ab. Verbindungspunkt für beide Routen.",
+          highlights: ["Einfacher Zugang von Lissabon", "Beide Routen halten hier", "Häufige Abfahrten"],
+        },
+        historicalCenterNorth: {
+          name: "Historisches Zentrum Nord",
+          description: "Historisches Zentrum mit Cafés und Geschäften",
+          info: "Abholung im charmanten historischen Zentrum, umgeben von lokalen Restaurants, Konditoreien und Boutiquen. Verbindungspunkt für beide Routen.",
+          highlights: ["Historische Atmosphäre", "Beide Routen halten hier", "Gastronomie in der Nähe"],
+        },
+        historicalCenterSouth: {
+          name: "Historisches Zentrum Süd",
+          description: "Stadtzentrum in der Nähe des Nationalpalastes",
+          info: "Haltestelle im historischen Zentrum in der Nähe des ikonischen Nationalpalastes mit seinen markanten Zwillingskaminen.",
+          highlights: ["Königliches Erbe", "Zentrale Lage", "Ikonische Architektur"],
+        },
+        moorishCastle: {
+          name: "Maurenburg",
+          description: "Alte Festung mit mittelalterlichen Mauern",
+          info: "Besuchen Sie diese maurische Befestigung aus dem 10. Jahrhundert auf dem Hügel, die spektakuläre Aussichten über die Region bietet.",
+          highlights: ["Historische Bedeutung", "Panoramablicke", "Authentische mittelalterliche Ruinen"],
+        },
+        penaPalace: {
+          name: "Pena-Palast",
+          description: "Ikonisches Schloss auf dem Hügel mit Panoramablick",
+          info: "Besuchen Sie das berühmteste Wahrzeichen von Sintra. Unser Abholpunkt befindet sich bequem am Eingang des Palastes.",
+          highlights: ["Atemberaubende Aussichten", "Meistbesuchte Attraktion", "Tolle Fotomöglichkeiten"],
+        },
+        quintaRegaleira: {
+          name: "Quinta da Regaleira",
+          description: "Mystisches Anwesen mit Initiationsbrunnen und Höhlen",
+          info: "Besuchen Sie dieses bezaubernde Anwesen mit mysteriösen Gärten, unterirdischen Tunneln und dem berühmten Initiationsbrunnen. Abholung am Haupteingang.",
+          highlights: ["Mysteriöse Architektur", "Schöne Gärten", "Einzigartiges Erlebnis"],
+        },
+        seteais: {
+          name: "Seteais",
+          description: "Historischer Palast und Aussichtspunkt",
+          info: "Halt an diesem prächtigen neoklassizistischen Palast mit atemberaubenden Aussichten. Jetzt ein Luxushotel, das Äußere und die Gärten sind für Besucher geöffnet.",
+          highlights: ["Beeindruckende Architektur", "Panorama-Aussichtspunkt", "Historische Bedeutung"],
+        },
+        monserratePalace: {
+          name: "Monserrate-Palast",
+          description: "Romantischer Palast mit exotischen Gärten",
+          info: "Abholung an diesem atemberaubenden Palast aus dem 19. Jahrhundert, umgeben von botanischen Gärten mit Pflanzen aus der ganzen Welt. Ein verstecktes Juwel von Sintra.",
+          highlights: ["Exotische botanische Gärten", "Romantische Architektur", "Friedliche Atmosphäre"],
+        },
+      },
     },
     passengersSelection: {
       yourInformation: "Ihre Informationen",

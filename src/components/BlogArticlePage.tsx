@@ -19,6 +19,8 @@ import {
   getArticleBySlug,
   loadCategories,
   getPublishedArticles,
+  getArticleTranslation,
+  getCategoryTranslation,
   type BlogArticle,
 } from "../lib/blogManager";
 import ReactMarkdown from "react-markdown";
@@ -64,15 +66,19 @@ export function BlogArticlePage({
       const category = categories.find(
         (cat) => cat.slug === foundArticle.category,
       );
-      const translatedCategoryName =
-        content.blog.categories[
-          foundArticle.category as keyof typeof content.blog.categories
-        ];
-      setCategoryName(
-        category?.name ||
+      if (category) {
+        const categoryTranslation = getCategoryTranslation(category, language);
+        setCategoryName(categoryTranslation.name);
+      } else {
+        const translatedCategoryName =
+          content.blog.categories[
+            foundArticle.category as keyof typeof content.blog.categories
+          ];
+        setCategoryName(
           translatedCategoryName ||
-          foundArticle.category,
-      );
+            foundArticle.category,
+        );
+      }
 
       // Find related articles (same category, excluding current)
       const allArticles = getPublishedArticles();
@@ -149,7 +155,8 @@ export function BlogArticlePage({
 
   const handleShare = (platform: string) => {
     const url = window.location.href;
-    const title = article.title;
+    const translation = getArticleTranslation(article, language);
+    const title = translation.title;
 
     switch (platform) {
       case "facebook":
@@ -170,6 +177,9 @@ export function BlogArticlePage({
     }
     setShowShareMenu(false);
   };
+
+  // Get translated content for the current language
+  const articleTranslation = getArticleTranslation(article, language);
 
   return (
     <div className="flex-1">
@@ -219,7 +229,7 @@ export function BlogArticlePage({
                     category: article.category,
                   }),
               },
-              { label: article.title },
+              { label: articleTranslation.title },
             ]}
           />
 
@@ -265,7 +275,7 @@ export function BlogArticlePage({
               src={
                 article.heroImage || article.featuredImage || ""
               }
-              alt={article.title}
+              alt={articleTranslation.title}
               className="aspect-[21/9] w-full object-cover sm:aspect-video"
             />
           </div>
@@ -410,7 +420,7 @@ export function BlogArticlePage({
                   ),
                 }}
               >
-                {article.content}
+                {articleTranslation.content}
               </ReactMarkdown>
             </div>
           </article>
@@ -419,7 +429,7 @@ export function BlogArticlePage({
           <aside className="hidden space-y-6 lg:block">
             <div className="sticky top-24 space-y-6">
               <TableOfContents
-                content={article.content}
+                content={articleTranslation.content}
                 language={language}
               />
 
@@ -434,7 +444,9 @@ export function BlogArticlePage({
                   <div className="divide-y divide-border">
                     {otherArticles
                       .slice(0, 3)
-                      .map((otherArticle) => (
+                      .map((otherArticle) => {
+                        const otherTranslation = getArticleTranslation(otherArticle, language);
+                        return (
                         <div
                           key={otherArticle.id}
                           className="group cursor-pointer transition-all hover:bg-secondary/30"
@@ -451,14 +463,14 @@ export function BlogArticlePage({
                                   otherArticle.thumbnailImage ||
                                   otherArticle.featuredImage
                                 }
-                                alt={otherArticle.title}
+                                alt={otherTranslation.title}
                                 className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                               />
                             </div>
                           )}
                           <div className="p-4">
                             <h4 className="mb-2 line-clamp-2 transition-colors group-hover:text-primary">
-                              {otherArticle.title}
+                              {otherTranslation.title}
                             </h4>
                             <div className="flex items-center gap-1 text-xs text-muted-foreground">
                               <Clock className="h-3 w-3" />
@@ -469,7 +481,7 @@ export function BlogArticlePage({
                             </div>
                           </div>
                         </div>
-                      ))}
+                      );})}
                   </div>
                   <div className="border-t border-border p-4">
                     <Button
@@ -491,7 +503,7 @@ export function BlogArticlePage({
       {/* Mobile Table of Contents */}
       <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:hidden">
         <TableOfContents
-          content={article.content}
+          content={articleTranslation.content}
           language={language}
         />
       </div>
@@ -505,7 +517,9 @@ export function BlogArticlePage({
             {content.blog.moreFromTravelGuide}
           </h2>
           <div className="grid gap-6 sm:grid-cols-2">
-            {otherArticles.slice(0, 4).map((otherArticle) => (
+            {otherArticles.slice(0, 4).map((otherArticle) => {
+              const otherTranslation = getArticleTranslation(otherArticle, language);
+              return (
               <Card
                 key={otherArticle.id}
                 className="group cursor-pointer overflow-hidden border-border transition-all hover:shadow-lg"
@@ -519,14 +533,14 @@ export function BlogArticlePage({
                   <div className="relative aspect-video overflow-hidden">
                     <ImageWithFallback
                       src={otherArticle.featuredImage}
-                      alt={otherArticle.title}
+                      alt={otherTranslation.title}
                       className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                   </div>
                 )}
                 <div className="p-4">
                   <h3 className="mb-2 line-clamp-2 transition-colors group-hover:text-primary">
-                    {otherArticle.title}
+                    {otherTranslation.title}
                   </h3>
                   <div className="flex items-center gap-1 text-sm text-muted-foreground">
                     <Clock className="h-4 w-4" />
@@ -535,7 +549,7 @@ export function BlogArticlePage({
                   </div>
                 </div>
               </Card>
-            ))}
+            );})}
           </div>
           <div className="mt-6 text-center">
             <Button
@@ -591,7 +605,9 @@ export function BlogArticlePage({
               {content.blog.relatedArticles}
             </h2>
             <div className="grid gap-8 md:grid-cols-3">
-              {relatedArticles.map((relatedArticle) => (
+              {relatedArticles.map((relatedArticle) => {
+                const relatedTranslation = getArticleTranslation(relatedArticle, language);
+                return (
                 <Card
                   key={relatedArticle.id}
                   className="group cursor-pointer overflow-hidden border-border transition-all hover:shadow-xl"
@@ -605,7 +621,7 @@ export function BlogArticlePage({
                     <div className="relative aspect-video overflow-hidden">
                       <ImageWithFallback
                         src={relatedArticle.featuredImage}
-                        alt={relatedArticle.title}
+                        alt={relatedTranslation.title}
                         className="h-full w-full object-cover transition-transform group-hover:scale-110"
                       />
                     </div>
@@ -617,11 +633,11 @@ export function BlogArticlePage({
                       {content.blog.minRead}
                     </div>
                     <h3 className="text-foreground transition-colors group-hover:text-primary">
-                      {relatedArticle.title}
+                      {relatedTranslation.title}
                     </h3>
                   </div>
                 </Card>
-              ))}
+              );})}
             </div>
           </div>
         </section>

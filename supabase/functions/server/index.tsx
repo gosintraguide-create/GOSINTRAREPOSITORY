@@ -2070,29 +2070,40 @@ app.post("/make-server-3bd0ade8/verify-payment", async (c) => {
 // Get all bookings (admin)
 app.get("/make-server-3bd0ade8/bookings", async (c) => {
   try {
+    console.log("📥 Fetching all bookings...");
+    
     // Get all bookings (handles all formats)
+    console.log("Fetching old bookings (booking_ prefix)...");
     const oldBookings = await kv.getByPrefix("booking_"); // Very old format
+    console.log(`Found ${oldBookings.length} old bookings`);
+    
+    console.log("Fetching GS bookings (GS- prefix)...");
     const gsBookings = await kv.getByPrefix("GS-"); // Old GS-#### format
+    console.log(`Found ${gsBookings.length} GS bookings`);
 
     // Get new AA-#### format bookings (only active prefixes for efficiency)
     const letterBookings = [];
     const usedPrefixes =
       (await kv.get("booking_used_prefixes")) || [];
+    console.log(`Used prefixes: ${JSON.stringify(usedPrefixes)}`);
 
     // If no used prefixes tracked yet, check common ones
     if (usedPrefixes.length === 0) {
       // Check first few prefixes that likely have bookings
       const commonPrefixes = ["AA", "AB", "AC", "AD", "AE"];
+      console.log(`Checking common prefixes: ${commonPrefixes.join(", ")}`);
       for (const prefix of commonPrefixes) {
         const prefixBookings = await kv.getByPrefix(
           `${prefix}-`,
         );
         if (prefixBookings.length > 0) {
+          console.log(`Found ${prefixBookings.length} bookings with prefix ${prefix}`);
           letterBookings.push(...prefixBookings);
         }
       }
     } else {
       // Query only prefixes we know have bookings
+      console.log(`Fetching from ${usedPrefixes.length} used prefixes`);
       for (const prefix of usedPrefixes) {
         const prefixBookings = await kv.getByPrefix(
           `${prefix}-`,
@@ -2100,12 +2111,14 @@ app.get("/make-server-3bd0ade8/bookings", async (c) => {
         letterBookings.push(...prefixBookings);
       }
     }
+    console.log(`Found ${letterBookings.length} letter-prefixed bookings`);
 
     const allBookings = [
       ...oldBookings,
       ...gsBookings,
       ...letterBookings,
     ];
+    console.log(`Total bookings before filtering: ${allBookings.length}`);
 
     // Filter out any null or invalid bookings
     // Note: getByPrefix already returns values directly, not {key, value} objects
@@ -2124,9 +2137,10 @@ app.get("/make-server-3bd0ade8/bookings", async (c) => {
       bookings: validBookings,
     });
   } catch (error) {
-    console.error("Error fetching bookings:", error);
+    console.error("❌ Error fetching bookings:", error);
+    console.error("Error stack:", error instanceof Error ? error.stack : "No stack trace");
     return c.json(
-      { success: false, error: "Failed to fetch bookings" },
+      { success: false, error: "Failed to fetch bookings", details: error instanceof Error ? error.message : String(error) },
       500,
     );
   }
@@ -6055,7 +6069,12 @@ async function ensureImagesBucket() {
       );
 
       if (error) {
-        console.error("❌ Failed to create images bucket:", error);
+        // 409 status code means bucket already exists, which is fine
+        if (error.statusCode === "409" || error.status === 409) {
+          console.log(`✅ Images bucket already exists: ${IMAGES_BUCKET}`);
+        } else {
+          console.error("❌ Failed to create images bucket:", error);
+        }
       } else {
         console.log(`✅ Images bucket created: ${IMAGES_BUCKET}`);
       }

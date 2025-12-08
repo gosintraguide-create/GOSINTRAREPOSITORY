@@ -526,6 +526,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     async function fetchBookings() {
       setLoadingBookings(true);
       try {
+        console.log("🔄 Fetching bookings from server...");
         const response = await fetch(
           `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/bookings`,
           {
@@ -534,12 +535,20 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
             },
           },
         );
+        console.log("📡 Response status:", response.status, response.statusText);
+        
         if (response.ok) {
           const data = await response.json();
+          console.log("✅ Bookings fetched successfully:", data.bookings?.length || 0);
           setBookings(data.bookings || []);
+        } else {
+          const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
+          console.error("❌ Server error:", errorData);
+          toast.error(`Failed to fetch bookings: ${errorData.error || response.statusText}`);
         }
       } catch (error) {
-        console.error("Error fetching bookings:", error);
+        console.error("❌ Error fetching bookings:", error);
+        toast.error(`Network error: ${error instanceof Error ? error.message : "Failed to fetch bookings"}`);
       } finally {
         setLoadingBookings(false);
       }
@@ -616,19 +625,11 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
         if (status === 'SUBSCRIBED') {
           console.log('✅ Bookings subscription active');
         }
-        // Silently handle errors - polling will handle updates
       });
-
-    // Polling fallback: Only poll every 3 minutes since realtime is enabled
-    // This serves as a safety net in case realtime misses an update
-    const pollInterval = setInterval(() => {
-      fetchBookings();
-    }, 180000); // 3 minutes
 
     return () => {
       console.log('🔌 Unsubscribing from bookings channel');
       supabase.removeChannel(channel);
-      clearInterval(pollInterval);
     };
   }, [isAuthenticated]);
 
@@ -687,19 +688,11 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
         if (status === 'SUBSCRIBED') {
           console.log('✅ Messages subscription active');
         }
-        // Silently handle errors - polling will handle updates
       });
-
-    // Polling fallback: Only poll every 3 minutes since realtime is enabled
-    // This serves as a safety net in case realtime misses an update
-    const pollInterval = setInterval(() => {
-      loadConversations();
-    }, 180000); // 3 minutes
 
     return () => {
       console.log('🔌 Unsubscribing from messages channel');
       supabase.removeChannel(messagesChannel);
-      clearInterval(pollInterval);
     };
   }, [isAuthenticated]);
 
@@ -1287,20 +1280,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
   }, [isAuthenticated]);
 
   // Auto-refresh every 30 seconds
-  useEffect(() => {
-    if (!isAuthenticated) return;
-
-    const interval = setInterval(() => {
-      checkForNewItems(true);
-    }, 30000); // 30 seconds
-
-    return () => clearInterval(interval);
-  }, [
-    isAuthenticated,
-    lastPickupCount,
-    lastBookingCount,
-    lastMessageCount,
-  ]);
+  // Removed polling interval - realtime subscriptions handle all updates automatically
 
   // Update page title when notification counts change
   useEffect(() => {

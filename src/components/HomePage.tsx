@@ -102,8 +102,8 @@ export function HomePage({
   const [showInstallCard, setShowInstallCard] = useState(false);
   const [showFloatingButton, setShowFloatingButton] = useState(false);
   const t = getUITranslation(language);
-  // Use editable content from admin panel
-  const content = useEditableContent();
+  // Use editable content from admin panel with language support
+  const content = useEditableContent(language);
 
   useEffect(() => {
     async function loadPricingFromDB() {
@@ -368,7 +368,7 @@ export function HomePage({
           <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
             {/* Attractions Link */}
             <button
-              onClick={() => onNavigate("attractions")}
+              onClick={() => onNavigate(legacyContent.homepage.quickLinks.attractions.link)}
               className="group flex items-center gap-4 rounded-2xl border-2 border-white/30 bg-white/10 px-6 py-5 backdrop-blur-sm transition-all hover:scale-105 hover:border-white/60 hover:bg-white/20 hover:shadow-2xl"
             >
               <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl sm:h-20 sm:w-20">
@@ -391,7 +391,7 @@ export function HomePage({
 
             {/* Travel Guide Link */}
             <button
-              onClick={() => onNavigate("blog")}
+              onClick={() => onNavigate(legacyContent.homepage.quickLinks.travelGuide.link)}
               className="group flex items-center gap-4 rounded-2xl border-2 border-white/30 bg-white/10 px-6 py-5 backdrop-blur-sm transition-all hover:scale-105 hover:border-white/60 hover:bg-white/20 hover:shadow-2xl"
             >
               <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl sm:h-20 sm:w-20">
@@ -414,7 +414,7 @@ export function HomePage({
 
             {/* Private Tours Link */}
             <button
-              onClick={() => onNavigate("private-tours")}
+              onClick={() => onNavigate(legacyContent.homepage.quickLinks.privateTours.link)}
               className="group flex items-center gap-4 rounded-2xl border-2 border-accent bg-accent/20 px-6 py-5 backdrop-blur-sm transition-all hover:scale-105 hover:border-accent hover:bg-accent/30 hover:shadow-2xl sm:col-span-2 lg:col-span-1"
             >
               <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl sm:h-20 sm:w-20">

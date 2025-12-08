@@ -5,7 +5,20 @@ export interface FAQItem {
   answer: string;
 }
 
-export interface BlogArticle {
+// Multi-language content structure
+export interface ArticleTranslation {
+  title: string;
+  excerpt: string;
+  content: string;
+  seo: {
+    title: string;
+    description: string;
+    keywords: string;
+  };
+}
+
+// Old format for backward compatibility
+export interface LegacyBlogArticle {
   id: string;
   title: string;
   slug: string;
@@ -29,49 +42,114 @@ export interface BlogArticle {
   };
 }
 
-export interface BlogCategory {
+export interface BlogArticle {
   id: string;
-  name: string;
   slug: string;
+  author: string;
+  publishDate: string;
+  lastModified: string;
+  featuredImage?: string;
+  heroImage?: string;
+  thumbnailImage?: string;
+  category: string;
+  tags: string[];
+  isPublished: boolean;
+  readTimeMinutes: number;
+  faqs?: FAQItem[];
+  
+  // Multi-language content - keyed by language code ('en', 'pt', 'es', etc.)
+  translations: {
+    [languageCode: string]: ArticleTranslation;
+  };
+}
+
+// Helper to get article content in a specific language with fallback to English
+export function getArticleTranslation(article: BlogArticle, language: string): ArticleTranslation {
+  return article.translations[language] || article.translations['en'];
+}
+
+// Helper to get article title in a specific language
+export function getArticleTitle(article: BlogArticle, language: string): string {
+  return getArticleTranslation(article, language).title;
+}
+
+// Multi-language category structure
+export interface CategoryTranslation {
+  name: string;
   description: string;
 }
 
-// Default categories
+export interface BlogCategory {
+  id: string;
+  slug: string;
+  
+  // Multi-language content
+  translations: {
+    [languageCode: string]: CategoryTranslation;
+  };
+}
+
+// Helper to get category content in a specific language with fallback to English
+export function getCategoryTranslation(category: BlogCategory, language: string): CategoryTranslation {
+  return category.translations[language] || category.translations['en'];
+}
+
+// Default categories with English translations (add more languages as needed)
 export const DEFAULT_CATEGORIES: BlogCategory[] = [
   {
     id: "planning",
-    name: "Planning Your Visit",
     slug: "planning",
-    description: "Everything you need to know to plan the perfect Sintra day trip"
+    translations: {
+      en: {
+        name: "Planning Your Visit",
+        description: "Everything you need to know to plan the perfect Sintra day trip"
+      }
+    }
   },
   {
     id: "getting-there",
-    name: "Getting There",
     slug: "getting-there",
-    description: "Transportation guides and tips for reaching Sintra"
+    translations: {
+      en: {
+        name: "Getting There",
+        description: "Transportation guides and tips for reaching Sintra"
+      }
+    }
   },
   {
     id: "attractions",
-    name: "Attractions & Sights",
     slug: "attractions",
-    description: "In-depth guides to Sintra's palaces, castles, and gardens"
+    translations: {
+      en: {
+        name: "Attractions & Sights",
+        description: "In-depth guides to Sintra's palaces, castles, and gardens"
+      }
+    }
   },
   {
     id: "tips",
-    name: "Travel Tips",
     slug: "tips",
-    description: "Insider tips and local advice for exploring Sintra"
+    translations: {
+      en: {
+        name: "Travel Tips",
+        description: "Insider tips and local advice for exploring Sintra"
+      }
+    }
   },
   {
     id: "history",
-    name: "History & Culture",
     slug: "history",
-    description: "Learn about Sintra's rich history and cultural heritage"
+    translations: {
+      en: {
+        name: "History & Culture",
+        description: "Learn about Sintra's rich history and cultural heritage"
+      }
+    }
   }
 ];
 
-// Sample default articles
-export const DEFAULT_ARTICLES: BlogArticle[] = [
+// Sample default articles (in legacy format - will be migrated automatically)
+export const DEFAULT_ARTICLES: LegacyBlogArticle[] = [
   {
     id: "how-to-get-to-sintra",
     title: "How to Get to Sintra from Lisbon",
@@ -576,6 +654,59 @@ Pena Palace is truly magical and deserves a leisurely visit. Take your time, soa
   }
 ];
 
+// Migration helper - converts old format articles to new multi-language format
+export function migrateArticleToMultiLanguage(oldArticle: any): BlogArticle {
+  // Check if already in new format
+  if (oldArticle.translations) {
+    return oldArticle as BlogArticle;
+  }
+  
+  // Convert old format to new format with English as default
+  return {
+    id: oldArticle.id,
+    slug: oldArticle.slug,
+    author: oldArticle.author,
+    publishDate: oldArticle.publishDate,
+    lastModified: oldArticle.lastModified,
+    featuredImage: oldArticle.featuredImage,
+    heroImage: oldArticle.heroImage,
+    thumbnailImage: oldArticle.thumbnailImage,
+    category: oldArticle.category,
+    tags: oldArticle.tags,
+    isPublished: oldArticle.isPublished,
+    readTimeMinutes: oldArticle.readTimeMinutes,
+    faqs: oldArticle.faqs,
+    translations: {
+      en: {
+        title: oldArticle.title,
+        excerpt: oldArticle.excerpt,
+        content: oldArticle.content,
+        seo: oldArticle.seo
+      }
+    }
+  };
+}
+
+// Migration helper - converts old format categories to new multi-language format
+export function migrateCategoryToMultiLanguage(oldCategory: any): BlogCategory {
+  // Check if already in new format
+  if (oldCategory.translations) {
+    return oldCategory as BlogCategory;
+  }
+  
+  // Convert old format to new format with English as default
+  return {
+    id: oldCategory.id,
+    slug: oldCategory.slug,
+    translations: {
+      en: {
+        name: oldCategory.name,
+        description: oldCategory.description
+      }
+    }
+  };
+}
+
 // Storage functions
 export function saveArticles(articles: BlogArticle[]): void {
   localStorage.setItem("blog-articles", JSON.stringify(articles));
@@ -585,13 +716,15 @@ export function loadArticles(): BlogArticle[] {
   const saved = localStorage.getItem("blog-articles");
   if (saved) {
     try {
-      return JSON.parse(saved);
+      const parsed = JSON.parse(saved);
+      // Migrate old format articles to new format
+      return parsed.map((article: any) => migrateArticleToMultiLanguage(article));
     } catch (error) {
       console.error("Error parsing saved articles:", error);
-      return DEFAULT_ARTICLES;
+      return DEFAULT_ARTICLES.map(migrateArticleToMultiLanguage);
     }
   }
-  return DEFAULT_ARTICLES;
+  return DEFAULT_ARTICLES.map(migrateArticleToMultiLanguage);
 }
 
 export function saveCategories(categories: BlogCategory[]): void {
@@ -602,7 +735,9 @@ export function loadCategories(): BlogCategory[] {
   const saved = localStorage.getItem("blog-categories");
   if (saved) {
     try {
-      return JSON.parse(saved);
+      const parsed = JSON.parse(saved);
+      // Migrate old format categories to new format
+      return parsed.map((category: any) => migrateCategoryToMultiLanguage(category));
     } catch (error) {
       console.error("Error parsing saved categories:", error);
       return DEFAULT_CATEGORIES;
@@ -638,13 +773,16 @@ export function getArticlesByCategory(categorySlug: string): BlogArticle[] {
   return getPublishedArticles().filter(article => article.category === categorySlug);
 }
 
-export function searchArticles(query: string): BlogArticle[] {
+export function searchArticles(query: string, language: string = 'en'): BlogArticle[] {
   const lowerQuery = query.toLowerCase();
-  return getPublishedArticles().filter(article => 
-    article.title.toLowerCase().includes(lowerQuery) ||
-    article.excerpt.toLowerCase().includes(lowerQuery) ||
-    article.tags.some(tag => tag.toLowerCase().includes(lowerQuery))
-  );
+  return getPublishedArticles().filter(article => {
+    const translation = getArticleTranslation(article, language);
+    return (
+      translation.title.toLowerCase().includes(lowerQuery) ||
+      translation.excerpt.toLowerCase().includes(lowerQuery) ||
+      article.tags.some(tag => tag.toLowerCase().includes(lowerQuery))
+    );
+  });
 }
 
 // Server-sync functions for fetching/saving blog data
@@ -664,9 +802,11 @@ export async function loadArticlesFromServer(projectId: string, publicAnonKey: s
     if (response.ok) {
       const result = await response.json();
       if (result.success && result.articles && result.articles.length > 0) {
+        // Migrate articles to new format if needed
+        const migratedArticles = result.articles.map((article: any) => migrateArticleToMultiLanguage(article));
         // Cache in localStorage for faster subsequent loads
-        localStorage.setItem("blog-articles", JSON.stringify(result.articles));
-        return result.articles;
+        localStorage.setItem("blog-articles", JSON.stringify(migratedArticles));
+        return migratedArticles;
       }
     }
   } catch (error) {
@@ -714,9 +854,11 @@ export async function loadCategoriesFromServer(projectId: string, publicAnonKey:
     if (response.ok) {
       const result = await response.json();
       if (result.success && result.categories && result.categories.length > 0) {
+        // Migrate categories to new format if needed
+        const migratedCategories = result.categories.map((category: any) => migrateCategoryToMultiLanguage(category));
         // Cache in localStorage
-        localStorage.setItem("blog-categories", JSON.stringify(result.categories));
-        return result.categories;
+        localStorage.setItem("blog-categories", JSON.stringify(migratedCategories));
+        return migratedCategories;
       }
     }
   } catch (error) {

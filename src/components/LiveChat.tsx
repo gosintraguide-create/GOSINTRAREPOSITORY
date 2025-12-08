@@ -139,17 +139,11 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
         if (status === 'SUBSCRIBED') {
           console.log('✅ Chat subscription active for conversation:', conversationId);
         }
-        // Silently handle errors - polling will handle message updates
+        // Silently handle errors - realtime will handle message updates
       });
-
-    // Polling as primary method: Check for new messages every 3 seconds
-    const pollInterval = setInterval(() => {
-      loadMessages(conversationId);
-    }, 3000);
 
     return () => {
       supabase.removeChannel(channel);
-      clearInterval(pollInterval);
     };
   }, [conversationId]);
 

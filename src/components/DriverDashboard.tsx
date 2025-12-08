@@ -54,13 +54,7 @@ export function DriverDashboard({ driver, token, onLogout, onNavigate }: DriverD
     loadActivity();
     loadPendingRequests();
     loadAcceptedRequests();
-    
-    // Refresh requests every 30 seconds
-    const interval = setInterval(() => {
-      loadPendingRequests();
-      loadAcceptedRequests();
-    }, 30000);
-    return () => clearInterval(interval);
+    // Note: Requests refresh via realtime subscriptions in pickup request components
   }, [driver.id]);
 
   const loadMetrics = async () => {

@@ -1028,6 +1028,84 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
           "https://images.unsplash.com/photo-1632733033743-4f953afcfb1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyZWdhbGVpcmElMjBwYWxhY2UlMjBnYXJkZW58ZW58MXx8fHwxNzY0NzgzMTM4fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
         ],
       },
+      "biester-chalet": {
+        name: "Biester Chalet",
+        shortDescription: "A charming romantic-era chalet hidden in Sintra's hills, showcasing elegant architecture and beautiful gardens. This lesser-known gem offers an intimate glimpse into 19th-century aristocratic life.",
+        longDescription: "Built in the 1890s for Ernest Biester, a wealthy businessman and art collector, the Biester Chalet represents the romantic eclecticism of late 19th-century architecture. Designed by French architect José Leopoldo Gouveia, the chalet combines Swiss chalet influences with Portuguese decorative elements. After extensive restoration, the property opened to visitors, revealing ornate interiors with original frescoes, carved woodwork, and period furnishings set within beautifully landscaped gardens.",
+        highlights: [
+          "Beautifully restored 19th-century interiors",
+          "Romantic eclectic architecture",
+          "Peaceful gardens with exotic plants",
+          "Less crowded than major palaces",
+          "Guided tours with historical insights",
+        ],
+        hours: "10:00 AM - 6:00 PM (Last entry 5:30 PM)",
+        duration: "1-1.5 hours recommended",
+        tips: [
+          "Book tickets in advance - limited daily capacity",
+          "Guided tours provide fascinating historical context",
+          "Perfect for architecture and design enthusiasts",
+          "Combine with nearby Seteais Palace gardens",
+        ],
+        price: 8,
+        gallery: [
+          "https://images.unsplash.com/photo-1630272088070-8daf9644018b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxiaWVzdGVyJTIwY2hhbGV0JTIwc2ludHJhfGVufDF8fHx8MTc2NTEzMjc3NXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+          "https://images.unsplash.com/photo-1670060434149-220a5fce89da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx2aWxsYSUyMHNhc3NldHRpJTIwc2ludHJhfGVufDF8fHx8MTc2NDc4MzM3MHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+          "https://images.unsplash.com/photo-1697394494123-c6c1323a14f7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzaW50cmElMjBwYWxhY2UlMjBwb3J0dWdhbHxlbnwxfHx8fDE3NjQ3ODAxNTR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+        ],
+      },
+      "queluz-palace": {
+        name: "Palace of Queluz",
+        shortDescription: "Often called the 'Portuguese Versailles', this magnificent 18th-century palace features opulent rococo interiors and stunning French-inspired gardens. A masterpiece of royal architecture just outside Sintra.",
+        longDescription: "The Palace of Queluz was built as a summer retreat for Dom Pedro of Braganza, later King Pedro III and husband to Queen Maria I. Designed by architects Mateus Vicente de Oliveira and Jean-Baptiste Robillon, the palace exemplifies Portuguese rococo architecture at its finest. The lavish interiors feature gilded halls, painted ceilings, and ornate decorations, while the geometric gardens are adorned with statues, fountains, and topiary in the French formal style.",
+        highlights: [
+          "Magnificent rococo palace rooms",
+          "Stunning formal gardens inspired by Versailles",
+          "Throne Room with crystal chandeliers and mirrors",
+          "Azulejo canal with decorative tile panels",
+          "Royal ceremonial halls and private chambers",
+        ],
+        hours: "9:00 AM - 6:00 PM (Last entry 5:30 PM)",
+        duration: "2-2.5 hours recommended",
+        tips: [
+          "Located 15km from Sintra center - plan transportation",
+          "Gardens are spectacular in spring and summer",
+          "Less crowded than Sintra's main attractions",
+          "Combined tickets available with Sintra National Palace",
+        ],
+        price: 10,
+        gallery: [
+          "https://images.unsplash.com/photo-1720434566459-4c3eb849a0d7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxxdWVsdXolMjBwYWxhY2UlMjBwb3J0dWdhbHxlbnwxfHx8fDE3NjUxMzI3NzV8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+          "https://images.unsplash.com/photo-1650462817648-106f4640e636?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwZW5hJTIwcGFsYWNlJTIwc2ludHJhfGVufDF8fHx8MTc2NDc4MDE1M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+          "https://images.unsplash.com/photo-1636889758899-292204ded803?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzaW50cmElMjBwYWxhY2UlMjBjaGltbmV5c3xlbnwxfHx8fDE3NjQ3ODMzNzV8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+        ],
+      },
+      "mafra-convent": {
+        name: "Mafra National Palace and Convent",
+        shortDescription: "One of Europe's most impressive baroque monuments, this colossal palace-convent complex features a magnificent library, ornate basilica, and royal apartments. A UNESCO World Heritage masterpiece.",
+        longDescription: "Commissioned by King João V in 1717 to fulfill a vow made for an heir, the Mafra National Palace represents the wealth and power of 18th-century Portugal. This monumental complex combines a royal palace, Franciscan convent, basilica, and one of Europe's most beautiful baroque libraries. Construction took 13 years and employed over 50,000 workers. The building's scale is staggering - it contains 1,200 rooms, 4,700 doors and windows, and 156 stairways. The rocaille library houses over 36,000 leather-bound volumes.",
+        highlights: [
+          "Stunning baroque library with 36,000 books",
+          "Impressive basilica with 6 organs and 2 bell towers",
+          "Royal apartments with period furnishings",
+          "Vast monastery with hospital and pharmacy",
+          "UNESCO World Heritage Site",
+        ],
+        hours: "9:30 AM - 5:30 PM (Closed Tuesdays)",
+        duration: "2.5-3 hours recommended",
+        tips: [
+          "Located 40km from Sintra - plan for travel time",
+          "Guided tours highly recommended for full experience",
+          "Photography not allowed in the library",
+          "One of Portugal's most important baroque monuments",
+        ],
+        price: 8,
+        gallery: [
+          "https://images.unsplash.com/photo-1722408893958-90cc75e0d1ba?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYWZyYSUyMHBhbGFjZSUyMHBvcnR1Z2FsfGVufDF8fHx8MTc2NTEzMjc3NXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+          "https://images.unsplash.com/photo-1692651763114-6b36c2df12f7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzaW50cmElMjBuYXRpb25hbCUyMHBhbGFjZXxlbnwxfHx8fDE3NjQ3ODMzNjl8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+          "https://images.unsplash.com/photo-1697394494123-c6c1323a14f7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzaW50cmElMjBwYWxhY2UlMjBwb3J0dWdhbHxlbnwxfHx8fDE3NjQ3ODAxNTR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+        ],
+      },
     },
     attractionDetailPage: {
       backButton: "Back to Attractions",
@@ -1853,4 +1931,55 @@ export function getTranslationStatus(): {
   }
   
   return { exists, lastTranslated };
+}
+
+/**
+ * Save comprehensive content for a specific language
+ * @param content Content to save
+ * @param languageCode Language code (e.g., 'en', 'pt', 'es')
+ */
+export function saveComprehensiveContentForLanguage(
+  content: ComprehensiveContent,
+  languageCode: string
+): void {
+  const storageKey = languageCode === 'en' 
+    ? 'comprehensive-content' 
+    : `comprehensive-content-${languageCode}`;
+  
+  localStorage.setItem(storageKey, JSON.stringify(content));
+  console.log(`✅ Saved ${languageCode} content to localStorage`);
+  
+  // If saving English, also save to database
+  if (languageCode === 'en') {
+    saveComprehensiveContentToAPI(content).catch(error => {
+      console.error('Failed to save comprehensive content to database:', error);
+    });
+  }
+}
+
+/**
+ * Migration: Initialize translations by copying English content to all languages
+ * This should only be run once when first setting up multi-language support
+ */
+export function initializeAllTranslationsFromEnglish(): void {
+  const englishContent = loadComprehensiveContent();
+  
+  console.log('🔄 Initializing translations for all languages from English...');
+  
+  for (const lang of SUPPORTED_LANGUAGES) {
+    if (lang.code === 'en') continue; // Skip English
+    
+    const storageKey = `comprehensive-content-${lang.code}`;
+    const existing = localStorage.getItem(storageKey);
+    
+    // Only initialize if translation doesn't exist
+    if (!existing) {
+      localStorage.setItem(storageKey, JSON.stringify(englishContent));
+      console.log(`✅ Initialized ${lang.code} translation from English`);
+    } else {
+      console.log(`ℹ️ ${lang.code} translation already exists, skipping`);
+    }
+  }
+  
+  console.log('✅ Translation initialization complete');
 }

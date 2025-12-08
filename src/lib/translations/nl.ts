@@ -494,6 +494,67 @@ export const nl: WebsiteContent = {
     },
     timeSlots: {
       guidedTourLabel: "Insight Tour",
+      guidedTourDescription: "Sommige starttijden bevatten onze Insight Tour, een langere, meer gedetailleerde rit waarbij uw chauffeur de verhalen en geschiedenis achter de monumenten van Sintra deelt. Zoek naar tijdslots gemarkeerd met het Insight Tour-badge hieronder.",
+      viewRouteMaps: "Routekaarten bekijken",
+    },
+    routeMap: {
+      bothRoutesLabel: "Beide routes",
+      pickupLabel: "Ophalen",
+      frequencyLabel: "Elke 30 min • 9u - 19u",
+      infoHeader: "Twee rondritten • Klik op een halte om te selecteren",
+      yourPickupLocation: "Jouw Ophaallocatie",
+      route1Label: "Route 1",
+      route2Label: "Route 2",
+      locations: {
+        sintraTrainStation: {
+          name: "Treinstation Sintra",
+          description: "Verbindingspunt voor beide routes",
+          info: "Gelegen in het hart van Sintra, op slechts een steenworp afstand van het historische centrum. Onze voertuigen halen af direct buiten de hoofdingang van het station. Verbindingspunt voor beide routes.",
+          highlights: ["Gemakkelijke toegang vanuit Lissabon", "Beide routes stoppen hier", "Frequente vertrektijden"],
+        },
+        historicalCenterNorth: {
+          name: "Historisch Centrum Noord",
+          description: "Historisch centrum met cafés en winkels",
+          info: "Ophalen in het charmante historische centrum, omringd door lokale restaurants, banketbakkerijen en boetieks. Verbindingspunt voor beide routes.",
+          highlights: ["Historische sfeer", "Beide routes stoppen hier", "Eetgelegenheden in de buurt"],
+        },
+        historicalCenterSouth: {
+          name: "Historisch Centrum Zuid",
+          description: "Stadscentrum bij Nationaal Paleis",
+          info: "Halte in het historische centrum bij het iconische Nationale Paleis met zijn kenmerkende tweeling schoorstenen.",
+          highlights: ["Koninklijk erfgoed", "Centrale locatie", "Iconische architectuur"],
+        },
+        moorishCastle: {
+          name: "Moorse Kasteel",
+          description: "Oude vesting met middeleeuwse muren",
+          info: "Bezoek deze 10e-eeuwse Moorse versterking op de heuveltop, met spectaculaire uitzichten over de regio.",
+          highlights: ["Historisch belang", "Panoramische vergezichten", "Authentieke middeleeuwse ruïnes"],
+        },
+        penaPalace: {
+          name: "Pena Paleis",
+          description: "Iconisch kasteel op de heuveltop met panoramisch uitzicht",
+          info: "Bezoek het beroemdste monument van Sintra. Ons ophaalpunt bevindt zich gunstig bij de ingang van het paleis.",
+          highlights: ["Adembenemende uitzichten", "Meest bezochte attractie", "Geweldige fotomogelijkheden"],
+        },
+        quintaRegaleira: {
+          name: "Quinta da Regaleira",
+          description: "Mystiek landgoed met initiatieputten en grotten",
+          info: "Bezoek dit betoverende landgoed met mysterieuze tuinen, ondergrondse tunnels en de beroemde Initiatieput. Ophalen bij de hoofdingang.",
+          highlights: ["Mysterieuze architectuur", "Prachtige tuinen", "Unieke ervaring"],
+        },
+        seteais: {
+          name: "Seteais",
+          description: "Historisch paleis en panoramisch uitkijkpunt",
+          info: "Halte bij dit prachtige neoklassieke paleis met adembenemende uitzichten. Nu een luxe hotel, de buitenkant en tuinen zijn open voor bezoekers.",
+          highlights: ["Indrukwekkende architectuur", "Panoramisch uitkijkpunt", "Historisch belang"],
+        },
+        monserratePalace: {
+          name: "Monserrate Paleis",
+          description: "Romantisch paleis met exotische tuinen",
+          info: "Ophalen bij dit prachtige 19e-eeuwse paleis omringd door botanische tuinen met planten van over de hele wereld. Een verborgen juweel van Sintra.",
+          highlights: ["Exotische botanische tuinen", "Romantische architectuur", "Vredige sfeer"],
+        },
+      },
     },
     passengersSelection: {
       yourInformation: "Jouw Informatie",

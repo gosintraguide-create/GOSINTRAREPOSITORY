@@ -514,6 +514,67 @@ export const en: WebsiteContent = {
     },
     timeSlots: {
       guidedTourLabel: "Insight Tour",
+      guidedTourDescription: "Some start times include our Insight Tour, a longer, more detailed ride where your driver shares the stories and history behind Sintra's monuments. Look for time slots marked with the Insight Tour badge below.",
+      viewRouteMaps: "View route maps",
+    },
+    routeMap: {
+      bothRoutesLabel: "Both routes",
+      pickupLabel: "Pickup",
+      frequencyLabel: "Every 30 min • 9 AM - 7 PM",
+      infoHeader: "Two circular routes • Click any stop to select",
+      yourPickupLocation: "Your Pickup Location",
+      route1Label: "Route 1",
+      route2Label: "Route 2",
+      locations: {
+        sintraTrainStation: {
+          name: "Sintra Train Station",
+          description: "Connection point for both routes",
+          info: "Located in the heart of Sintra, just steps from the historic center. Our vehicles pick up right outside the main station entrance. Connection point for both routes.",
+          highlights: ["Easy access from Lisbon", "Both routes stop here", "Frequent departures"],
+        },
+        historicalCenterNorth: {
+          name: "Historical Center North",
+          description: "Historic center with cafés and shops",
+          info: "Pick up in the charming historic center, surrounded by local restaurants, pastry shops, and boutiques. Connection point for both routes.",
+          highlights: ["Historic atmosphere", "Both routes stop here", "Dining options nearby"],
+        },
+        historicalCenterSouth: {
+          name: "Historical Center South",
+          description: "Town center near National Palace",
+          info: "Stop in the historic center near the iconic National Palace with its distinctive twin chimneys.",
+          highlights: ["Royal heritage", "Central location", "Iconic architecture"],
+        },
+        moorishCastle: {
+          name: "Moorish Castle",
+          description: "Ancient fortress with medieval walls",
+          info: "Visit this 10th-century Moorish fortification perched on the hilltop, offering spectacular views over the region.",
+          highlights: ["Historical significance", "Panoramic vistas", "Authentic medieval ruins"],
+        },
+        penaPalace: {
+          name: "Pena Palace",
+          description: "Iconic hilltop castle with panoramic views",
+          info: "Visit Sintra's most famous landmark. Our pickup point is conveniently located at the palace entrance area.",
+          highlights: ["Stunning views", "Most visited attraction", "Great photo opportunities"],
+        },
+        quintaRegaleira: {
+          name: "Quinta da Regaleira",
+          description: "Mystical estate with initiation wells and caves",
+          info: "Visit this enchanting estate featuring mysterious gardens, underground tunnels, and the famous Initiation Well. Pickup at the main entrance.",
+          highlights: ["Mysterious architecture", "Beautiful gardens", "Unique experience"],
+        },
+        seteais: {
+          name: "Seteais",
+          description: "Historic palace and scenic viewpoint",
+          info: "Stop at this magnificent neoclassical palace with breathtaking views. Now a luxury hotel, the exterior and gardens are open to visitors.",
+          highlights: ["Stunning architecture", "Scenic viewpoint", "Historical significance"],
+        },
+        monserratePalace: {
+          name: "Monserrate Palace",
+          description: "Romantic palace with exotic gardens",
+          info: "Pick up at this stunning 19th-century palace surrounded by botanical gardens featuring plants from around the world. A hidden gem of Sintra.",
+          highlights: ["Exotic botanical gardens", "Romantic architecture", "Peaceful atmosphere"],
+        },
+      },
     },
     passengersSelection: {
       yourInformation: "Your Information",

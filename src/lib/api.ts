@@ -39,6 +39,16 @@ async function apiCall<T>(
     } else {
       // If not JSON, try to read as text for debugging
       const text = await response.text();
+      
+      // Check for Supabase quota exceeded error
+      if (text.includes('exceeded your Free Plan quota') || text.includes('quota in this billing')) {
+        console.warn('⚠️ Supabase quota exceeded. Operating in offline mode with localStorage.');
+        return {
+          success: false,
+          error: 'Backend quota exceeded. Operating in offline mode.',
+        };
+      }
+      
       if (!silent) {
         console.error(`Non-JSON response from ${endpoint}:`, text.substring(0, 200));
       }

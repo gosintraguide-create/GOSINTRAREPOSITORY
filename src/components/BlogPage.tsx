@@ -23,6 +23,8 @@ import {
   searchArticles,
   loadArticlesFromServer,
   loadCategoriesFromServer,
+  getArticleTranslation,
+  getCategoryTranslation,
   type BlogArticle,
   type BlogCategory,
 } from "../lib/blogManager";
@@ -83,14 +85,17 @@ export function BlogPage({
       filtered = filtered.filter(article => article.category === selectedCategory);
     }
 
-    // Filter by search query
+    // Filter by search query (search in current language)
     if (searchQuery.trim()) {
       const lowerQuery = searchQuery.toLowerCase();
-      filtered = filtered.filter(article => 
-        article.title.toLowerCase().includes(lowerQuery) ||
-        article.excerpt.toLowerCase().includes(lowerQuery) ||
-        article.tags.some(tag => tag.toLowerCase().includes(lowerQuery))
-      );
+      filtered = filtered.filter(article => {
+        const translation = getArticleTranslation(article, language);
+        return (
+          translation.title.toLowerCase().includes(lowerQuery) ||
+          translation.excerpt.toLowerCase().includes(lowerQuery) ||
+          article.tags.some(tag => tag.toLowerCase().includes(lowerQuery))
+        );
+      });
     }
 
     // Sort by publish date
@@ -131,8 +136,11 @@ export function BlogPage({
     const category = categories.find(
       (cat) => cat.slug === categorySlug,
     );
-    if (category?.name) return category.name;
-    // Fallback to translated category name
+    if (category) {
+      const categoryTranslation = getCategoryTranslation(category, language);
+      return categoryTranslation.name;
+    }
+    // Fallback to translated category name from content
     return (
       content.blog.categories[
         categorySlug as keyof typeof content.blog.categories
@@ -291,7 +299,7 @@ export function BlogPage({
                               article.featuredImage ||
                               ""
                             }
-                            alt={article.title}
+                            alt={getArticleTranslation(article, language).title}
                             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
@@ -316,11 +324,11 @@ export function BlogPage({
                         </div>
 
                         <h3 className="mb-3 text-foreground group-hover:text-primary">
-                          {article.title}
+                          {getArticleTranslation(article, language).title}
                         </h3>
 
                         <p className="mb-4 flex-1 line-clamp-3 text-muted-foreground">
-                          {article.excerpt}
+                          {getArticleTranslation(article, language).excerpt}
                         </p>
 
                         {article.tags.length > 0 && (

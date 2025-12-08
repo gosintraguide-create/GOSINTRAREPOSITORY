@@ -16,6 +16,7 @@ import { Input } from "./ui/input";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import {
   loadComprehensiveContent,
+  loadComprehensiveContentForLanguage,
   type ComprehensiveContent,
   DEFAULT_COMPREHENSIVE_CONTENT,
 } from "../lib/comprehensiveContent";
@@ -47,7 +48,7 @@ export function AttractionsPage({
   const t = getUITranslation(language);
 
   useEffect(() => {
-    setContent(loadComprehensiveContent());
+    setContent(loadComprehensiveContentForLanguage(language));
   }, [language]);
 
   useEffect(() => {
@@ -110,6 +111,12 @@ export function AttractionsPage({
       "https://images.unsplash.com/photo-1700739745973-bbd552072e98?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjYWJvJTIwZGElMjByb2NhJTIwbGlnaHRob3VzZXxlbnwxfHx8fDE3NjMxNjY2MDN8MA&ixlib=rb-4.1.0&q=80&w=1080",
     "villa-sassetti":
       "https://images.unsplash.com/photo-1670060434149-220a5fce89da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx2aWxsYSUyMHNhc3NldHRpJTIwc2ludHJhfGVufDF8fHx8MTc2MzE2NjYwNnww&ixlib=rb-4.1.0&q=80&w=1080",
+    "biester-chalet":
+      "https://images.unsplash.com/photo-1630272088070-8daf9644018b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxiaWVzdGVyJTIwY2hhbGV0JTIwc2ludHJhfGVufDF8fHx8MTc2NTEzMjc3NXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+    "queluz-palace":
+      "https://images.unsplash.com/photo-1720434566459-4c3eb849a0d7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxxdWVsdXolMjBwYWxhY2UlMjBwb3J0dWdhbHxlbnwxfHx8fDE3NjUxMzI3NzV8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+    "mafra-convent":
+      "https://images.unsplash.com/photo-1722408893958-90cc75e0d1ba?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYWZyYSUyMHBhbGFjZSUyMHBvcnR1Z2FsfGVufDF8fHx8MTc2NTEzMjc3NXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
   };
 
   return (

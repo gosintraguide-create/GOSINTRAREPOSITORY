@@ -27,9 +27,9 @@ export interface WebsiteContent {
     quickLinks: {
       title: string;
       subtitle: string;
-      attractions: { title: string; subtitle: string };
-      travelGuide: { title: string; subtitle: string };
-      privateTours: { title: string; subtitle: string };
+      attractions: { title: string; subtitle: string; imageUrl?: string; link: string };
+      travelGuide: { title: string; subtitle: string; imageUrl?: string; link: string };
+      privateTours: { title: string; subtitle: string; imageUrl?: string; link: string };
     };
     heroTitle: string;
     heroSubtitle: string;
@@ -370,6 +370,67 @@ export interface WebsiteContent {
     };
     timeSlots: {
       guidedTourLabel: string; // "Guided Tour"
+      guidedTourDescription: string; // Description of Insight Tour
+      viewRouteMaps: string; // "View route maps"
+    };
+    routeMap: {
+      bothRoutesLabel: string; // "Both routes"
+      pickupLabel: string; // "Pickup"
+      frequencyLabel: string; // "Every 30 min • 9 AM - 7 PM"
+      infoHeader: string; // "Two circular routes • Click any stop to select"
+      yourPickupLocation: string; // "Your Pickup Location"
+      route1Label: string; // "Route 1"
+      route2Label: string; // "Route 2"
+      locations: {
+        sintraTrainStation: {
+          name: string;
+          description: string;
+          info: string;
+          highlights: string[];
+        };
+        historicalCenterNorth: {
+          name: string;
+          description: string;
+          info: string;
+          highlights: string[];
+        };
+        historicalCenterSouth: {
+          name: string;
+          description: string;
+          info: string;
+          highlights: string[];
+        };
+        moorishCastle: {
+          name: string;
+          description: string;
+          info: string;
+          highlights: string[];
+        };
+        penaPalace: {
+          name: string;
+          description: string;
+          info: string;
+          highlights: string[];
+        };
+        quintaRegaleira: {
+          name: string;
+          description: string;
+          info: string;
+          highlights: string[];
+        };
+        seteais: {
+          name: string;
+          description: string;
+          info: string;
+          highlights: string[];
+        };
+        monserratePalace: {
+          name: string;
+          description: string;
+          info: string;
+          highlights: string[];
+        };
+      };
     };
     passengersSelection: {
       yourInformation: string;
@@ -601,16 +662,19 @@ export const DEFAULT_CONTENT: WebsiteContent = {
         title: "Attractions",
         subtitle:
           "Discover Pena Palace, Quinta da Regaleira, Moorish Castle, and more",
+        link: "attractions",
       },
       travelGuide: {
         title: "Travel Guide",
         subtitle:
           "Expert tips, insider secrets, and everything you need for a magical Sintra adventure",
+        link: "blog",
       },
       privateTours: {
         title: "Private Tours",
         subtitle:
           "Book a private tour for a personalized experience",
+        link: "private-tours",
       },
     },
     heroTitle: "Discover Sintra Your Way",
@@ -901,6 +965,75 @@ export const DEFAULT_CONTENT: WebsiteContent = {
         "Combine with exploring Sintra's cafes and shops",
       ],
       price: 10,
+    },
+    "biester-chalet": {
+      name: "Biester Chalet",
+      description:
+        "A charming romantic-era chalet hidden in Sintra's hills, showcasing elegant architecture and beautiful gardens. This lesser-known gem offers an intimate glimpse into 19th-century aristocratic life.",
+      longDescription:
+        "Built in the 1890s for Ernest Biester, a wealthy businessman and art collector, the Biester Chalet represents the romantic eclecticism of late 19th-century architecture. Designed by French architect José Leopoldo Gouveia, the chalet combines Swiss chalet influences with Portuguese decorative elements. After extensive restoration, the property opened to visitors, revealing ornate interiors with original frescoes, carved woodwork, and period furnishings set within beautifully landscaped gardens.",
+      highlights: [
+        "Beautifully restored 19th-century interiors",
+        "Romantic eclectic architecture",
+        "Peaceful gardens with exotic plants",
+        "Less crowded than major palaces",
+        "Guided tours with historical insights",
+      ],
+      hours: "10:00 AM - 6:00 PM (Last entry 5:30 PM)",
+      duration: "1-1.5 hours recommended",
+      tips: [
+        "Book tickets in advance - limited daily capacity",
+        "Guided tours provide fascinating historical context",
+        "Perfect for architecture and design enthusiasts",
+        "Combine with nearby Seteais Palace gardens",
+      ],
+      price: 8,
+    },
+    "queluz-palace": {
+      name: "Palace of Queluz",
+      description:
+        "Often called the 'Portuguese Versailles', this magnificent 18th-century palace features opulent rococo interiors and stunning French-inspired gardens. A masterpiece of royal architecture just outside Sintra.",
+      longDescription:
+        "The Palace of Queluz was built as a summer retreat for Dom Pedro of Braganza, later King Pedro III and husband to Queen Maria I. Designed by architects Mateus Vicente de Oliveira and Jean-Baptiste Robillon, the palace exemplifies Portuguese rococo architecture at its finest. The lavish interiors feature gilded halls, painted ceilings, and ornate decorations, while the geometric gardens are adorned with statues, fountains, and topiary in the French formal style.",
+      highlights: [
+        "Magnificent rococo palace rooms",
+        "Stunning formal gardens inspired by Versailles",
+        "Throne Room with crystal chandeliers and mirrors",
+        "Azulejo canal with decorative tile panels",
+        "Royal ceremonial halls and private chambers",
+      ],
+      hours: "9:00 AM - 6:00 PM (Last entry 5:30 PM)",
+      duration: "2-2.5 hours recommended",
+      tips: [
+        "Located 15km from Sintra center - plan transportation",
+        "Gardens are spectacular in spring and summer",
+        "Less crowded than Sintra's main attractions",
+        "Combined tickets available with Sintra National Palace",
+      ],
+      price: 10,
+    },
+    "mafra-convent": {
+      name: "Mafra National Palace and Convent",
+      description:
+        "One of Europe's most impressive baroque monuments, this colossal palace-convent complex features a magnificent library, ornate basilica, and royal apartments. A UNESCO World Heritage masterpiece.",
+      longDescription:
+        "Commissioned by King João V in 1717 to fulfill a vow made for an heir, the Mafra National Palace represents the wealth and power of 18th-century Portugal. This monumental complex combines a royal palace, Franciscan convent, basilica, and one of Europe's most beautiful baroque libraries. Construction took 13 years and employed over 50,000 workers. The building's scale is staggering - it contains 1,200 rooms, 4,700 doors and windows, and 156 stairways. The rocaille library houses over 36,000 leather-bound volumes.",
+      highlights: [
+        "Stunning baroque library with 36,000 books",
+        "Impressive basilica with 6 organs and 2 bell towers",
+        "Royal apartments with period furnishings",
+        "Vast monastery with hospital and pharmacy",
+        "UNESCO World Heritage Site",
+      ],
+      hours: "9:30 AM - 5:30 PM (Closed Tuesdays)",
+      duration: "2.5-3 hours recommended",
+      tips: [
+        "Located 40km from Sintra - plan for travel time",
+        "Guided tours highly recommended for full experience",
+        "Photography not allowed in the library",
+        "One of Portugal's most important baroque monuments",
+      ],
+      price: 8,
     },
   },
   seo: {

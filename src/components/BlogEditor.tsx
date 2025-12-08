@@ -7,7 +7,9 @@ import {
   saveArticlesToServer,
   generateSlug,
   estimateReadTime,
+  getArticleTranslation,
   type BlogArticle,
+  type ArticleTranslation,
   DEFAULT_ARTICLES,
 } from "../lib/blogManager";
 import { InternalLinkHelper } from "./InternalLinkHelper";
@@ -22,6 +24,7 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { Switch } from "./ui/switch";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "./ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -37,13 +40,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { Plus, Edit, Trash2, Save, Calendar, Tag as TagIcon } from "lucide-react";
+import { Plus, Edit, Trash2, Save, Calendar, Tag as TagIcon, Globe } from "lucide-react";
+
+// Supported languages
+const SUPPORTED_LANGUAGES = [
+  { code: 'en', name: 'English', flag: '🇬🇧' },
+  { code: 'pt', name: 'Portuguese', flag: '🇵🇹' },
+  { code: 'es', name: 'Spanish', flag: '🇪🇸' },
+  { code: 'fr', name: 'French', flag: '🇫🇷' },
+  { code: 'de', name: 'German', flag: '🇩🇪' },
+  { code: 'nl', name: 'Dutch', flag: '🇳🇱' },
+  { code: 'it', name: 'Italian', flag: '🇮🇹' },
+];
 
 export function BlogEditor() {
   const [articles, setArticles] = useState<BlogArticle[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editingArticle, setEditingArticle] = useState<BlogArticle | null>(null);
+  const [currentLanguage, setCurrentLanguage] = useState<string>('en');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [articleToDelete, setArticleToDelete] = useState<string | null>(null);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
@@ -57,70 +72,126 @@ export function BlogEditor() {
   }, []);
 
   const createNewArticle = (): BlogArticle => {
-    return {
-      id: `article-${Date.now()}`,
+    const emptyTranslation: ArticleTranslation = {
       title: "",
-      slug: "",
       excerpt: "",
       content: "",
-      author: "Hop On Sintra Team",
-      publishDate: new Date().toISOString().split('T')[0],
-      lastModified: new Date().toISOString().split('T')[0],
-      featuredImage: "",
-      category: categories[0]?.slug || "",
-      tags: [],
-      isPublished: false,
-      readTimeMinutes: 1,
       seo: {
         title: "",
         description: "",
         keywords: "",
       },
     };
+
+    return {
+      id: `article-${Date.now()}`,
+      slug: "",
+      author: "Hop On Sintra Team",
+      publishDate: new Date().toISOString().split('T')[0],
+      lastModified: new Date().toISOString().split('T')[0],
+      featuredImage: "",
+      heroImage: "",
+      thumbnailImage: "",
+      category: categories[0]?.slug || "",
+      tags: [],
+      isPublished: false,
+      readTimeMinutes: 1,
+      translations: {
+        en: { ...emptyTranslation }, // Always start with English
+      },
+    };
   };
 
   const handleCreateNew = () => {
-    setEditingArticle(createNewArticle());
+    const newArticle = createNewArticle();
+    setEditingArticle(newArticle);
+    setCurrentLanguage('en'); // Start with English for new articles
     setIsEditing(true);
   };
 
   const handleEdit = (article: BlogArticle) => {
     setEditingArticle({ ...article });
+    setCurrentLanguage('en'); // Start with English when editing
     setIsEditing(true);
+  };
+
+  // Helper to get current translation being edited
+  const getCurrentTranslation = (): ArticleTranslation => {
+    if (!editingArticle) {
+      return {
+        title: "",
+        excerpt: "",
+        content: "",
+        seo: { title: "", description: "", keywords: "" },
+      };
+    }
+    
+    // If translation doesn't exist for current language, create empty one
+    if (!editingArticle.translations[currentLanguage]) {
+      return {
+        title: "",
+        excerpt: "",
+        content: "",
+        seo: { title: "", description: "", keywords: "" },
+      };
+    }
+    
+    return editingArticle.translations[currentLanguage];
+  };
+
+  // Helper to update current translation
+  const updateCurrentTranslation = (updates: Partial<ArticleTranslation>) => {
+    if (!editingArticle) return;
+
+    const currentTranslation = getCurrentTranslation();
+    const updatedTranslation = { ...currentTranslation, ...updates };
+
+    setEditingArticle({
+      ...editingArticle,
+      translations: {
+        ...editingArticle.translations,
+        [currentLanguage]: updatedTranslation,
+      },
+    });
   };
 
   const handleSave = () => {
     if (!editingArticle) return;
 
-    // Validation
-    if (!editingArticle.title.trim()) {
-      toast.error("Title is required");
+    const englishTranslation = editingArticle.translations.en;
+    
+    // Validation - English is required
+    if (!englishTranslation || !englishTranslation.title.trim()) {
+      toast.error("English title is required");
       return;
     }
 
-    if (!editingArticle.content.trim()) {
-      toast.error("Content is required");
+    if (!englishTranslation.content.trim()) {
+      toast.error("English content is required");
       return;
     }
 
     // Generate slug if not set
     if (!editingArticle.slug) {
-      editingArticle.slug = generateSlug(editingArticle.title);
+      editingArticle.slug = generateSlug(englishTranslation.title);
     }
 
-    // Calculate read time
-    editingArticle.readTimeMinutes = estimateReadTime(editingArticle.content);
+    // Calculate read time from English content
+    editingArticle.readTimeMinutes = estimateReadTime(englishTranslation.content);
 
     // Update last modified
     editingArticle.lastModified = new Date().toISOString().split('T')[0];
 
-    // Auto-generate SEO fields if empty
-    if (!editingArticle.seo.title) {
-      editingArticle.seo.title = editingArticle.title;
+    // Auto-generate SEO fields if empty for English
+    if (!englishTranslation.seo.title) {
+      englishTranslation.seo.title = englishTranslation.title;
     }
-    if (!editingArticle.seo.description) {
-      editingArticle.seo.description = editingArticle.excerpt;
+    if (!englishTranslation.seo.description) {
+      englishTranslation.seo.description = englishTranslation.excerpt;
     }
+
+    // Update the English translation with auto-generated values
+    editingArticle.translations.en = englishTranslation;
 
     // Save to articles list
     const existingIndex = articles.findIndex(a => a.id === editingArticle.id);
@@ -212,12 +283,13 @@ export function BlogEditor() {
     const textarea = contentTextareaRef.current;
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
-    const text = editingArticle.content;
+    const currentTranslation = getCurrentTranslation();
+    const text = currentTranslation.content;
     const before = text.substring(0, start);
     const after = text.substring(end);
 
     const newContent = before + markdown + after;
-    setEditingArticle({ ...editingArticle, content: newContent });
+    updateCurrentTranslation({ content: newContent });
 
     // Set cursor position after inserted link
     setTimeout(() => {
@@ -258,20 +330,32 @@ export function BlogEditor() {
             <Button onClick={handleCreateNew}>Create Your First Article</Button>
           </Card>
         ) : (
-          articles.map((article) => (
+          articles.map((article) => {
+            const translation = getArticleTranslation(article, 'en');
+            return (
             <Card key={article.id} className="p-6">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="mb-2 flex items-center gap-2">
-                    <h3 className="text-foreground">{article.title}</h3>
+                    <h3 className="text-foreground">{translation.title}</h3>
                     {article.isPublished ? (
                       <Badge className="bg-green-500">Published</Badge>
                     ) : (
                       <Badge variant="outline">Draft</Badge>
                     )}
+                    {/* Show language indicators */}
+                    <div className="flex gap-1">
+                      {SUPPORTED_LANGUAGES.map(lang => 
+                        article.translations[lang.code] && (
+                          <Badge key={lang.code} variant="outline" className="text-xs">
+                            {lang.flag}
+                          </Badge>
+                        )
+                      )}
+                    </div>
                   </div>
                   <p className="mb-3 line-clamp-2 text-muted-foreground">
-                    {article.excerpt}
+                    {translation.excerpt}
                   </p>
                   <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                     <div className="flex items-center gap-1">
@@ -308,7 +392,7 @@ export function BlogEditor() {
                 </div>
               </div>
             </Card>
-          ))
+          );})
         )}
       </div>
 
@@ -326,25 +410,148 @@ export function BlogEditor() {
             </DialogDescription>
           </DialogHeader>
 
-          {editingArticle && (
+          {editingArticle && (() => {
+            const currentTranslation = getCurrentTranslation();
+            return (
             <div className="space-y-6">
-              {/* Basic Info */}
-              <div className="space-y-4">
+              {/* Language Tabs */}
+              <div className="rounded-lg border border-primary/30 bg-primary/5 p-4">
+                <div className="mb-3 flex items-center gap-2">
+                  <Globe className="h-5 w-5 text-primary" />
+                  <h4 className="font-medium text-foreground">Language</h4>
+                </div>
+                <Tabs value={currentLanguage} onValueChange={setCurrentLanguage}>
+                  <TabsList className="grid w-full grid-cols-7">
+                    {SUPPORTED_LANGUAGES.map(lang => (
+                      <TabsTrigger 
+                        key={lang.code} 
+                        value={lang.code}
+                        className="text-xs"
+                      >
+                        <span className="mr-1">{lang.flag}</span>
+                        {lang.code.toUpperCase()}
+                        {editingArticle.translations[lang.code] && (
+                          <span className="ml-1 text-green-500">✓</span>
+                        )}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                </Tabs>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {currentLanguage === 'en' 
+                    ? '🇬🇧 English is required and serves as the fallback language.' 
+                    : `Translate content to ${SUPPORTED_LANGUAGES.find(l => l.code === currentLanguage)?.name}. Leave empty to use English as fallback.`
+                  }
+                </p>
+              </div>
+
+              {/* Translated Content Fields */}
+              <div className="space-y-4 rounded-lg border border-border p-4">
+                <h4 className="font-medium">Content ({SUPPORTED_LANGUAGES.find(l => l.code === currentLanguage)?.name})</h4>
                 <div>
-                  <Label>Title *</Label>
+                  <Label>Title * {currentLanguage !== 'en' && '(Optional for non-English)'}</Label>
                   <Input
-                    value={editingArticle.title}
-                    onChange={(e) =>
-                      setEditingArticle({
-                        ...editingArticle,
-                        title: e.target.value,
-                        slug: generateSlug(e.target.value),
-                      })
-                    }
+                    value={currentTranslation.title}
+                    onChange={(e) => {
+                      updateCurrentTranslation({ title: e.target.value });
+                      // Auto-generate slug from English title only
+                      if (currentLanguage === 'en') {
+                        setEditingArticle({
+                          ...editingArticle,
+                          slug: generateSlug(e.target.value),
+                        });
+                      }
+                    }}
                     placeholder="e.g., How to Get to Sintra from Lisbon"
                   />
                 </div>
 
+                <div>
+                  <Label>Excerpt * {currentLanguage !== 'en' && '(Optional for non-English)'}</Label>
+                  <Textarea
+                    value={currentTranslation.excerpt}
+                    onChange={(e) =>
+                      updateCurrentTranslation({ excerpt: e.target.value })
+                    }
+                    placeholder="Brief summary of the article (2-3 sentences)"
+                    rows={3}
+                  />
+                </div>
+
+                <div>
+                  <div className="mb-2 flex items-center justify-between">
+                    <Label>Article Content * {currentLanguage !== 'en' && '(Optional for non-English)'} (Markdown supported)</Label>
+                    <InternalLinkHelper onInsertLink={handleInsertLink} />
+                  </div>
+                  
+                  <Alert className="mb-3 border-primary/30 bg-primary/5">
+                    <AlertDescription className="text-sm">
+                      💡 <strong>Tip:</strong> Use the "Insert Internal Link" button to easily link to other blog articles, attractions, or pages. Click it to browse all available content!
+                    </AlertDescription>
+                  </Alert>
+
+                  <Textarea
+                    ref={contentTextareaRef}
+                    value={currentTranslation.content}
+                    onChange={(e) =>
+                      updateCurrentTranslation({ content: e.target.value })
+                    }
+                    placeholder="Write your article content here using Markdown formatting...&#10;&#10;# Your Article Title&#10;&#10;Start writing your content here. Use the 'Insert Internal Link' button above to easily add links to other articles and attractions.&#10;&#10;## Section Heading&#10;&#10;Write more content..."
+                    rows={15}
+                    className="font-mono"
+                  />
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Supports Markdown: # Heading, ## Subheading, **bold**, *italic*, [link](url), etc.
+                  </p>
+                </div>
+
+                {/* SEO for current language */}
+                <div className="space-y-4 rounded-lg border border-border p-4">
+                  <h4 className="text-foreground">SEO Settings ({SUPPORTED_LANGUAGES.find(l => l.code === currentLanguage)?.name})</h4>
+                  <div>
+                    <Label>SEO Title</Label>
+                    <Input
+                      value={currentTranslation.seo.title}
+                      onChange={(e) =>
+                        updateCurrentTranslation({
+                          seo: { ...currentTranslation.seo, title: e.target.value },
+                        })
+                      }
+                      placeholder="Auto-filled from article title"
+                    />
+                  </div>
+                  <div>
+                    <Label>SEO Description</Label>
+                    <Textarea
+                      value={currentTranslation.seo.description}
+                      onChange={(e) =>
+                        updateCurrentTranslation({
+                          seo: { ...currentTranslation.seo, description: e.target.value },
+                        })
+                      }
+                      placeholder="Auto-filled from excerpt"
+                      rows={2}
+                    />
+                  </div>
+                  <div>
+                    <Label>SEO Keywords</Label>
+                    <Input
+                      value={currentTranslation.seo.keywords}
+                      onChange={(e) =>
+                        updateCurrentTranslation({
+                          seo: { ...currentTranslation.seo, keywords: e.target.value },
+                        })
+                      }
+                      placeholder="keyword1, keyword2, keyword3"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Metadata (language-independent) */}
+              <div className="space-y-4 rounded-lg border border-border p-4">
+                <h4 className="font-medium">Article Metadata (applies to all languages)</h4>
+                
                 <div>
                   <Label>URL Slug</Label>
                   <Input
@@ -352,23 +559,11 @@ export function BlogEditor() {
                     onChange={(e) =>
                       setEditingArticle({ ...editingArticle, slug: e.target.value })
                     }
-                    placeholder="auto-generated from title"
+                    placeholder="auto-generated from English title"
                   />
                   <p className="mt-1 text-sm text-muted-foreground">
                     URL: /blog/{editingArticle.slug}
                   </p>
-                </div>
-
-                <div>
-                  <Label>Excerpt *</Label>
-                  <Textarea
-                    value={editingArticle.excerpt}
-                    onChange={(e) =>
-                      setEditingArticle({ ...editingArticle, excerpt: e.target.value })
-                    }
-                    placeholder="Brief summary of the article (2-3 sentences)"
-                    rows={3}
-                  />
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
@@ -428,7 +623,7 @@ export function BlogEditor() {
                   </div>
                 </div>
 
-                <div className="space-y-4 rounded-lg border border-border p-4">
+                <div className="space-y-4">
                   <h4 className="font-medium">Images</h4>
                   <ImageSelector
                     label="Hero Image"
@@ -557,89 +752,16 @@ export function BlogEditor() {
                   </div>
                 </div>
               </div>
-
-              {/* Content */}
-              <div>
-                <div className="mb-2 flex items-center justify-between">
-                  <Label>Article Content * (Markdown supported)</Label>
-                  <InternalLinkHelper onInsertLink={handleInsertLink} />
-                </div>
-                
-                <Alert className="mb-3 border-primary/30 bg-primary/5">
-                  <AlertDescription className="text-sm">
-                    💡 <strong>Tip:</strong> Use the "Insert Internal Link" button to easily link to other blog articles, attractions, or pages. Click it to browse all available content!
-                  </AlertDescription>
-                </Alert>
-
-                <Textarea
-                  ref={contentTextareaRef}
-                  value={editingArticle.content}
-                  onChange={(e) =>
-                    setEditingArticle({ ...editingArticle, content: e.target.value })
-                  }
-                  placeholder="Write your article content here using Markdown formatting...&#10;&#10;# Your Article Title&#10;&#10;Start writing your content here. Use the 'Insert Internal Link' button above to easily add links to other articles and attractions.&#10;&#10;## Section Heading&#10;&#10;Write more content..."
-                  rows={15}
-                  className="font-mono"
-                />
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Supports Markdown: # Heading, ## Subheading, **bold**, *italic*, [link](url), etc.
-                </p>
-              </div>
-
-              {/* SEO */}
-              <div className="space-y-4 rounded-lg border border-border p-4">
-                <h4 className="text-foreground">SEO Settings</h4>
-                <div>
-                  <Label>SEO Title</Label>
-                  <Input
-                    value={editingArticle.seo.title}
-                    onChange={(e) =>
-                      setEditingArticle({
-                        ...editingArticle,
-                        seo: { ...editingArticle.seo, title: e.target.value },
-                      })
-                    }
-                    placeholder="Auto-filled from article title"
-                  />
-                </div>
-                <div>
-                  <Label>SEO Description</Label>
-                  <Textarea
-                    value={editingArticle.seo.description}
-                    onChange={(e) =>
-                      setEditingArticle({
-                        ...editingArticle,
-                        seo: { ...editingArticle.seo, description: e.target.value },
-                      })
-                    }
-                    placeholder="Auto-filled from excerpt"
-                    rows={2}
-                  />
-                </div>
-                <div>
-                  <Label>SEO Keywords</Label>
-                  <Input
-                    value={editingArticle.seo.keywords}
-                    onChange={(e) =>
-                      setEditingArticle({
-                        ...editingArticle,
-                        seo: { ...editingArticle.seo, keywords: e.target.value },
-                      })
-                    }
-                    placeholder="keyword1, keyword2, keyword3"
-                  />
-                </div>
-              </div>
             </div>
-          )}
+          );})()}
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsEditing(false)}>
               Cancel
             </Button>
             <Button onClick={handleSave}>
-              <Save className="mr-2 h-4 w-4" />
-              Save Article
+              <Save className="h-4 w-4" />
+              Save
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Save, RefreshCw, Eye, FileText, Home, Info, MapPin, ShoppingCart, User, Phone, Settings, Trash2, Plus, ToggleLeft, ToggleRight, Languages, Check, Loader2 } from "lucide-react";
+import { Save, RefreshCw, Eye, FileText, Home, Info, MapPin, ShoppingCart, User, Phone, Settings, Trash2, Plus, ToggleLeft, ToggleRight, Languages, Check, Loader2, Globe } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
@@ -12,11 +12,14 @@ import { Switch } from "./ui/switch";
 import { toast } from "sonner@2.0.3";
 import {
   loadComprehensiveContent,
+  loadComprehensiveContentForLanguage,
   saveComprehensiveContent,
+  saveComprehensiveContentForLanguage,
   saveComprehensiveContentAsync,
   saveTranslatedContent,
   saveIncrementalTranslation,
   getTranslationStatus,
+  initializeAllTranslationsFromEnglish,
   DEFAULT_COMPREHENSIVE_CONTENT,
   type ComprehensiveContent,
 } from "../lib/comprehensiveContent";
@@ -32,10 +35,21 @@ import {
   AccordionTrigger,
 } from "./ui/accordion";
 import { ImageSelector } from "./ImageSelector";
-import { SUPPORTED_LANGUAGES } from "../lib/autoTranslate";
 import { ProductCardEditor } from "./ProductCardEditor";
 
+// Supported languages with display names and flags
+const SUPPORTED_LANGUAGES = [
+  { code: 'en', name: 'English', flag: '🇬🇧' },
+  { code: 'pt', name: 'Portuguese', flag: '🇵🇹' },
+  { code: 'es', name: 'Spanish', flag: '🇪🇸' },
+  { code: 'fr', name: 'French', flag: '🇫🇷' },
+  { code: 'de', name: 'German', flag: '🇩🇪' },
+  { code: 'nl', name: 'Dutch', flag: '🇳🇱' },
+  { code: 'it', name: 'Italian', flag: '🇮🇹' },
+];
+
 export function ContentEditor() {
+  const [currentLanguage, setCurrentLanguage] = useState<string>('en');
   const [content, setContent] = useState<ComprehensiveContent>(DEFAULT_COMPREHENSIVE_CONTENT);
   const [mainContent, setMainContent] = useState<WebsiteContent>(loadMainContent());
   const [hasChanges, setHasChanges] = useState(false);
@@ -49,15 +63,28 @@ export function ContentEditor() {
   const [translationStatus, setTranslationStatus] = useState(getTranslationStatus());
 
   useEffect(() => {
-    const loadedContent = loadComprehensiveContent();
+    const loadedContent = loadComprehensiveContentForLanguage(currentLanguage);
     setContent(loadedContent);
     setMainContent(loadMainContent());
-    // Load autoTranslateEnabled from server settings
-    setAutoTranslateEnabled(loadedContent.adminSettings?.autoTranslateEnabled ?? false);
-  }, []);
+    setHasChanges(false); // Reset changes when switching languages
+    // Load autoTranslateEnabled from server settings (only from English)
+    if (currentLanguage === 'en') {
+      setAutoTranslateEnabled(loadedContent.adminSettings?.autoTranslateEnabled ?? false);
+    }
+  }, [currentLanguage]);
 
   const handleSave = async () => {
     try {
+      // If editing a non-English language, save directly to that language
+      if (currentLanguage !== 'en') {
+        saveComprehensiveContentForLanguage(content, currentLanguage);
+        setHasChanges(false);
+        toast.success(`${currentLanguage.toUpperCase()} content saved successfully!`);
+        window.dispatchEvent(new Event('content-updated'));
+        return;
+      }
+
+      // English content - handle auto-translate and database save
       // Update content with current admin settings
       const updatedContent = {
         ...content,
@@ -136,6 +163,19 @@ export function ContentEditor() {
       toast.error("Failed to save setting");
       // Revert the toggle if save failed
       setAutoTranslateEnabled(!checked);
+    }
+  };
+
+  const handleInitializeTranslations = () => {
+    if (confirm("This will copy the current English content to all language slots without translation. This is useful for manual translation. Continue?")) {
+      try {
+        initializeAllTranslationsFromEnglish();
+        setTranslationStatus(getTranslationStatus());
+        toast.success("All language slots initialized with English content!");
+      } catch (error) {
+        console.error('Error initializing translations:', error);
+        toast.error("Failed to initialize translations");
+      }
     }
   };
 
@@ -417,7 +457,42 @@ export function ContentEditor() {
         />
       </div>
 
-      {/* Auto-Translation Settings */}
+      {/* Language Selector */}
+      <Card className="border-primary/30 bg-primary/5 p-4">
+        <div className="mb-3 flex items-center gap-2">
+          <Globe className="h-5 w-5 text-primary" />
+          <h4 className="font-medium text-foreground">Edit Language</h4>
+          <Badge variant={currentLanguage === 'en' ? 'default' : 'outline'} className="ml-auto">
+            {currentLanguage === 'en' ? 'Base Language' : 'Translation'}
+          </Badge>
+        </div>
+        <Tabs value={currentLanguage} onValueChange={setCurrentLanguage}>
+          <TabsList className="grid w-full grid-cols-7">
+            {SUPPORTED_LANGUAGES.map(lang => (
+              <TabsTrigger 
+                key={lang.code} 
+                value={lang.code}
+                className="text-xs"
+              >
+                <span className="mr-1">{lang.flag}</span>
+                {lang.code.toUpperCase()}
+                {translationStatus.exists[lang.code] && (
+                  <span className="ml-1 text-green-500">✓</span>
+                )}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+        <p className="mt-2 text-sm text-muted-foreground">
+          {currentLanguage === 'en' 
+            ? 'Editing the base English content. Changes can be auto-translated to other languages.' 
+            : `Editing ${SUPPORTED_LANGUAGES.find(l => l.code === currentLanguage)?.name} translation. Changes will only affect this language.`
+          }
+        </p>
+      </Card>
+
+      {/* Auto-Translation Settings - Only show for English */}
+      {currentLanguage === 'en' && (
       <Card className="border-border p-6">
         <div className="mb-4">
           <h3 className="mb-2 flex items-center gap-2 text-foreground">
@@ -457,20 +532,11 @@ export function ContentEditor() {
             <h4 className="mb-3 text-sm font-medium text-foreground">Translation Status</h4>
             <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
               {SUPPORTED_LANGUAGES.map(lang => {
-                const exists = translationStatus.exists[lang];
-                const languageNames: { [key: string]: string } = {
-                  en: 'English',
-                  pt: 'Portuguese',
-                  es: 'Spanish',
-                  fr: 'French',
-                  de: 'German',
-                  nl: 'Dutch',
-                  it: 'Italian',
-                };
+                const exists = translationStatus.exists[lang.code];
                 
                 return (
                   <div
-                    key={lang}
+                    key={lang.code}
                     className="flex items-center gap-2 rounded border border-border bg-background p-2"
                   >
                     {exists ? (
@@ -479,7 +545,7 @@ export function ContentEditor() {
                       <div className="h-4 w-4 rounded-full border-2 border-muted" />
                     )}
                     <span className="text-sm">
-                      {languageNames[lang]}
+                      {lang.name}
                     </span>
                   </div>
                 );
@@ -492,27 +558,39 @@ export function ContentEditor() {
             )}
           </div>
 
-          {/* Manual translation button */}
-          <Button
-            variant="outline"
-            onClick={handleTranslateNow}
-            className="w-full gap-2"
-            disabled={isTranslating}
-          >
-            {isTranslating ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Translating...
-              </>
-            ) : (
-              <>
-                <Languages className="h-4 w-4" />
-                Translate All Content Now
-              </>
-            )}
-          </Button>
+          {/* Translation action buttons */}
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+            <Button
+              variant="outline"
+              onClick={handleInitializeTranslations}
+              className="w-full gap-2"
+              disabled={isTranslating}
+            >
+              <FileText className="h-4 w-4" />
+              Initialize All Languages
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleTranslateNow}
+              className="w-full gap-2"
+              disabled={isTranslating}
+            >
+              {isTranslating ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Translating...
+                </>
+              ) : (
+                <>
+                  <Languages className="h-4 w-4" />
+                  Auto-Translate All
+                </>
+              )}
+            </Button>
+          </div>
         </div>
       </Card>
+      )}
 
       {/* Feature Flags */}
       <Card className="border-border p-6">

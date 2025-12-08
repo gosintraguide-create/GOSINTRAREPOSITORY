@@ -1,5 +1,5 @@
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "./ui/button";
 import { LanguageSelector } from "./LanguageSelector";
 import { Logo } from "./Logo";
@@ -15,8 +15,39 @@ interface HeaderProps {
 
 export function Header({ currentPage, onNavigate, language, onLanguageChange }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const t = getUITranslation(language);
   const content = getTranslation(language);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    }
+
+    if (isMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMenuOpen]);
+
+  // Prevent body scroll when menu is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMenuOpen]);
 
   const navItems = [
     { id: "attractions", label: t.attractions },
@@ -92,41 +123,53 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="border-t border-border bg-white/95 backdrop-blur-sm md:hidden">
-            <nav className="mx-auto max-w-7xl space-y-1 px-4 py-6 sm:px-6 lg:px-8">
-              <Button
-                onClick={() => {
-                  onNavigate("buy-ticket");
-                  setIsMenuOpen(false);
-                }}
-                size="lg"
-                className="w-full bg-accent hover:bg-accent/90 mb-4"
-              >
-                {t.buyTicket}
-              </Button>
-              
-              {navItems.map((item) => (
-                <button
-                  key={item.id}
+          <>
+            {/* Backdrop */}
+            <div 
+              className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden animate-in fade-in duration-200"
+              onClick={() => setIsMenuOpen(false)}
+            />
+            
+            {/* Menu Overlay */}
+            <div 
+              ref={menuRef}
+              className="fixed left-0 right-0 top-20 z-50 max-h-[calc(100vh-5rem)] overflow-y-auto border-t border-border bg-white shadow-2xl md:hidden animate-in slide-in-from-top duration-300"
+            >
+              <nav className="mx-auto max-w-7xl space-y-1 px-4 py-6 sm:px-6 lg:px-8">
+                <Button
                   onClick={() => {
-                    onNavigate(item.id);
+                    onNavigate("buy-ticket");
                     setIsMenuOpen(false);
                   }}
-                  className={`block w-full rounded-xl px-4 py-3 text-left transition-colors ${
-                    currentPage === item.id
-                      ? "bg-primary/10 text-primary"
-                      : "text-foreground hover:bg-secondary hover:text-primary"
-                  }`}
+                  size="lg"
+                  className="w-full bg-accent hover:bg-accent/90 mb-4"
                 >
-                  {item.label}
-                </button>
-              ))}
+                  {t.buyTicket}
+                </Button>
+                
+                {navItems.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      onNavigate(item.id);
+                      setIsMenuOpen(false);
+                    }}
+                    className={`block w-full rounded-xl px-4 py-3 text-left transition-colors ${
+                      currentPage === item.id
+                        ? "bg-primary/10 text-primary"
+                        : "text-foreground hover:bg-secondary hover:text-primary"
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
 
-              <div className="pt-4">
-                <LanguageSelector currentLanguage={language} onLanguageChange={onLanguageChange} />
-              </div>
-            </nav>
-          </div>
+                <div className="pt-4">
+                  <LanguageSelector currentLanguage={language} onLanguageChange={onLanguageChange} />
+                </div>
+              </nav>
+            </div>
+          </>
         )}
       </header>
     </>

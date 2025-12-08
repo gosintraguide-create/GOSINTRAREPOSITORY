@@ -494,6 +494,67 @@ export const it: WebsiteContent = {
     },
     timeSlots: {
       guidedTourLabel: "Insight Tour",
+      guidedTourDescription: "Alcuni orari di partenza includono il nostro Insight Tour, un giro più lungo e dettagliato in cui il tuo autista condivide le storie e la storia dietro i monumenti di Sintra. Cerca le fasce orarie contrassegnate con il badge Insight Tour qui sotto.",
+      viewRouteMaps: "Visualizza mappe dei percorsi",
+    },
+    routeMap: {
+      bothRoutesLabel: "Entrambi i percorsi",
+      pickupLabel: "Ritiro",
+      frequencyLabel: "Ogni 30 min • 9:00 - 19:00",
+      infoHeader: "Due percorsi circolari • Clicca su una fermata per selezionare",
+      yourPickupLocation: "Il Tuo Punto di Ritiro",
+      route1Label: "Percorso 1",
+      route2Label: "Percorso 2",
+      locations: {
+        sintraTrainStation: {
+          name: "Stazione Ferroviaria di Sintra",
+          description: "Punto di connessione per entrambi i percorsi",
+          info: "Situata nel cuore di Sintra, a pochi passi dal centro storico. I nostri veicoli prelevano proprio all'esterno dell'ingresso principale della stazione. Punto di connessione per entrambi i percorsi.",
+          highlights: ["Facile accesso da Lisbona", "Entrambi i percorsi si fermano qui", "Partenze frequenti"],
+        },
+        historicalCenterNorth: {
+          name: "Centro Storico Nord",
+          description: "Centro storico con caffè e negozi",
+          info: "Ritiro nell'affascinante centro storico, circondato da ristoranti locali, pasticcerie e boutique. Punto di connessione per entrambi i percorsi.",
+          highlights: ["Atmosfera storica", "Entrambi i percorsi si fermano qui", "Opzioni di ristorazione nelle vicinanze"],
+        },
+        historicalCenterSouth: {
+          name: "Centro Storico Sud",
+          description: "Centro città vicino al Palazzo Nazionale",
+          info: "Fermata nel centro storico vicino all'iconico Palazzo Nazionale con i suoi distintivi camini gemelli.",
+          highlights: ["Eredità reale", "Posizione centrale", "Architettura iconica"],
+        },
+        moorishCastle: {
+          name: "Castello dei Mori",
+          description: "Antica fortezza con mura medievali",
+          info: "Visita questa fortificazione moresca del X secolo arroccata sulla collina, che offre viste spettacolari sulla regione.",
+          highlights: ["Significato storico", "Viste panoramiche", "Autentiche rovine medievali"],
+        },
+        penaPalace: {
+          name: "Palazzo di Pena",
+          description: "Castello iconico sulla collina con viste panoramiche",
+          info: "Visita il monumento più famoso di Sintra. Il nostro punto di ritiro si trova comodamente all'ingresso del palazzo.",
+          highlights: ["Viste mozzafiato", "Attrazione più visitata", "Ottime opportunità fotografiche"],
+        },
+        quintaRegaleira: {
+          name: "Quinta da Regaleira",
+          description: "Tenuta mistica con pozzi iniziatici e grotte",
+          info: "Visita questa tenuta incantevole con giardini misteriosi, tunnel sotterranei e il famoso Pozzo Iniziatico. Ritiro all'ingresso principale.",
+          highlights: ["Architettura misteriosa", "Giardini bellissimi", "Esperienza unica"],
+        },
+        seteais: {
+          name: "Seteais",
+          description: "Palazzo storico e punto panoramico",
+          info: "Fermata a questo magnifico palazzo neoclassico con viste mozzafiato. Ora un hotel di lusso, l'esterno e i giardini sono aperti ai visitatori.",
+          highlights: ["Architettura impressionante", "Punto panoramico", "Significato storico"],
+        },
+        monserratePalace: {
+          name: "Palazzo di Monserrate",
+          description: "Palazzo romantico con giardini esotici",
+          info: "Ritiro a questo splendido palazzo del XIX secolo circondato da giardini botanici con piante provenienti da tutto il mondo. Un gioiello nascosto di Sintra.",
+          highlights: ["Giardini botanici esotici", "Architettura romantica", "Atmosfera tranquilla"],
+        },
+      },
     },
     passengersSelection: {
       yourInformation: "Le Tue Informazioni",

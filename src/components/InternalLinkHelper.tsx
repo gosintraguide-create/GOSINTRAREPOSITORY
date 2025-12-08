@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
-import { Link, FileText, MapPin, Home, BookOpen } from "lucide-react";
+import { useEffect, useState } from "react";
+import { X, FileText, MapPin, FileTextIcon, Home, Link, BookOpen } from "lucide-react";
 import { Button } from "./ui/button";
-import { Card } from "./ui/card";
 import { Input } from "./ui/input";
-import { Label } from "./ui/label";
+import { Card } from "./ui/card";
+import { Separator } from "./ui/separator";
 import { Badge } from "./ui/badge";
+import { Label } from "./ui/label";
 import { ScrollArea } from "./ui/scroll-area";
 import {
   Dialog,
@@ -14,7 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
-import { loadArticles } from "../lib/blogManager";
+import { getPublishedArticles, getArticleTranslation } from "../lib/blogManager";
 import { DEFAULT_CONTENT } from "../lib/contentManager";
 
 interface InternalLinkHelperProps {
@@ -27,7 +28,7 @@ export function InternalLinkHelper({ onInsertLink }: InternalLinkHelperProps) {
   const [articles, setArticles] = useState<any[]>([]);
 
   useEffect(() => {
-    setArticles(loadArticles().filter(a => a.isPublished));
+    setArticles(getPublishedArticles());
   }, []);
 
   // Convert attractions object to array
@@ -37,10 +38,14 @@ export function InternalLinkHelper({ onInsertLink }: InternalLinkHelperProps) {
     description: attraction.description,
   }));
 
-  const filteredArticles = articles.filter(article =>
-    article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    article.excerpt.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredArticles = articles.filter(article => {
+    // Get English translation for searching (articles always have English)
+    const translation = getArticleTranslation(article, 'en');
+    return (
+      translation.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      translation.excerpt.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
 
   const filteredAttractions = attractions.filter(attraction =>
     attraction.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -131,19 +136,21 @@ export function InternalLinkHelper({ onInsertLink }: InternalLinkHelperProps) {
                     <Badge variant="outline">{filteredArticles.length}</Badge>
                   </div>
                   <div className="space-y-2">
-                    {filteredArticles.map((article) => (
+                    {filteredArticles.map((article) => {
+                      const translation = getArticleTranslation(article, 'en');
+                      return (
                       <Card
                         key={article.id}
                         className="cursor-pointer p-3 transition-colors hover:bg-secondary/50"
                         onClick={() =>
-                          insertLink(article.title, `/blog/${article.slug}`)
+                          insertLink(translation.title, `/blog/${article.slug}`)
                         }
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex-1">
-                            <p className="mb-1 text-foreground">{article.title}</p>
+                            <p className="mb-1 text-foreground">{translation.title}</p>
                             <p className="mb-2 line-clamp-1 text-sm text-muted-foreground">
-                              {article.excerpt}
+                              {translation.excerpt}
                             </p>
                             <p className="text-xs text-muted-foreground">
                               /blog/{article.slug}
@@ -154,7 +161,7 @@ export function InternalLinkHelper({ onInsertLink }: InternalLinkHelperProps) {
                           </Button>
                         </div>
                       </Card>
-                    ))}
+                    );})}
                   </div>
                 </div>
               )}

@@ -367,7 +367,7 @@ export const es: WebsiteContent = {
     viewAllArticles: "Ver Todos los Artículos",
     tableOfContents: "Tabla de Contenidos",
     readyToExperience: "¿Listo para Explorar Sintra?",
-    bookFlexibleDayPass: "Reserva tu pase de d��a flexible y comienza a explorar los magníficos palacios y jardines de Sintra",
+    bookFlexibleDayPass: "Reserva tu pase de da flexible y comienza a explorar los magníficos palacios y jardines de Sintra",
     bookDayPassNow: "Reserva Tu Pase de Día Ahora",
     
     categories: {
@@ -494,6 +494,67 @@ export const es: WebsiteContent = {
     },
     timeSlots: {
       guidedTourLabel: "Insight Tour",
+      guidedTourDescription: "Algunos horarios incluyen nuestro Insight Tour, un recorrido más largo y detallado donde su conductor comparte las historias y la historia detrás de los monumentos de Sintra. Busque las franjas horarias marcadas con la insignia Insight Tour a continuación.",
+      viewRouteMaps: "Ver mapas de rutas",
+    },
+    routeMap: {
+      bothRoutesLabel: "Ambas rutas",
+      pickupLabel: "Recogida",
+      frequencyLabel: "Cada 30 min • 9h - 19h",
+      infoHeader: "Dos rutas circulares • Haz clic en cualquier parada para seleccionar",
+      yourPickupLocation: "Tu Punto de Recogida",
+      route1Label: "Ruta 1",
+      route2Label: "Ruta 2",
+      locations: {
+        sintraTrainStation: {
+          name: "Estación de Tren de Sintra",
+          description: "Punto de conexión para ambas rutas",
+          info: "Ubicada en el corazón de Sintra, a pocos pasos del centro histórico. Nuestros vehículos recogen justo afuera de la entrada principal de la estación. Punto de conexión para ambas rutas.",
+          highlights: ["Fácil acceso desde Lisboa", "Ambas rutas paran aquí", "Salidas frecuentes"],
+        },
+        historicalCenterNorth: {
+          name: "Centro Histórico Norte",
+          description: "Centro histórico con cafés y tiendas",
+          info: "Recogida en el encantador centro histórico, rodeado de restaurantes locales, pastelerías y boutiques. Punto de conexión para ambas rutas.",
+          highlights: ["Atmósfera histórica", "Ambas rutas paran aquí", "Opciones gastronómicas cercanas"],
+        },
+        historicalCenterSouth: {
+          name: "Centro Histórico Sur",
+          description: "Centro de la ciudad cerca del Palacio Nacional",
+          info: "Parada en el centro histórico cerca del icónico Palacio Nacional con sus distintivas chimeneas gemelas.",
+          highlights: ["Patrimonio real", "Ubicación central", "Arquitectura icónica"],
+        },
+        moorishCastle: {
+          name: "Castillo de los Moros",
+          description: "Fortaleza antigua con murallas medievales",
+          info: "Visita esta fortificación morisca del siglo X encaramada en la cima de la colina, que ofrece vistas espectaculares sobre la región.",
+          highlights: ["Significado histórico", "Vistas panorámicas", "Ruinas medievales auténticas"],
+        },
+        penaPalace: {
+          name: "Palacio de Pena",
+          description: "Castillo icónico en la cima de la colina con vistas panorámicas",
+          info: "Visita el monumento más famoso de Sintra. Nuestro punto de recogida está convenientemente ubicado en el área de entrada del palacio.",
+          highlights: ["Vistas impresionantes", "Atracción más visitada", "Excelentes oportunidades fotográficas"],
+        },
+        quintaRegaleira: {
+          name: "Quinta da Regaleira",
+          description: "Finca mística con pozos de iniciación y cuevas",
+          info: "Visita esta finca encantadora con jardines misteriosos, túneles subterráneos y el famoso Pozo de Iniciación. Recogida en la entrada principal.",
+          highlights: ["Arquitectura misteriosa", "Hermosos jardines", "Experiencia única"],
+        },
+        seteais: {
+          name: "Seteais",
+          description: "Palacio histórico y mirador panorámico",
+          info: "Parada en este magnífico palacio neoclásico con vistas impresionantes. Ahora un hotel de lujo, el exterior y los jardines están abiertos a los visitantes.",
+          highlights: ["Arquitectura impresionante", "Mirador panorámico", "Significado histórico"],
+        },
+        monserratePalace: {
+          name: "Palacio de Monserrate",
+          description: "Palacio romántico con jardines exóticos",
+          info: "Recogida en este impresionante palacio del siglo XIX rodeado de jardines botánicos con plantas de todo el mundo. Una joya escondida de Sintra.",
+          highlights: ["Jardines botánicos exóticos", "Arquitectura romántica", "Atmósfera tranquila"],
+        },
+      },
     },
     passengersSelection: {
       yourInformation: "Tu Información",

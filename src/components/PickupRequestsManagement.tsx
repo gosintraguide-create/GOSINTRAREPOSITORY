@@ -88,19 +88,11 @@ export function PickupRequestsManagement() {
         if (status === 'SUBSCRIBED') {
           console.log('✅ Pickup requests management subscription active');
         }
-        // Silently handle errors - polling will handle updates
       });
-
-    // Polling fallback: Only poll every 2 minutes since realtime is enabled
-    // This serves as a safety net in case realtime misses an update
-    const pollInterval = setInterval(() => {
-      loadRequests();
-    }, 120000); // 2 minutes
 
     return () => {
       console.log('🔌 Unsubscribing from pickup requests management channel');
       supabase.removeChannel(channel);
-      clearInterval(pollInterval);
     };
   }, []);
 

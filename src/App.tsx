@@ -517,25 +517,8 @@ export default function App() {
     syncContentForLanguage();
   }, [language]);
 
-  // Periodic content refresh every 3 minutes to catch updates
-  useEffect(() => {
-    async function periodicSync() {
-      try {
-        const { syncContentFromDatabaseWithLanguage } =
-          await import("./lib/contentManager");
-        const freshContent =
-          await syncContentFromDatabaseWithLanguage(language);
-        setWebsiteContent(freshContent);
-      } catch (error) {
-        // Silently fail - this is a background refresh
-      }
-    }
-
-    // Set up periodic refresh every 3 minutes (180000ms)
-    const interval = setInterval(periodicSync, 180000);
-
-    return () => clearInterval(interval);
-  }, [language]); // Re-set interval when language changes
+  // Content updates are handled by the 'content-updated' event from admin panel
+  // No polling needed - realtime updates via localStorage events
 
   // Scroll to top when page changes
   useEffect(() => {

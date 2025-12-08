@@ -23,7 +23,8 @@ export function HeroSection({
   legacyContent,
   content,
 }: HeroSectionProps) {
-  const editableContent = useEditableContent();
+  // Content is already passed in with the correct language, no need to call useEditableContent again
+  const editableContent = content || legacyContent;
   
   return (
     <section className="relative overflow-hidden">

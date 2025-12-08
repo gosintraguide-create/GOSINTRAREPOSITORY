@@ -494,6 +494,67 @@ export const fr: WebsiteContent = {
     },
     timeSlots: {
       guidedTourLabel: "Insight Tour",
+      guidedTourDescription: "Certains horaires incluent notre Insight Tour, une visite plus longue et détaillée où votre chauffeur partage les histoires et l'histoire derrière les monuments de Sintra. Recherchez les créneaux horaires marqués avec le badge Insight Tour ci-dessous.",
+      viewRouteMaps: "Voir les plans d'itinéraire",
+    },
+    routeMap: {
+      bothRoutesLabel: "Les deux itinéraires",
+      pickupLabel: "Prise en charge",
+      frequencyLabel: "Toutes les 30 min • 9h - 19h",
+      infoHeader: "Deux itinéraires circulaires • Cliquez sur n'importe quel arrêt pour sélectionner",
+      yourPickupLocation: "Votre Point de Prise en Charge",
+      route1Label: "Itinéraire 1",
+      route2Label: "Itinéraire 2",
+      locations: {
+        sintraTrainStation: {
+          name: "Gare de Sintra",
+          description: "Point de connexion pour les deux itinéraires",
+          info: "Située au cœur de Sintra, à quelques pas du centre historique. Nos véhicules récupèrent juste à l'extérieur de l'entrée principale de la gare. Point de connexion pour les deux itinéraires.",
+          highlights: ["Accès facile depuis Lisbonne", "Les deux itinéraires s'arrêtent ici", "Départs fréquents"],
+        },
+        historicalCenterNorth: {
+          name: "Centre Historique Nord",
+          description: "Centre historique avec cafés et boutiques",
+          info: "Prise en charge dans le charmant centre historique, entouré de restaurants locaux, pâtisseries et boutiques. Point de connexion pour les deux itinéraires.",
+          highlights: ["Atmosphère historique", "Les deux itinéraires s'arrêtent ici", "Options de restauration à proximité"],
+        },
+        historicalCenterSouth: {
+          name: "Centre Historique Sud",
+          description: "Centre-ville près du Palais National",
+          info: "Arrêt dans le centre historique près de l'emblématique Palais National avec ses cheminées jumelles distinctives.",
+          highlights: ["Patrimoine royal", "Emplacement central", "Architecture emblématique"],
+        },
+        moorishCastle: {
+          name: "Château des Maures",
+          description: "Forteresse ancienne avec murs médiévaux",
+          info: "Visitez cette fortification mauresque du 10ème siècle perchée au sommet de la colline, offrant des vues spectaculaires sur la région.",
+          highlights: ["Importance historique", "Vues panoramiques", "Ruines médiévales authentiques"],
+        },
+        penaPalace: {
+          name: "Palais de Pena",
+          description: "Château emblématique au sommet de la colline avec vues panoramiques",
+          info: "Visitez le monument le plus célèbre de Sintra. Notre point de prise en charge est idéalement situé à l'entrée du palais.",
+          highlights: ["Vues époustouflantes", "Attraction la plus visitée", "Excellentes opportunités de photos"],
+        },
+        quintaRegaleira: {
+          name: "Quinta da Regaleira",
+          description: "Domaine mystique avec puits d'initiation et grottes",
+          info: "Visitez ce domaine enchanteur avec des jardins mystérieux, des tunnels souterrains et le célèbre Puits d'Initiation. Prise en charge à l'entrée principale.",
+          highlights: ["Architecture mystérieuse", "Beaux jardins", "Expérience unique"],
+        },
+        seteais: {
+          name: "Seteais",
+          description: "Palais historique et point de vue panoramique",
+          info: "Arrêt à ce magnifique palais néoclassique avec des vues à couper le souffle. Maintenant un hôtel de luxe, l'extérieur et les jardins sont ouverts aux visiteurs.",
+          highlights: ["Architecture époustouflante", "Point de vue panoramique", "Importance historique"],
+        },
+        monserratePalace: {
+          name: "Palais de Monserrate",
+          description: "Palais romantique avec jardins exotiques",
+          info: "Prise en charge à ce superbe palais du 19ème siècle entouré de jardins botaniques avec des plantes du monde entier. Un joyau caché de Sintra.",
+          highlights: ["Jardins botaniques exotiques", "Architecture romantique", "Atmosphère paisible"],
+        },
+      },
     },
     passengersSelection: {
       yourInformation: "Vos Informations",
@@ -635,7 +696,7 @@ export const fr: WebsiteContent = {
       subtitle: "Inspirez-vous de nos itinéraires les plus populaires (entièrement personnalisables)",
       halfDay: {
         title: "Demi-Journée : Palais Royaux",
-        duration: "4 heures �� Parfait pour les visiteurs de première fois",
+        duration: "4 heures  Parfait pour les visiteurs de première fois",
         badge: "Populaire",
         stop1Title: "Palais da Pena (90 min)",
         stop1Description: "Le monument le plus emblématique de Sintra",
