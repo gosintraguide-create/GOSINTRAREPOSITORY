@@ -67,7 +67,10 @@ export function BlogArticlePage({
         (cat) => cat.slug === foundArticle.category,
       );
       if (category) {
-        const categoryTranslation = getCategoryTranslation(category, language);
+        const categoryTranslation = getCategoryTranslation(
+          category,
+          language,
+        );
         setCategoryName(categoryTranslation.name);
       } else {
         const translatedCategoryName =
@@ -75,8 +78,7 @@ export function BlogArticlePage({
             foundArticle.category as keyof typeof content.blog.categories
           ];
         setCategoryName(
-          translatedCategoryName ||
-            foundArticle.category,
+          translatedCategoryName || foundArticle.category,
         );
       }
 
@@ -155,7 +157,10 @@ export function BlogArticlePage({
 
   const handleShare = (platform: string) => {
     const url = window.location.href;
-    const translation = getArticleTranslation(article, language);
+    const translation = getArticleTranslation(
+      article,
+      language,
+    );
     const title = translation.title;
 
     switch (platform) {
@@ -179,7 +184,10 @@ export function BlogArticlePage({
   };
 
   // Get translated content for the current language
-  const articleTranslation = getArticleTranslation(article, language);
+  const articleTranslation = getArticleTranslation(
+    article,
+    language,
+  );
 
   return (
     <div className="flex-1">
@@ -191,6 +199,7 @@ export function BlogArticlePage({
         <BlogSEO
           article={article}
           categoryName={categoryName}
+          language={language}
         />
       )}
 
@@ -445,43 +454,49 @@ export function BlogArticlePage({
                     {otherArticles
                       .slice(0, 3)
                       .map((otherArticle) => {
-                        const otherTranslation = getArticleTranslation(otherArticle, language);
+                        const otherTranslation =
+                          getArticleTranslation(
+                            otherArticle,
+                            language,
+                          );
                         return (
-                        <div
-                          key={otherArticle.id}
-                          className="group cursor-pointer transition-all hover:bg-secondary/30"
-                          onClick={() =>
-                            onNavigate("blog-article", {
-                              slug: otherArticle.slug,
-                            })
-                          }
-                        >
-                          {(otherArticle.thumbnailImage || otherArticle.featuredImage) && (
-                            <div className="relative aspect-video overflow-hidden">
-                              <ImageWithFallback
-                                src={
-                                  otherArticle.thumbnailImage ||
-                                  otherArticle.featuredImage
-                                }
-                                alt={otherTranslation.title}
-                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                              />
-                            </div>
-                          )}
-                          <div className="p-4">
-                            <h4 className="mb-2 line-clamp-2 transition-colors group-hover:text-primary">
-                              {otherTranslation.title}
-                            </h4>
-                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                              <Clock className="h-3 w-3" />
-                              {
-                                otherArticle.readTimeMinutes
-                              }{" "}
-                              {content.blog.minRead}
+                          <div
+                            key={otherArticle.id}
+                            className="group cursor-pointer transition-all hover:bg-secondary/30"
+                            onClick={() =>
+                              onNavigate("blog-article", {
+                                slug: otherArticle.slug,
+                              })
+                            }
+                          >
+                            {(otherArticle.thumbnailImage ||
+                              otherArticle.featuredImage) && (
+                              <div className="relative aspect-video overflow-hidden">
+                                <ImageWithFallback
+                                  src={
+                                    otherArticle.thumbnailImage ||
+                                    otherArticle.featuredImage
+                                  }
+                                  alt={otherTranslation.title}
+                                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                />
+                              </div>
+                            )}
+                            <div className="p-4">
+                              <h4 className="mb-2 line-clamp-2 transition-colors group-hover:text-primary">
+                                {otherTranslation.title}
+                              </h4>
+                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <Clock className="h-3 w-3" />
+                                {
+                                  otherArticle.readTimeMinutes
+                                }{" "}
+                                {content.blog.minRead}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      );})}
+                        );
+                      })}
                   </div>
                   <div className="border-t border-border p-4">
                     <Button
@@ -518,38 +533,42 @@ export function BlogArticlePage({
           </h2>
           <div className="grid gap-6 sm:grid-cols-2">
             {otherArticles.slice(0, 4).map((otherArticle) => {
-              const otherTranslation = getArticleTranslation(otherArticle, language);
+              const otherTranslation = getArticleTranslation(
+                otherArticle,
+                language,
+              );
               return (
-              <Card
-                key={otherArticle.id}
-                className="group cursor-pointer overflow-hidden border-border transition-all hover:shadow-lg"
-                onClick={() =>
-                  onNavigate("blog-article", {
-                    slug: otherArticle.slug,
-                  })
-                }
-              >
-                {otherArticle.featuredImage && (
-                  <div className="relative aspect-video overflow-hidden">
-                    <ImageWithFallback
-                      src={otherArticle.featuredImage}
-                      alt={otherTranslation.title}
-                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
+                <Card
+                  key={otherArticle.id}
+                  className="group cursor-pointer overflow-hidden border-border transition-all hover:shadow-lg"
+                  onClick={() =>
+                    onNavigate("blog-article", {
+                      slug: otherArticle.slug,
+                    })
+                  }
+                >
+                  {otherArticle.featuredImage && (
+                    <div className="relative aspect-video overflow-hidden">
+                      <ImageWithFallback
+                        src={otherArticle.featuredImage}
+                        alt={otherTranslation.title}
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    </div>
+                  )}
+                  <div className="p-4">
+                    <h3 className="mb-2 line-clamp-2 transition-colors group-hover:text-primary">
+                      {otherTranslation.title}
+                    </h3>
+                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                      <Clock className="h-4 w-4" />
+                      {otherArticle.readTimeMinutes}{" "}
+                      {content.blog.minRead}
+                    </div>
                   </div>
-                )}
-                <div className="p-4">
-                  <h3 className="mb-2 line-clamp-2 transition-colors group-hover:text-primary">
-                    {otherTranslation.title}
-                  </h3>
-                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                    <Clock className="h-4 w-4" />
-                    {otherArticle.readTimeMinutes}{" "}
-                    {content.blog.minRead}
-                  </div>
-                </div>
-              </Card>
-            );})}
+                </Card>
+              );
+            })}
           </div>
           <div className="mt-6 text-center">
             <Button
@@ -606,38 +625,43 @@ export function BlogArticlePage({
             </h2>
             <div className="grid gap-8 md:grid-cols-3">
               {relatedArticles.map((relatedArticle) => {
-                const relatedTranslation = getArticleTranslation(relatedArticle, language);
+                const relatedTranslation =
+                  getArticleTranslation(
+                    relatedArticle,
+                    language,
+                  );
                 return (
-                <Card
-                  key={relatedArticle.id}
-                  className="group cursor-pointer overflow-hidden border-border transition-all hover:shadow-xl"
-                  onClick={() =>
-                    onNavigate("blog-article", {
-                      slug: relatedArticle.slug,
-                    })
-                  }
-                >
-                  {relatedArticle.featuredImage && (
-                    <div className="relative aspect-video overflow-hidden">
-                      <ImageWithFallback
-                        src={relatedArticle.featuredImage}
-                        alt={relatedTranslation.title}
-                        className="h-full w-full object-cover transition-transform group-hover:scale-110"
-                      />
+                  <Card
+                    key={relatedArticle.id}
+                    className="group cursor-pointer overflow-hidden border-border transition-all hover:shadow-xl"
+                    onClick={() =>
+                      onNavigate("blog-article", {
+                        slug: relatedArticle.slug,
+                      })
+                    }
+                  >
+                    {relatedArticle.featuredImage && (
+                      <div className="relative aspect-video overflow-hidden">
+                        <ImageWithFallback
+                          src={relatedArticle.featuredImage}
+                          alt={relatedTranslation.title}
+                          className="h-full w-full object-cover transition-transform group-hover:scale-110"
+                        />
+                      </div>
+                    )}
+                    <div className="p-6">
+                      <div className="mb-2 flex items-center gap-2 text-sm text-muted-foreground">
+                        <Clock className="h-4 w-4" />
+                        {relatedArticle.readTimeMinutes}{" "}
+                        {content.blog.minRead}
+                      </div>
+                      <h3 className="text-foreground transition-colors group-hover:text-primary">
+                        {relatedTranslation.title}
+                      </h3>
                     </div>
-                  )}
-                  <div className="p-6">
-                    <div className="mb-2 flex items-center gap-2 text-sm text-muted-foreground">
-                      <Clock className="h-4 w-4" />
-                      {relatedArticle.readTimeMinutes}{" "}
-                      {content.blog.minRead}
-                    </div>
-                    <h3 className="text-foreground transition-colors group-hover:text-primary">
-                      {relatedTranslation.title}
-                    </h3>
-                  </div>
-                </Card>
-              );})}
+                  </Card>
+                );
+              })}
             </div>
           </div>
         </section>

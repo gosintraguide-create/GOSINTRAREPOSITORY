@@ -1,15 +1,19 @@
 import { useEffect } from "react";
-import { BlogArticle } from "../lib/blogManager";
+import { BlogArticle, getArticleTranslation } from "../lib/blogManager";
 
 interface BlogSEOProps {
   article: BlogArticle;
   categoryName: string;
+  language?: string;
 }
 
-export function BlogSEO({ article, categoryName }: BlogSEOProps) {
+export function BlogSEO({ article, categoryName, language = 'en' }: BlogSEOProps) {
   useEffect(() => {
+    // Get the translated content
+    const translation = getArticleTranslation(article, language);
+    
     // Update title
-    document.title = article.seo.title || `${article.title} - Hop On Sintra Blog`;
+    document.title = translation.seo?.title || `${translation.title} - Hop On Sintra Blog`;
 
     // Update or create meta tags
     const updateMetaTag = (name: string, content: string, property = false) => {
@@ -26,8 +30,8 @@ export function BlogSEO({ article, categoryName }: BlogSEOProps) {
     };
 
     // Standard meta tags
-    updateMetaTag("description", article.seo.description || article.excerpt);
-    updateMetaTag("keywords", article.seo.keywords || article.tags.join(", "));
+    updateMetaTag("description", translation.seo?.description || translation.excerpt);
+    updateMetaTag("keywords", translation.seo?.keywords || article.tags.join(", "));
     updateMetaTag("robots", "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1");
     updateMetaTag("author", article.author);
     
@@ -43,8 +47,8 @@ export function BlogSEO({ article, categoryName }: BlogSEOProps) {
     });
     
     // Open Graph tags for articles
-    updateMetaTag("og:title", article.seo.title || article.title, true);
-    updateMetaTag("og:description", article.seo.description || article.excerpt, true);
+    updateMetaTag("og:title", translation.seo?.title || translation.title, true);
+    updateMetaTag("og:description", translation.seo?.description || translation.excerpt, true);
     updateMetaTag("og:type", "article", true);
     updateMetaTag("og:url", `https://www.hoponsintra.com/blog/${article.slug}`, true);
     updateMetaTag("og:site_name", "Hop On Sintra Travel Guide", true);
@@ -55,16 +59,16 @@ export function BlogSEO({ article, categoryName }: BlogSEOProps) {
       updateMetaTag("og:image:secure_url", article.featuredImage, true);
       updateMetaTag("og:image:width", "1200", true);
       updateMetaTag("og:image:height", "630", true);
-      updateMetaTag("og:image:alt", article.title, true);
+      updateMetaTag("og:image:alt", translation.title, true);
     }
     
     // Twitter Card tags
     updateMetaTag("twitter:card", "summary_large_image");
-    updateMetaTag("twitter:title", article.seo.title || article.title);
-    updateMetaTag("twitter:description", article.seo.description || article.excerpt);
+    updateMetaTag("twitter:title", translation.seo?.title || translation.title);
+    updateMetaTag("twitter:description", translation.seo?.description || translation.excerpt);
     if (article.featuredImage) {
       updateMetaTag("twitter:image", article.featuredImage);
-      updateMetaTag("twitter:image:alt", article.title);
+      updateMetaTag("twitter:image:alt", translation.title);
     }
     updateMetaTag("twitter:creator", "@hoponsintra");
     updateMetaTag("twitter:site", "@hoponsintra");
@@ -90,8 +94,8 @@ export function BlogSEO({ article, categoryName }: BlogSEOProps) {
     const articleSchema = {
       "@context": "https://schema.org",
       "@type": "BlogPosting",
-      "headline": article.title,
-      "description": article.excerpt,
+      "headline": translation.title,
+      "description": translation.excerpt,
       "image": article.featuredImage ? {
         "@type": "ImageObject",
         "url": article.featuredImage,
@@ -120,7 +124,7 @@ export function BlogSEO({ article, categoryName }: BlogSEOProps) {
       },
       "articleSection": categoryName,
       "keywords": article.tags.join(", "),
-      "wordCount": article.content.split(/\s+/).length,
+      "wordCount": translation.content.split(/\s+/).length,
       "timeRequired": `PT${article.readTimeMinutes}M`,
       "inLanguage": "en-US",
       "about": {
@@ -160,7 +164,7 @@ export function BlogSEO({ article, categoryName }: BlogSEOProps) {
         {
           "@type": "ListItem",
           "position": 4,
-          "name": article.title,
+          "name": translation.title,
           "item": `https://www.hoponsintra.com/blog/${article.slug}`
         }
       ]
@@ -173,7 +177,7 @@ export function BlogSEO({ article, categoryName }: BlogSEOProps) {
     };
 
     structuredData.textContent = JSON.stringify(combinedSchema);
-  }, [article, categoryName]);
+  }, [article, categoryName, language]);
 
   return null;
 }
