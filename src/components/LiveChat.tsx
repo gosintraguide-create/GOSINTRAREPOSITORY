@@ -370,7 +370,7 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
 
       {/* Chat Window */}
       {isOpen && (
-        <Card ref={chatWindowRef} className="fixed bottom-20 right-4 z-40 flex w-[calc(100vw-2rem)] max-w-sm flex-col overflow-hidden border-border bg-card shadow-2xl sm:bottom-24 sm:right-6 sm:w-96">
+        <Card ref={chatWindowRef} className="fixed bottom-20 right-4 z-40 flex w-full max-w-[calc(100vw-2rem)] sm:max-w-sm flex-col overflow-hidden border-border bg-card shadow-2xl sm:bottom-24 sm:right-6 sm:w-96">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-border bg-accent p-3 sm:p-4">
             <div className="flex items-center gap-3">
@@ -391,6 +391,13 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
                 <p className="text-accent-foreground/80">We're here to help!</p>
               </div>
             </div>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="flex h-8 w-8 items-center justify-center rounded-full text-accent-foreground transition-colors hover:bg-accent-foreground/10"
+              aria-label="Close chat"
+            >
+              <X className="h-5 w-5" />
+            </button>
           </div>
 
           {/* Messages or Start Form */}

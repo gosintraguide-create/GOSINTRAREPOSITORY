@@ -879,7 +879,7 @@ export default function App() {
       {/* Initial Loading Screen */}
       {isInitialLoad && <LoadingIndicator type="both" fullScreen />}
 
-      <div className="flex min-h-screen flex-col">
+      <div className="flex min-h-screen flex-col w-full overflow-x-hidden">
         {/* SEO Meta Tags */}
         {currentPage !== "admin" &&
           currentPage !== "analytics" &&
