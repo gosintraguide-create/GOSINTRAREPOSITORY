@@ -22,8 +22,8 @@ export function BackendStatusIndicator() {
       
       const controller = new AbortController();
       const timeoutId = setTimeout(() => {
-        controller.abort(new Error("Backend health check timeout after 5 seconds"));
-      }, 5000); // 5 second timeout
+        controller.abort(new Error("Backend health check timeout after 15 seconds"));
+      }, 15000); // 15 second timeout (increased from 5 to handle cold starts)
 
       const response = await fetch(
         `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/health`,
@@ -71,7 +71,7 @@ export function BackendStatusIndicator() {
       
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
-          setErrorDetails("Backend timeout (5s). Service may be cold-starting or not deployed.");
+          setErrorDetails("Backend timeout (15s). Service may be cold-starting or not deployed.");
         } else if (error.message.includes("Failed to fetch") || error.message.includes("NetworkError")) {
           setErrorDetails("Cannot reach backend. Edge Function may not be deployed.");
         } else {
