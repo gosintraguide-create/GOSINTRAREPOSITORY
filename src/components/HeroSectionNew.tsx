@@ -26,6 +26,12 @@ export function HeroSection({
   // Content is already passed in with the correct language, no need to call useEditableContent again
   const editableContent = content || legacyContent;
   
+  // Safely access hero content with fallbacks
+  const heroTitle = editableContent?.homepage?.hero?.title || legacyContent.homepage.hero.title;
+  const heroSubtitle = editableContent?.homepage?.hero?.subtitle || legacyContent.homepage.hero.subtitle;
+  const heroCtaButton = editableContent?.homepage?.hero?.ctaButton || legacyContent.homepage.hero.ctaButton;
+  const heroBenefitPills = editableContent?.homepage?.hero?.benefitPills || legacyContent.homepage.hero.benefitPills || [];
+  
   return (
     <section className="relative overflow-hidden">
       <div className="relative">
@@ -47,16 +53,16 @@ export function HeroSection({
                 {/* Hero Text */}
                 <div className="max-w-4xl">
                   <h1 className="mb-4 text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight drop-shadow-[0_8px_32px_rgba(0,0,0,1)] sm:mb-5">
-                    {legacyContent.homepage.hero.title}
+                    {heroTitle}
                   </h1>
 
                   <p className="mb-6 text-base sm:text-lg md:text-xl text-white/95 drop-shadow-[0_6px_20px_rgba(0,0,0,1)] sm:mb-7">
-                    {legacyContent.homepage.hero.subtitle}
+                    {heroSubtitle}
                   </p>
 
                   {/* Key Benefits */}
                   <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-6">
-                    {legacyContent.homepage.hero.benefitPills.map(
+                    {heroBenefitPills.map(
                       (benefit, index) => {
                         const IconComponent =
                           benefit.icon === "Users"
@@ -91,7 +97,7 @@ export function HeroSection({
                       className="h-14 w-full max-w-sm bg-accent px-10 text-lg shadow-2xl hover:scale-105 hover:bg-accent/90"
                       onClick={() => onNavigate("buy-ticket")}
                     >
-                      {legacyContent.homepage.hero.ctaButton}
+                      {heroCtaButton}
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                   </div>

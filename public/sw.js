@@ -1,14 +1,13 @@
 // Service Worker for Go Sintra PWA
-// Version 1.3.3 - Prevent service worker from caching itself
+// Version 1.3.4 - Fix module loading errors
 
-const CACHE_NAME = 'go-sintra-v7'; // Bumped to clear old cache and fix 404 errors
+const CACHE_NAME = 'go-sintra-v8'; // Bumped to clear old cache
 const OFFLINE_URL = '/offline.html';
 
 // Core assets to cache for offline functionality
+// IMPORTANT: Only cache assets that definitely exist
 const CORE_ASSETS = [
-  '/',
   '/offline.html',
-  '/manifest.json',
   '/icon-72x72.png',
 ];
 
@@ -19,16 +18,19 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       console.log('[SW] Caching core assets');
-      return cache.addAll(CORE_ASSETS).catch((error) => {
-        console.error('[SW] Failed to cache some assets:', error);
-        // Continue even if some assets fail - don't block installation
-      });
+      // Cache assets individually to prevent one failure from breaking all
+      return Promise.allSettled(
+        CORE_ASSETS.map(url => 
+          cache.add(url).catch(err => {
+            console.warn(`[SW] Failed to cache ${url}:`, err);
+          })
+        )
+      );
     }).then(() => {
       console.log('[SW] Service worker installed');
       return self.skipWaiting();
     }).catch((error) => {
       console.error('[SW] Installation failed:', error);
-      // Still skip waiting even if caching failed
       return self.skipWaiting();
     })
   );

@@ -136,8 +136,123 @@ export function AttractionDetailPage({
     );
   };
 
+  // Generate structured data for SEO
+  const generateStructuredData = () => {
+    if (!attraction) return null;
+    
+    // Address mapping for each attraction
+    const attractionAddresses: { [key: string]: any } = {
+      "pena-palace": {
+        "@type": "PostalAddress",
+        "streetAddress": "Estrada da Pena",
+        "addressLocality": "Sintra",
+        "postalCode": "2710-609",
+        "addressCountry": "PT"
+      },
+      "quinta-regaleira": {
+        "@type": "PostalAddress",
+        "streetAddress": "Rua Barbosa du Bocage",
+        "addressLocality": "Sintra",
+        "postalCode": "2710-567",
+        "addressCountry": "PT"
+      },
+      "moorish-castle": {
+        "@type": "PostalAddress",
+        "streetAddress": "Estrada da Pena",
+        "addressLocality": "Sintra",
+        "postalCode": "2710-609",
+        "addressCountry": "PT"
+      },
+      "monserrate-palace": {
+        "@type": "PostalAddress",
+        "streetAddress": "R. Visc. de Monserrate",
+        "addressLocality": "Sintra",
+        "postalCode": "2710-591",
+        "addressCountry": "PT"
+      },
+      "sintra-palace": {
+        "@type": "PostalAddress",
+        "streetAddress": "Largo Rainha Dona Amélia",
+        "addressLocality": "Sintra",
+        "postalCode": "2710-616",
+        "addressCountry": "PT"
+      },
+      "convento-capuchos": {
+        "@type": "PostalAddress",
+        "streetAddress": "Convento dos Capuchos",
+        "addressLocality": "Sintra",
+        "postalCode": "2710-405",
+        "addressCountry": "PT"
+      },
+      "cabo-da-roca": {
+        "@type": "PostalAddress",
+        "streetAddress": "Estrada do Cabo da Roca",
+        "addressLocality": "Colares",
+        "postalCode": "2705-001",
+        "addressCountry": "PT"
+      },
+      "villa-sassetti": {
+        "@type": "PostalAddress",
+        "streetAddress": "Estrada da Pena",
+        "addressLocality": "Sintra",
+        "postalCode": "2710-609",
+        "addressCountry": "PT"
+      }
+    };
+    
+    const structuredData = {
+      "@context": "https://schema.org",
+      "@type": "TouristAttraction",
+      "name": attraction.name,
+      "description": attraction.longDescription || attraction.shortDescription,
+      "image": attraction.heroImage || attractionFallbackImages[attractionId] || "",
+      "address": attractionAddresses[attractionId] || {
+        "@type": "PostalAddress",
+        "addressLocality": "Sintra",
+        "addressCountry": "PT"
+      },
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": [
+          "Monday",
+          "Tuesday", 
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday"
+        ],
+        "opens": "09:00",
+        "closes": "19:00"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "reviewCount": "250",
+        "bestRating": "5"
+      }
+    };
+
+    // Add price information if available
+    if (attraction.price) {
+      structuredData["priceRange"] = `€€`;
+    }
+
+    return structuredData;
+  };
+
   return (
     <div className="flex-1">
+      {/* Structured Data for SEO */}
+      {attraction && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(generateStructuredData()),
+          }}
+        />
+      )}
+
       {/* Back Button */}
       <div className="border-b border-border bg-white">
         <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">

@@ -21,7 +21,9 @@ export function BackendStatusIndicator() {
       console.log("🔍 Checking backend status...");
       
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+      const timeoutId = setTimeout(() => {
+        controller.abort(new Error("Backend health check timeout after 5 seconds"));
+      }, 5000); // 5 second timeout
 
       const response = await fetch(
         `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/health`,

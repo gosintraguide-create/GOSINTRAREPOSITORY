@@ -28,127 +28,123 @@ const CLARITY_PROJECT_ID = ""; // Replace with your Clarity project ID (optional
 
 // Build timestamp: Force rebuild
 
+// Helper function to add error handling to lazy imports
+const lazyWithErrorHandling = (importFn: () => Promise<any>, componentName: string) => {
+  return lazy(() =>
+    importFn()
+      .then((module) => module)
+      .catch((error) => {
+        console.error(`🚨 Failed to load ${componentName}:`, error);
+        // Check if it's a module loading error
+        if (error.message?.includes('Unexpected token') || error.message?.includes('expected expression')) {
+          console.error(`❌ This is a module loading error - likely a 404 or HTML being parsed as JavaScript`);
+        }
+        // Re-throw to let ErrorBoundary catch it
+        throw new Error(`Failed to load ${componentName}: ${error.message}`);
+      })
+  );
+};
+
 // Lazy load page components for better performance
-const HomePage = lazy(() =>
-  import("./components/HomePage").then((m) => ({
-    default: m.HomePage,
-  })),
+const HomePage = lazyWithErrorHandling(
+  () => import("./components/HomePage").then((m) => ({ default: m.HomePage })),
+  "HomePage"
 );
-const AttractionsPage = lazy(() =>
-  import("./components/AttractionsPage").then((m) => ({
-    default: m.AttractionsPage,
-  })),
+const AttractionsPage = lazyWithErrorHandling(
+  () => import("./components/AttractionsPage").then((m) => ({ default: m.AttractionsPage })),
+  "AttractionsPage"
 );
-const BuyTicketPage = lazy(() =>
-  import("./components/BuyTicketPage").then((m) => ({
-    default: m.BuyTicketPage,
-  })),
+const BuyTicketPage = lazyWithErrorHandling(
+  () => import("./components/BuyTicketPage").then((m) => ({ default: m.BuyTicketPage })),
+  "BuyTicketPage"
 );
-const AboutPage = lazy(() =>
-  import("./components/AboutPage").then((m) => ({
-    default: m.AboutPage,
-  })),
+const AboutPage = lazyWithErrorHandling(
+  () => import("./components/AboutPage").then((m) => ({ default: m.AboutPage })),
+  "AboutPage"
 );
-const AttractionDetailPage = lazy(() =>
-  import("./components/AttractionDetailPage").then((m) => ({
-    default: m.AttractionDetailPage,
-  })),
+const AttractionDetailPage = lazyWithErrorHandling(
+  () => import("./components/AttractionDetailPage").then((m) => ({ default: m.AttractionDetailPage })),
+  "AttractionDetailPage"
 );
-const RequestPickupPage = lazy(() =>
-  import("./components/RequestPickupPage").then((m) => ({
-    default: m.RequestPickupPage,
-  })),
+const RequestPickupPage = lazyWithErrorHandling(
+  () => import("./components/RequestPickupPage").then((m) => ({ default: m.RequestPickupPage })),
+  "RequestPickupPage"
 );
-const AdminPage = lazy(() =>
-  import("./components/AdminPage").then((m) => ({
-    default: m.AdminPage,
-  })),
+const AdminPage = lazyWithErrorHandling(
+  () => import("./components/AdminPage").then((m) => ({ default: m.AdminPage })),
+  "AdminPage"
 );
-const BookingConfirmationPage = lazy(() =>
-  import("./components/BookingConfirmationPage").then((m) => ({
-    default: m.BookingConfirmationPage,
-  })),
+const BookingConfirmationPage = lazyWithErrorHandling(
+  () => import("./components/BookingConfirmationPage").then((m) => ({ default: m.BookingConfirmationPage })),
+  "BookingConfirmationPage"
 );
-const QRScannerPage = lazy(() =>
-  import("./components/QRScannerPage").then((m) => ({
-    default: m.QRScannerPage,
-  })),
+const QRScannerPage = lazyWithErrorHandling(
+  () => import("./components/QRScannerPage").then((m) => ({ default: m.QRScannerPage })),
+  "QRScannerPage"
 );
-const DiagnosticsPage = lazy(() =>
-  import("./components/DiagnosticsPage").then((m) => ({
-    default: m.DiagnosticsPage,
-  })),
+const DiagnosticsPage = lazyWithErrorHandling(
+  () => import("./components/DiagnosticsPage").then((m) => ({ default: m.DiagnosticsPage })),
+  "DiagnosticsPage"
 );
-const PrivacyPolicyPage = lazy(() =>
-  import("./components/PrivacyPolicyPage").then((m) => ({
-    default: m.PrivacyPolicyPage,
-  })),
+const PrivacyPolicyPage = lazyWithErrorHandling(
+  () => import("./components/PrivacyPolicyPage").then((m) => ({ default: m.PrivacyPolicyPage })),
+  "PrivacyPolicyPage"
 );
-const TermsOfServicePage = lazy(() =>
-  import("./components/TermsOfServicePage").then((m) => ({
-    default: m.TermsOfServicePage,
-  })),
+const TermsOfServicePage = lazyWithErrorHandling(
+  () => import("./components/TermsOfServicePage").then((m) => ({ default: m.TermsOfServicePage })),
+  "TermsOfServicePage"
 );
-const ManageBookingPage = lazy(() =>
-  import("./components/ManageBookingPage").then((m) => ({
-    default: m.ManageBookingPage,
-  })),
+const ManageBookingPage = lazyWithErrorHandling(
+  () => import("./components/ManageBookingPage").then((m) => ({ default: m.ManageBookingPage })),
+  "ManageBookingPage"
 );
-const AnalyticsPage = lazy(() =>
-  import("./components/AnalyticsPage").then((m) => ({
-    default: m.AnalyticsPage,
-  })),
+const AnalyticsPage = lazyWithErrorHandling(
+  () => import("./components/AnalyticsPage").then((m) => ({ default: m.AnalyticsPage })),
+  "AnalyticsPage"
 );
-const OperationsPage = lazy(() =>
-  import("./components/OperationsPage").then((m) => ({
-    default: m.OperationsPage,
-  })),
+const OperationsPage = lazyWithErrorHandling(
+  () => import("./components/OperationsPage").then((m) => ({ default: m.OperationsPage })),
+  "OperationsPage"
 );
-const ManualBookingPage = lazy(() =>
-  import("./components/ManualBookingPage").then((m) => ({
-    default: m.ManualBookingPage,
-  })),
+const ManualBookingPage = lazyWithErrorHandling(
+  () => import("./components/ManualBookingPage").then((m) => ({ default: m.ManualBookingPage })),
+  "ManualBookingPage"
 );
-const DriverLoginPage = lazy(() =>
-  import("./components/DriverLoginPage").then((m) => ({
-    default: m.DriverLoginPage,
-  })),
+const DriverLoginPage = lazyWithErrorHandling(
+  () => import("./components/DriverLoginPage").then((m) => ({ default: m.DriverLoginPage })),
+  "DriverLoginPage"
 );
-const DriverDashboard = lazy(() =>
-  import("./components/DriverDashboard").then((m) => ({
-    default: m.DriverDashboard,
-  })),
+const DriverDashboard = lazyWithErrorHandling(
+  () => import("./components/DriverDashboard").then((m) => ({ default: m.DriverDashboard })),
+  "DriverDashboard"
 );
 
-const BlogPage = lazy(() =>
-  import("./components/BlogPage").then((m) => ({
-    default: m.BlogPage,
-  })),
+const BlogPage = lazyWithErrorHandling(
+  () => import("./components/BlogPage").then((m) => ({ default: m.BlogPage })),
+  "BlogPage"
 );
-const BlogArticlePage = lazy(() =>
-  import("./components/BlogArticlePage").then((m) => ({
-    default: m.BlogArticlePage,
-  })),
+const BlogArticlePage = lazyWithErrorHandling(
+  () => import("./components/BlogArticlePage").then((m) => ({ default: m.BlogArticlePage })),
+  "BlogArticlePage"
 );
 
-const PrivateToursPage = lazy(() =>
-  import("./components/PrivateToursPage").then((m) => ({
-    default: m.PrivateToursPage,
-  })),
+const PrivateToursPage = lazyWithErrorHandling(
+  () => import("./components/PrivateToursPage").then((m) => ({ default: m.PrivateToursPage })),
+  "PrivateToursPage"
 );
 
-const RouteMapPage = lazy(() =>
-  import("./components/RouteMapPage").then((m) => ({
-    default: m.RouteMapPage,
-  })),
+const RouteMapPage = lazyWithErrorHandling(
+  () => import("./components/RouteMapPage").then((m) => ({ default: m.RouteMapPage })),
+  "RouteMapPage"
 );
 
-const SunsetSpecialPurchasePage = lazy(() =>
-  import("./components/SunsetSpecialPurchasePage").then(
+const SunsetSpecialPurchasePage = lazyWithErrorHandling(
+  () => import("./components/SunsetSpecialPurchasePage").then(
     (m) => ({
       default: m.SunsetSpecialPurchasePage,
     }),
   ),
+  "SunsetSpecialPurchasePage"
 );
 
 // Loading fallback component for lazy-loaded pages
@@ -408,6 +404,11 @@ export default function App() {
 
   // Register service worker for PWA functionality
   useEffect(() => {
+    // TEMPORARILY DISABLED - Service worker causing module loading errors
+    // Will re-enable after fixing the root cause
+    console.log('[App] Service worker registration disabled to fix module errors');
+    
+    /* 
     // Only register service worker in production (when not on localhost)
     const isProduction =
       !window.location.hostname.includes("localhost") &&
@@ -478,6 +479,7 @@ export default function App() {
         },
       );
     }
+    */
   }, []);
 
   // Sync content from database on app startup (non-blocking)
@@ -851,6 +853,9 @@ export default function App() {
       case "convento-capuchos":
       case "cabo-da-roca":
       case "villa-sassetti":
+      case "biester-chalet":
+      case "queluz-palace":
+      case "mafra-convent":
         return (
           <AttractionDetailPage
             onNavigate={handleNavigate}

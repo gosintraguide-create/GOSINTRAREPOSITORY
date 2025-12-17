@@ -943,6 +943,10 @@
     margin-right: calc(var(--spacing) * 2);
   }
 
+  .mr-3 {
+    margin-right: calc(var(--spacing) * 3);
+  }
+
   .mb-0\.5 {
     margin-bottom: calc(var(--spacing) * .5);
   }
@@ -1414,6 +1418,10 @@
     width: 75%;
   }
 
+  .w-3\/5 {
+    width: 60%;
+  }
+
   .w-4 {
     width: calc(var(--spacing) * 4);
   }
@@ -1542,6 +1550,10 @@
     max-width: 70%;
   }
 
+  .max-w-\[80px\] {
+    max-width: 80px;
+  }
+
   .max-w-\[120px\] {
     max-width: 120px;
   }
@@ -1576,6 +1588,10 @@
 
   .min-w-\[8rem\] {
     min-width: 8rem;
+  }
+
+  .min-w-\[100px\] {
+    min-width: 100px;
   }
 
   .min-w-\[var\(--radix-select-trigger-width\)\] {
@@ -2906,6 +2922,17 @@
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
   }
 
+  .from-accent\/5 {
+    --tw-gradient-from: var(--accent);
+    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .from-accent\/5 {
+      --tw-gradient-from: color-mix(in oklab, var(--accent) 5%, transparent);
+    }
+  }
+
   .from-accent\/10 {
     --tw-gradient-from: var(--accent);
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
@@ -3655,8 +3682,16 @@
     font-size: .8rem;
   }
 
+  .text-\[9px\] {
+    font-size: 9px;
+  }
+
   .text-\[10px\] {
     font-size: 10px;
+  }
+
+  .text-\[11px\] {
+    font-size: 11px;
   }
 
   .leading-none {
@@ -3810,16 +3845,6 @@
 
   .text-foreground {
     color: var(--foreground);
-  }
-
-  .text-foreground\/80 {
-    color: var(--foreground);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .text-foreground\/80 {
-      color: color-mix(in oklab, var(--foreground) 80%, transparent);
-    }
   }
 
   .text-gray-400 {
@@ -4786,6 +4811,12 @@
   }
 
   @media (hover: hover) {
+    .hover\:bg-transparent:hover {
+      background-color: #0000;
+    }
+  }
+
+  @media (hover: hover) {
     .hover\:bg-white:hover {
       background-color: var(--color-white);
     }
@@ -5709,6 +5740,12 @@
   @media (width >= 40rem) {
     .sm\:grid-cols-3 {
       grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (width >= 40rem) {
+    .sm\:grid-cols-6 {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
     }
   }
 
@@ -6695,7 +6732,7 @@
   --secondary-foreground: #2d3436;
   --muted: #f5f5f5;
   --muted-foreground: #6b7280;
-  --accent: #d97843;
+  --accent: #d77942;
   --accent-foreground: #fff;
   --destructive: #dc2626;
   --destructive-foreground: #fff;
@@ -6706,9 +6743,9 @@
   --font-weight-medium: 500;
   --font-weight-normal: 400;
   --font-weight-semibold: 600;
-  --ring: #d97843;
+  --ring: #d77942;
   --chart-1: #0a4d5c;
-  --chart-2: #d97843;
+  --chart-2: #d77942;
   --chart-3: #636e72;
   --chart-4: #f8f9fa;
   --chart-5: #2d3436;
@@ -6720,7 +6757,7 @@
   --sidebar-accent: #fff4ed;
   --sidebar-accent-foreground: #2d3436;
   --sidebar-border: #f0e9e3;
-  --sidebar-ring: #d97843;
+  --sidebar-ring: #d77942;
 }
 
 html {
@@ -6926,6 +6963,34 @@ html {
   opacity: 1;
   color: #fff;
   font-size: 12px;
+}
+
+input:-webkit-autofill {
+  -webkit-text-fill-color: var(--foreground);
+  -webkit-background-clip: text;
+  transition: background-color 5000s ease-in-out;
+  box-shadow: inset 0 0 20px 20px #fff;
+}
+
+input:-webkit-autofill:hover {
+  -webkit-text-fill-color: var(--foreground);
+  -webkit-background-clip: text;
+  transition: background-color 5000s ease-in-out;
+  box-shadow: inset 0 0 20px 20px #fff;
+}
+
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--foreground);
+  -webkit-background-clip: text;
+  transition: background-color 5000s ease-in-out;
+  box-shadow: inset 0 0 20px 20px #fff;
+}
+
+input:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--foreground);
+  -webkit-background-clip: text;
+  transition: background-color 5000s ease-in-out;
+  box-shadow: inset 0 0 20px 20px #fff;
 }
 
 @property --tw-translate-x {

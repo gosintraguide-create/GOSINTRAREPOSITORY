@@ -46,14 +46,14 @@ function generateBookingConfirmationHTML(data: any): string {
 </head>
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8f9fa; color: #2d3436;">
   <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
-    <div style="background: linear-gradient(135deg, #0A4D5C 0%, #0d5f70 100%); padding: 40px 20px; text-align: center; border-bottom: 4px solid #D97843;">
+    <div style="background: linear-gradient(135deg, #0A4D5C 0%, #0d5f70 100%); padding: 40px 20px; text-align: center; border-bottom: 4px solid #D77942;">
       <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">🎉 Your Day Pass is Ready!</h1>
       <p style="margin: 10px 0 0 0; color: #ffffff; opacity: 0.95; font-size: 16px;">Hop On Sintra</p>
     </div>
     <div style="padding: 40px 30px;">
       <p style="font-size: 18px; margin-bottom: 10px; color: #2d3436;">Dear ${customerName},</p>
       <p style="margin-bottom: 30px; color: #2d3436; line-height: 1.6;">Thank you for choosing Hop On Sintra! Your day pass is confirmed and ready to use. Enjoy unlimited rides on our professional-guided tuk tuks and UMM jeeps throughout Sintra's most enchanting destinations.</p>
-      <div style="background-color: #fff4ed; border-left: 4px solid #D97843; padding: 20px; margin: 25px 0; border-radius: 8px;">
+      <div style="background-color: #fff4ed; border-left: 4px solid #D77942; padding: 20px; margin: 25px 0; border-radius: 8px;">
         <p style="margin: 0 0 10px 0; color: #0A4D5C; font-weight: 700; font-size: 16px;">📎 Your Passes (PDF Attached)</p>
         <p style="margin: 0; color: #2d3436; font-size: 14px; line-height: 1.6;">We've attached a PDF with ${dayPassCount} pass${dayPassCount === 1 ? '' : 'es'}. Save it to your phone and show the QR code when boarding any of our vehicles.</p>
       </div>
@@ -80,7 +80,7 @@ function generateBookingConfirmationHTML(data: any): string {
             <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Guests:</td>
             <td style="padding: 8px 0; color: #2d3436; font-weight: 600; text-align: right; font-size: 14px;">${dayPassCount}</td>
           </tr>
-          <tr style="border-top: 2px solid #D97843;">
+          <tr style="border-top: 2px solid #D77942;">
             <td style="padding: 15px 0 0 0; color: #0A4D5C; font-weight: 700; font-size: 16px;">Total Paid:</td>
             <td style="padding: 15px 0 0 0; color: #0A4D5C; font-weight: 700; text-align: right; font-size: 18px;">€${totalPrice.toFixed(2)}</td>
           </tr>
@@ -96,19 +96,19 @@ function generateBookingConfirmationHTML(data: any): string {
           <li>Guaranteed seating - no overcrowding</li>
         </ul>
       </div>
-      ${guidedTour ? `<div style="background-color: #fff4ed; border: 2px solid #D97843; padding: 20px; border-radius: 8px; margin: 25px 0;">
-        <h3 style="margin: 0 0 12px 0; font-size: 18px; color: #D97843;">🌟 Insight Tour - Important Pickup Information</h3>
+      ${guidedTour ? `<div style="background-color: #fff4ed; border: 2px solid #D77942; padding: 20px; border-radius: 8px; margin: 25px 0;">
+        <h3 style="margin: 0 0 12px 0; font-size: 18px; color: #D77942;">🌟 Insight Tour - Important Pickup Information</h3>
         <p style="margin: 0 0 12px 0; color: #2d3436; font-size: 15px; font-weight: 600;">Your guided tour departs at ${insightTourTime}</p>
         <p style="margin: 0 0 15px 0; color: #2d3436; font-size: 14px; line-height: 1.8;"><strong>📍 Meeting Point:</strong> Historical Center of Sintra (downtown area near the main square)</p>
         <p style="margin: 0; color: #2d3436; font-size: 14px; line-height: 1.8;"><strong>⏰ Please arrive 10 minutes early</strong> to ensure a prompt departure. Look for our vehicle with the Hop On Sintra branding and show your ticket to the driver.</p>
         <p style="margin: 12px 0 0 0; color: #2d3436; font-size: 13px; font-style: italic;">💡 This information is also included in your PDF ticket attachment.</p>
       </div>` : ''}
-      <div style="background-color: #fef3e7; border: 1px solid #D97843; padding: 20px; border-radius: 8px; margin: 25px 0;">
+      <div style="background-color: #fef3e7; border: 1px solid #D77942; padding: 20px; border-radius: 8px; margin: 25px 0;">
         <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #0A4D5C;">🚙 What to Expect</h3>
         <p style="margin: 0; color: #2d3436; font-size: 14px; line-height: 1.8;">Your pass includes rides on our fleet of tuk tuks, UMM jeeps, and other comfortable vehicles - all driven by professional guides who know Sintra's history and hidden gems. Hop on, hop off as many times as you like at any of our designated stops.</p>
       </div>
       <div style="text-align: center; margin: 30px 0;">
-        <a href="https://hoponsintra.com/manage-booking?id=${bookingId}" style="display: inline-block; background-color: #D97843; color: #ffffff; padding: 14px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px; box-shadow: 0 2px 8px rgba(217, 120, 67, 0.3);">Manage My Pass</a>
+        <a href="https://hoponsintra.com/manage-booking?id=${bookingId}" style="display: inline-block; background-color: #D77942; color: #ffffff; padding: 14px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px; box-shadow: 0 2px 8px rgba(215, 121, 66, 0.3);">Manage My Pass</a>
       </div>
       <p style="margin-top: 30px; color: #6b7280; font-size: 14px;">Questions? We're here to help via WhatsApp or email.</p>
       <p style="margin-top: 20px; color: #2d3436;">We look forward to showing you the magic of Sintra!</p>
@@ -116,7 +116,7 @@ function generateBookingConfirmationHTML(data: any): string {
     </div>
     <div style="background-color: #0A4D5C; color: #ffffff; padding: 25px; text-align: center;">
       <p style="margin: 0 0 5px 0; font-size: 18px; font-weight: 700;">Hop On Sintra</p>
-      <p style="margin: 0 0 15px 0; color: #D97843; font-size: 13px;">Professional Hop-On/Hop-Off Day Pass Service</p>
+      <p style="margin: 0 0 15px 0; color: #D77942; font-size: 13px;">Professional Hop-On/Hop-Off Day Pass Service</p>
       <p style="margin: 5px 0; font-size: 13px;">📧 info@hoponsintra.com</p>
       <p style="margin: 5px 0; font-size: 13px;">📱 WhatsApp: +351 932 967 279</p>
       <p style="margin: 15px 0 0 0; font-size: 12px; opacity: 0.8;">Daily Service: 9:00 AM - 7:00 PM | Sintra, Portugal</p>
@@ -309,7 +309,7 @@ const stripe = stripeSecretKey
     })
   : null;
 
-// Generate unique Go Sintra booking ID with sequential letter prefixes
+// Generate unique Hop On Sintra booking ID with sequential letter prefixes
 // Format: AA-1234, AB-1234, AC-1234... ZZ-9999
 // When AA exhausts (9,000 IDs), moves to AB, then AC, etc.
 // Total capacity: 676 letter combos × 9,000 numbers = 6,084,000 IDs!
@@ -561,12 +561,12 @@ async function generateBookingPDF(
         y: height - 145,
         width: width,
         height: 5,
-        color: rgb(0.851, 0.471, 0.263), // #D97843
+        color: rgb(0.843, 0.475, 0.259), // #D77942
       });
 
-      // Logo/Title - Large (GO SINTRA = 9 chars * 20 ≈ 180)
-      page.drawText("GO SINTRA", {
-        x: width / 2 - 90,
+      // Logo/Title - Large (HOP ON SINTRA = 13 chars * 18 ≈ 234)
+      page.drawText("HOP ON SINTRA", {
+        x: width / 2 - 117,
         y: height - 55,
         size: 36,
         color: rgb(1, 1, 1),
@@ -749,7 +749,7 @@ async function generateBookingPDF(
           width: width - 120,
           height: 85,
           color: rgb(1, 0.957, 0.929), // #FFF4ED
-          borderColor: rgb(0.851, 0.471, 0.263), // #D97843
+          borderColor: rgb(0.843, 0.475, 0.259), // #D77942
           borderWidth: 2,
         });
 
@@ -843,8 +843,8 @@ async function generateBookingPDF(
         color: rgb(0.851, 0.471, 0.263),
       });
 
-      // GO SINTRA - size 14, ~8 per char = 72
-      const footerTitle = "GO SINTRA";
+      // HOP ON SINTRA - size 14, ~8 per char = 104
+      const footerTitle = "HOP ON SINTRA";
       page.drawText(footerTitle, {
         x: width / 2 - (footerTitle.length * 4),
         y: 65,
@@ -1966,7 +1966,7 @@ app.post(
         },
         metadata: {
           ...metadata,
-          service: "Go Sintra Day Pass",
+          service: "Hop On Sintra Day Pass",
         },
       });
 
@@ -4735,8 +4735,8 @@ app.get(
         .filter(Boolean); // Remove any null entries
 
       const manifest = {
-        name: "Go Sintra - Hop-On/Hop-Off Day Pass",
-        short_name: "Go Sintra",
+        name: "Hop On Sintra - Hop-On/Hop-Off Day Pass",
+        short_name: "Hop On Sintra",
         description:
           "Premium hop-on/hop-off day pass service in Sintra, Portugal. Unlimited rides between major attractions with guaranteed seating.",
         start_url: "/",

@@ -46,6 +46,7 @@ import {
   Car,
   Receipt,
   RefreshCw,
+  Info,
 } from "lucide-react";
 import { format } from "date-fns";
 import { StripePaymentForm } from "./StripePaymentForm";
@@ -183,6 +184,7 @@ export function BuyTicketPage({
   const [paymentInitError, setPaymentInitError] = useState<
     string | null
   >(null);
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -322,10 +324,10 @@ export function BuyTicketPage({
     }
   }, [formData.date]);
 
-  // Create payment intent when reaching step 4
+  // Create payment intent when reaching step 5
   useEffect(() => {
     if (
-      currentStep === 4 &&
+      currentStep === 5 &&
       !paymentClientSecret &&
       !isCreatingPayment
     ) {
@@ -464,7 +466,7 @@ export function BuyTicketPage({
   };
 
   const handleNext = () => {
-    if (currentStep < 4) {
+    if (currentStep < 5) {
       setCurrentStep(currentStep + 1);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -720,113 +722,227 @@ export function BuyTicketPage({
     setIsSubmitting(false);
   };
 
+  // Validation for new Step 1: Date and Time
   const canProceedStep1 =
     formData.date &&
-    formData.pickupLocation &&
-    formData.quantity >= 1 &&
-    (formData.pickupLocation === "other" || formData.timeSlot) &&
+    formData.timeSlot &&
     ticketPurchasesEnabled;
-  const canProceedStep3 =
+  
+  // Validation for new Step 2: Pickup and Quantity
+  const canProceedStep2 =
+    formData.pickupLocation &&
+    formData.quantity >= 1;
+  
+  // Validation for Step 4 (Your Information)
+  const canProceedStep4 =
     formData.fullName &&
     formData.email &&
     formData.confirmEmail &&
     formData.email === formData.confirmEmail;
 
   return (
-    <div className="flex-1 bg-secondary/30">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden border-b border-border bg-gradient-to-br from-primary/5 via-white to-accent/5 py-12 sm:py-16">
-        <div className="absolute -top-24 right-0 h-96 w-96 rounded-full bg-gradient-to-br from-accent/10 to-primary/10 blur-3xl" />
-        <div className="absolute -bottom-24 left-0 h-96 w-96 rounded-full bg-gradient-to-tr from-primary/10 to-accent/10 blur-3xl" />
-
-        <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-          <h1 className="mb-3 bg-gradient-to-r from-primary via-primary/90 to-accent bg-clip-text text-foreground">
-            {t.buyTicket.hero.title}
-          </h1>
-          <div className="mx-auto mb-6 h-1 w-20 rounded-full bg-accent" />
-
-          {/* Progress Steps */}
-          <div className="mx-auto mt-8 flex max-w-2xl items-center justify-center gap-2">
-            {[1, 2, 3, 4].map((step) => (
-              <div key={step} className="flex items-center">
-                <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-full transition-all ${
-                    currentStep >= step
-                      ? "bg-primary text-white"
-                      : "bg-white text-muted-foreground border-2 border-border"
-                  }`}
-                >
-                  {currentStep > step ? (
-                    <Check className="h-5 w-5" />
-                  ) : (
-                    step
-                  )}
-                </div>
-                {step < 4 && (
-                  <div
-                    className={`h-1 w-8 sm:w-16 transition-all ${
-                      currentStep > step
-                        ? "bg-primary"
-                        : "bg-border"
-                    }`}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-4">
+    <div className="flex-1 bg-white">
+      {/* Hero Section - Simplified */}
+      <section className="border-b border-border bg-gradient-to-br from-secondary/30 to-white py-8 sm:py-12">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h1 className="mb-2 text-foreground">
+              {t.buyTicket.hero.title}
+            </h1>
             <p className="text-muted-foreground">
-              {currentStep === 1 &&
-                t.buyTicket.steps.step1Description}
-              {currentStep === 2 &&
-                t.buyTicket.steps.step2Description}
+              {currentStep === 1 && "Select your preferred date and start time"}
+              {currentStep === 2 && "Choose pickup location and number of guests"}
               {currentStep === 3 &&
-                t.buyTicket.steps.step3Description}
+                t.buyTicket.steps.step2Description}
               {currentStep === 4 &&
+                t.buyTicket.steps.step3Description}
+              {currentStep === 5 &&
                 t.buyTicket.steps.step4Description}
             </p>
+          </div>
+
+          {/* Progress Steps with Icons */}
+          <div className="mx-auto mt-8 max-w-3xl">
+            <div className="flex items-start justify-between">
+              {/* Step 1 */}
+              <div className="flex flex-col items-center flex-1">
+                <div className="relative flex items-center w-full justify-center">
+                  <div
+                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all z-10 ${
+                      currentStep >= 1
+                        ? "bg-accent text-white"
+                        : "bg-border text-muted-foreground"
+                    }`}
+                  >
+                    {currentStep > 1 ? (
+                      <Check className="h-6 w-6" />
+                    ) : (
+                      <CalendarIcon className="h-6 w-6" />
+                    )}
+                  </div>
+                </div>
+                <p className="mt-2 text-xs text-center text-muted-foreground max-w-[80px] font-semibold">
+                  Date & Time
+                </p>
+              </div>
+
+              {/* Connector 1-2 */}
+              <div className="flex flex-col items-center flex-1">
+                <div className="relative flex items-center w-full justify-center h-12">
+                  <div
+                    className={`h-1 w-3/5 rounded-full transition-all ${
+                      currentStep > 1 ? "bg-accent" : "bg-border"
+                    }`}
+                  />
+                </div>
+              </div>
+
+              {/* Step 2 */}
+              <div className="flex flex-col items-center flex-1">
+                <div className="relative flex items-center w-full justify-center">
+                  <div
+                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all z-10 ${
+                      currentStep >= 2
+                        ? "bg-accent text-white"
+                        : "bg-border text-muted-foreground"
+                    }`}
+                  >
+                    {currentStep > 2 ? (
+                      <Check className="h-6 w-6" />
+                    ) : (
+                      <MapPin className="h-6 w-6" />
+                    )}
+                  </div>
+                </div>
+                <p className="mt-2 text-xs text-center text-muted-foreground max-w-[80px] font-semibold">
+                  Pickup Spot
+                </p>
+              </div>
+
+              {/* Connector 2-3 */}
+              <div className="flex flex-col items-center flex-1">
+                <div className="relative flex items-center w-full justify-center h-12">
+                  <div
+                    className={`h-1 w-3/5 rounded-full transition-all ${
+                      currentStep > 2 ? "bg-accent" : "bg-border"
+                    }`}
+                  />
+                </div>
+              </div>
+
+              {/* Step 3 */}
+              <div className="flex flex-col items-center flex-1">
+                <div className="relative flex items-center w-full justify-center">
+                  <div
+                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all z-10 ${
+                      currentStep >= 3
+                        ? "bg-accent text-white"
+                        : "bg-border text-muted-foreground"
+                    }`}
+                  >
+                    {currentStep > 3 ? (
+                      <Check className="h-6 w-6" />
+                    ) : (
+                      <Ticket className="h-6 w-6" />
+                    )}
+                  </div>
+                </div>
+                <p className="mt-2 text-xs text-center text-muted-foreground max-w-[80px] font-semibold">
+                  Attractions
+                </p>
+              </div>
+
+              {/* Connector 3-4 */}
+              <div className="flex flex-col items-center flex-1">
+                <div className="relative flex items-center w-full justify-center h-12">
+                  <div
+                    className={`h-1 w-3/5 rounded-full transition-all ${
+                      currentStep > 3 ? "bg-accent" : "bg-border"
+                    }`}
+                  />
+                </div>
+              </div>
+
+              {/* Step 4 */}
+              <div className="flex flex-col items-center flex-1">
+                <div className="relative flex items-center w-full justify-center">
+                  <div
+                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all z-10 ${
+                      currentStep >= 4
+                        ? "bg-accent text-white"
+                        : "bg-border text-muted-foreground"
+                    }`}
+                  >
+                    {currentStep > 4 ? (
+                      <Check className="h-6 w-6" />
+                    ) : (
+                      <User className="h-6 w-6" />
+                    )}
+                  </div>
+                </div>
+                <p className="mt-2 text-xs text-center text-muted-foreground max-w-[80px] font-semibold">
+                  Your Details
+                </p>
+              </div>
+
+              {/* Connector 4-5 */}
+              <div className="flex flex-col items-center flex-1">
+                <div className="relative flex items-center w-full justify-center h-12">
+                  <div
+                    className={`h-1 w-3/5 rounded-full transition-all ${
+                      currentStep > 4 ? "bg-accent" : "bg-border"
+                    }`}
+                  />
+                </div>
+              </div>
+
+              {/* Step 5 */}
+              <div className="flex flex-col items-center flex-1">
+                <div className="relative flex items-center w-full justify-center">
+                  <div
+                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all z-10 ${
+                      currentStep >= 5
+                        ? "bg-accent text-white"
+                        : "bg-border text-muted-foreground"
+                    }`}
+                  >
+                    <Check className="h-6 w-6" />
+                  </div>
+                </div>
+                <p className="mt-2 text-xs text-center text-muted-foreground max-w-[80px] font-semibold">
+                  Confirmation
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Form Section */}
-      <section className="py-12 sm:py-16">
+      <section className="py-8 sm:py-12">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <div>
-            {/* Step 1: Date & Group */}
+            {/* Step 1: Date & Time Selection */}
             {currentStep === 1 && (
-              <Card className="border-border p-8">
-                <div className="mb-8">
-                  <div className="mb-3 flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                      <CalendarIcon className="h-5 w-5 text-primary" />
-                    </div>
-                    <h2 className="text-foreground">
-                      {t.buyTicket.dateSelection.planYourVisit}
-                    </h2>
-                  </div>
-                  <div className="h-1 w-16 rounded-full bg-accent" />
-                  
-                  {/* Insight Tour Highlight */}
-                  <div className="mt-6 rounded-lg border-2 border-accent/30 bg-gradient-to-br from-accent/10 to-accent/5 p-4">
+              <Card className="border-border p-6 sm:p-8 shadow-sm">
+                <div className="space-y-8">
+                  {/* Insight Tour Info Banner */}
+                  <div className="rounded-xl border border-accent/30 bg-accent/5 p-4">
                     <div className="flex items-start gap-3">
-                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-accent text-white">
-                        <AlertCircle className="h-5 w-5" />
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-accent flex items-center justify-center">
+                        <Info className="h-4 w-4 text-white" />
                       </div>
-                      <div className="flex-1">
-                        <p className="font-semibold text-accent mb-2">
-                          {t.buyTicket.timeSlots.guidedTourLabel}
-                        </p>
-                        <p className="text-sm text-foreground/80">
-                          {t.buyTicket.timeSlots.guidedTourDescription}
+                      <div>
+                        <h4 className="text-accent mb-1 font-semibold">
+                          Insight Tour
+                        </h4>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          Select time slots include our <span className="font-semibold text-foreground">Insight Tour</span>, a longer and more detailed ride where the driver shares the stories and history behind Sintra's monuments. Look for time slots marked with the distinctive Insight Tour badge below.
                         </p>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="space-y-6">
                   {/* Sold Out Warning when ticket purchases disabled */}
                   {!ticketPurchasesEnabled && (
                     <div className="rounded-lg border-2 border-red-200 bg-red-50 p-4">
@@ -844,394 +960,335 @@ export function BuyTicketPage({
                     </div>
                   )}
 
-                  <div className="grid gap-6 sm:grid-cols-2">
-                    <div>
-                      <Label
-                        htmlFor="date"
-                        className="text-foreground"
-                      >
-                        {t.buyTicket.dateSelection.selectDate}
-                      </Label>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className={`mt-2 w-full justify-start text-left border-border ${
-                              !formData.date &&
-                              "text-muted-foreground"
-                            }`}
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
+                  {/* Date Selection */}
+                  <div>
+                    <h3 className="text-foreground mb-3 font-semibold">
+                      Select Date
+                    </h3>
+                    <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={`w-full justify-start text-left border-border h-14 px-4 ${
+                            !formData.date &&
+                            "text-muted-foreground"
+                          }`}
+                        >
+                          <CalendarIcon className="mr-3 h-5 w-5 text-muted-foreground" />
+                          <span className="text-foreground">
                             {formData.date
                               ? format(
                                   new Date(formData.date),
-                                  "PPP",
+                                  "EEEE, MMMM d, yyyy",
                                 )
                               : t.buyTicket.dateSelection
                                   .pickDate}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent
-                          className="w-auto p-0"
-                          align="start"
-                        >
-                          <CalendarComponent
-                            mode="single"
-                            selected={
-                              formData.date
-                                ? new Date(formData.date)
-                                : undefined
-                            }
-                            onSelect={(date) => {
-                              if (date) {
-                                handleInputChange(
-                                  "date",
-                                  format(date, "yyyy-MM-dd"),
-                                );
-                              }
-                            }}
-                            disabled={(date) =>
-                              date <
-                              new Date(
-                                new Date().setHours(0, 0, 0, 0),
-                              ) || !ticketPurchasesEnabled
-                            }
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-
-                    <div>
-                      <Label
-                        htmlFor="timeSlot"
-                        className="text-foreground"
+                          </span>
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        className="w-auto p-0"
+                        align="start"
                       >
+                        <CalendarComponent
+                          mode="single"
+                          selected={
+                            formData.date
+                              ? new Date(formData.date)
+                              : undefined
+                          }
+                          onSelect={(date) => {
+                            if (date) {
+                              handleInputChange(
+                                "date",
+                                format(date, "yyyy-MM-dd"),
+                              );
+                              setIsDatePickerOpen(false);
+                            }
+                          }}
+                          disabled={(date) =>
+                            date <
+                            new Date(
+                              new Date().setHours(0, 0, 0, 0),
+                            ) || !ticketPurchasesEnabled
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  {/* Time Selection */}
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-foreground font-semibold">
+                        Departure Time
+                      </h3>
+                      <div className="h-5 flex items-center">
+                        {loadingAvailability && (
+                          <p className="text-sm text-muted-foreground flex items-center gap-2">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            {
+                              t.buyTicket.dateSelection
+                                .checkingAvailability
+                            }
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                      {TIME_SLOTS.map((slot) => {
+                        const seats = formData.date
+                          ? getAvailability(
+                              formData.date,
+                              slot.value,
+                            )
+                          : 50;
+                        const isSoldOut = seats === 0;
+                        const isLowAvailability = seats < 10 && seats > 0;
+                        const isSelected = formData.timeSlot === slot.value;
+
+                        return (
+                          <div key={slot.value} className="relative">
+                            {slot.isGuided && !isSoldOut && (
+                              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-white text-[9px] px-3 py-1 rounded-full font-semibold uppercase tracking-wider whitespace-nowrap z-10">
+                                Insight Tour
+                              </div>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (!isSoldOut && formData.date) {
+                                  handleInputChange(
+                                    "timeSlot",
+                                    slot.value,
+                                  );
+                                }
+                              }}
+                              disabled={!formData.date || isSoldOut || loadingAvailability}
+                              className={`
+                                w-full rounded-lg transition-all
+                                ${slot.isGuided && !isSoldOut ? "h-16 border-2 border-primary flex flex-col items-center justify-center gap-1 py-2" : "h-12 flex items-center justify-center"}
+                                ${
+                                  isSelected
+                                    ? "bg-accent text-white shadow-md"
+                                    : isSoldOut
+                                        ? "bg-secondary/30 text-muted-foreground cursor-not-allowed"
+                                        : "bg-secondary/50 text-foreground hover:bg-secondary/80"
+                                }
+                                ${!formData.date ? "opacity-50 cursor-not-allowed" : ""}
+                              `}
+                            >
+                              <span className="font-semibold">{slot.label}</span>
+                              {slot.isGuided && !isSoldOut && (
+                                <span className="text-[11px] text-primary font-semibold">
+                                  +€{guidedTourSurcharge}
+                                </span>
+                              )}
+                            </button>
+                            {formData.date && !isSoldOut && isLowAvailability && !slot.isGuided && (
+                              <div className="absolute -top-1 -right-1 bg-accent text-white text-[10px] px-1.5 py-0.5 rounded-full font-semibold">
+                                {seats} left
+                              </div>
+                            )}
+                            {isSoldOut && (
+                              <div className="absolute -top-1 -right-1 bg-destructive text-white text-[10px] px-1.5 py-0.5 rounded-full font-semibold">
+                                Sold Out
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                    {formData.date && formData.timeSlot && (
+                      <p className="mt-3 text-sm text-muted-foreground">
+                        <span className="font-semibold text-foreground">Note:</span>{" "}
                         {
                           t.buyTicket.dateSelection
-                            .preferredStartTime
+                            .passValidFullDay
                         }
-                      </Label>
-                      {loadingAvailability && (
-                        <p className="mt-1 text-xs text-muted-foreground flex items-center gap-1">
-                          <Loader2 className="h-3 w-3 animate-spin" />
-                          {
-                            t.buyTicket.dateSelection
-                              .checkingAvailability
-                          }
-                        </p>
-                      )}
-                      {formData.pickupLocation !== "other" && (
-                        <>
-                          <Select
-                            value={formData.timeSlot}
-                            onValueChange={(value) => {
-                              handleInputChange(
-                                "timeSlot",
-                                value,
-                              );
-                            }}
-                            disabled={
-                              !formData.date ||
-                              loadingAvailability
-                            }
-                          >
-                            <SelectTrigger className="mt-2 border-border">
-                              <SelectValue
-                                placeholder={
-                                  t.buyTicket.dateSelection
-                                    .selectTime
-                                }
-                              />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {TIME_SLOTS.map((slot) => {
-                                const seats = formData.date
-                                  ? getAvailability(
-                                      formData.date,
-                                      slot.value,
-                                    )
-                                  : 50;
-                                const isLowAvailability =
-                                  seats < 10 && seats > 0;
-                                const isSoldOut = seats === 0;
-
-                                return (
-                                  <SelectItem
-                                    key={slot.value}
-                                    value={slot.value}
-                                    disabled={isSoldOut}
-                                  >
-                                    <div className="flex items-center gap-2 w-full">
-                                      <span>{slot.label}</span>
-                                      {formData.date && (
-                                        <span
-                                          className={`text-xs ${
-                                            isSoldOut
-                                              ? "text-destructive"
-                                              : isLowAvailability
-                                                ? "text-accent"
-                                                : "text-muted-foreground"
-                                          }`}
-                                        >
-                                          {isSoldOut
-                                            ? t.buyTicket
-                                                .dateSelection
-                                                .soldOut
-                                            : isLowAvailability
-                                              ? t.buyTicket
-                                                  .dateSelection
-                                                  .limited
-                                              : t.buyTicket
-                                                  .dateSelection
-                                                  .available}
-                                        </span>
-                                      )}
-                                      {slot.isGuided && (
-                                        <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full font-medium">
-                                          {
-                                            t.buyTicket
-                                              .timeSlots
-                                              .guidedTourLabel
-                                          }{" "}
-                                          +€
-                                          {guidedTourSurcharge}
-                                        </span>
-                                      )}
-                                    </div>
-                                  </SelectItem>
-                                );
-                              })}
-                            </SelectContent>
-                          </Select>
-                          <p className="mt-1 text-muted-foreground">
-                            {
-                              t.buyTicket.dateSelection
-                                .passValidFullDay
-                            }
-                          </p>
-                          {formData.date &&
-                            formData.timeSlot && (
-                              <p
-                                className={`mt-1 ${
-                                  getAvailability(
-                                    formData.date,
-                                    formData.timeSlot,
-                                  ) === 0
-                                    ? "text-destructive"
-                                    : getAvailability(
-                                          formData.date,
-                                          formData.timeSlot,
-                                        ) < 10
-                                      ? "text-accent"
-                                      : "text-primary"
-                                }`}
-                              >
-                                {getAvailability(
-                                  formData.date,
-                                  formData.timeSlot,
-                                ) === 0
-                                  ? t.buyTicket.dateSelection
-                                      .soldOutForTime
-                                  : getAvailability(
-                                        formData.date,
-                                        formData.timeSlot,
-                                      ) < 10
-                                    ? t.buyTicket.dateSelection
-                                        .limitedAvailability
-                                    : t.buyTicket.dateSelection
-                                        .goodAvailability}
-                              </p>
-                            )}
-                        </>
-                      )}
-                      {formData.pickupLocation === "other" && (
-                        <p className="mt-2 text-sm text-muted-foreground italic">
-                          No specific time needed - hop on at
-                          any time during operating hours (9 AM
-                          - 7 PM)
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label
-                      htmlFor="pickupLocation"
-                      className="text-foreground"
-                    >
-                      {
-                        t.buyTicket.dateSelection
-                          .preferredPickupSpot
-                      }
-                    </Label>
-
-                    {/* Dropdown Selector - PRIMARY ACTION */}
-                    <Select
-                      value={formData.pickupLocation}
-                      onValueChange={(value) =>
-                        handleInputChange(
-                          "pickupLocation",
-                          value,
-                        )
-                      }
-                    >
-                      <SelectTrigger className="mt-2 border-border h-12">
-                        <SelectValue
-                          placeholder={
-                            t.buyTicket.dateSelection
-                              .pickupPlaceholder
-                          }
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {PICKUP_LOCATIONS.map((location) => (
-                          <SelectItem
-                            key={location.value}
-                            value={location.value}
-                          >
-                            {location.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <p className="mt-1.5 text-xs text-muted-foreground">
-                      {t.buyTicket.dateSelection.pickupHelpText}
-                    </p>
-
-                    {/* Interactive Map - COLLAPSIBLE REFERENCE */}
-                    <Collapsible className="mt-3">
-                      <CollapsibleTrigger className="flex items-center gap-2 text-xs text-primary hover:text-primary/80 transition-colors">
-                        <MapPin className="h-3.5 w-3.5" />
-                        <span>{t.buyTicket?.timeSlots?.viewRouteMaps || "View route maps"}</span>
-                        <ChevronDown className="h-3.5 w-3.5 transition-transform data-[state=open]:rotate-180" />
-                      </CollapsibleTrigger>
-                      <CollapsibleContent className="mt-3">
-                        <PickupLocationMap
-                          selectedLocation={
-                            formData.pickupLocation
-                          }
-                          onLocationSelect={(location) =>
-                            handleInputChange(
-                              "pickupLocation",
-                              location,
-                            )
-                          }
-                          language={language}
-                        />
-                      </CollapsibleContent>
-                    </Collapsible>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="quantity"
-                      className="text-foreground"
-                    >
-                      {t.buyTicket.dateSelection.numberOfGuests}
-                    </Label>
-                    <div className="flex items-center gap-3">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="h-12 w-12 border-border"
-                        onClick={() =>
-                          handleInputChange(
-                            "quantity",
-                            Math.max(1, formData.quantity - 1),
-                          )
-                        }
-                      >
-                        -
-                      </Button>
-                      <Input
-                        id="quantity"
-                        type="number"
-                        min="1"
-                        max="50"
-                        value={formData.quantity}
-                        onChange={(e) =>
-                          handleInputChange(
-                            "quantity",
-                            Math.max(
-                              1,
-                              parseInt(e.target.value) || 1,
-                            ),
-                          )
-                        }
-                        className="border-border text-center"
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="h-12 w-12 border-border"
-                        onClick={() =>
-                          handleInputChange(
-                            "quantity",
-                            Math.min(50, formData.quantity + 1),
-                          )
-                        }
-                      >
-                        +
-                      </Button>
-                    </div>
-                    {formData.quantity <= 6 ? (
-                      <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
-                        <div className="flex items-start gap-2 text-muted-foreground">
-                          <Car className="h-4 w-4 mt-0.5 flex-shrink-0 text-primary" />
-                          <p>
-                            {
-                              t.buyTicket.dateSelection
-                                .vehicleDispatchSmall
-                            }{" "}
-                            {formData.quantity}
-                          </p>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="rounded-lg border border-accent/20 bg-accent/5 p-3">
-                        <div className="flex items-start gap-2 text-muted-foreground">
-                          <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0 text-accent" />
-                          <p>
-                            {
-                              t.buyTicket.dateSelection
-                                .vehicleDispatchLarge
-                            }{" "}
-                            <strong className="text-foreground">
-                              {Math.ceil(formData.quantity / 6)}{" "}
-                              {
-                                t.buyTicket.dateSelection
-                                  .vehicles
-                              }
-                            </strong>{" "}
-                            {
-                              t.buyTicket.dateSelection
-                                .coordinatedToArrive
-                            }
-                          </p>
-                        </div>
-                      </div>
+                      </p>
                     )}
                   </div>
+                </div>
+
+                <div className="mt-8 flex justify-between items-center pt-6">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="lg"
+                    onClick={() => window.history.back()}
+                    className="text-muted-foreground hover:bg-transparent hover:text-foreground"
+                  >
+                    <ChevronLeft className="mr-1 h-4 w-4" />
+                    Back
+                  </Button>
+                  <Button
+                    type="button"
+                    size="lg"
+                    className="bg-accent hover:bg-accent/90 text-white px-8"
+                    onClick={handleNext}
+                    disabled={!canProceedStep1}
+                  >
+                    Continue
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
+              </Card>
+            )}
+
+            {/* Step 2: Pickup Location & Quantity */}
+            {currentStep === 2 && (
+              <Card className="border-border p-6 sm:p-8 shadow-sm">
+                <div className="mb-6">
+                  <h2 className="text-foreground mb-1 font-semibold">
+                    Pickup & Group Size
+                  </h2>
+                  <p className="text-muted-foreground text-sm">
+                    Choose your pickup location and number of guests
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Pickup Location Card - Most Important */}
+                  <Card className="p-6 border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                          <MapPin className="h-5 w-5 text-primary" />
+                        </div>
+                        <Label
+                          htmlFor="pickupLocation"
+                          className="text-foreground font-semibold text-lg"
+                        >
+                          {
+                            t.buyTicket.dateSelection
+                              .preferredPickupSpot
+                          }
+                        </Label>
+                      </div>
+
+                      {/* Dropdown Selector - PRIMARY ACTION */}
+                      <Select
+                        value={formData.pickupLocation}
+                        onValueChange={(value) =>
+                          handleInputChange(
+                            "pickupLocation",
+                            value,
+                          )
+                        }
+                      >
+                        <SelectTrigger className="border-primary/30 h-14 text-base bg-white shadow-sm hover:border-primary/50 transition-colors">
+                          <SelectValue
+                            placeholder={
+                              t.buyTicket.dateSelection
+                                .pickupPlaceholder
+                            }
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {PICKUP_LOCATIONS.map((location) => (
+                            <SelectItem
+                              key={location.value}
+                              value={location.value}
+                              className="text-base py-3"
+                            >
+                              {location.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-sm text-muted-foreground">
+                        {t.buyTicket.dateSelection.pickupHelpText}
+                      </p>
+
+                      {/* Interactive Map - COLLAPSIBLE REFERENCE */}
+                      <Collapsible>
+                        <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors font-medium">
+                          <MapPin className="h-4 w-4" />
+                          <span>{t.buyTicket?.timeSlots?.viewRouteMaps || "View route maps"}</span>
+                          <ChevronDown className="h-4 w-4 transition-transform data-[state=open]:rotate-180" />
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="mt-4">
+                          <PickupLocationMap
+                            selectedLocation={
+                              formData.pickupLocation
+                            }
+                            onLocationSelect={(location) =>
+                              handleInputChange(
+                                "pickupLocation",
+                                location,
+                              )
+                            }
+                            language={language}
+                          />
+                        </CollapsibleContent>
+                      </Collapsible>
+                    </div>
+                  </Card>
+
+                  {/* Number of Guests Card - Secondary Importance */}
+                  <Card className="p-6 border border-border">
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-accent/10 flex items-center justify-center">
+                          <Users className="h-5 w-5 text-accent" />
+                        </div>
+                        <Label
+                          htmlFor="quantity"
+                          className="text-foreground font-semibold text-lg"
+                        >
+                          {t.buyTicket.dateSelection.numberOfGuests}
+                        </Label>
+                      </div>
+                      <div className="flex items-center justify-center gap-4 py-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="lg"
+                          className="h-14 w-14 rounded-full border-2 border-border hover:bg-accent hover:text-white hover:border-accent transition-all text-xl"
+                          onClick={() =>
+                            handleInputChange(
+                              "quantity",
+                              Math.max(1, formData.quantity - 1),
+                            )
+                          }
+                        >
+                          -
+                        </Button>
+                        <div className="flex items-center justify-center min-w-[100px] px-6 py-3 rounded-lg bg-secondary/30">
+                          <span className="text-4xl text-foreground font-semibold">
+                            {formData.quantity}
+                          </span>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="lg"
+                          className="h-14 w-14 rounded-full border-2 border-border hover:bg-accent hover:text-white hover:border-accent transition-all text-xl"
+                          onClick={() =>
+                            handleInputChange(
+                              "quantity",
+                              Math.min(50, formData.quantity + 1),
+                            )
+                          }
+                        >
+                          +
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
 
                   {/* Guided Tour Info */}
                   {isGuidedTourTime && (
-                    <div className="rounded-lg border-2 border-primary/20 bg-primary/5 p-6">
+                    <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
                       <div className="flex items-start gap-3">
-                        <Check className="h-5 w-5 mt-0.5 flex-shrink-0 text-primary" />
+                        <Check className="h-5 w-5 flex-shrink-0 text-primary" />
                         <div className="flex-1">
-                          <p className="text-foreground">
+                          <p className="text-sm text-foreground font-semibold">
                             {
                               t.buyTicket.dateSelection
                                 .guidedCommentaryIncluded
-                            }
-                          </p>
-                          <p className="mt-1 text-muted-foreground">
-                            {
-                              t.buyTicket.dateSelection
-                                .guidedCommentaryDescription
                             }
                           </p>
                         </div>
@@ -1239,67 +1296,61 @@ export function BuyTicketPage({
                     </div>
                   )}
 
-                  {/* Price Summary for Step 1 */}
-                  <div className="rounded-lg bg-secondary/50 p-6">
+                  {/* Price Summary for Step 2 */}
+                  <Card className="p-6 border-2 border-accent/20 bg-gradient-to-br from-accent/5 to-transparent">
                     <div className="flex justify-between items-center">
-                      <div>
-                        <p className="text-muted-foreground">
-                          {
-                            t.buyTicket.dateSelection
-                              .dayPassPriceSummary
-                          }
-                          {isGuidedTourTime
-                            ? ` ${t.buyTicket.dateSelection.dayPassWithGuided}`
-                            : ""}
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-accent/10 flex items-center justify-center">
+                          <Receipt className="h-5 w-5 text-accent" />
+                        </div>
+                        <p className="text-foreground font-semibold text-lg">
+                          Total
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-2xl text-primary">
-                          €{passTotal + guidedTourTotal}
-                        </p>
-                        <p className="text-muted-foreground">
-                          {t.buyTicket.dateSelection.forGuests}{" "}
-                          {formData.quantity}{" "}
-                          {formData.quantity === 1
-                            ? t.buyTicket.dateSelection.guest
-                            : t.buyTicket.dateSelection.guests}
+                        <p className="text-3xl text-accent font-semibold">
+                          €{(passTotal + guidedTourTotal).toFixed(2)}
                         </p>
                       </div>
                     </div>
-                  </div>
+                  </Card>
                 </div>
 
-                <div className="mt-8 flex justify-end">
+                <div className="mt-8 flex justify-between items-center pt-6 border-t border-border gap-4">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="lg"
+                    onClick={handleBack}
+                    className="text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                  >
+                    <ChevronLeft className="mr-1 h-5 w-5" />
+                    Back
+                  </Button>
                   <Button
                     type="button"
                     size="lg"
-                    className="bg-primary hover:bg-primary/90"
+                    className="bg-accent hover:bg-accent/90 text-white px-10 h-12 shadow-lg hover:shadow-xl transition-all text-base"
                     onClick={handleNext}
-                    disabled={!canProceedStep1}
+                    disabled={!canProceedStep2}
                   >
-                    {t.buyTicket.dateSelection.continueButton}
+                    Continue
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </div>
               </Card>
             )}
 
-            {/* Step 2: Attraction Tickets */}
-            {currentStep === 2 && (
-              <Card className="border-border p-8">
-                <div className="mb-8">
-                  <div className="mb-3 flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                      <Ticket className="h-5 w-5 text-primary" />
-                    </div>
-                    <h2 className="text-foreground">
-                      Add Attraction Tickets?
-                    </h2>
-                  </div>
-                  <div className="h-1 w-16 rounded-full bg-accent" />
+            {/* Step 3: Attraction Tickets */}
+            {currentStep === 3 && (
+              <Card className="border-border p-6 sm:p-8 shadow-sm">
+                <div className="mb-6">
+                  <h2 className="text-foreground mb-1 font-semibold">
+                    Add Attraction Tickets?
+                  </h2>
                   {monumentTicketsEnabled ? (
                     <p className="mt-4 text-muted-foreground">
-                      Skip the ticket lines! Add entrance
+                      <span className="font-semibold text-foreground">Skip the ticket lines!</span> Add entrance
                       tickets to popular attractions.{" "}
                       {formData.quantity > 1
                         ? `Prices shown for ${formData.quantity} guests.`
@@ -1346,15 +1397,15 @@ export function BuyTicketPage({
                             htmlFor={attraction.id}
                             className="flex flex-1 cursor-pointer items-center justify-between"
                           >
-                            <span className="text-foreground">
+                            <span className="text-foreground font-semibold">
                               {attraction.name}
                             </span>
-                            <span className="text-primary">
+                            <span className="text-primary font-semibold">
                               +€
                               {attraction.price *
                                 formData.quantity}
                               {formData.quantity > 1 && (
-                                <span className="ml-1 text-muted-foreground">
+                                <span className="ml-1 text-muted-foreground font-normal">
                                   (€{attraction.price} each)
                                 </span>
                               )}
@@ -1368,7 +1419,7 @@ export function BuyTicketPage({
                       0 && (
                       <div className="mt-6 rounded-lg bg-accent/5 p-4">
                         <p className="text-muted-foreground">
-                          💡 <strong>Tip:</strong> You'll
+                          💡 <strong className="text-foreground">Tip:</strong> You'll
                           receive digital tickets via email
                           along with your{" "}
                           {formData.quantity === 1
@@ -1400,10 +1451,10 @@ export function BuyTicketPage({
                           </div>
                         )}
                         <div className="border-t border-border pt-2 flex justify-between items-center">
-                          <p className="text-foreground">
+                          <p className="text-foreground font-semibold">
                             Total
                           </p>
-                          <p className="text-2xl text-primary">
+                          <p className="text-2xl text-primary font-semibold">
                             €{totalPrice}
                           </p>
                         </div>
@@ -1451,10 +1502,10 @@ export function BuyTicketPage({
                           </span>
                         </div>
                         <div className="border-t border-border pt-2 flex justify-between items-center">
-                          <p className="text-foreground">
+                          <p className="text-foreground font-semibold">
                             Total
                           </p>
-                          <p className="text-2xl text-primary">
+                          <p className="text-2xl text-primary font-semibold">
                             €{totalPrice}
                           </p>
                         </div>
@@ -1463,49 +1514,44 @@ export function BuyTicketPage({
                   </>
                 )}
 
-                <div className="mt-8 flex justify-between">
+                <div className="mt-8 flex justify-between items-center pt-6 border-t border-border">
                   <Button
                     type="button"
-                    variant="outline"
+                    variant="ghost"
                     size="lg"
                     onClick={handleBack}
+                    className="text-foreground hover:bg-transparent"
                   >
-                    <ChevronLeft className="mr-2 h-5 w-5" />
+                    <ChevronLeft className="mr-1 h-4 w-4" />
                     Back
                   </Button>
                   <Button
                     type="button"
                     size="lg"
-                    className="bg-primary hover:bg-primary/90"
+                    className="bg-accent hover:bg-accent/90 text-white px-8"
                     onClick={handleNext}
                   >
                     Continue
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
               </Card>
             )}
 
-            {/* Step 3: Your Information */}
-            {currentStep === 3 && (
-              <Card className="border-border p-8">
-                <div className="mb-8">
-                  <div className="mb-3 flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                      <User className="h-5 w-5 text-primary" />
-                    </div>
-                    <h2 className="text-foreground">
-                      Your Information
-                    </h2>
-                  </div>
-                  <div className="h-1 w-16 rounded-full bg-accent" />
+            {/* Step 4: Your Information */}
+            {currentStep === 4 && (
+              <Card className="border-border p-6 sm:p-8 shadow-sm">
+                <div className="mb-6">
+                  <h2 className="text-foreground mb-1 font-semibold">
+                    Your Information
+                  </h2>
                 </div>
 
                 <div className="space-y-6">
                   <div>
                     <Label
                       htmlFor="fullName"
-                      className="text-foreground"
+                      className="text-foreground font-semibold"
                     >
                       Full Name
                     </Label>
@@ -1515,7 +1561,7 @@ export function BuyTicketPage({
                         id="fullName"
                         type="text"
                         placeholder="John Doe"
-                        className="border-border pl-10"
+                        className="border-border pl-10 bg-white"
                         required
                         value={formData.fullName}
                         onChange={(e) =>
@@ -1531,7 +1577,7 @@ export function BuyTicketPage({
                   <div>
                     <Label
                       htmlFor="email"
-                      className="text-foreground"
+                      className="text-foreground font-semibold"
                     >
                       Email Address
                     </Label>
@@ -1541,7 +1587,7 @@ export function BuyTicketPage({
                         id="email"
                         type="email"
                         placeholder="john@example.com"
-                        className="border-border pl-10"
+                        className="border-border pl-10 bg-white"
                         required
                         value={formData.email}
                         onChange={(e) =>
@@ -1560,7 +1606,7 @@ export function BuyTicketPage({
                   <div>
                     <Label
                       htmlFor="confirmEmail"
-                      className="text-foreground"
+                      className="text-foreground font-semibold"
                     >
                       Confirm Email
                     </Label>
@@ -1570,7 +1616,7 @@ export function BuyTicketPage({
                         id="confirmEmail"
                         type="email"
                         placeholder="john@example.com"
-                        className="border-border pl-10"
+                        className="border-border pl-10 bg-white"
                         required
                         value={formData.confirmEmail}
                         onChange={(e) =>
@@ -1591,44 +1637,41 @@ export function BuyTicketPage({
                   </div>
                 </div>
 
-                <div className="mt-8 flex justify-between">
+                <div className="mt-8 flex justify-between items-center pt-6 border-t border-border">
                   <Button
                     type="button"
-                    variant="outline"
+                    variant="ghost"
                     size="lg"
                     onClick={handleBack}
+                    className="text-foreground hover:bg-transparent"
                   >
-                    <ChevronLeft className="mr-2 h-5 w-5" />
+                    <ChevronLeft className="mr-1 h-4 w-4" />
                     Back
                   </Button>
                   <Button
                     type="button"
                     size="lg"
-                    className="bg-primary hover:bg-primary/90"
+                    className="bg-accent hover:bg-accent/90 text-white px-8"
                     onClick={handleNext}
-                    disabled={!canProceedStep3}
+                    disabled={!canProceedStep4}
                   >
                     Continue
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
               </Card>
             )}
 
-            {/* Step 4: Payment */}
-            {currentStep === 4 && (
+            {/* Step 5: Payment */}
+            {currentStep === 5 && (
               <div className="grid gap-8 lg:grid-cols-3">
                 {/* Order Summary */}
                 <div className="order-2 lg:order-1 lg:col-span-1">
-                  <Card className="lg:sticky lg:top-4 border-border p-6">
+                  <Card className="lg:sticky lg:top-4 border-border p-6 shadow-sm">
                     <div className="mb-4">
-                      <div className="mb-2 flex items-center gap-2">
-                        <Receipt className="h-5 w-5 text-primary" />
-                        <h3 className="text-foreground">
-                          Order Summary
-                        </h3>
-                      </div>
-                      <div className="h-1 w-16 rounded-full bg-accent" />
+                      <h3 className="text-foreground font-semibold">
+                        Order Summary
+                      </h3>
                     </div>
 
                     <div className="space-y-3 text-muted-foreground">
@@ -1687,11 +1730,11 @@ export function BuyTicketPage({
                       </div>
 
                       <div className="border-t border-border pt-3 mt-3 flex justify-between items-center gap-2">
-                        <span className="text-foreground flex-shrink-0">
+                        <span className="text-foreground flex-shrink-0 font-semibold">
                           Total
                         </span>
-                        <span className="text-2xl text-primary flex-shrink-0">
-                          €{totalPrice}
+                        <span className="text-3xl text-foreground flex-shrink-0 font-semibold">
+                          €{totalPrice.toFixed(2)}
                         </span>
                       </div>
                     </div>
@@ -1725,24 +1768,18 @@ export function BuyTicketPage({
 
                 {/* Payment Form */}
                 <div className="order-1 lg:order-2 lg:col-span-2">
-                  <Card className="border-border p-8">
-                    <div className="mb-8">
-                      <div className="mb-3 flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                          <CreditCard className="h-5 w-5 text-primary" />
-                        </div>
-                        <h2 className="text-foreground">
-                          Payment Details
-                        </h2>
-                      </div>
-                      <div className="h-1 w-16 rounded-full bg-accent" />
+                  <Card className="border-border p-6 sm:p-8 shadow-sm">
+                    <div className="mb-6">
+                      <h2 className="text-foreground mb-1 font-semibold">
+                        Payment Details
+                      </h2>
                     </div>
 
                     {paymentInitError ? (
                       <div className="flex flex-col items-center justify-center py-12 space-y-4">
                         <AlertCircle className="h-12 w-12 text-destructive" />
                         <div className="text-center space-y-2">
-                          <p className="text-foreground">
+                          <p className="text-foreground font-semibold">
                             Payment initialization failed
                           </p>
                           <p className="text-sm text-muted-foreground">
@@ -1754,7 +1791,7 @@ export function BuyTicketPage({
                             type="button"
                             onClick={createStripePaymentIntent}
                             size="lg"
-                            className="bg-primary hover:bg-primary/90"
+                            className="bg-accent hover:bg-accent/90 text-white"
                           >
                             <RefreshCw className="mr-2 h-5 w-5" />
                             Retry
@@ -1765,7 +1802,7 @@ export function BuyTicketPage({
                             size="lg"
                             onClick={handleBack}
                           >
-                            <ChevronLeft className="mr-2 h-5 w-5" />
+                            <ChevronLeft className="mr-1 h-4 w-4" />
                             Go Back
                           </Button>
                         </div>
@@ -1788,16 +1825,16 @@ export function BuyTicketPage({
                           customerEmail={formData.email}
                         />
 
-                        <div className="mt-6">
+                        <div className="mt-6 pt-6 border-t border-border">
                           <Button
                             type="button"
-                            variant="outline"
+                            variant="ghost"
                             size="lg"
                             onClick={handleBack}
-                            className="w-full sm:w-auto"
+                            className="text-foreground hover:bg-transparent"
                             disabled={isSubmitting}
                           >
-                            <ChevronLeft className="mr-2 h-5 w-5" />
+                            <ChevronLeft className="mr-1 h-4 w-4" />
                             Back
                           </Button>
                         </div>
