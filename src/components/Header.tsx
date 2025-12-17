@@ -61,12 +61,12 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
       {/* Desktop Header */}
       <header className="sticky top-0 z-50 border-b border-border bg-white/95 backdrop-blur-md shadow-sm">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
-          <div className="flex h-20 items-center justify-between md:justify-between relative">
+          <div className="flex h-20 items-center justify-between lg:justify-between relative">
             {/* Mobile: Menu Button (top left) */}
             <Button
               variant="ghost"
               size="sm"
-              className="text-primary hover:bg-secondary md:hidden relative z-10 flex-shrink-0"
+              className="text-primary hover:bg-secondary lg:hidden relative z-10 flex-shrink-0"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -78,7 +78,7 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
                 onNavigate("home");
                 setIsMenuOpen(false);
               }}
-              className="group absolute left-1/2 -translate-x-1/2 md:relative md:left-auto md:translate-x-0 flex items-center transition-all hover:opacity-90 flex-shrink-0"
+              className="group absolute left-1/2 -translate-x-1/2 lg:relative lg:left-auto lg:translate-x-0 flex items-center transition-all hover:opacity-90 flex-shrink-0"
             >
               <div className="h-[30px] w-auto sm:h-10">
                 <Logo />
@@ -86,12 +86,12 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
             </button>
 
             {/* Desktop Navigation */}
-            <nav className="hidden items-center gap-3 lg:gap-6 md:flex md:ml-8 lg:ml-16 flex-shrink min-w-0">
+            <nav className="hidden items-center gap-2 xl:gap-4 lg:flex lg:ml-6 xl:ml-12 flex-shrink min-w-0">
               {navItems.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => onNavigate(item.id)}
-                  className={`transition-all whitespace-nowrap text-sm lg:text-base flex-shrink-0 ${
+                  className={`transition-all whitespace-nowrap text-xs xl:text-base flex-shrink-0 ${
                     currentPage === item.id
                       ? "text-primary"
                       : "text-muted-foreground hover:text-primary"
@@ -111,7 +111,7 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
               </div>
               <Button 
                 size="lg"
-                className="bg-accent hover:bg-accent/90 shadow-lg hover:shadow-xl transition-all hover:scale-105 flex-shrink-0 text-sm lg:text-base px-4 lg:px-6"
+                className="bg-accent hover:bg-accent/90 shadow-lg hover:shadow-xl transition-all hover:scale-105 flex-shrink-0 text-xs xl:text-base px-3 xl:px-6 py-2"
                 onClick={() => onNavigate("buy-ticket")}
               >
                 {t.buyTicket}
@@ -119,7 +119,7 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
             </nav>
 
             {/* Mobile: User Profile (top right) */}
-            <div className="md:hidden relative z-10 flex-shrink-0">
+            <div className="lg:hidden relative z-10 flex-shrink-0">
               <UserProfile onNavigate={onNavigate} language={language} />
             </div>
           </div>
