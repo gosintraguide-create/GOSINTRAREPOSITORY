@@ -51,6 +51,8 @@ const SUPPORTED_LANGUAGES = [
 export function ContentEditor() {
   const [currentLanguage, setCurrentLanguage] = useState<string>('en');
   const [content, setContent] = useState<ComprehensiveContent>(DEFAULT_COMPREHENSIVE_CONTENT);
+  const [contentByLanguage, setContentByLanguage] = useState<Record<string, ComprehensiveContent>>({});
+  const [modifiedLanguages, setModifiedLanguages] = useState<Set<string>>(new Set());
   const [mainContent, setMainContent] = useState<WebsiteContent>(loadMainContent());
   const [hasChanges, setHasChanges] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -62,78 +64,91 @@ export function ContentEditor() {
   const [autoTranslateEnabled, setAutoTranslateEnabled] = useState(false);
   const [translationStatus, setTranslationStatus] = useState(getTranslationStatus());
 
+  // Load all languages on initial mount
   useEffect(() => {
-    const loadedContent = loadComprehensiveContentForLanguage(currentLanguage);
-    setContent(loadedContent);
+    const allContent: Record<string, ComprehensiveContent> = {};
+    SUPPORTED_LANGUAGES.forEach(lang => {
+      allContent[lang.code] = loadComprehensiveContentForLanguage(lang.code);
+    });
+    setContentByLanguage(allContent);
+    setContent(allContent['en'] || DEFAULT_COMPREHENSIVE_CONTENT);
     setMainContent(loadMainContent());
-    setHasChanges(false); // Reset changes when switching languages
-    // Load autoTranslateEnabled from server settings (only from English)
-    if (currentLanguage === 'en') {
-      setAutoTranslateEnabled(loadedContent.adminSettings?.autoTranslateEnabled ?? false);
+    
+    // Load autoTranslateEnabled from server settings
+    setAutoTranslateEnabled(allContent['en'].adminSettings?.autoTranslateEnabled ?? false);
+  }, []);
+
+  // When switching languages, update the current content from the cache
+  useEffect(() => {
+    if (contentByLanguage[currentLanguage]) {
+      setContent(contentByLanguage[currentLanguage]);
     }
-  }, [currentLanguage]);
+  }, [currentLanguage, contentByLanguage]);
 
   const handleSave = async () => {
     try {
-      // If editing a non-English language, save directly to that language
-      if (currentLanguage !== 'en') {
-        saveComprehensiveContentForLanguage(content, currentLanguage);
-        setHasChanges(false);
-        toast.success(`${currentLanguage.toUpperCase()} content saved successfully!`);
-        window.dispatchEvent(new Event('content-updated'));
+      // Save all modified languages
+      const languagesToSave = Array.from(modifiedLanguages);
+      
+      if (languagesToSave.length === 0) {
+        toast.info("No changes to save");
         return;
       }
 
-      // English content - handle auto-translate and database save
-      // Update content with current admin settings
-      const updatedContent = {
-        ...content,
-        adminSettings: {
-          autoTranslateEnabled,
-        },
-      };
-      
       // Save main content first
       const mainResult = await saveMainContentAsync(mainContent);
       
-      // Decide whether to auto-translate
-      if (autoTranslateEnabled) {
-        setIsTranslating(true);
-        toast.info("Saving content and updating translations...");
-        
-        // Use incremental translation (only translate changed content)
-        const result = await saveIncrementalTranslation(updatedContent, 'en', (language, progress) => {
-          setTranslationProgress({ language, progress });
-        });
-        
-        setIsTranslating(false);
-        setTranslationProgress(null);
-        
-        if (result.success && mainResult.success) {
-          setHasChanges(false);
-          setTranslationStatus(getTranslationStatus());
-          toast.success("Content saved and translations updated!");
-          window.dispatchEvent(new Event('content-updated'));
+      // Save each modified language
+      for (const langCode of languagesToSave) {
+        if (langCode === 'en') {
+          // English content - handle auto-translate and database save
+          const updatedContent = {
+            ...contentByLanguage[langCode],
+            adminSettings: {
+              autoTranslateEnabled,
+            },
+          };
+          
+          // Decide whether to auto-translate
+          if (autoTranslateEnabled) {
+            setIsTranslating(true);
+            toast.info("Saving content and updating translations...");
+            
+            // Use incremental translation (only translate changed content)
+            const result = await saveIncrementalTranslation(updatedContent, 'en', (language, progress) => {
+              setTranslationProgress({ language, progress });
+            });
+            
+            setIsTranslating(false);
+            setTranslationProgress(null);
+            
+            if (!result.success) {
+              toast.error(`Translation failed: ${result.error}`);
+            }
+          } else {
+            // Save without translation
+            const result = await saveComprehensiveContentAsync(updatedContent);
+            
+            if (!result.success) {
+              toast.error(`Failed to save English: ${result.error}`);
+            }
+          }
         } else {
-          const errors = [];
-          if (!result.success) errors.push(result.error);
-          if (!mainResult.success) errors.push(mainResult.error);
-          toast.error(`Some errors occurred: ${errors.join(', ')}`);
+          // Save non-English language directly
+          saveComprehensiveContentForLanguage(contentByLanguage[langCode], langCode);
         }
+      }
+      
+      // Clear modified languages and mark as saved
+      setModifiedLanguages(new Set());
+      setHasChanges(false);
+      setTranslationStatus(getTranslationStatus());
+      
+      if (mainResult.success) {
+        toast.success(`Saved changes for ${languagesToSave.length} language(s)!`);
+        window.dispatchEvent(new Event('content-updated'));
       } else {
-        // Save without translation
-        const result = await saveComprehensiveContentAsync(updatedContent);
-        
-        if (result.success && mainResult.success) {
-          setHasChanges(false);
-          toast.success("All content saved successfully!");
-          window.dispatchEvent(new Event('content-updated'));
-        } else {
-          const errors = [];
-          if (!result.success) errors.push(result.error);
-          if (!mainResult.success) errors.push(mainResult.error);
-          toast.error(`Failed to save: ${errors.join(', ')}`);
-        }
+        toast.error(`Some errors occurred: ${mainResult.error}`);
       }
     } catch (error) {
       console.error('Error saving content:', error);
@@ -149,14 +164,21 @@ export function ContentEditor() {
     // Immediately save the setting to the server
     try {
       const updatedContent = {
-        ...content,
+        ...contentByLanguage['en'],
         adminSettings: {
           autoTranslateEnabled: checked,
         },
       };
       
       await saveComprehensiveContentAsync(updatedContent);
+      
+      // Update both content and contentByLanguage cache
       setContent(updatedContent);
+      setContentByLanguage(prev => ({
+        ...prev,
+        'en': updatedContent,
+      }));
+      
       toast.success(checked ? "Auto-translate enabled" : "Auto-translate disabled");
     } catch (error) {
       console.error('Error saving auto-translate setting:', error);
@@ -185,7 +207,7 @@ export function ContentEditor() {
         setIsTranslating(true);
         toast.info("Translating content to all languages...");
         
-        const result = await saveTranslatedContent(content, 'en', (language, progress) => {
+        const result = await saveTranslatedContent(contentByLanguage['en'], 'en', (language, progress) => {
           setTranslationProgress({ language, progress });
         });
         
@@ -193,6 +215,14 @@ export function ContentEditor() {
         setTranslationProgress(null);
         
         if (result.success) {
+          // Reload all translations after translating
+          const allContent: Record<string, ComprehensiveContent> = {};
+          SUPPORTED_LANGUAGES.forEach(lang => {
+            allContent[lang.code] = loadComprehensiveContentForLanguage(lang.code);
+          });
+          setContentByLanguage(allContent);
+          setContent(allContent[currentLanguage]);
+          
           setTranslationStatus(getTranslationStatus());
           toast.success("All content translated successfully!");
         } else {
@@ -234,11 +264,18 @@ export function ContentEditor() {
     if (confirm("Are you sure you want to reset all content to defaults? This cannot be undone.")) {
       setContent(DEFAULT_COMPREHENSIVE_CONTENT);
       
+      // Update contentByLanguage cache
+      setContentByLanguage(prev => ({
+        ...prev,
+        [currentLanguage]: DEFAULT_COMPREHENSIVE_CONTENT,
+      }));
+      
       try {
         const result = await saveComprehensiveContentAsync(DEFAULT_COMPREHENSIVE_CONTENT);
         
         if (result.success) {
           setHasChanges(false);
+          setModifiedLanguages(new Set());
           toast.success("Content reset to defaults and saved to database!");
         } else {
           toast.error(`Content reset locally but database save failed: ${result.error}`);
@@ -260,7 +297,17 @@ export function ContentEditor() {
       }
       
       current[path[path.length - 1]] = value;
+      
+      // Update the contentByLanguage cache
+      setContentByLanguage(prevByLang => ({
+        ...prevByLang,
+        [currentLanguage]: newContent,
+      }));
+      
+      // Mark this language as modified
+      setModifiedLanguages(prev => new Set(prev).add(currentLanguage));
       setHasChanges(true);
+      
       return newContent;
     });
     
@@ -296,7 +343,17 @@ export function ContentEditor() {
       }
       
       current[index][field] = value;
+      
+      // Update the contentByLanguage cache
+      setContentByLanguage(prevByLang => ({
+        ...prevByLang,
+        [currentLanguage]: newContent,
+      }));
+      
+      // Mark this language as modified
+      setModifiedLanguages(prev => new Set(prev).add(currentLanguage));
       setHasChanges(true);
+      
       return newContent;
     });
     
@@ -332,7 +389,17 @@ export function ContentEditor() {
       }
       
       current.push(template);
+      
+      // Update the contentByLanguage cache
+      setContentByLanguage(prevByLang => ({
+        ...prevByLang,
+        [currentLanguage]: newContent,
+      }));
+      
+      // Mark this language as modified
+      setModifiedLanguages(prev => new Set(prev).add(currentLanguage));
       setHasChanges(true);
+      
       return newContent;
     });
     
@@ -368,7 +435,17 @@ export function ContentEditor() {
       }
       
       current.splice(index, 1);
+      
+      // Update the contentByLanguage cache
+      setContentByLanguage(prevByLang => ({
+        ...prevByLang,
+        [currentLanguage]: newContent,
+      }));
+      
+      // Mark this language as modified
+      setModifiedLanguages(prev => new Set(prev).add(currentLanguage));
       setHasChanges(true);
+      
       return newContent;
     });
     
