@@ -745,10 +745,9 @@ export default function App() {
         );
       case "request-pickup":
         return (
-          <RequestPickupPage
-            onNavigate={handleNavigate}
-            language={language}
-          />
+          <Suspense fallback={<div className="flex h-screen items-center justify-center"><div className="text-primary">Loading...</div></div>}>
+            <RequestPickupPage onNavigate={handleNavigate} language={language} />
+          </Suspense>
         );
       case "about":
         return <AboutPage language={language} />;
@@ -936,7 +935,7 @@ export default function App() {
         currentPage !== "operations" &&
         currentPage !== "manual-booking" &&
         currentPage !== "diagnostics" && (
-          <LiveChat onNavigate={handleNavigate} />
+          <LiveChat onNavigate={handleNavigate} language={language} />
         )}
       {/* Show floating CTA on all pages except buy-ticket and admin */}
       {currentPage !== "buy-ticket" &&

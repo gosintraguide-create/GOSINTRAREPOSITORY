@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { MessageCircle, X, Send, Car, ArrowLeft } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -8,9 +8,11 @@ import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { createClient } from '../utils/supabase/client';
 import { toast } from "sonner@2.0.3";
 import { getSession } from "../lib/sessionManager";
+import { getComponentTranslation } from "../lib/translations/component-translations";
 
 interface LiveChatProps {
   onNavigate: (page: string) => void;
+  language?: string;
 }
 
 interface Message {
@@ -21,7 +23,7 @@ interface Message {
   timestamp: string;
 }
 
-export function LiveChat({ onNavigate }: LiveChatProps) {
+export function LiveChat({ onNavigate, language = "en" }: LiveChatProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [content, setContent] = useState<WebsiteContent>(DEFAULT_CONTENT);
@@ -33,6 +35,7 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatWindowRef = useRef<HTMLDivElement>(null);
+  const t = getComponentTranslation(language);
 
   useEffect(() => {
     console.log('LiveChat component mounted');
@@ -259,7 +262,7 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
     // Go back to contact options screen without erasing the conversation
     // The conversation is saved and will resume when they click "Start Web Chat" again
     setHasStartedChat(false);
-    toast.info("Your conversation is saved.");
+    toast.info(t.liveChat.conversationSaved);
   };
 
   const sendMessage = async () => {
@@ -387,8 +390,8 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
                 <MessageCircle className="h-5 w-5 text-accent-foreground" />
               </div>
               <div>
-                <h3 className="text-accent-foreground">Live Support</h3>
-                <p className="text-accent-foreground/80">We're here to help!</p>
+                <h3 className="text-accent-foreground">{t.liveChat.liveSupport}</h3>
+                <p className="text-accent-foreground/80">{t.liveChat.hereToHelp}</p>
               </div>
             </div>
             <button
@@ -407,7 +410,7 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
               <div className="space-y-4">
                 <div className="rounded-lg bg-secondary p-3">
                   <p className="text-foreground">
-                    Hi! 👋 Welcome to Hop On Sintra. How can we help you today?
+                    {t.liveChat.welcomeMessage}
                   </p>
                 </div>
 
@@ -419,7 +422,7 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
                     className="w-full bg-[#25D366] text-white hover:bg-[#20BD5A]"
                   >
                     <MessageCircle className="mr-2 h-5 w-5" />
-                    Chat on WhatsApp
+                    {t.liveChat.chatOnWhatsApp}
                   </Button>
 
                   <Button
@@ -437,7 +440,7 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
                       <span className="w-full border-t border-border" />
                     </div>
                     <div className="relative flex justify-center">
-                      <span className="bg-card px-2 text-muted-foreground">or start web chat</span>
+                      <span className="bg-card px-2 text-muted-foreground">{t.liveChat.orStartWebChat}</span>
                     </div>
                   </div>
 
@@ -446,7 +449,7 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
                     <Input
                       value={customerName}
                       onChange={(e) => setCustomerName(e.target.value)}
-                      placeholder="John Smith"
+                      placeholder={t.liveChat.enterName}
                       className="mt-1 border-border"
                       readOnly={!!getSession()}
                     />
@@ -461,7 +464,7 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
                       type="email"
                       value={customerEmail}
                       onChange={(e) => setCustomerEmail(e.target.value)}
-                      placeholder="john@example.com"
+                      placeholder={t.liveChat.enterEmail}
                       className="mt-1 border-border"
                       readOnly={!!getSession()}
                     />
@@ -475,7 +478,7 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
                     disabled={loading}
                     className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                   >
-                    {loading ? "Starting..." : "Start Web Chat"}
+                    {loading ? t.liveChat.starting : t.liveChat.startWebChat}
                   </Button>
 
                   <p className="text-center text-xs text-muted-foreground">
@@ -535,7 +538,7 @@ export function LiveChat({ onNavigate }: LiveChatProps) {
                 <Input
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Type your message..."
+                  placeholder={t.liveChat.enterMessage}
                   className="flex-1 border-border"
                   onKeyPress={(e) => e.key === "Enter" && sendMessage()}
                 />

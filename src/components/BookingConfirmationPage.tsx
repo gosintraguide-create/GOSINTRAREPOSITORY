@@ -9,6 +9,7 @@ import { toast } from "sonner@2.0.3";
 import { TicketCard } from "./TicketCard";
 import { getTranslation } from "../lib/translations";
 import { getSession } from "../lib/sessionManager";
+import { getComponentTranslation } from "../lib/translations/component-translations";
 
 interface BookingConfirmationPageProps {
   onNavigate: (page: string) => void;
@@ -16,10 +17,11 @@ interface BookingConfirmationPageProps {
   language?: string;
 }
 
-export function BookingConfirmationPage({ onNavigate, booking, language }: BookingConfirmationPageProps) {
+export function BookingConfirmationPage({ onNavigate, booking, language = "en" }: BookingConfirmationPageProps) {
   const [emailSent, setEmailSent] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const t = getComponentTranslation(language);
 
   useEffect(() => {
     // Scroll to top
@@ -68,10 +70,10 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
       
-      toast.success('PDF downloaded successfully!');
+      toast.success(t.bookingConfirmation.pdfDownloadSuccess);
     } catch (error) {
       console.error('Error downloading PDF:', error);
-      toast.error(`Failed to download PDF: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      toast.error(t.bookingConfirmation.pdfDownloadError);
     } finally {
       setDownloadingPdf(false);
     }
@@ -81,10 +83,10 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
     return (
       <div className="min-h-screen bg-background py-20">
         <div className="container px-4 text-center">
-          <p>No booking found. Please make a booking first.</p>
+          <p>{t.bookingConfirmation.noBookingFound}</p>
           <Button onClick={() => onNavigate("buy-ticket")} className="mt-4 bg-accent hover:bg-accent/90">
             <Ticket className="mr-2 h-5 w-5" />
-            Book Now
+            {t.bookingConfirmation.bookNow}
           </Button>
         </div>
       </div>
@@ -120,16 +122,16 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
           <div className="mb-4 inline-flex h-20 w-20 items-center justify-center rounded-full bg-green-100">
             <CheckCircle className="h-12 w-12 text-green-600" />
           </div>
-          <h1 className="mb-2">Booking Confirmed!</h1>
+          <h1 className="mb-2">{t.bookingConfirmation.bookingConfirmed}</h1>
           <p className="mb-4 text-muted-foreground">
-            Your Hop On Sintra day pass is ready. Check your email for confirmation and QR codes.
+            {t.bookingConfirmation.checkEmail}
           </p>
           
           {/* Booking ID Badge */}
           <div className="mx-auto inline-block rounded-lg bg-primary/10 px-6 py-3">
-            <p className="text-sm text-muted-foreground">Booking ID</p>
+            <p className="text-sm text-muted-foreground">{t.bookingConfirmation.bookingId}</p>
             <p className="text-2xl font-mono font-bold text-primary">{booking.id}</p>
-            <p className="mt-1 text-xs text-muted-foreground">Save this for managing your booking</p>
+            <p className="mt-1 text-xs text-muted-foreground">{t.bookingConfirmation.saveForManaging}</p>
           </div>
         </div>
 
@@ -140,10 +142,10 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
               <Mail className="h-5 w-5 text-green-600" />
               <div className="flex-1">
                 <p className="font-medium text-green-900">
-                  Confirmation email sent to {booking.contactInfo.email}
+                  {t.bookingConfirmation.emailSentTo} {booking.contactInfo.email}
                 </p>
                 <p className="text-green-700">
-                  Your tickets PDF and booking details have been sent to your email.
+                  {t.bookingConfirmation.ticketsSentToEmail}
                 </p>
               </div>
             </div>
@@ -159,26 +161,30 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
                   <LogIn className="h-6 w-6 text-accent-foreground" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="mb-2 text-accent-foreground">🚀 Unlock Full Access</h3>
+                  <h3 className="mb-2 text-accent-foreground">🚀 {t.bookingConfirmation.unlockFullAccess}</h3>
                   <p className="mb-3 text-muted-foreground">
-                    Login now to access premium features during your visit:
+                    {t.bookingConfirmation.loginNow}
                   </p>
                   <ul className="space-y-2 text-sm text-muted-foreground">
                     <li className="flex items-center gap-2">
                       <Car className="h-4 w-4 text-accent" />
-                      <span><strong>Request a pickup</strong> from any attraction in Sintra</span>
+                      <span><strong>{t.bookingConfirmation.requestPickup}</strong> {t.bookingConfirmation.requestPickupDesc}</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <MessageCircle className="h-4 w-4 text-accent" />
-                      <span><strong>Live chat support</strong> with saved conversation history</span>
+                      <span><strong>{t.bookingConfirmation.liveChatSupport}</strong> {t.bookingConfirmation.liveChatSupportDesc}</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <MapPin className="h-4 w-4 text-accent" />
-                      <span><strong>View your tickets</strong> and booking details anytime</span>
+                      <span><strong>{t.bookingConfirmation.viewTickets}</strong> {t.bookingConfirmation.viewTicketsDesc}</span>
                     </li>
                   </ul>
                   <p className="mt-3 text-sm text-muted-foreground">
-                    Use your <strong className="text-accent-foreground">Booking ID</strong> and <strong className="text-accent-foreground">last name</strong> to login instantly.
+                    {t.bookingConfirmation.loginInstantly.split('{bold}')[0]}
+                    <strong className="text-accent-foreground">{t.bookingConfirmation.loginInstantly.split('{bold}')[1].split('{/bold}')[0]}</strong>
+                    {t.bookingConfirmation.loginInstantly.split('{/bold}')[1].split('{bold}')[0]}
+                    <strong className="text-accent-foreground">{t.bookingConfirmation.loginInstantly.split('{bold}')[2].split('{/bold}')[0]}</strong>
+                    {t.bookingConfirmation.loginInstantly.split('{/bold}')[2]}
                   </p>
                 </div>
               </div>
@@ -189,7 +195,7 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
                   className="w-full gap-2 bg-accent hover:bg-accent/90 md:w-auto"
                 >
                   <LogIn className="h-5 w-5" />
-                  Login Now
+                  {t.bookingConfirmation.loginNowButton}
                 </Button>
               </div>
             </div>
@@ -199,9 +205,9 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
         {/* Booking Summary */}
         <Card className="mb-6 p-6">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-primary">Booking Summary</h2>
+            <h2 className="text-primary">{t.bookingConfirmation.bookingSummary}</h2>
             <Badge variant="secondary" className="bg-primary/10 text-primary">
-              Booking #{bookingIdShort}
+              {t.bookingConfirmation.booking} #{bookingIdShort}
             </Badge>
           </div>
 
@@ -209,7 +215,7 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
             <div className="flex items-start gap-3">
               <Calendar className="mt-1 h-5 w-5 text-muted-foreground" />
               <div>
-                <p className="font-medium">Date</p>
+                <p className="font-medium">{t.bookingConfirmation.date}</p>
                 <p className="text-muted-foreground">{formattedDate}</p>
                 <p className="text-muted-foreground">9:00 AM - 7:00 PM</p>
               </div>
@@ -218,9 +224,9 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
             <div className="flex items-start gap-3">
               <Users className="mt-1 h-5 w-5 text-muted-foreground" />
               <div>
-                <p className="font-medium">Passengers</p>
+                <p className="font-medium">{t.bookingConfirmation.passengers}</p>
                 <p className="text-muted-foreground">
-                  {booking.passengers.length} {booking.passengers.length === 1 ? 'person' : 'people'}
+                  {booking.passengers.length} {booking.passengers.length === 1 ? t.bookingConfirmation.person : t.bookingConfirmation.people}
                 </p>
               </div>
             </div>
@@ -228,7 +234,7 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
 
           <div className="mt-4 border-t pt-4">
             <div className="flex items-center justify-between">
-              <p className="font-medium">Total Paid</p>
+              <p className="font-medium">{t.bookingConfirmation.totalPaid}</p>
               <p className="text-primary">€{booking.totalPrice.toFixed(2)}</p>
             </div>
           </div>
@@ -240,15 +246,15 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
             <Car className="h-5 w-5 text-secondary" />
             <AlertDescription>
               <div className="space-y-2">
-                <p className="font-semibold text-secondary text-lg">🌟 Insight Tour - Important Pickup Information</p>
+                <p className="font-semibold text-secondary text-lg">🌟 {t.bookingConfirmation.insightTourPickup}</p>
                 <p className="text-foreground">
-                  <strong>Your guided tour departs at {new Date(booking.selectedDate).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}</strong>
+                  <strong>{t.bookingConfirmation.departsAt} {new Date(booking.selectedDate).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}</strong>
                 </p>
                 <p className="text-foreground">
-                  <strong>📍 Meeting Point:</strong> Historical Center of Sintra (downtown area near the main square)
+                  <strong>📍 {t.bookingConfirmation.meetingPoint}:</strong> Historical Center of Sintra (downtown area near the main square)
                 </p>
                 <p className="text-foreground">
-                  <strong>⏰ Please arrive 10 minutes early</strong> to ensure a prompt departure. Look for our vehicle with the Hop On Sintra branding and show your ticket to the driver.
+                  <strong>⏰ {t.bookingConfirmation.arriveEarly}</strong> {t.bookingConfirmation.lookForVehicle}
                 </p>
                 <p className="text-sm text-muted-foreground italic mt-2">
                   💡 This information is also included in your PDF ticket attachment and confirmation email.
@@ -261,7 +267,7 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
         {/* Tickets */}
         <div className="mb-6">
           <div className="mb-4 flex items-center justify-between flex-wrap gap-2">
-            <h2 className="text-primary">Your Day Pass Tickets</h2>
+            <h2 className="text-primary">{t.bookingConfirmation.yourDayPassTickets}</h2>
             <div className="flex gap-2">
               <Button 
                 variant="default" 
@@ -273,18 +279,18 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
                 {downloadingPdf ? (
                   <>
                     <Download className="mr-2 h-4 w-4 animate-spin" />
-                    Downloading...
+                    {t.bookingConfirmation.downloading}
                   </>
                 ) : (
                   <>
                     <FileDown className="mr-2 h-4 w-4" />
-                    Download PDF
+                    {t.bookingConfirmation.downloadPDF}
                   </>
                 )}
               </Button>
               <Button variant="outline" size="sm" onClick={handlePrint}>
                 <Printer className="mr-2 h-4 w-4" />
-                Print All
+                {t.bookingConfirmation.printAll}
               </Button>
             </div>
           </div>
@@ -292,17 +298,17 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
           <Alert className="mb-4 border-blue-200 bg-blue-50">
             <FileDown className="h-4 w-4 text-blue-600" />
             <AlertDescription className="text-blue-900">
-              <strong>📎 PDF Tickets Attached</strong><br/>
-              We've sent a PDF with all your tickets to your email. You can also download it here or save your tickets below.
+              <strong>📎 {t.bookingConfirmation.pdfTicketsAttached}</strong><br/>
+              {t.bookingConfirmation.pdfTicketsAttachedDesc}
             </AlertDescription>
           </Alert>
 
           <div className="mb-6 rounded-lg bg-accent/10 p-4">
             <p className="font-medium text-accent-foreground">
-              🎫 Your Tickets Are Ready!
+              🎫 {t.bookingConfirmation.ticketsReady}
             </p>
             <p className="mt-1 text-muted-foreground">
-              Show these tickets to the driver when boarding. Each passenger needs their own ticket with QR code.
+              {t.bookingConfirmation.ticketsReadyDesc}
             </p>
           </div>
 
@@ -332,10 +338,9 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
                 <CheckCircle className="h-5 w-5 text-accent-foreground" />
               </div>
               <div className="flex-1">
-                <h3 className="mb-2 text-accent-foreground">✅ You're Logged In!</h3>
+                <h3 className="mb-2 text-accent-foreground">✅ {t.bookingConfirmation.youreLoggedIn}</h3>
                 <p className="text-muted-foreground">
-                  You have full access to all features including requesting pickups and live chat support. 
-                  Your tickets and booking details are saved to your profile.
+                  {t.bookingConfirmation.fullAccessEnabled}
                 </p>
                 <div className="mt-3 flex gap-2">
                   <Button
@@ -345,7 +350,7 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
                     className="gap-2"
                   >
                     <Car className="h-4 w-4" />
-                    Request Pickup
+                    {t.bookingConfirmation.requestPickupFrom}
                   </Button>
                 </div>
               </div>
@@ -355,14 +360,14 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
 
         {/* How to Use */}
         <Card className="mb-6 p-6">
-          <h3 className="mb-4 text-primary">How to Use Your Pass</h3>
+          <h3 className="mb-4 text-primary">{t.bookingConfirmation.howToUseYourPass}</h3>
           <div className="space-y-3">
             <div className="flex gap-3">
               <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary">
                 1
               </div>
               <p>
-                <strong>Show QR Code:</strong> Present your QR code to the driver when boarding any vehicle
+                <strong>{t.bookingConfirmation.showQRCode}:</strong> {t.bookingConfirmation.showQRCodeDesc}
               </p>
             </div>
             <div className="flex gap-3">
@@ -370,7 +375,7 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
                 2
               </div>
               <p>
-                <strong>Unlimited Rides:</strong> Use your pass for unlimited hop-on/hop-off rides until 8:00 PM
+                <strong>{t.bookingConfirmation.unlimitedRides}:</strong> {t.bookingConfirmation.unlimitedRidesDesc}
               </p>
             </div>
             <div className="flex gap-3">
@@ -378,7 +383,7 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
                 3
               </div>
               <p>
-                <strong>Regular Service:</strong> New vehicles depart every 30 minutes from all major attractions
+                <strong>{t.bookingConfirmation.regularService}:</strong> {t.bookingConfirmation.regularServiceDesc}
               </p>
             </div>
             <div className="flex gap-3">
@@ -386,7 +391,7 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
                 4
               </div>
               <p>
-                <strong>Flexible Schedule:</strong> Spend as much time as you want at each attraction
+                <strong>{t.bookingConfirmation.flexibleSchedule}:</strong> {t.bookingConfirmation.flexibleScheduleDesc}
               </p>
             </div>
           </div>
@@ -395,12 +400,12 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
         {/* Thank You & Navigation Actions */}
         <Card className="mb-8 bg-gradient-to-br from-primary/5 to-secondary/5 p-8 text-center border-primary/20">
           <div className="mb-6">
-            <h2 className="mb-3 text-primary">🎉 Thank You for Choosing Hop On Sintra!</h2>
+            <h2 className="mb-3 text-primary">🎉 {t.bookingConfirmation.thankYou}</h2>
             <p className="text-lg text-muted-foreground">
-              We're excited to show you the magic of Sintra. Your adventure begins on {formattedDate}!
+              {t.bookingConfirmation.adventureBegins} {formattedDate}!
             </p>
             <p className="mt-3 text-muted-foreground">
-              Your booking confirmation and tickets have been sent to <strong>{booking.contactInfo.email}</strong>
+              {t.bookingConfirmation.confirmationSentTo} <strong>{booking.contactInfo.email}</strong>
             </p>
           </div>
 
@@ -413,7 +418,7 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
               className="gap-2 bg-primary hover:bg-primary/90"
             >
               <Home className="h-5 w-5" />
-              Back to Homepage
+              {t.bookingConfirmation.backToHome}
             </Button>
             
             <Button
@@ -423,7 +428,7 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
               className="gap-2 border-primary text-primary hover:bg-primary/10"
             >
               <Settings className="h-5 w-5" />
-              Manage Booking
+              {t.bookingConfirmation.manageBooking}
             </Button>
 
             <Button
@@ -433,25 +438,25 @@ export function BookingConfirmationPage({ onNavigate, booking, language }: Booki
               className="gap-2"
             >
               <ArrowRight className="h-5 w-5" />
-              View Attractions
+              {t.bookingConfirmation.viewAttractions}
             </Button>
           </div>
 
           <div className="mt-6 space-y-2 text-sm text-muted-foreground">
-            <p>💡 <strong>Tip:</strong> Use your Booking ID <span className="font-mono text-primary">{booking.id}</span> to manage your reservation</p>
-            <p>📍 View our <button onClick={() => onNavigate("route-map")} className="text-primary hover:underline">interactive route map</button> to plan your stops</p>
+            <p>💡 <strong>{t.bookingConfirmation.tip}:</strong> {t.bookingConfirmation.tipUseBookingId.replace('{bookingId}', booking.id)}</p>
+            <p>📍 View our <button onClick={() => onNavigate("route-map")} className="text-primary hover:underline">{t.bookingConfirmation.viewRouteMap}</button> to plan your stops</p>
           </div>
         </Card>
 
         {/* Contact Support */}
         <div className="text-center text-sm text-muted-foreground">
-          <p className="mb-2">Questions or need to make changes?</p>
+          <p className="mb-2">{t.bookingConfirmation.questionsOrChanges}</p>
           <p>
-            Contact us via{" "}
+            {t.bookingConfirmation.contactViaEmail}{" "}
             <a href="mailto:info@hoponsintra.com" className="text-primary hover:underline">
               info@hoponsintra.com
             </a>{" "}
-            or{" "}
+            {t.bookingConfirmation.or}{" "}
             <a href="https://wa.me/351932967279" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">
               WhatsApp (+351 932 967 279)
             </a>

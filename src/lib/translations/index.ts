@@ -179,6 +179,94 @@ export interface UITranslations {
     pleaseTryAgain: string;
     goBack: string;
   };
+  
+  // LiveChat translations
+  liveChat: {
+    liveSupport: string;
+    hereToHelp: string;
+    chatOnWhatsApp: string;
+    orStartWebChat: string;
+    startWebChat: string;
+    starting: string;
+    conversationSaved: string;
+    welcomeMessage: string;
+    enterName: string;
+    enterEmail: string;
+    enterMessage: string;
+    sendMessage: string;
+    goBack: string;
+  };
+  
+  // UserProfile translations
+  userProfile: {
+    myAccount: string;
+    quickAccess: string;
+    loginToProfile: string;
+    myBooking: string;
+    requestRide: string;
+    accessYourBooking: string;
+    loginDescription: string;
+    bookingId: string;
+    bookingIdPlaceholder: string;
+    lastName: string;
+    lastNamePlaceholder: string;
+    login: string;
+    loggingIn: string;
+    welcomeBack: string;
+    loggedOut: string;
+    pleaseEnterBoth: string;
+    invalidCredentials: string;
+    loginFailed: string;
+    logout: string;
+    yourPasses: string;
+    validFor: string;
+  };
+  
+  // RequestPickupPage translations
+  requestPickupPage: {
+    verifyBooking: string;
+    verifyBookingDescription: string;
+    requestPickup: string;
+    requestPickupDescription: string;
+    enterName: string;
+    groupSize: string;
+    pickupLocation: string;
+    requestingSent: string;
+    pickupRequested: string;
+    pickupRequestedMessage: string;
+    errorRequestingPickup: string;
+  };
+  
+  // BookingConfirmation translations
+  bookingConfirmation: {
+    requestPickupFrom: string;
+    downloadTickets: string;
+    downloadingTickets: string;
+  };
+  
+  // AboutPage translations
+  aboutPage: {
+    sendMessage: string;
+    sending: string;
+    messageSent: string;
+    messageError: string;
+    fullName: string;
+    emailAddress: string;
+  };
+  
+  // Toast messages
+  toast: {
+    newVersionAvailable: string;
+    contentUpdated: string;
+    loginSuccess: string;
+    loginError: string;
+    settingsSaved: string;
+    settingsSaveFailed: string;
+    availabilitySaved: string;
+    availabilitySaveFailed: string;
+    contentSaved: string;
+    contentSaveFailed: string;
+  };
 }
 
 export const uiTranslations: { [key: string]: UITranslations } = {

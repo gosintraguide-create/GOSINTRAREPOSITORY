@@ -6,6 +6,7 @@ import {
   publicAnonKey,
 } from "../utils/supabase/info";
 import { getTranslation } from "../lib/translations";
+import { getComponentTranslation } from "../lib/translations/component-translations";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";
@@ -123,6 +124,7 @@ export function BuyTicketPage({
   language,
 }: BuyTicketPageProps) {
   const t = getTranslation(language);
+  const ct = getComponentTranslation(language);
 
   const PICKUP_LOCATIONS = [
     {
@@ -447,7 +449,7 @@ export function BuyTicketPage({
         setPaymentInitError(null);
       } else {
         throw new Error(
-          response.error || "Failed to create payment intent",
+          response.error || ct.buyTicketPage.paymentError.message,
         );
       }
     } catch (error) {
@@ -455,10 +457,10 @@ export function BuyTicketPage({
       const errorMsg =
         error instanceof Error
           ? error.message
-          : "Failed to initialize payment";
+          : ct.buyTicketPage.paymentError.message;
       setPaymentInitError(errorMsg);
       toast.error(
-        "Failed to initialize payment. Please try again.",
+        ct.buyTicketPage.toasts.paymentInitFailed,
       );
     } finally {
       setIsCreatingPayment(false);
@@ -572,7 +574,7 @@ export function BuyTicketPage({
         throw (
           lastError ||
           new Error(
-            "Failed to create booking after multiple attempts",
+            ct.buyTicketPage.bookingErrors.failedMultipleAttempts,
           )
         );
       }
@@ -595,11 +597,11 @@ export function BuyTicketPage({
         // Show success toast immediately
         if (response.data.emailSent) {
           toast.success(
-            "Booking confirmed! Check your email for QR codes.",
+            ct.buyTicketPage.toasts.bookingConfirmedCheckEmail,
           );
         } else {
           toast.success(
-            "Booking confirmed! QR codes are ready.",
+            ct.buyTicketPage.toasts.bookingConfirmedQRReady,
           );
 
           // Check for specific email error details
@@ -617,7 +619,7 @@ export function BuyTicketPage({
               emailError.includes("only send testing emails")
             ) {
               toast.warning(
-                "⚠️ Email system requires domain verification. QR codes are available on this page.",
+                ct.buyTicketPage.toasts.emailVerificationWarning,
                 {
                   duration: 7000,
                 },
@@ -626,7 +628,7 @@ export function BuyTicketPage({
               emailError.includes("No email address")
             ) {
               toast.warning(
-                "⚠️ No email address provided. Save your QR codes from this page.",
+                ct.buyTicketPage.toasts.emailNoAddress,
                 {
                   duration: 6000,
                 },
@@ -634,7 +636,7 @@ export function BuyTicketPage({
             } else {
               // Show generic email error with details
               toast.warning(
-                `⚠️ Email couldn't be sent: ${emailError}. Save your QR codes from this page.`,
+                `${ct.buyTicketPage.toasts.emailErrorWithDetails}: ${emailError}. Save your QR codes from this page.`,
                 {
                   duration: 7000,
                 },
@@ -643,7 +645,7 @@ export function BuyTicketPage({
           } else {
             // Email error without details
             toast.warning(
-              "Email couldn't be sent. Save your QR codes from this page.",
+              ct.buyTicketPage.toasts.emailCouldntBeSent,
               {
                 duration: 6000,
               },
@@ -667,7 +669,7 @@ export function BuyTicketPage({
         const errorMsg =
           response.data?.error ||
           response.error ||
-          "Failed to create booking";
+          ct.buyTicketPage.bookingErrors.failedToCreate;
         console.error("❌ Booking creation failed:", errorMsg);
         throw new Error(errorMsg);
       }
@@ -676,7 +678,7 @@ export function BuyTicketPage({
       const errorMessage =
         error instanceof Error
           ? error.message
-          : "Failed to complete booking. Please try again.";
+          : ct.buyTicketPage.bookingErrors.failedToComplete;
 
       // Special handling for 404 errors
       if (
@@ -685,7 +687,7 @@ export function BuyTicketPage({
         errorMessage.includes("endpoint")
       ) {
         toast.error(
-          "Server connection issue. Your payment was processed. Please contact support with your payment confirmation.",
+          ct.buyTicketPage.toasts.serverConnectionIssue,
           {
             duration: 10000,
           },
@@ -718,7 +720,7 @@ export function BuyTicketPage({
 
   const handlePaymentError = (error: string) => {
     console.error("Payment error:", error);
-    toast.error(error || "Payment failed. Please try again.");
+    toast.error(error || ct.buyTicketPage.toasts.paymentFailed);
     setIsSubmitting(false);
   };
 
@@ -750,8 +752,8 @@ export function BuyTicketPage({
               {t.buyTicket.hero.title}
             </h1>
             <p className="text-muted-foreground">
-              {currentStep === 1 && "Select your preferred date and start time"}
-              {currentStep === 2 && "Choose pickup location and number of guests"}
+              {currentStep === 1 && ct.buyTicketPage.stepDescriptions.step1}
+              {currentStep === 2 && ct.buyTicketPage.stepDescriptions.step2}
               {currentStep === 3 &&
                 t.buyTicket.steps.step2Description}
               {currentStep === 4 &&
@@ -782,7 +784,7 @@ export function BuyTicketPage({
                   </div>
                 </div>
                 <p className="mt-2 text-xs text-center text-muted-foreground max-w-[80px] font-semibold">
-                  Date & Time
+                  {ct.buyTicketPage.progressLabels.dateTime}
                 </p>
               </div>
 
@@ -815,7 +817,7 @@ export function BuyTicketPage({
                   </div>
                 </div>
                 <p className="mt-2 text-xs text-center text-muted-foreground max-w-[80px] font-semibold">
-                  Pickup Spot
+                  {ct.buyTicketPage.progressLabels.pickupSpot}
                 </p>
               </div>
 
@@ -848,7 +850,7 @@ export function BuyTicketPage({
                   </div>
                 </div>
                 <p className="mt-2 text-xs text-center text-muted-foreground max-w-[80px] font-semibold">
-                  Attractions
+                  {ct.buyTicketPage.progressLabels.attractions}
                 </p>
               </div>
 
@@ -881,7 +883,7 @@ export function BuyTicketPage({
                   </div>
                 </div>
                 <p className="mt-2 text-xs text-center text-muted-foreground max-w-[80px] font-semibold">
-                  Your Details
+                  {ct.buyTicketPage.progressLabels.yourDetails}
                 </p>
               </div>
 
@@ -910,7 +912,7 @@ export function BuyTicketPage({
                   </div>
                 </div>
                 <p className="mt-2 text-xs text-center text-muted-foreground max-w-[80px] font-semibold">
-                  Confirmation
+                  {ct.buyTicketPage.progressLabels.confirmation}
                 </p>
               </div>
             </div>
@@ -934,10 +936,10 @@ export function BuyTicketPage({
                       </div>
                       <div>
                         <h4 className="text-accent mb-1 font-semibold">
-                          Insight Tour
+                          {ct.buyTicketPage.insightTourInfo.title}
                         </h4>
                         <p className="text-sm text-muted-foreground leading-relaxed">
-                          Select time slots include our <span className="font-semibold text-foreground">Insight Tour</span>, a longer and more detailed ride where the driver shares the stories and history behind Sintra's monuments. Look for time slots marked with the distinctive Insight Tour badge below.
+                          {ct.buyTicketPage.insightTourInfo.description}
                         </p>
                       </div>
                     </div>
@@ -950,10 +952,10 @@ export function BuyTicketPage({
                         <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
                         <div>
                           <p className="font-medium text-red-900">
-                            Temporarily Unavailable
+                            {ct.buyTicketPage.soldOut.title}
                           </p>
                           <p className="text-sm text-red-700 mt-1">
-                            All dates are currently sold out. Please check back later or contact us for availability.
+                            {ct.buyTicketPage.soldOut.description}
                           </p>
                         </div>
                       </div>
@@ -963,7 +965,7 @@ export function BuyTicketPage({
                   {/* Date Selection */}
                   <div>
                     <h3 className="text-foreground mb-3 font-semibold">
-                      Select Date
+                      {ct.buyTicketPage.step1.selectDate}
                     </h3>
                     <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
                       <PopoverTrigger asChild>
@@ -1022,7 +1024,7 @@ export function BuyTicketPage({
                   <div>
                     <div className="flex items-center justify-between mb-3">
                       <h3 className="text-foreground font-semibold">
-                        Departure Time
+                        {ct.buyTicketPage.step1.departureTime}
                       </h3>
                       <div className="h-5 flex items-center">
                         {loadingAvailability && (
@@ -1052,7 +1054,7 @@ export function BuyTicketPage({
                           <div key={slot.value} className="relative">
                             {slot.isGuided && !isSoldOut && (
                               <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-white text-[9px] px-3 py-1 rounded-full font-semibold uppercase tracking-wider whitespace-nowrap z-10">
-                                Insight Tour
+                                {ct.buyTicketPage.insightTourInfo.badge}
                               </div>
                             )}
                             <button
@@ -1088,12 +1090,12 @@ export function BuyTicketPage({
                             </button>
                             {formData.date && !isSoldOut && isLowAvailability && !slot.isGuided && (
                               <div className="absolute -top-1 -right-1 bg-accent text-white text-[10px] px-1.5 py-0.5 rounded-full font-semibold">
-                                {seats} left
+                                {seats} {ct.buyTicketPage.step1.seatsLeft}
                               </div>
                             )}
                             {isSoldOut && (
                               <div className="absolute -top-1 -right-1 bg-destructive text-white text-[10px] px-1.5 py-0.5 rounded-full font-semibold">
-                                Sold Out
+                                {ct.buyTicketPage.soldOut.badge}
                               </div>
                             )}
                           </div>
@@ -1102,7 +1104,7 @@ export function BuyTicketPage({
                     </div>
                     {formData.date && formData.timeSlot && (
                       <p className="mt-3 text-sm text-muted-foreground">
-                        <span className="font-semibold text-foreground">Note:</span>{" "}
+                        <span className="font-semibold text-foreground">{ct.buyTicketPage.step1.note}</span>{" "}
                         {
                           t.buyTicket.dateSelection
                             .passValidFullDay
@@ -1121,7 +1123,7 @@ export function BuyTicketPage({
                     className="text-muted-foreground hover:bg-transparent hover:text-foreground"
                   >
                     <ChevronLeft className="mr-1 h-4 w-4" />
-                    Back
+                    {ct.buyTicketPage.common.back}
                   </Button>
                   <Button
                     type="button"
@@ -1130,7 +1132,7 @@ export function BuyTicketPage({
                     onClick={handleNext}
                     disabled={!canProceedStep1}
                   >
-                    Continue
+                    {ct.buyTicketPage.common.continue}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
@@ -1142,10 +1144,10 @@ export function BuyTicketPage({
               <Card className="border-border p-6 sm:p-8 shadow-sm">
                 <div className="mb-6">
                   <h2 className="text-foreground mb-1 font-semibold">
-                    Pickup & Group Size
+                    {ct.buyTicketPage.step2.title}
                   </h2>
                   <p className="text-muted-foreground text-sm">
-                    Choose your pickup location and number of guests
+                    {ct.buyTicketPage.step2.description}
                   </p>
                 </div>
 
@@ -1206,7 +1208,7 @@ export function BuyTicketPage({
                       <Collapsible>
                         <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors font-medium">
                           <MapPin className="h-4 w-4" />
-                          <span>{t.buyTicket?.timeSlots?.viewRouteMaps || "View route maps"}</span>
+                          <span>{t.buyTicket?.timeSlots?.viewRouteMaps}</span>
                           <ChevronDown className="h-4 w-4 transition-transform data-[state=open]:rotate-180" />
                         </CollapsibleTrigger>
                         <CollapsibleContent className="mt-4">
@@ -1304,7 +1306,7 @@ export function BuyTicketPage({
                           <Receipt className="h-5 w-5 text-accent" />
                         </div>
                         <p className="text-foreground font-semibold text-lg">
-                          Total
+                          {ct.buyTicketPage.common.total}
                         </p>
                       </div>
                       <div className="text-right">
@@ -1325,7 +1327,7 @@ export function BuyTicketPage({
                     className="text-muted-foreground hover:text-foreground hover:bg-secondary/50"
                   >
                     <ChevronLeft className="mr-1 h-5 w-5" />
-                    Back
+                    {ct.buyTicketPage.common.back}
                   </Button>
                   <Button
                     type="button"
@@ -1334,7 +1336,7 @@ export function BuyTicketPage({
                     onClick={handleNext}
                     disabled={!canProceedStep2}
                   >
-                    Continue
+                    {ct.buyTicketPage.common.continue}
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </div>
@@ -1346,21 +1348,18 @@ export function BuyTicketPage({
               <Card className="border-border p-6 sm:p-8 shadow-sm">
                 <div className="mb-6">
                   <h2 className="text-foreground mb-1 font-semibold">
-                    Add Attraction Tickets?
+                    {ct.buyTicketPage.step3.title}
                   </h2>
                   {monumentTicketsEnabled ? (
                     <p className="mt-4 text-muted-foreground">
-                      <span className="font-semibold text-foreground">Skip the ticket lines!</span> Add entrance
-                      tickets to popular attractions.{" "}
+                      <span className="font-semibold text-foreground">{ct.buyTicketPage.step3.skipTicketLines}</span> {t.buyTicket.step2.addTickets}{" "}
                       {formData.quantity > 1
-                        ? `Prices shown for ${formData.quantity} guests.`
+                        ? `${ct.buyTicketPage.step3.pricesShownFor} ${formData.quantity} ${ct.buyTicketPage.step3.guests}`
                         : ""}
                     </p>
                   ) : (
                     <p className="mt-4 text-muted-foreground">
-                      Attraction tickets are not yet available
-                      for online purchase. You can buy tickets
-                      at each attraction entrance.
+                      {ct.buyTicketPage.step3.notAvailable}
                     </p>
                   )}
                 </div>
@@ -1406,7 +1405,7 @@ export function BuyTicketPage({
                                 formData.quantity}
                               {formData.quantity > 1 && (
                                 <span className="ml-1 text-muted-foreground font-normal">
-                                  (€{attraction.price} each)
+                                  (€{attraction.price} {ct.buyTicketPage.step3.each})
                                 </span>
                               )}
                             </span>
@@ -1419,12 +1418,10 @@ export function BuyTicketPage({
                       0 && (
                       <div className="mt-6 rounded-lg bg-accent/5 p-4">
                         <p className="text-muted-foreground">
-                          💡 <strong className="text-foreground">Tip:</strong> You'll
-                          receive digital tickets via email
-                          along with your{" "}
+                          💡 <strong className="text-foreground">{ct.buyTicketPage.step3.tipTitle}</strong> {ct.buyTicketPage.step3.tipDescription}{" "}
                           {formData.quantity === 1
-                            ? "day pass QR code"
-                            : `${formData.quantity} day pass QR codes`}
+                            ? ct.buyTicketPage.step3.dayPassQRCode
+                            : `${formData.quantity} ${ct.buyTicketPage.step3.dayPassQRCodes}`}
                           .
                         </p>
                       </div>
@@ -1435,9 +1432,9 @@ export function BuyTicketPage({
                       <div className="space-y-2">
                         <div className="flex justify-between text-muted-foreground">
                           <span>
-                            Day Pass
+                            {ct.buyTicketPage.step5.dayPass}
                             {isGuidedTourTime
-                              ? " (includes guided commentary)"
+                              ? ` (${ct.buyTicketPage.step5.includesGuidedCommentary})`
                               : ""}
                           </span>
                           <span>
@@ -1446,13 +1443,13 @@ export function BuyTicketPage({
                         </div>
                         {attractionsTotal > 0 && (
                           <div className="flex justify-between text-muted-foreground">
-                            <span>Attraction Tickets</span>
+                            <span>{ct.buyTicketPage.step5.attractionTickets}</span>
                             <span>€{attractionsTotal}</span>
                           </div>
                         )}
                         <div className="border-t border-border pt-2 flex justify-between items-center">
                           <p className="text-foreground font-semibold">
-                            Total
+                            {ct.buyTicketPage.common.total}
                           </p>
                           <p className="text-2xl text-primary font-semibold">
                             €{totalPrice}
@@ -1469,20 +1466,14 @@ export function BuyTicketPage({
                         variant="outline"
                         className="mb-4 text-muted-foreground"
                       >
-                        Online Booking Coming Soon
+                        {ct.buyTicketPage.step3.comingSoon.badge}
                       </Badge>
                       <p className="mb-6 text-muted-foreground">
-                        We're working on adding the ability to
-                        purchase attraction tickets online. For
-                        now, tickets can be purchased at each
-                        attraction entrance.
+                        {ct.buyTicketPage.step3.comingSoon.description}
                       </p>
                       <div className="rounded-lg bg-primary/5 p-4">
                         <p className="text-sm text-muted-foreground">
-                          💡 Your Hop On Sintra day pass gets
-                          you unlimited transport to all
-                          attractions. Tickets are available for
-                          purchase when you arrive!
+                          {ct.buyTicketPage.step3.comingSoon.tip}
                         </p>
                       </div>
                     </div>
@@ -1492,9 +1483,9 @@ export function BuyTicketPage({
                       <div className="space-y-2">
                         <div className="flex justify-between text-muted-foreground">
                           <span>
-                            Day Pass
+                            {ct.buyTicketPage.step5.dayPass}
                             {isGuidedTourTime
-                              ? " (includes guided commentary)"
+                              ? ` (${ct.buyTicketPage.step5.includesGuidedCommentary})`
                               : ""}
                           </span>
                           <span>
@@ -1503,7 +1494,7 @@ export function BuyTicketPage({
                         </div>
                         <div className="border-t border-border pt-2 flex justify-between items-center">
                           <p className="text-foreground font-semibold">
-                            Total
+                            {ct.buyTicketPage.common.total}
                           </p>
                           <p className="text-2xl text-primary font-semibold">
                             €{totalPrice}
@@ -1523,7 +1514,7 @@ export function BuyTicketPage({
                     className="text-foreground hover:bg-transparent"
                   >
                     <ChevronLeft className="mr-1 h-4 w-4" />
-                    Back
+                    {ct.buyTicketPage.common.back}
                   </Button>
                   <Button
                     type="button"
@@ -1531,7 +1522,7 @@ export function BuyTicketPage({
                     className="bg-accent hover:bg-accent/90 text-white px-8"
                     onClick={handleNext}
                   >
-                    Continue
+                    {ct.buyTicketPage.common.continue}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
@@ -1543,7 +1534,7 @@ export function BuyTicketPage({
               <Card className="border-border p-6 sm:p-8 shadow-sm">
                 <div className="mb-6">
                   <h2 className="text-foreground mb-1 font-semibold">
-                    Your Information
+                    {ct.buyTicketPage.step4.title}
                   </h2>
                 </div>
 
@@ -1553,14 +1544,14 @@ export function BuyTicketPage({
                       htmlFor="fullName"
                       className="text-foreground font-semibold"
                     >
-                      Full Name
+                      {ct.buyTicketPage.step4.fullName}
                     </Label>
                     <div className="relative mt-2">
                       <User className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                       <Input
                         id="fullName"
                         type="text"
-                        placeholder="John Doe"
+                        placeholder={t.buyTicket.step3.fullNamePlaceholder}
                         className="border-border pl-10 bg-white"
                         required
                         value={formData.fullName}
@@ -1579,14 +1570,14 @@ export function BuyTicketPage({
                       htmlFor="email"
                       className="text-foreground font-semibold"
                     >
-                      Email Address
+                      {ct.buyTicketPage.step4.emailAddress}
                     </Label>
                     <div className="relative mt-2">
                       <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                       <Input
                         id="email"
                         type="email"
-                        placeholder="john@example.com"
+                        placeholder={t.buyTicket.step3.emailPlaceholder}
                         className="border-border pl-10 bg-white"
                         required
                         value={formData.email}
@@ -1599,7 +1590,7 @@ export function BuyTicketPage({
                       />
                     </div>
                     <p className="mt-1 text-muted-foreground">
-                      Your QR code will be sent here
+                      {ct.buyTicketPage.step4.qrCodeSentHere}
                     </p>
                   </div>
 
@@ -1608,14 +1599,14 @@ export function BuyTicketPage({
                       htmlFor="confirmEmail"
                       className="text-foreground font-semibold"
                     >
-                      Confirm Email
+                      {ct.buyTicketPage.step4.confirmEmail}
                     </Label>
                     <div className="relative mt-2">
                       <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                       <Input
                         id="confirmEmail"
                         type="email"
-                        placeholder="john@example.com"
+                        placeholder={t.buyTicket.step3.confirmEmailPlaceholder}
                         className="border-border pl-10 bg-white"
                         required
                         value={formData.confirmEmail}
@@ -1631,7 +1622,7 @@ export function BuyTicketPage({
                       formData.email !==
                         formData.confirmEmail && (
                         <p className="mt-1 text-destructive">
-                          Emails don't match
+                          {ct.buyTicketPage.step4.emailsDontMatch}
                         </p>
                       )}
                   </div>
@@ -1646,7 +1637,7 @@ export function BuyTicketPage({
                     className="text-foreground hover:bg-transparent"
                   >
                     <ChevronLeft className="mr-1 h-4 w-4" />
-                    Back
+                    {ct.buyTicketPage.common.back}
                   </Button>
                   <Button
                     type="button"
@@ -1655,7 +1646,7 @@ export function BuyTicketPage({
                     onClick={handleNext}
                     disabled={!canProceedStep4}
                   >
-                    Continue
+                    {ct.buyTicketPage.common.continue}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
@@ -1670,7 +1661,7 @@ export function BuyTicketPage({
                   <Card className="lg:sticky lg:top-4 border-border p-6 shadow-sm">
                     <div className="mb-4">
                       <h3 className="text-foreground font-semibold">
-                        Order Summary
+                        {ct.buyTicketPage.step5.orderSummary}
                       </h3>
                     </div>
 
@@ -1678,7 +1669,7 @@ export function BuyTicketPage({
                       <div className="flex items-center gap-2">
                         <CalendarIcon className="h-4 w-4 text-primary flex-shrink-0" />
                         <span className="break-words">
-                          {formData.date} starting at{" "}
+                          {formData.date} {ct.buyTicketPage.step5.startingAt}{" "}
                           {formData.timeSlot}
                         </span>
                       </div>
@@ -1699,17 +1690,17 @@ export function BuyTicketPage({
                         <span>
                           {formData.quantity}{" "}
                           {formData.quantity === 1
-                            ? "guest"
-                            : "guests"}
+                            ? ct.buyTicketPage.step5.guest
+                            : ct.buyTicketPage.step5.guests}
                         </span>
                       </div>
 
                       <div className="border-t border-border pt-3 mt-3 space-y-2">
                         <div className="flex justify-between gap-2">
                           <span className="flex-shrink-0">
-                            Day Pass (×{formData.quantity})
+                            {ct.buyTicketPage.step5.dayPass} (×{formData.quantity})
                             {isGuidedTourTime
-                              ? " + Guided"
+                              ? ` + ${ct.buyTicketPage.step5.guided}`
                               : ""}
                           </span>
                           <span className="flex-shrink-0">
@@ -1720,7 +1711,7 @@ export function BuyTicketPage({
                           0 && (
                           <div className="flex justify-between gap-2">
                             <span className="flex-shrink-0">
-                              Attraction Tickets
+                              {ct.buyTicketPage.step5.attractionTickets}
                             </span>
                             <span className="flex-shrink-0">
                               €{attractionsTotal}
@@ -1731,7 +1722,7 @@ export function BuyTicketPage({
 
                       <div className="border-t border-border pt-3 mt-3 flex justify-between items-center gap-2">
                         <span className="text-foreground flex-shrink-0 font-semibold">
-                          Total
+                          {ct.buyTicketPage.common.total}
                         </span>
                         <span className="text-3xl text-foreground flex-shrink-0 font-semibold">
                           €{totalPrice.toFixed(2)}
@@ -1741,25 +1732,24 @@ export function BuyTicketPage({
 
                     <div className="mt-6 space-y-2 rounded-lg bg-primary/5 p-4">
                       <p className="text-foreground">
-                        ✓ Unlimited hop-on/hop-off until 8:00 PM
+                        ✓ {ct.buyTicketPage.step5.benefits.unlimited}
                       </p>
                       <p className="text-foreground">
-                        ✓ Guaranteed seating in small vehicles
+                        ✓ {ct.buyTicketPage.step5.benefits.guaranteedSeating}
                       </p>
                       <p className="text-foreground">
-                        ✓ Flexible - use anytime during
-                        operating hours
+                        ✓ {ct.buyTicketPage.step5.benefits.flexible}
                       </p>
                       <p className="text-foreground">
                         ✓{" "}
                         {formData.quantity === 1
-                          ? "QR code"
-                          : `${formData.quantity} QR codes`}{" "}
-                        sent via email
+                          ? ct.buyTicketPage.step5.benefits.qrCode
+                          : `${formData.quantity} ${ct.buyTicketPage.step5.benefits.qrCodes}`}{" "}
+                        {ct.buyTicketPage.step5.benefits.sentViaEmail}
                       </p>
                       {isGuidedTourTime && (
                         <p className="text-foreground">
-                          ✓ Guided commentary included
+                          ✓ {ct.buyTicketPage.step5.benefits.guidedCommentary}
                         </p>
                       )}
                     </div>
@@ -1771,7 +1761,7 @@ export function BuyTicketPage({
                   <Card className="border-border p-6 sm:p-8 shadow-sm">
                     <div className="mb-6">
                       <h2 className="text-foreground mb-1 font-semibold">
-                        Payment Details
+                        {ct.buyTicketPage.step5.paymentDetails}
                       </h2>
                     </div>
 
@@ -1780,7 +1770,7 @@ export function BuyTicketPage({
                         <AlertCircle className="h-12 w-12 text-destructive" />
                         <div className="text-center space-y-2">
                           <p className="text-foreground font-semibold">
-                            Payment initialization failed
+                            {ct.buyTicketPage.paymentError.title}
                           </p>
                           <p className="text-sm text-muted-foreground">
                             {paymentInitError}
@@ -1794,7 +1784,7 @@ export function BuyTicketPage({
                             className="bg-accent hover:bg-accent/90 text-white"
                           >
                             <RefreshCw className="mr-2 h-5 w-5" />
-                            Retry
+                            {ct.buyTicketPage.paymentError.retry}
                           </Button>
                           <Button
                             type="button"
@@ -1803,7 +1793,7 @@ export function BuyTicketPage({
                             onClick={handleBack}
                           >
                             <ChevronLeft className="mr-1 h-4 w-4" />
-                            Go Back
+                            {ct.buyTicketPage.paymentError.goBack}
                           </Button>
                         </div>
                       </div>
@@ -1812,7 +1802,7 @@ export function BuyTicketPage({
                       <div className="flex flex-col items-center justify-center py-12 space-y-4">
                         <Loader2 className="h-12 w-12 animate-spin text-primary" />
                         <p className="text-muted-foreground">
-                          Preparing secure payment...
+                          {ct.buyTicketPage.step5.preparingPayment}
                         </p>
                       </div>
                     ) : (
@@ -1835,7 +1825,7 @@ export function BuyTicketPage({
                             disabled={isSubmitting}
                           >
                             <ChevronLeft className="mr-1 h-4 w-4" />
-                            Back
+                            {ct.buyTicketPage.common.back}
                           </Button>
                         </div>
                       </>

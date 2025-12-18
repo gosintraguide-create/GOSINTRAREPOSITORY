@@ -225,13 +225,13 @@ export function PickupLocationMap({ selectedLocation, onLocationSelect, language
                                 <div className="h-2 w-2 rounded-full" style={{ backgroundColor: '#0A4D5C' }} />
                                 <div className="h-2 w-2 rounded-full" style={{ backgroundColor: '#D97843' }} />
                               </div>
-                              <span className="text-[10px] text-muted-foreground">{t.buyTicket?.routeMap?.bothRoutesLabel || "Both routes"}</span>
+                              <span className="text-[10px] text-muted-foreground">{t.buyTicket?.routeMap?.bothRoutesLabel}</span>
                             </div>
                           )}
                           {isSelected && (
                             <span className="text-[10px] bg-accent/10 text-accent px-1.5 py-0.5 rounded flex items-center gap-0.5">
                               <CheckCircle2 className="h-2.5 w-2.5" />
-                              {t.buyTicket?.routeMap?.pickupLabel || "Pickup"}
+                              {t.buyTicket?.routeMap?.pickupLabel}
                             </span>
                           )}
                         </div>
@@ -269,7 +269,7 @@ export function PickupLocationMap({ selectedLocation, onLocationSelect, language
                           <div className="absolute bottom-2 left-2 right-2">
                             <div className="flex items-center gap-1.5 text-white">
                               <Clock className="h-3 w-3" />
-                              <span className="text-xs">{t.buyTicket?.routeMap?.frequencyLabel || "Every 30 min • 9 AM - 7 PM"}</span>
+                              <span className="text-xs">{t.buyTicket?.routeMap?.frequencyLabel}</span>
                             </div>
                           </div>
                         </div>
@@ -317,7 +317,7 @@ export function PickupLocationMap({ selectedLocation, onLocationSelect, language
       <div className="rounded bg-primary/5 border border-primary/20 px-2 py-1">
         <p className="text-[10px] text-muted-foreground">
           <Info className="inline h-2.5 w-2.5 mr-1 text-primary" />
-          {t.buyTicket?.routeMap?.infoHeader || "Two circular routes • Click any stop to select"}
+          {t.buyTicket?.routeMap?.infoHeader}
         </p>
       </div>
 
@@ -329,7 +329,7 @@ export function PickupLocationMap({ selectedLocation, onLocationSelect, language
               <MapPin className="h-4 w-4 text-white" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] text-muted-foreground mb-0.5">{t.buyTicket?.routeMap?.yourPickupLocation || "Your Pickup Location"}</p>
+              <p className="text-[10px] text-muted-foreground mb-0.5">{t.buyTicket?.routeMap?.yourPickupLocation}</p>
               <p className="text-sm text-foreground font-medium truncate">
                 {(() => {
                   const loc = [...ROUTE_1_DETAILS, ...ROUTE_2_DETAILS].find(loc => loc.id === selectedLocation);
@@ -348,7 +348,7 @@ export function PickupLocationMap({ selectedLocation, onLocationSelect, language
         <div className="space-y-1">
           <div className="flex items-center gap-1.5 px-1">
             <div className="h-2 w-2 rounded-full bg-primary" />
-            <span className="text-[10px] text-primary">{t.buyTicket?.routeMap?.route1Label || "Route 1"}</span>
+            <span className="text-[10px] text-primary">{t.buyTicket?.routeMap?.route1Label}</span>
           </div>
           {renderRoute(ROUTE_1_DETAILS, 1, '#0A4D5C')}
         </div>
@@ -357,7 +357,7 @@ export function PickupLocationMap({ selectedLocation, onLocationSelect, language
         <div className="space-y-1">
           <div className="flex items-center gap-1.5 px-1">
             <div className="h-2 w-2 rounded-full bg-accent" />
-            <span className="text-[10px] text-accent">{t.buyTicket?.routeMap?.route2Label || "Route 2"}</span>
+            <span className="text-[10px] text-accent">{t.buyTicket?.routeMap?.route2Label}</span>
           </div>
           {renderRoute(ROUTE_2_DETAILS, 2, '#D97843')}
         </div>

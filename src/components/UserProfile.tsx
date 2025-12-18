@@ -21,6 +21,7 @@ import { Label } from "./ui/label";
 import { getSession, clearSession, verifyAndLogin, type UserSession } from "../lib/sessionManager";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
 import { toast } from "sonner@2.0.3";
+import { getComponentTranslation } from "../lib/translations/component-translations";
 
 interface UserProfileProps {
   onNavigate: (page: string) => void;
@@ -29,6 +30,8 @@ interface UserProfileProps {
 
 export function UserProfile({ onNavigate, language }: UserProfileProps) {
   const [session, setSession] = useState<UserSession | null>(null);
+  const t = getComponentTranslation(language);
+
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [bookingId, setBookingId] = useState("");
   const [lastName, setLastName] = useState("");
@@ -56,7 +59,7 @@ export function UserProfile({ onNavigate, language }: UserProfileProps) {
     e.preventDefault();
 
     if (!bookingId.trim() || !lastName.trim()) {
-      toast.error("Please enter both booking ID and last name");
+      toast.error(t.userProfile.pleaseEnterBoth);
       return;
     }
 
@@ -70,7 +73,7 @@ export function UserProfile({ onNavigate, language }: UserProfileProps) {
         setIsLoginOpen(false);
         setBookingId("");
         setLastName("");
-        toast.success(`Welcome back, ${result.session.customerName}!`);
+        toast.success(`${t.userProfile.welcomeBack}, ${result.session.customerName}!`);
         
         // If there's a pending navigation, navigate after login
         if (pendingNavigation) {
@@ -78,10 +81,10 @@ export function UserProfile({ onNavigate, language }: UserProfileProps) {
           setPendingNavigation(null);
         }
       } else {
-        toast.error(result.error || "Invalid booking credentials");
+        toast.error(result.error || t.userProfile.invalidCredentials);
       }
     } catch (error) {
-      toast.error("Failed to login. Please try again.");
+      toast.error(t.userProfile.loginFailed);
     } finally {
       setIsLoading(false);
     }
@@ -101,7 +104,7 @@ export function UserProfile({ onNavigate, language }: UserProfileProps) {
   const handleLogout = () => {
     clearSession();
     setSession(null);
-    toast.success("You've been logged out");
+    toast.success(t.userProfile.loggedOut);
   };
 
   const formatDate = (dateString: string) => {
@@ -126,26 +129,26 @@ export function UserProfile({ onNavigate, language }: UserProfileProps) {
               className="flex items-center gap-2"
             >
               <User className="h-4 w-4" />
-              <span className="hidden sm:inline">My Account</span>
+              <span className="hidden sm:inline">{t.userProfile.myAccount}</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>Quick Access</DropdownMenuLabel>
+            <DropdownMenuLabel>{t.userProfile.quickAccess}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             
             <DropdownMenuItem onClick={() => setIsLoginOpen(true)}>
               <User className="mr-2 h-4 w-4" />
-              Login to Profile
+              {t.userProfile.loginToProfile}
             </DropdownMenuItem>
             
             <DropdownMenuItem onClick={() => handleProtectedNavigation("manage-booking")}>
               <Ticket className="mr-2 h-4 w-4" />
-              My Booking
+              {t.userProfile.myBooking}
             </DropdownMenuItem>
             
             <DropdownMenuItem onClick={() => handleProtectedNavigation("request-pickup")}>
               <Car className="mr-2 h-4 w-4" />
-              Request a Ride
+              {t.userProfile.requestRide}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -159,18 +162,18 @@ export function UserProfile({ onNavigate, language }: UserProfileProps) {
         }}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Access Your Booking</DialogTitle>
+              <DialogTitle>{t.userProfile.accessYourBooking}</DialogTitle>
               <DialogDescription>
-                Login with your booking ID and last name to access your temporary profile during your visit.
+                {t.userProfile.loginDescription}
               </DialogDescription>
             </DialogHeader>
 
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="bookingId">Booking ID</Label>
+                <Label htmlFor="bookingId">{t.userProfile.bookingId}</Label>
                 <Input
                   id="bookingId"
-                  placeholder="e.g., AB1234"
+                  placeholder={t.userProfile.bookingIdPlaceholder}
                   value={bookingId}
                   onChange={(e) => {
                     let value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -189,10 +192,10 @@ export function UserProfile({ onNavigate, language }: UserProfileProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
+                <Label htmlFor="lastName">{t.userProfile.lastName}</Label>
                 <Input
                   id="lastName"
-                  placeholder="As provided during booking"
+                  placeholder={t.userProfile.lastNamePlaceholder}
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   disabled={isLoading}
@@ -200,7 +203,7 @@ export function UserProfile({ onNavigate, language }: UserProfileProps) {
               </div>
 
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Verifying..." : "Login"}
+                {isLoading ? t.userProfile.loggingIn : t.userProfile.login}
               </Button>
 
               <Button 
@@ -270,7 +273,7 @@ export function UserProfile({ onNavigate, language }: UserProfileProps) {
 
         <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
           <LogOut className="mr-2 h-4 w-4" />
-          Logout
+          {t.userProfile.logout}
         </DropdownMenuItem>
 
         <div className="px-2 py-2">

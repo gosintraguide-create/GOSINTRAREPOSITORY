@@ -8,12 +8,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { getSession } from "../lib/sessionManager";
 import { toast } from "sonner@2.0.3";
+import { getComponentTranslation } from "../lib/translations/component-translations";
 
 interface RequestPickupPageProps {
   onNavigate: (page: string) => void;
+  language?: string;
 }
 
-export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
+export function RequestPickupPage({ onNavigate, language = "en" }: RequestPickupPageProps) {
+  const t = getComponentTranslation(language);
   const [step, setStep] = useState<"verify" | "request" | "searching" | "confirmed">("verify");
   const [bookingCode, setBookingCode] = useState<string>("");
   const [verificationError, setVerificationError] = useState<string>("");
@@ -248,10 +251,10 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
               </div>
             </div>
             <h1 className="mb-4 bg-gradient-to-r from-primary via-primary/90 to-accent bg-clip-text text-transparent">
-              Verify Your Booking
+              {t.requestPickupPage.verifyBooking}
             </h1>
             <p className="mx-auto max-w-2xl text-muted-foreground">
-              Enter your booking code to request a pickup. This service is only available to customers with active day passes.
+              {t.requestPickupPage.verifyBookingDescription}
             </p>
           </div>
         </section>
@@ -486,11 +489,11 @@ export function RequestPickupPage({ onNavigate }: RequestPickupPageProps) {
             <div className="space-y-6">
               {/* Customer Name */}
               <div className="space-y-2">
-                <Label htmlFor="customer-name">Your Name</Label>
+                <Label htmlFor="customer-name">{t.requestPickupPage.enterName}</Label>
                 <Input
                   id="customer-name"
                   type="text"
-                  placeholder="Enter your name"
+                  placeholder={t.requestPickupPage.enterName}
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                   className="border-border"
