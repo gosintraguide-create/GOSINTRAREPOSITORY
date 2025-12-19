@@ -495,7 +495,7 @@ export const componentTranslations: { [key: string]: ComponentTranslations } = {
       messageSent: "Thank you for your message! We'll get back to you soon.",
       messageError: "Unable to send message. Please try WhatsApp or email us directly at info@hoponsintra.com",
       fullName: "Full Name",
-      emailAddress: "Email Address"
+      emailAddress: "Email Address",
     },
     
     toast: {
@@ -750,7 +750,7 @@ export const componentTranslations: { [key: string]: ComponentTranslations } = {
       messageSent: "Obrigado pela sua mensagem! Entraremos em contacto em breve.",
       messageError: "Não foi possível enviar a mensagem. Por favor, use WhatsApp ou envie e-mail para info@hoponsintra.com",
       fullName: "Nome Completo",
-      emailAddress: "Endereço de E-mail"
+      emailAddress: "Endereço de E-mail",
     },
     
     toast: {
@@ -1005,7 +1005,7 @@ export const componentTranslations: { [key: string]: ComponentTranslations } = {
       messageSent: "¡Gracias por tu mensaje! Nos pondremos en contacto pronto.",
       messageError: "No se pudo enviar el mensaje. Por favor, usa WhatsApp o envía un correo a info@hoponsintra.com",
       fullName: "Nombre Completo",
-      emailAddress: "Correo Electrónico"
+      emailAddress: "Correo Electrónico",
     },
     
     toast: {
@@ -1260,7 +1260,7 @@ export const componentTranslations: { [key: string]: ComponentTranslations } = {
       messageSent: "Merci pour votre message! Nous vous recontacterons bientôt.",
       messageError: "Impossible d'envoyer le message. Veuillez utiliser WhatsApp ou nous envoyer un e-mail à info@hoponsintra.com",
       fullName: "Nom Complet",
-      emailAddress: "Adresse E-mail"
+      emailAddress: "Adresse E-mail",
     },
     
     toast: {
@@ -1515,7 +1515,7 @@ export const componentTranslations: { [key: string]: ComponentTranslations } = {
       messageSent: "Vielen Dank für Ihre Nachricht! Wir werden uns bald bei Ihnen melden.",
       messageError: "Nachricht konnte nicht gesendet werden. Bitte verwenden Sie WhatsApp oder senden Sie uns eine E-Mail an info@hoponsintra.com",
       fullName: "Vollständiger Name",
-      emailAddress: "E-Mail-Adresse"
+      emailAddress: "E-Mail-Adresse",
     },
     
     toast: {
@@ -1770,7 +1770,7 @@ export const componentTranslations: { [key: string]: ComponentTranslations } = {
       messageSent: "Bedankt voor uw bericht! We nemen binnenkort contact met u op.",
       messageError: "Kan bericht niet verzenden. Gebruik WhatsApp of e-mail ons rechtstreeks op info@hoponsintra.com",
       fullName: "Volledige Naam",
-      emailAddress: "E-mailadres"
+      emailAddress: "E-mailadres",
     },
     
     toast: {
@@ -2025,7 +2025,7 @@ export const componentTranslations: { [key: string]: ComponentTranslations } = {
       messageSent: "Grazie per il tuo messaggio! Ti contatteremo presto.",
       messageError: "Impossibile inviare il messaggio. Usa WhatsApp o inviaci un'email a info@hoponsintra.com",
       fullName: "Nome Completo",
-      emailAddress: "Indirizzo Email"
+      emailAddress: "Indirizzo Email",
     },
     
     toast: {
