@@ -194,7 +194,8 @@ export function BuyTicketPage({
     date: "",
     timeSlot: "",
     selectedAttractions: [] as string[],
-    quantity: 1,
+    adultQuantity: 1,
+    childQuantity: 0,
     pickupLocation: "sintra-train-station" as string,
   });
 
@@ -400,17 +401,23 @@ export function BuyTicketPage({
   const isGuidedTourTime = guidedTourTimes.includes(
     formData.timeSlot,
   );
-  const basePrice = pricing.basePrice;
+  const adultPrice = pricing.basePrice;
+  const childPrice = pricing.childPrice || pricing.basePrice * 0.6; // Fallback if not set
   const guidedTourSurcharge = pricing.guidedTourSurcharge;
-  const passTotal = basePrice * formData.quantity;
+  const totalQuantity = formData.adultQuantity + formData.childQuantity;
+  
+  const adultPassTotal = adultPrice * formData.adultQuantity;
+  const childPassTotal = childPrice * formData.childQuantity;
+  const passTotal = adultPassTotal + childPassTotal;
+  
   const guidedTourTotal = isGuidedTourTime
-    ? guidedTourSurcharge * formData.quantity
+    ? guidedTourSurcharge * totalQuantity
     : 0;
   const attractionsTotal = formData.selectedAttractions.reduce(
     (total, id) => {
       const attraction = attractions.find((a) => a.id === id);
       return (
-        total + (attraction?.price || 0) * formData.quantity
+        total + (attraction?.price || 0) * totalQuantity
       );
     },
     0,
@@ -490,15 +497,25 @@ export function BuyTicketPage({
     setIsSubmitting(true);
 
     try {
-      // Create booking data
-      const passengers = Array.from(
-        { length: formData.quantity },
+      // Create booking data with adults and children
+      const adultPassengers = Array.from(
+        { length: formData.adultQuantity },
         (_, i) => ({
           name:
-            i === 0 ? formData.fullName : `Passenger ${i + 1}`,
+            i === 0 ? formData.fullName : `Adult ${i + 1}`,
           type: "Adult",
         }),
       );
+      
+      const childPassengers = Array.from(
+        { length: formData.childQuantity },
+        (_, i) => ({
+          name: `Child ${i + 1}`,
+          type: "Child",
+        }),
+      );
+      
+      const passengers = [...adultPassengers, ...childPassengers];
 
       const bookingData = {
         contactInfo: {
@@ -524,12 +541,23 @@ export function BuyTicketPage({
             return {
               id,
               name: attraction?.name || id,
-              tickets: formData.quantity,
+              tickets: totalQuantity,
               price:
-                (attraction?.price || 0) * formData.quantity,
+                (attraction?.price || 0) * totalQuantity,
             };
           },
         ),
+        pricing: {
+          adultCount: formData.adultQuantity,
+          childCount: formData.childQuantity,
+          adultPrice: adultPrice,
+          childPrice: childPrice,
+          adultTotal: adultPassTotal,
+          childTotal: childPassTotal,
+          passTotal: passTotal,
+          guidedTourTotal: guidedTourTotal,
+          attractionsTotal: attractionsTotal,
+        },
         totalPrice,
         paymentIntentId: confirmedPaymentIntentId,
       };
@@ -733,7 +761,7 @@ export function BuyTicketPage({
   // Validation for new Step 2: Pickup and Quantity
   const canProceedStep2 =
     formData.pickupLocation &&
-    formData.quantity >= 1;
+    totalQuantity >= 1;
   
   // Validation for Step 4 (Your Information)
   const canProceedStep4 =
@@ -1179,6 +1207,20 @@ export function BuyTicketPage({
                             value,
                           )
                         }
+                        onOpenChange={(open) => {
+                          if (open) {
+                            const scrollY = window.scrollY;
+                            document.body.style.position = 'fixed';
+                            document.body.style.top = `-${scrollY}px`;
+                            document.body.style.width = '100%';
+                          } else {
+                            const scrollY = document.body.style.top;
+                            document.body.style.position = '';
+                            document.body.style.top = '';
+                            document.body.style.width = '';
+                            window.scrollTo(0, parseInt(scrollY || '0') * -1);
+                          }
+                        }}
                       >
                         <SelectTrigger className="border-primary/30 h-14 text-base bg-white shadow-sm hover:border-primary/50 transition-colors">
                           <SelectValue
@@ -1188,7 +1230,12 @@ export function BuyTicketPage({
                             }
                           />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent 
+                          position="popper"
+                          side="bottom"
+                          align="start"
+                          className="max-h-[300px]"
+                        >
                           {PICKUP_LOCATIONS.map((location) => (
                             <SelectItem
                               key={location.value}
@@ -1231,53 +1278,121 @@ export function BuyTicketPage({
 
                   {/* Number of Guests Card - Secondary Importance */}
                   <Card className="p-6 border border-border">
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                       <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-full bg-accent/10 flex items-center justify-center">
                           <Users className="h-5 w-5 text-accent" />
                         </div>
-                        <Label
-                          htmlFor="quantity"
-                          className="text-foreground font-semibold text-lg"
-                        >
+                        <Label className="text-foreground font-semibold text-lg">
                           {t.buyTicket.dateSelection.numberOfGuests}
                         </Label>
                       </div>
-                      <div className="flex items-center justify-center gap-4 py-2">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="lg"
-                          className="h-14 w-14 rounded-full border-2 border-border hover:bg-accent hover:text-white hover:border-accent transition-all text-xl"
-                          onClick={() =>
-                            handleInputChange(
-                              "quantity",
-                              Math.max(1, formData.quantity - 1),
-                            )
-                          }
-                        >
-                          -
-                        </Button>
-                        <div className="flex items-center justify-center min-w-[100px] px-6 py-3 rounded-lg bg-secondary/30">
-                          <span className="text-4xl text-foreground font-semibold">
-                            {formData.quantity}
-                          </span>
+                      
+                      {/* Adult Tickets */}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-foreground">Adults</p>
+                            <p className="text-xs text-muted-foreground">€{adultPrice.toFixed(2)} per pass</p>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="h-10 w-10 rounded-full"
+                              onClick={() =>
+                                handleInputChange(
+                                  "adultQuantity",
+                                  Math.max(0, formData.adultQuantity - 1),
+                                )
+                              }
+                            >
+                              -
+                            </Button>
+                            <div className="min-w-[60px] text-center">
+                              <span className="text-2xl font-semibold text-foreground">
+                                {formData.adultQuantity}
+                              </span>
+                            </div>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="h-10 w-10 rounded-full"
+                              onClick={() =>
+                                handleInputChange(
+                                  "adultQuantity",
+                                  Math.min(50, formData.adultQuantity + 1),
+                                )
+                              }
+                            >
+                              +
+                            </Button>
+                          </div>
                         </div>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="lg"
-                          className="h-14 w-14 rounded-full border-2 border-border hover:bg-accent hover:text-white hover:border-accent transition-all text-xl"
-                          onClick={() =>
-                            handleInputChange(
-                              "quantity",
-                              Math.min(50, formData.quantity + 1),
-                            )
-                          }
-                        >
-                          +
-                        </Button>
                       </div>
+
+                      {/* Child Tickets */}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-foreground">Children (7-12)</p>
+                            <p className="text-xs text-muted-foreground">€{childPrice.toFixed(2)} per pass</p>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="h-10 w-10 rounded-full"
+                              onClick={() =>
+                                handleInputChange(
+                                  "childQuantity",
+                                  Math.max(0, formData.childQuantity - 1),
+                                )
+                              }
+                            >
+                              -
+                            </Button>
+                            <div className="min-w-[60px] text-center">
+                              <span className="text-2xl font-semibold text-foreground">
+                                {formData.childQuantity}
+                              </span>
+                            </div>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="h-10 w-10 rounded-full"
+                              onClick={() =>
+                                handleInputChange(
+                                  "childQuantity",
+                                  Math.min(50, formData.childQuantity + 1),
+                                )
+                              }
+                            >
+                              +
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Total Count */}
+                      {totalQuantity > 0 && (
+                        <div className="pt-4 border-t border-border">
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-muted-foreground">Total Guests:</span>
+                            <span className="font-semibold text-foreground text-lg">{totalQuantity}</span>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {totalQuantity === 0 && (
+                        <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3">
+                          <p className="text-sm text-destructive text-center">Please select at least one ticket</p>
+                        </div>
+                      )}
                     </div>
                   </Card>
 
@@ -1688,25 +1803,49 @@ export function BuyTicketPage({
                       <div className="flex items-center gap-2">
                         <Users className="h-4 w-4 text-primary flex-shrink-0" />
                         <span>
-                          {formData.quantity}{" "}
-                          {formData.quantity === 1
+                          {totalQuantity}{" "}
+                          {totalQuantity === 1
                             ? ct.buyTicketPage.step5.guest
                             : ct.buyTicketPage.step5.guests}
+                          {formData.adultQuantity > 0 && formData.childQuantity > 0 && (
+                            <span className="text-xs text-muted-foreground ml-1">
+                              ({formData.adultQuantity} adult{formData.adultQuantity > 1 ? 's' : ''}, {formData.childQuantity} child{formData.childQuantity > 1 ? 'ren' : ''})
+                            </span>
+                          )}
                         </span>
                       </div>
 
                       <div className="border-t border-border pt-3 mt-3 space-y-2">
-                        <div className="flex justify-between gap-2">
-                          <span className="flex-shrink-0">
-                            {ct.buyTicketPage.step5.dayPass} (×{formData.quantity})
-                            {isGuidedTourTime
-                              ? ` + ${ct.buyTicketPage.step5.guided}`
-                              : ""}
-                          </span>
-                          <span className="flex-shrink-0">
-                            €{passTotal + guidedTourTotal}
-                          </span>
-                        </div>
+                        {formData.adultQuantity > 0 && (
+                          <div className="flex justify-between gap-2">
+                            <span className="flex-shrink-0 text-sm">
+                              Adult Pass (×{formData.adultQuantity})
+                            </span>
+                            <span className="flex-shrink-0 text-sm">
+                              €{adultPassTotal.toFixed(2)}
+                            </span>
+                          </div>
+                        )}
+                        {formData.childQuantity > 0 && (
+                          <div className="flex justify-between gap-2">
+                            <span className="flex-shrink-0 text-sm">
+                              Child Pass (×{formData.childQuantity})
+                            </span>
+                            <span className="flex-shrink-0 text-sm">
+                              €{childPassTotal.toFixed(2)}
+                            </span>
+                          </div>
+                        )}
+                        {isGuidedTourTime && guidedTourTotal > 0 && (
+                          <div className="flex justify-between gap-2">
+                            <span className="flex-shrink-0 text-sm">
+                              {ct.buyTicketPage.step5.guided} (×{totalQuantity})
+                            </span>
+                            <span className="flex-shrink-0 text-sm">
+                              €{guidedTourTotal.toFixed(2)}
+                            </span>
+                          </div>
+                        )}
                         {formData.selectedAttractions.length >
                           0 && (
                           <div className="flex justify-between gap-2">

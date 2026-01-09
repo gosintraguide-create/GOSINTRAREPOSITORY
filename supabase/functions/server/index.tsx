@@ -15,6 +15,8 @@ function generateBookingConfirmationHTML(data: any): string {
     formattedDate,
     totalPrice,
     dayPassCount,
+    adultCount,
+    childCount,
     guidedTour,
     selectedDate,
   } = data;
@@ -78,7 +80,9 @@ function generateBookingConfirmationHTML(data: any): string {
           </tr>
           <tr>
             <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Guests:</td>
-            <td style="padding: 8px 0; color: #2d3436; font-weight: 600; text-align: right; font-size: 14px;">${dayPassCount}</td>
+            <td style="padding: 8px 0; color: #2d3436; font-weight: 600; text-align: right; font-size: 14px;">
+              ${dayPassCount}${adultCount > 0 && childCount > 0 ? ` <span style="color: #6b7280; font-weight: 400; font-size: 13px;">(${adultCount} adult${adultCount > 1 ? 's' : ''}, ${childCount} child${childCount > 1 ? 'ren' : ''})</span>` : ''}
+            </td>
           </tr>
           <tr style="border-top: 2px solid #D77942;">
             <td style="padding: 15px 0 0 0; color: #0A4D5C; font-weight: 700; font-size: 16px;">Total Paid:</td>
@@ -943,6 +947,10 @@ async function sendBookingEmail(
       })),
     );
 
+    // Calculate adult and child counts from passengers
+    const adultCount = booking.passengers.filter((p: any) => p.type === 'Adult').length;
+    const childCount = booking.passengers.filter((p: any) => p.type === 'Child').length;
+    
     // Build HTML email
     const htmlContent = generateBookingConfirmationHTML({
       customerName: booking.contactInfo?.name || booking.fullName || 'Guest',
@@ -952,6 +960,8 @@ async function sendBookingEmail(
       passengers: passengersWithQR,
       totalPrice: booking.totalPrice,
       dayPassCount: booking.passengers.length,
+      adultCount: adultCount,
+      childCount: childCount,
       guidedTour: booking.guidedTour,
       attractions: booking.selectedAttractions,
     });

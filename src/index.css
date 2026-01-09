@@ -1348,6 +1348,10 @@
     max-height: 90vh;
   }
 
+  .max-h-\[300px\] {
+    max-height: 300px;
+  }
+
   .max-h-\[400px\] {
     max-height: 400px;
   }
@@ -1600,8 +1604,8 @@
     min-width: 8rem;
   }
 
-  .min-w-\[100px\] {
-    min-width: 100px;
+  .min-w-\[60px\] {
+    min-width: 60px;
   }
 
   .min-w-\[var\(--radix-select-trigger-width\)\] {

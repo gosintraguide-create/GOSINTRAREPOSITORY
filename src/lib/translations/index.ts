@@ -267,6 +267,26 @@ export interface UITranslations {
     contentSaved: string;
     contentSaveFailed: string;
   };
+  
+  // HomePage Quick Links
+  homepage: {
+    quickLinks: {
+      sectionTitle: string;
+      sectionSubtitle: string;
+      attractions: {
+        title: string;
+        subtitle: string;
+      };
+      travelGuide: {
+        title: string;
+        subtitle: string;
+      };
+      privateTours: {
+        title: string;
+        subtitle: string;
+      };
+    };
+  };
 }
 
 export const uiTranslations: { [key: string]: UITranslations } = {
@@ -374,6 +394,25 @@ export const uiTranslations: { [key: string]: UITranslations } = {
     planningYourVisit: "Planning Your Visit?",
     browseTravelGuidesDescription: "Browse our travel guides for tips, itineraries, and insider advice",
     readTravelGuides: "Read Travel Guides",
+    
+    homepage: {
+      quickLinks: {
+        sectionTitle: "Plan Your Visit",
+        sectionSubtitle: "Everything you need for the perfect day in Sintra",
+        attractions: {
+          title: "UNESCO Attractions",
+          subtitle: "Discover palaces & castles",
+        },
+        travelGuide: {
+          title: "Travel Guides",
+          subtitle: "Expert tips & itineraries",
+        },
+        privateTours: {
+          title: "Private Tours",
+          subtitle: "Personalized experiences",
+        },
+      },
+    },
   },
   pt: {
     home: "Início",
@@ -479,6 +518,25 @@ export const uiTranslations: { [key: string]: UITranslations } = {
     planningYourVisit: "A Planear a Sua Visita?",
     browseTravelGuidesDescription: "Explore os nossos guias de viagem com dicas, itinerários e conselhos especializados",
     readTravelGuides: "Ler Guias de Viagem",
+    
+    homepage: {
+      quickLinks: {
+        sectionTitle: "Planeie a Sua Visita",
+        sectionSubtitle: "Tudo o que precisa para o dia perfeito em Sintra",
+        attractions: {
+          title: "Atrações UNESCO",
+          subtitle: "Descubra palácios e castelos",
+        },
+        travelGuide: {
+          title: "Guias de Viagem",
+          subtitle: "Dicas de especialistas e itinerários",
+        },
+        privateTours: {
+          title: "Tours Privados",
+          subtitle: "Experiências personalizadas",
+        },
+      },
+    },
   },
   es: {
     home: "Inicio",
@@ -584,6 +642,25 @@ export const uiTranslations: { [key: string]: UITranslations } = {
     planningYourVisit: "¿Planificando Tu Visita?",
     browseTravelGuidesDescription: "Explora nuestras guías de viaje con consejos, itinerarios y recomendaciones expertas",
     readTravelGuides: "Leer Guías de Viaje",
+    
+    homepage: {
+      quickLinks: {
+        sectionTitle: "Planifica Tu Visita",
+        sectionSubtitle: "Todo lo que necesitas para el día perfecto en Sintra",
+        attractions: {
+          title: "Atracciones UNESCO",
+          subtitle: "Descubre palacios y castillos",
+        },
+        travelGuide: {
+          title: "Guías de Viaje",
+          subtitle: "Consejos e itinerarios expertos",
+        },
+        privateTours: {
+          title: "Tours Privados",
+          subtitle: "Experiencias personalizadas",
+        },
+      },
+    },
   },
   fr: {
     home: "Accueil",
@@ -689,6 +766,25 @@ export const uiTranslations: { [key: string]: UITranslations } = {
     planningYourVisit: "Vous Planifiez Votre Visite?",
     browseTravelGuidesDescription: "Parcourez nos guides de voyage avec conseils, itinéraires et recommandations d'experts",
     readTravelGuides: "Lire les Guides de Voyage",
+    
+    homepage: {
+      quickLinks: {
+        sectionTitle: "Planifiez Votre Visite",
+        sectionSubtitle: "Tout ce dont vous avez besoin pour une journée parfaite à Sintra",
+        attractions: {
+          title: "Attractions UNESCO",
+          subtitle: "Découvrez palais et châteaux",
+        },
+        travelGuide: {
+          title: "Guides de Voyage",
+          subtitle: "Conseils d'experts et itinéraires",
+        },
+        privateTours: {
+          title: "Visites Privées",
+          subtitle: "Expériences personnalisées",
+        },
+      },
+    },
   },
   de: {
     home: "Startseite",
@@ -794,6 +890,25 @@ export const uiTranslations: { [key: string]: UITranslations } = {
     planningYourVisit: "Planen Sie Ihren Besuch?",
     browseTravelGuidesDescription: "Durchstöbern Sie unsere Reiseführer mit Tipps, Reiserouten und Expertenrat",
     readTravelGuides: "Reiseführer Lesen",
+    
+    homepage: {
+      quickLinks: {
+        sectionTitle: "Planen Sie Ihren Besuch",
+        sectionSubtitle: "Alles, was Sie für den perfekten Tag in Sintra brauchen",
+        attractions: {
+          title: "UNESCO-Attraktionen",
+          subtitle: "Entdecken Sie Paläste & Burgen",
+        },
+        travelGuide: {
+          title: "Reiseführer",
+          subtitle: "Expertentipps & Routen",
+        },
+        privateTours: {
+          title: "Private Touren",
+          subtitle: "Personalisierte Erlebnisse",
+        },
+      },
+    },
   },
   nl: {
     home: "Home",
@@ -899,6 +1014,25 @@ export const uiTranslations: { [key: string]: UITranslations } = {
     planningYourVisit: "Plan Je Bezoek?",
     browseTravelGuidesDescription: "Bekijk onze reisgidsen met tips, routes en deskundig advies",
     readTravelGuides: "Lees Reisgidsen",
+    
+    homepage: {
+      quickLinks: {
+        sectionTitle: "Plan Je Bezoek",
+        sectionSubtitle: "Alles wat je nodig hebt voor de perfecte dag in Sintra",
+        attractions: {
+          title: "UNESCO Attracties",
+          subtitle: "Ontdek paleizen & kastelen",
+        },
+        travelGuide: {
+          title: "Reisgidsen",
+          subtitle: "Expertadviezen & routes",
+        },
+        privateTours: {
+          title: "Privé Tours",
+          subtitle: "Gepersonaliseerde ervaringen",
+        },
+      },
+    },
   },
   it: {
     home: "Home",
@@ -1004,6 +1138,25 @@ export const uiTranslations: { [key: string]: UITranslations } = {
     planningYourVisit: "Pianifica la Tua Visita?",
     browseTravelGuidesDescription: "Sfoglia le nostre guide di viaggio con consigli, itinerari e suggerimenti esperti",
     readTravelGuides: "Leggi le Guide di Viaggio",
+    
+    homepage: {
+      quickLinks: {
+        sectionTitle: "Pianifica la Tua Visita",
+        sectionSubtitle: "Tutto ciò di cui hai bisogno per la giornata perfetta a Sintra",
+        attractions: {
+          title: "Attrazioni UNESCO",
+          subtitle: "Scopri palazzi e castelli",
+        },
+        travelGuide: {
+          title: "Guide di Viaggio",
+          subtitle: "Consigli esperti e itinerari",
+        },
+        privateTours: {
+          title: "Tour Privati",
+          subtitle: "Esperienze personalizzate",
+        },
+      },
+    },
   },
 };
 

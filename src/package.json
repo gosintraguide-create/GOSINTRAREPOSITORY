@@ -12,7 +12,8 @@
     "validate:sitemap": "node scripts/validate-sitemap.js",
     "clean": "rm -rf build dist node_modules package-lock.json",
     "fresh-install": "npm run clean && npm install",
-    "verify-stripe": "node scripts/verify-stripe.js"
+    "verify-stripe": "node scripts/verify-stripe.js",
+    "clear-cache": "rm -rf node_modules/.vite .vite dist && echo '✅ Cache cleared! Run npm run dev to restart.'"
   },
   "dependencies": {
     "react": "^18.2.0",

@@ -1,159 +1,241 @@
-# Troubleshooting: No Confirmation Email & Booking Not Registered
+# 🔧 Troubleshooting "Unexpected token '<'" Error
 
-## Issue
-After payment is confirmed:
-- ❌ No confirmation email received
-- ❌ Booking doesn't appear in console/admin panel
+## What This Error Means
 
-## Root Cause
-The Supabase Edge Function `/make-server-3bd0ade8/bookings` endpoint is returning a 404 error, meaning the backend service is not accessible.
+The error `SyntaxError: Unexpected token '<'` occurs when JavaScript tries to parse HTML (which starts with `<`) as if it were JavaScript code. This typically happens when:
 
-## Diagnostic Steps
+1. **A module file returns a 404 error** - The server returns an HTML 404 page instead of the JavaScript file
+2. **Cached files are outdated** - Your browser is loading old/corrupted cached files
+3. **Build artifacts are corrupted** - The build process created invalid files
 
-### 1. Check Backend Health
-1. Navigate to `/diagnostics` page
-2. Click "Check Health" under "Edge Function Health Check"
-3. Look for the status:
-   - ✅ **Green "healthy"** = Backend is running
-   - ❌ **Red "not found"** = Backend needs deployment
+## Quick Fixes (Try These First)
 
-### 2. Check Browser Console
-Open browser console (F12) and look for these logs when attempting payment:
+### Fix 1: Clear Browser Cache (Most Common Solution)
 
-**What you SHOULD see (working):**
+#### Chrome/Edge/Brave:
+1. Press `Ctrl+Shift+Delete` (Windows/Linux) or `Cmd+Shift+Delete` (Mac)
+2. Select "All time"
+3. Check "Cached images and files"
+4. Click "Clear data"
+5. **Hard refresh**: `Ctrl+Shift+R` (Windows/Linux) or `Cmd+Shift+R` (Mac)
+
+#### Firefox:
+1. Press `Ctrl+Shift+Delete` (Windows/Linux) or `Cmd+Shift+Delete` (Mac)
+2. Select "Everything"
+3. Check "Cache"
+4. Click "Clear Now"
+5. **Hard refresh**: `Ctrl+Shift+R` (Windows/Linux) or `Cmd+Shift+R` (Mac)
+
+#### Safari:
+1. Safari menu → Preferences → Advanced
+2. Check "Show Develop menu"
+3. Develop menu → Empty Caches
+4. **Hard refresh**: `Cmd+Option+R`
+
+### Fix 2: Use the Automatic Cache Clear Tool
+
+Visit this URL to automatically clear all cache:
 ```
-🔗 API Call: POST https://dwiznaefeqnduglmcivr.supabase.co/functions/v1/make-server-3bd0ade8/bookings
-📤 Creating booking with data: {...}
-✅ Booking created successfully: {...}
-```
-
-**What you're PROBABLY seeing (broken):**
-```
-🔗 API Call: POST https://dwiznaefeqnduglmcivr.supabase.co/functions/v1/make-server-3bd0ade8/bookings
-API Error (/bookings): {status: 404, statusText: "Not Found", error: {...}}
-❌ Booking creation failed: Server endpoint not found
-```
-
-### 3. Test Booking Creation
-1. Go to `/diagnostics` page
-2. Scroll to "Send Test Email" section
-3. Enter your email
-4. Click "Send Test Email"
-5. Check console for detailed error messages
-
-## Solutions
-
-### Solution 1: Wait for Edge Function Deployment
-In some cases, the Figma Make environment needs a few minutes to deploy the Edge Function after changes.
-
-**Steps:**
-1. Wait 2-3 minutes
-2. Refresh the page
-3. Try creating a test booking via `/diagnostics`
-
-### Solution 2: Verify Supabase Project Status
-1. Go to [Supabase Dashboard](https://supabase.com/dashboard/project/dwiznaefeqnduglmcivr)
-2. Check if the project is **active** (not paused)
-3. Go to "Edge Functions" tab
-4. Look for `make-server-3bd0ade8` function
-5. Check deployment status and logs
-
-### Solution 3: Check CORS & Network Issues
-1. Open browser console (F12)
-2. Look for CORS errors (red text with "CORS" or "Access-Control")
-3. If you see CORS errors, the function exists but has configuration issues
-
-### Solution 4: Manual Backend Test
-Open this URL in your browser:
-```
-https://dwiznaefeqnduglmcivr.supabase.co/functions/v1/make-server-3bd0ade8/health
+http://localhost:5173/fix-errors.html
 ```
 
-**Expected response (working):**
-```json
-{
-  "status": "ok",
-  "timestamp": "2024-01-..."
-}
+Or in production:
+```
+https://your-site.com/fix-errors.html
 ```
 
-**If you get 404:**
-The Edge Function is not deployed.
+Click "Clear & Reload" button.
 
-## Understanding the Payment Flow
+### Fix 3: Clear Application Data (DevTools)
 
-Here's what SHOULD happen:
-1. Customer fills out booking form
-2. Stripe Payment Intent created (€XX.XX)
-3. Customer enters card details
-4. Stripe processes payment ✅
-5. **Frontend calls `/bookings` endpoint** ← This is where it's failing
-6. **Backend creates booking in database**
-7. **Backend generates QR codes**
-8. **Backend sends confirmation email**
-9. Customer sees confirmation page
+1. Open DevTools (`F12` or `Ctrl+Shift+I`)
+2. Go to **Application** tab (Chrome) or **Storage** tab (Firefox)
+3. In the left sidebar, find "Clear storage" or "Clear site data"
+4. Click "Clear site data"
+5. Close DevTools and refresh the page
 
-Currently, step 5 is failing with a 404 error, which prevents steps 6-9 from happening.
+### Fix 4: Rebuild the Project (Development)
 
-## Critical Payment Information
+If you're running the project locally:
 
-If a customer's payment went through but booking failed:
+```bash
+# Stop the dev server (Ctrl+C)
 
-**The payment WAS processed by Stripe** but the booking wasn't created. You need to:
+# Clear node_modules cache
+rm -rf node_modules/.vite
 
-1. Check Stripe Dashboard for the payment
-2. Get the Payment Intent ID from browser console (look for: `⚠️ Payment Intent ID: pi_...`)
-3. Get customer email from console
-4. Manually create the booking or refund the customer
+# Restart dev server
+npm run dev
+```
 
-**To find the Payment Intent ID:**
-1. Open browser console right after the error
-2. Look for logs that say: `⚠️ CRITICAL: Payment succeeded but booking creation failed with 404`
-3. The next line shows: `⚠️ Payment Intent ID: pi_xxxxx`
-4. The line after shows: `⚠️ Customer Email: customer@email.com`
+### Fix 5: Complete Clean Build (Development)
 
-## How to Recover from Failed Bookings
+```bash
+# Stop the dev server (Ctrl+C)
 
-If you have successful payments but no bookings created:
+# Remove all build artifacts
+rm -rf dist
+rm -rf node_modules/.vite
+rm -rf .vite
 
-### Option A: Manual Booking Creation
-1. Go to `/manual-booking` (admin panel)
-2. Create booking manually with the payment details
-3. System will generate QR codes and send email
+# Reinstall dependencies (optional, but thorough)
+rm -rf node_modules
+npm install
 
-### Option B: Contact Support
-Provide:
-- Payment Intent ID (from Stripe or console)
-- Customer email
-- Booking date and details
+# Rebuild
+npm run dev
+```
+
+## Advanced Troubleshooting
+
+### Check Console for Exact Error
+
+1. Open DevTools (`F12`)
+2. Go to **Console** tab
+3. Look for the full error message - it will show which file is causing the issue
+
+Example:
+```
+Uncaught SyntaxError: Unexpected token '<' 
+    at /src/components/SomeComponent.tsx:1
+```
+
+The file path tells you which module is failing to load.
+
+### Check Network Tab
+
+1. Open DevTools (`F12`)
+2. Go to **Network** tab
+3. Refresh the page
+4. Look for any files with:
+   - **Status code 404** (Not Found)
+   - **Type: document** instead of **Type: script**
+
+If you see a `.tsx` or `.js` file returning HTML (document), that's your problem file.
+
+### Common Problematic Files
+
+Based on the error, check these files:
+
+- `/src/main.tsx` - Entry point
+- `/App.tsx` - Main app component
+- `/components/BuyTicketPage.tsx` - Recently modified
+- `/components/StripePaymentForm.tsx` - Payment component
+- Any lazy-loaded components in `/App.tsx`
+
+### Verify File Exports
+
+Make sure all components have proper exports:
+
+```typescript
+// ✅ Correct - Named export
+export function MyComponent() { ... }
+
+// ✅ Correct - Default export
+export default function MyComponent() { ... }
+
+// ❌ Wrong - No export
+function MyComponent() { ... }
+```
+
+### Check Import Statements
+
+Make sure all imports match the exports:
+
+```typescript
+// If the component uses 'export function ComponentName'
+import { ComponentName } from './path/to/file';
+
+// If the component uses 'export default'
+import ComponentName from './path/to/file';
+```
+
+## Production-Specific Fixes
+
+### If Error Occurs on Deployed Site (Vercel)
+
+1. **Redeploy from Vercel Dashboard**
+   - Go to your Vercel dashboard
+   - Click "Redeploy" on the latest deployment
+
+2. **Clear Vercel Edge Cache**
+   - Add `?nocache=${Date.now()}` to your URL
+   - Example: `https://yoursite.com?nocache=1234567890`
+
+3. **Force Clear User Cache**
+   - Share this link with users: `https://yoursite.com/fix-errors.html`
+
+4. **Check Build Logs**
+   - Vercel Dashboard → Deployments → Click deployment → View build logs
+   - Look for any build errors or warnings
+
+## Nuclear Option (If Nothing Else Works)
+
+### For Development:
+
+```bash
+# Complete reset
+rm -rf node_modules
+rm -rf dist
+rm -rf .vite
+rm package-lock.json
+
+# Fresh install
+npm install
+npm run dev
+```
+
+### For Users Having Issues:
+
+Ask them to:
+1. Clear all browser data for your site
+2. Try in an incognito/private window
+3. Try a different browser
+4. Disable browser extensions
 
 ## Prevention
 
-Once the Edge Function is deployed and working:
-- Test thoroughly with `/diagnostics` page
-- Create a test booking to verify end-to-end flow
-- Check admin panel to confirm booking appears
-- Verify email is received
+### For Developers:
 
-## Quick Status Check
+- Always test builds locally before deploying: `npm run build && npm run preview`
+- Don't modify files in the `dist` folder directly
+- Keep dependencies up to date: `npm update`
 
-Run this command in browser console to check backend status:
+### For Users:
+
+The app has automatic cache clearing built-in. If issues persist:
+- Visit: `/fix-errors.html?auto-clear=true`
+
+## Still Having Issues?
+
+If none of these fixes work, please provide:
+
+1. **Full error message** from browser console
+2. **Which file** is causing the error (from console or Network tab)
+3. **Environment**: Development (localhost) or Production (live site)
+4. **Browser and version**: Chrome 120, Firefox 121, etc.
+5. **Steps to reproduce**: What you did before the error appeared
+
+## Technical Explanation
+
+The error occurs when:
+
 ```javascript
-fetch('https://dwiznaefeqnduglmcivr.supabase.co/functions/v1/make-server-3bd0ade8/health', {
-  headers: { 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR3aXpuYWVmZXFuZHVnbG1jaXZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxNzc5NzYsImV4cCI6MjA3NTc1Mzk3Nn0.cTO16eeGusYnwjVwVVt1i4M8gQZ_MtDxyv9wYFHBVLo' }
-})
-.then(r => r.json())
-.then(d => console.log('✅ Backend Status:', d))
-.catch(e => console.error('❌ Backend Error:', e));
+// JavaScript expects something like:
+import { MyComponent } from './components/MyComponent';
+
+// But the server returns:
+<!DOCTYPE html>
+<html>
+  <head><title>404 Not Found</title></head>
+  ...
+</html>
 ```
 
-**Expected output:** `✅ Backend Status: {status: "ok", timestamp: "..."}`
-**Error output:** `❌ Backend Error: ...`
+JavaScript sees the `<` character at the start of the HTML and throws the error because `<` is not valid JavaScript syntax (outside of JSX, which is transpiled).
 
-## Need Help?
-
-If none of these solutions work:
-1. Copy all console logs from the failed booking attempt
-2. Note the exact error message
-3. Check Supabase Edge Function logs in the dashboard
-4. Contact support with Payment Intent ID if customer was charged
+This happens when:
+- The file doesn't exist (404)
+- The build didn't include the file
+- The cache is serving an old/corrupt version
+- The path is wrong

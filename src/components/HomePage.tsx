@@ -362,28 +362,28 @@ export function HomePage({
       <section className="bg-gradient-to-br from-primary via-primary/95 to-primary/90 py-16 sm:py-20 lg:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-12 text-center">
-            <h2 className="mb-4 text-white">{legacyContent.homepage.quickLinks.title}</h2>
-            <p className="text-white/90">{legacyContent.homepage.quickLinks.subtitle}</p>
+            <h2 className="mb-4 text-white">{getUITranslation(language).homepage.quickLinks.sectionTitle}</h2>
+            <p className="text-white/90">{getUITranslation(language).homepage.quickLinks.sectionSubtitle}</p>
           </div>
           <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
             {/* Attractions Link */}
             <button
-              onClick={() => onNavigate(legacyContent.homepage.quickLinks.attractions.link)}
+              onClick={() => onNavigate('attractions')}
               className="group flex items-center gap-4 rounded-2xl border-2 border-white/30 bg-white/10 px-6 py-5 backdrop-blur-sm transition-all hover:scale-105 hover:border-white/60 hover:bg-white/20 hover:shadow-2xl"
             >
               <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl sm:h-20 sm:w-20">
                 <ImageWithFallback
-                  src={legacyContent.homepage.quickLinks.attractions.imageUrl || "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=200&h=200&fit=crop"}
+                  src="https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=200&h=200&fit=crop"
                   alt="Attractions"
                   className="h-full w-full object-cover"
                 />
               </div>
               <div className="flex-1 text-left">
                 <p className="mb-1 text-white">
-                  {legacyContent.homepage.quickLinks.attractions.title}
+                  {getUITranslation(language).homepage.quickLinks.attractions.title}
                 </p>
                 <p className="text-sm text-white/80">
-                  {legacyContent.homepage.quickLinks.attractions.subtitle}
+                  {getUITranslation(language).homepage.quickLinks.attractions.subtitle}
                 </p>
               </div>
               <ArrowRight className="h-5 w-5 flex-shrink-0 text-white/70 transition-transform group-hover:translate-x-1 group-hover:text-white" />
@@ -391,22 +391,22 @@ export function HomePage({
 
             {/* Travel Guide Link */}
             <button
-              onClick={() => onNavigate(legacyContent.homepage.quickLinks.travelGuide.link)}
+              onClick={() => onNavigate('blog')}
               className="group flex items-center gap-4 rounded-2xl border-2 border-white/30 bg-white/10 px-6 py-5 backdrop-blur-sm transition-all hover:scale-105 hover:border-white/60 hover:bg-white/20 hover:shadow-2xl"
             >
               <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl sm:h-20 sm:w-20">
                 <ImageWithFallback
-                  src={legacyContent.homepage.quickLinks.travelGuide.imageUrl || "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=200&h=200&fit=crop"}
+                  src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=200&h=200&fit=crop"
                   alt="Travel Guide"
                   className="h-full w-full object-cover"
                 />
               </div>
               <div className="flex-1 text-left">
                 <p className="mb-1 text-white">
-                  {legacyContent.homepage.quickLinks.travelGuide.title}
+                  {getUITranslation(language).homepage.quickLinks.travelGuide.title}
                 </p>
                 <p className="text-sm text-white/80">
-                  {legacyContent.homepage.quickLinks.travelGuide.subtitle}
+                  {getUITranslation(language).homepage.quickLinks.travelGuide.subtitle}
                 </p>
               </div>
               <ArrowRight className="h-5 w-5 flex-shrink-0 text-white/70 transition-transform group-hover:translate-x-1 group-hover:text-white" />
@@ -414,22 +414,22 @@ export function HomePage({
 
             {/* Private Tours Link */}
             <button
-              onClick={() => onNavigate(legacyContent.homepage.quickLinks.privateTours.link)}
+              onClick={() => onNavigate('private-tours')}
               className="group flex items-center gap-4 rounded-2xl border-2 border-accent bg-accent/20 px-6 py-5 backdrop-blur-sm transition-all hover:scale-105 hover:border-accent hover:bg-accent/30 hover:shadow-2xl sm:col-span-2 lg:col-span-1"
             >
               <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl sm:h-20 sm:w-20">
                 <ImageWithFallback
-                  src={legacyContent.homepage.quickLinks.privateTours.imageUrl || "https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?w=200&h=200&fit=crop"}
+                  src="https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?w=200&h=200&fit=crop"
                   alt="Private Tours"
                   className="h-full w-full object-cover"
                 />
               </div>
               <div className="flex-1 text-left">
                 <p className="mb-1 text-white">
-                  {legacyContent.homepage.quickLinks.privateTours.title}
+                  {getUITranslation(language).homepage.quickLinks.privateTours.title}
                 </p>
                 <p className="text-sm text-white/80">
-                  {legacyContent.homepage.quickLinks.privateTours.subtitle}
+                  {getUITranslation(language).homepage.quickLinks.privateTours.subtitle}
                 </p>
               </div>
               <ArrowRight className="h-5 w-5 flex-shrink-0 text-white/70 transition-transform group-hover:translate-x-1 group-hover:text-white" />

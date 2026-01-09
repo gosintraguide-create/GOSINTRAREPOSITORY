@@ -261,22 +261,30 @@ This is configurable in the content management system.
 ```
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your_anon_key
-VITE_STRIPE_PUBLISHABLE_KEY=pk_live_...
+VITE_STRIPE_PUBLISHABLE_KEY=pk_live_... # Get from Stripe Dashboard
 ```
 
 ### Backend (Supabase)
+
+Configure these environment variables in your Supabase Dashboard → Settings → Edge Functions:
 
 ```
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_ANON_KEY=your_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 SUPABASE_DB_URL=postgresql://...
-STRIPE_SECRET_KEY=sk_test_... # Currently in TEST MODE
-STRIPE_PUBLISHABLE_KEY=pk_test_... # Currently in TEST MODE
-STRIPE_WEBHOOK_SECRET=whsec_... # Use test webhook secret
-RESEND_API_KEY=re_...
+STRIPE_SECRET_KEY=sk_test_... # Get from Stripe Dashboard (use test keys for development)
+STRIPE_PUBLISHABLE_KEY=pk_test_... # Get from Stripe Dashboard (use test keys for development)
+STRIPE_WEBHOOK_SECRET=whsec_... # Get from Stripe Dashboard webhook settings
+RESEND_API_KEY=re_... # Get from Resend.com
 RESEND_FROM_EMAIL=bookings@yourdomain.com
 ```
+
+**Important Security Notes:**
+- Never commit API keys to your repository
+- Use test keys for development (`sk_test_...` and `pk_test_...`)
+- Switch to live keys only in production
+- Store all keys as environment variables
 
 ---
 

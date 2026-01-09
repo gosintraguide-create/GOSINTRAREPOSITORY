@@ -8,5 +8,6 @@ Disallow: /driver-login
 Disallow: /driver-dashboard
 Disallow: /manual-booking
 Disallow: /qr-scanner
+Disallow: /sunset-special
 
 Sitemap: https://www.hoponsintra.com/sitemap.xml

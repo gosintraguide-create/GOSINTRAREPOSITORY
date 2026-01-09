@@ -12,6 +12,7 @@ import { motion } from "motion/react";
 import { toast } from "sonner@2.0.3";
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { getComponentTranslation } from "../lib/translations/component-translations";
+import { Heart, Users, Car, Award, Camera, Shield, Target, Mail, MapPin, Clock, MessageSquare, ArrowRight } from "lucide-react";
 
 interface AboutPageProps {
   language?: string;
@@ -74,10 +75,10 @@ export function AboutPage({ language = "en" }: AboutPageProps) {
   };
 
   const perks = [
-    { icon: tc.Users, title: "Small Groups", description: "Just 2-6 guests per vehicle for a cozy, personal experience" },
-    { icon: tc.Car, title: "Professional Guides", description: "Every driver is a certified local expert who loves Sintra" },
-    { icon: tc.Award, title: "Guaranteed Seats", description: "Pre-booked comfort with no waiting or standing" },
-    { icon: tc.Camera, title: "Your Pace", description: "Hop on & off as much as you want all day long" },
+    { icon: Users, title: "Small Groups", description: "Just 2-6 guests per vehicle for a cozy, personal experience" },
+    { icon: Car, title: "Professional Guides", description: "Every driver is a certified local expert who loves Sintra" },
+    { icon: Award, title: "Guaranteed Seats", description: "Pre-booked comfort with no waiting or standing" },
+    { icon: Camera, title: "Your Pace", description: "Hop on & off as much as you want all day long" },
   ];
 
   return (
@@ -92,7 +93,7 @@ export function AboutPage({ language = "en" }: AboutPageProps) {
             transition={{ duration: 0.5, type: "spring" }}
           >
             <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-white shadow-xl sm:h-24 sm:w-24">
-              <tc.Heart className="h-10 w-10 text-accent sm:h-12 sm:w-12" />
+              <Heart className="h-10 w-10 text-accent sm:h-12 sm:w-12" />
             </div>
           </motion.div>
 
@@ -207,9 +208,9 @@ export function AboutPage({ language = "en" }: AboutPageProps) {
           <div className="grid gap-8 md:grid-cols-3">
             {content.about.values.map((value, index) => {
               const IconComponent = 
-                index === 0 ? tc.Shield :
-                index === 1 ? tc.Heart :
-                tc.Target;
+                index === 0 ? Shield :
+                index === 1 ? Heart :
+                Target;
               
               return (
                 <motion.div
@@ -249,7 +250,7 @@ export function AboutPage({ language = "en" }: AboutPageProps) {
             <div className="space-y-6">
               <Card className="p-6 transition-all hover:shadow-lg">
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                  <tc.Mail className="h-6 w-6 text-primary" />
+                  <Mail className="h-6 w-6 text-primary" />
                 </div>
                 <h4 className="mb-2 text-foreground">Email Us</h4>
                 <p className="text-muted-foreground">{content.company.email}</p>
@@ -258,7 +259,7 @@ export function AboutPage({ language = "en" }: AboutPageProps) {
 
               <Card className="p-6 transition-all hover:shadow-lg">
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                  <tc.MapPin className="h-6 w-6 text-primary" />
+                  <MapPin className="h-6 w-6 text-primary" />
                 </div>
                 <h4 className="mb-2 text-foreground">Find Us</h4>
                 <p className="text-muted-foreground">{content.company.location}</p>
@@ -266,7 +267,7 @@ export function AboutPage({ language = "en" }: AboutPageProps) {
 
               <Card className="p-6 transition-all hover:shadow-lg">
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                  <tc.Clock className="h-6 w-6 text-primary" />
+                  <Clock className="h-6 w-6 text-primary" />
                 </div>
                 <h4 className="mb-2 text-foreground">Hours</h4>
                 <p className="text-muted-foreground">{content.company.operatingHours}</p>
@@ -279,7 +280,7 @@ export function AboutPage({ language = "en" }: AboutPageProps) {
                 <div className="mb-6">
                   <div className="mb-3 flex items-center gap-3">
                     <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                      <tc.MessageSquare className="h-6 w-6 text-primary" />
+                      <MessageSquare className="h-6 w-6 text-primary" />
                     </div>
                     <h3 className="text-foreground">Send a Message</h3>
                   </div>
@@ -345,7 +346,7 @@ export function AboutPage({ language = "en" }: AboutPageProps) {
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? tc.aboutPage.sending : tc.aboutPage.sendMessage}
-                    <tc.ArrowRight className="ml-2 h-5 w-5" />
+                    <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </form>
               </Card>

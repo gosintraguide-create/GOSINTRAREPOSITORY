@@ -108,6 +108,7 @@ interface AdminPageProps {
 
 interface PricingSettings {
   basePrice: number;
+  childPrice: number; // Ages 7-12
   guidedTourSurcharge: number;
   attractions: {
     [key: string]: { name: string; price: number };
@@ -122,6 +123,7 @@ interface AvailabilitySettings {
 
 const DEFAULT_PRICING: PricingSettings = {
   basePrice: 25,
+  childPrice: 15, // Ages 7-12
   guidedTourSurcharge: 5,
   attractions: {
     "pena-palace-park": {
@@ -3208,7 +3210,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
                     <Label htmlFor="basePrice">
-                      Base Day Pass Price (€)
+                      Adult Day Pass Price (€)
                     </Label>
                     <Input
                       id="basePrice"
@@ -3227,6 +3229,30 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                     />
                   </div>
 
+                  <div>
+                    <Label htmlFor="childPrice">
+                      Child Day Pass Price (€)
+                      <span className="ml-2 text-xs text-muted-foreground">Ages 7-12</span>
+                    </Label>
+                    <Input
+                      id="childPrice"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={pricing.childPrice}
+                      onChange={(e) =>
+                        setPricing({
+                          ...pricing,
+                          childPrice:
+                            parseFloat(e.target.value) || 0,
+                        })
+                      }
+                      className="mt-2 border-border"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
                   <div>
                     <Label htmlFor="guidedSurcharge">
                       Guided Tour Surcharge (€)
@@ -3250,20 +3276,14 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                 </div>
 
                 <div className="rounded-lg bg-secondary/50 p-4">
-                  <p className="text-muted-foreground">
-                    Preview: Day pass will cost{" "}
-                    <strong className="text-foreground">
-                      €{pricing.basePrice.toFixed(2)}
-                    </strong>{" "}
-                    per person. With guided commentary:{" "}
-                    <strong className="text-foreground">
-                      €
-                      {(
-                        pricing.basePrice +
-                        pricing.guidedTourSurcharge
-                      ).toFixed(2)}
-                    </strong>
+                  <p className="text-muted-foreground text-sm">
+                    <strong className="text-foreground">Preview:</strong>
                   </p>
+                  <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+                    <li>• Adult: <strong className="text-foreground">€{pricing.basePrice.toFixed(2)}</strong></li>
+                    <li>• Child (7-12): <strong className="text-foreground">€{pricing.childPrice.toFixed(2)}</strong></li>
+                    <li>• Insight Tour add-on: <strong className="text-foreground">+€{pricing.guidedTourSurcharge.toFixed(2)}</strong> per person</li>
+                  </ul>
                 </div>
 
                 <Button

@@ -146,60 +146,6 @@
   </head>
   <body>
     <div id="root"></div>
-    
-    <!-- Cache clearing script - loads FIRST before any modules -->
-    <script src="/clear-cache.js"></script>
-    
-    <!-- Main app entry point -->
     <script type="module" src="/src/main.tsx"></script>
-    
-    <!-- Error detection script -->
-    <script>
-      // Detect module loading errors early
-      window.addEventListener('error', function(e) {
-        // Check for syntax errors that indicate HTML being parsed as JavaScript
-        if (e.message && (
-          e.message.includes('Unexpected token') || 
-          e.message.includes('Unexpected identifier') ||
-          e.message.includes('expected expression')
-        )) {
-          console.error('🚨 Module loading error detected:', e.message);
-          console.error('This usually means a 404 page is being loaded as JavaScript');
-          console.error('Error details:', {
-            message: e.message,
-            filename: e.filename,
-            lineno: e.lineno,
-            colno: e.colno
-          });
-          
-          // Try to clear service worker cache and reload
-          if ('serviceWorker' in navigator && 'caches' in window) {
-            console.log('Attempting to clear cache and reload...');
-            caches.keys().then(function(names) {
-              return Promise.all(
-                names.map(function(name) {
-                  return caches.delete(name);
-                })
-              );
-            }).then(function() {
-              console.log('Cache cleared, reloading page...');
-              // Only reload once to prevent infinite loops
-              if (!sessionStorage.getItem('reloadAttempted')) {
-                sessionStorage.setItem('reloadAttempted', 'true');
-                window.location.reload();
-              } else {
-                console.error('Reload already attempted. Please clear your browser cache manually.');
-                sessionStorage.removeItem('reloadAttempted');
-              }
-            });
-          }
-        }
-      }, true);
-      
-      // Clear reload flag on successful load
-      window.addEventListener('load', function() {
-        sessionStorage.removeItem('reloadAttempted');
-      });
-    </script>
   </body>
 </html>

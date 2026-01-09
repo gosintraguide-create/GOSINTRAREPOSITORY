@@ -1,3 +1,4 @@
+// Child pricing feature: ages 7-12 - Build 2024-12-19-002
 import { useState, useEffect, lazy, Suspense } from "react";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
@@ -26,7 +27,7 @@ import { LoadingIndicator } from "./components/LoadingIndicator";
 const GA_MEASUREMENT_ID = "G-VM2HFTLH4R"; // Hop On Sintra GA4 Measurement ID
 const CLARITY_PROJECT_ID = ""; // Replace with your Clarity project ID (optional)
 
-// Build timestamp: Force rebuild
+// Build timestamp: Force rebuild - Language selector fix
 
 // Helper function to add error handling to lazy imports
 const lazyWithErrorHandling = (importFn: () => Promise<any>, componentName: string) => {
@@ -678,8 +679,9 @@ export default function App() {
             "Add an exclusive sunset drive to Cabo da Roca to your Hop On Sintra booking. Experience the breathtaking sunset at Europe's westernmost point.",
           keywords:
             "Sintra sunset tour, Cabo da Roca sunset, sunset drive Sintra, exclusive Sintra experience",
-          path: "/sunset-special-purchase",
+          path: "/sunset-special",
           type: "product" as const,
+          noindex: true, // This is a transactional page that should not be indexed
         };
       default:
         return {
@@ -895,6 +897,7 @@ export default function App() {
             canonicalPath={seoConfig.path}
             language={language}
             structuredDataType={seoConfig.type}
+            noindex={seoConfig.noindex}
           />
         )}
 

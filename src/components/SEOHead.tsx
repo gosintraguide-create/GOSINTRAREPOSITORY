@@ -9,6 +9,7 @@ interface SEOHeadProps {
   language?: string;
   structuredDataType?: "service" | "product" | "article" | "attraction";
   price?: string;
+  noindex?: boolean;
 }
 
 export function SEOHead({
@@ -20,6 +21,7 @@ export function SEOHead({
   language = "en",
   structuredDataType = "service",
   price = "25",
+  noindex = false,
 }: SEOHeadProps) {
   useEffect(() => {
     // Update title
@@ -53,7 +55,7 @@ export function SEOHead({
     // Standard meta tags
     updateMetaTag("description", description);
     updateMetaTag("keywords", keywords);
-    updateMetaTag("robots", "index, follow");
+    updateMetaTag("robots", noindex ? "noindex, nofollow" : "index, follow");
     updateMetaTag("author", "Hop On Sintra");
     updateMetaTag("viewport", "width=device-width, initial-scale=1.0");
     updateMetaTag("theme-color", "#ffffff");
@@ -213,7 +215,7 @@ export function SEOHead({
     }
 
     structuredData.textContent = JSON.stringify(schema);
-  }, [title, description, keywords, ogImage, canonicalPath, language, structuredDataType, price]);
+  }, [title, description, keywords, ogImage, canonicalPath, language, structuredDataType, price, noindex]);
 
   return null;
 }

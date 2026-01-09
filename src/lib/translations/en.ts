@@ -195,7 +195,7 @@ export const en: WebsiteContent = {
     values: [
       {
         title: "Guaranteed Comfort",
-        description: "Every guest has a guaranteed seat in a small, intimate vehicle driven by a professional local guide. No standing, no overcrowding.",
+        description: "Every passenger has a guaranteed seat in a small, intimate vehicle driven by a professional local guide. No standing, no overcrowding.",
       },
       {
         title: "Total Flexibility",
@@ -423,12 +423,12 @@ export const en: WebsiteContent = {
       preferredStartTime: "Preferred Start Time",
       selectTime: "Select time",
       checkingAvailability: "Checking availability...",
-      numberOfGuests: "Number of Guests",
+      numberOfGuests: "Number of Passengers",
       numberOfPasses: "Number of Passes",
       passLabel: "pass",
       passesLabel: "passes",
-      guest: "guest",
-      guests: "guests",
+      guest: "passenger",
+      guests: "passengers",
       tourType: "Tour Type",
       standardTour: "Standard Service",
       standardTourDescription: "Hop-on/hop-off transportation with friendly, knowledgeable professional driver-guides.",
@@ -639,7 +639,7 @@ export const en: WebsiteContent = {
       badge: "Premium Experience",
       title: "Private Tours of Sintra",
       subtitle: "Experience the magic of Sintra at your own pace with a dedicated professional guide and private vehicle. Perfect for families, couples, and anyone seeking a personalized adventure.",
-      pill1: "Up to 8 guests",
+      pill1: "Up to 8 passengers",
       pill2: "Flexible duration",
       pill3: "Custom itinerary",
       requestQuoteButton: "Request a Quote",
