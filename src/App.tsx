@@ -31,129 +31,212 @@ const CLARITY_PROJECT_ID = ""; // Replace with your Clarity project ID (optional
 // Build timestamp: Force rebuild - Language selector fix
 
 // Helper function to add error handling to lazy imports
-const lazyWithErrorHandling = (importFn: () => Promise<any>, componentName: string) => {
+const lazyWithErrorHandling = (
+  importFn: () => Promise<any>,
+  componentName: string,
+) => {
   return lazy(() =>
     importFn()
       .then((module) => module)
       .catch((error) => {
-        console.error(`🚨 Failed to load ${componentName}:`, error);
+        console.error(
+          `🚨 Failed to load ${componentName}:`,
+          error,
+        );
         // Check if it's a module loading error
-        if (error.message?.includes('Unexpected token') || error.message?.includes('expected expression')) {
-          console.error(`❌ This is a module loading error - likely a 404 or HTML being parsed as JavaScript`);
+        if (
+          error.message?.includes("Unexpected token") ||
+          error.message?.includes("expected expression")
+        ) {
+          console.error(
+            `❌ This is a module loading error - likely a 404 or HTML being parsed as JavaScript`,
+          );
         }
         // Re-throw to let ErrorBoundary catch it
-        throw new Error(`Failed to load ${componentName}: ${error.message}`);
-      })
+        throw new Error(
+          `Failed to load ${componentName}: ${error.message}`,
+        );
+      }),
   );
 };
 
 // Lazy load page components for better performance
 const HomePage = lazyWithErrorHandling(
-  () => import("./components/HomePage").then((m) => ({ default: m.HomePage })),
-  "HomePage"
+  () =>
+    import("./components/HomePage").then((m) => ({
+      default: m.HomePage,
+    })),
+  "HomePage",
 );
 const AttractionsPage = lazyWithErrorHandling(
-  () => import("./components/AttractionsPage").then((m) => ({ default: m.AttractionsPage })),
-  "AttractionsPage"
+  () =>
+    import("./components/AttractionsPage").then((m) => ({
+      default: m.AttractionsPage,
+    })),
+  "AttractionsPage",
 );
 const BuyTicketPage = lazyWithErrorHandling(
-  () => import("./components/BuyTicketPage").then((m) => ({ default: m.BuyTicketPage })),
-  "BuyTicketPage"
+  () =>
+    import("./components/BuyTicketPage").then((m) => ({
+      default: m.BuyTicketPage,
+    })),
+  "BuyTicketPage",
 );
 const AboutPage = lazyWithErrorHandling(
-  () => import("./components/AboutPage").then((m) => ({ default: m.AboutPage })),
-  "AboutPage"
+  () =>
+    import("./components/AboutPage").then((m) => ({
+      default: m.AboutPage,
+    })),
+  "AboutPage",
 );
 const AttractionDetailPage = lazyWithErrorHandling(
-  () => import("./components/AttractionDetailPage").then((m) => ({ default: m.AttractionDetailPage })),
-  "AttractionDetailPage"
+  () =>
+    import("./components/AttractionDetailPage").then((m) => ({
+      default: m.AttractionDetailPage,
+    })),
+  "AttractionDetailPage",
 );
 const RequestPickupPage = lazyWithErrorHandling(
-  () => import("./components/RequestPickupPage").then((m) => ({ default: m.RequestPickupPage })),
-  "RequestPickupPage"
+  () =>
+    import("./components/RequestPickupPage").then((m) => ({
+      default: m.RequestPickupPage,
+    })),
+  "RequestPickupPage",
 );
 const AdminPage = lazyWithErrorHandling(
-  () => import("./components/AdminPage").then((m) => ({ default: m.AdminPage })),
-  "AdminPage"
+  () =>
+    import("./components/AdminPage").then((m) => ({
+      default: m.AdminPage,
+    })),
+  "AdminPage",
 );
 const BookingConfirmationPage = lazyWithErrorHandling(
-  () => import("./components/BookingConfirmationPage").then((m) => ({ default: m.BookingConfirmationPage })),
-  "BookingConfirmationPage"
+  () =>
+    import("./components/BookingConfirmationPage").then(
+      (m) => ({ default: m.BookingConfirmationPage }),
+    ),
+  "BookingConfirmationPage",
 );
 const QRScannerPage = lazyWithErrorHandling(
-  () => import("./components/QRScannerPage").then((m) => ({ default: m.QRScannerPage })),
-  "QRScannerPage"
+  () =>
+    import("./components/QRScannerPage").then((m) => ({
+      default: m.QRScannerPage,
+    })),
+  "QRScannerPage",
 );
 const DiagnosticsPage = lazyWithErrorHandling(
-  () => import("./components/DiagnosticsPage").then((m) => ({ default: m.DiagnosticsPage })),
-  "DiagnosticsPage"
+  () =>
+    import("./components/DiagnosticsPage").then((m) => ({
+      default: m.DiagnosticsPage,
+    })),
+  "DiagnosticsPage",
 );
 const PrivacyPolicyPage = lazyWithErrorHandling(
-  () => import("./components/PrivacyPolicyPage").then((m) => ({ default: m.PrivacyPolicyPage })),
-  "PrivacyPolicyPage"
+  () =>
+    import("./components/PrivacyPolicyPage").then((m) => ({
+      default: m.PrivacyPolicyPage,
+    })),
+  "PrivacyPolicyPage",
 );
 const TermsOfServicePage = lazyWithErrorHandling(
-  () => import("./components/TermsOfServicePage").then((m) => ({ default: m.TermsOfServicePage })),
-  "TermsOfServicePage"
+  () =>
+    import("./components/TermsOfServicePage").then((m) => ({
+      default: m.TermsOfServicePage,
+    })),
+  "TermsOfServicePage",
 );
 const ManageBookingPage = lazyWithErrorHandling(
-  () => import("./components/ManageBookingPage").then((m) => ({ default: m.ManageBookingPage })),
-  "ManageBookingPage"
+  () =>
+    import("./components/ManageBookingPage").then((m) => ({
+      default: m.ManageBookingPage,
+    })),
+  "ManageBookingPage",
 );
 const AnalyticsPage = lazyWithErrorHandling(
-  () => import("./components/AnalyticsPage").then((m) => ({ default: m.AnalyticsPage })),
-  "AnalyticsPage"
+  () =>
+    import("./components/AnalyticsPage").then((m) => ({
+      default: m.AnalyticsPage,
+    })),
+  "AnalyticsPage",
 );
 const OperationsPage = lazyWithErrorHandling(
-  () => import("./components/OperationsPage").then((m) => ({ default: m.OperationsPage })),
-  "OperationsPage"
+  () =>
+    import("./components/OperationsPage").then((m) => ({
+      default: m.OperationsPage,
+    })),
+  "OperationsPage",
 );
 const ManualBookingPage = lazyWithErrorHandling(
-  () => import("./components/ManualBookingPage").then((m) => ({ default: m.ManualBookingPage })),
-  "ManualBookingPage"
+  () =>
+    import("./components/ManualBookingPage").then((m) => ({
+      default: m.ManualBookingPage,
+    })),
+  "ManualBookingPage",
 );
 const DriverLoginPage = lazyWithErrorHandling(
-  () => import("./components/DriverLoginPage").then((m) => ({ default: m.DriverLoginPage })),
-  "DriverLoginPage"
+  () =>
+    import("./components/DriverLoginPage").then((m) => ({
+      default: m.DriverLoginPage,
+    })),
+  "DriverLoginPage",
 );
 const DriverDashboard = lazyWithErrorHandling(
-  () => import("./components/DriverDashboard").then((m) => ({ default: m.DriverDashboard })),
-  "DriverDashboard"
+  () =>
+    import("./components/DriverDashboard").then((m) => ({
+      default: m.DriverDashboard,
+    })),
+  "DriverDashboard",
 );
 
 const BlogPage = lazyWithErrorHandling(
-  () => import("./components/BlogPage").then((m) => ({ default: m.BlogPage })),
-  "BlogPage"
+  () =>
+    import("./components/BlogPage").then((m) => ({
+      default: m.BlogPage,
+    })),
+  "BlogPage",
 );
 const BlogArticlePage = lazyWithErrorHandling(
-  () => import("./components/BlogArticlePage").then((m) => ({ default: m.BlogArticlePage })),
-  "BlogArticlePage"
+  () =>
+    import("./components/BlogArticlePage").then((m) => ({
+      default: m.BlogArticlePage,
+    })),
+  "BlogArticlePage",
 );
 
 const PrivateToursPage = lazyWithErrorHandling(
-  () => import("./components/PrivateToursPage").then((m) => ({ default: m.PrivateToursPage })),
-  "PrivateToursPage"
+  () =>
+    import("./components/PrivateToursPage").then((m) => ({
+      default: m.PrivateToursPage,
+    })),
+  "PrivateToursPage",
 );
 // Private tours enabled - force rebuild
 
 const PrivateTourDetailPage = lazyWithErrorHandling(
-  () => import("./components/PrivateTourDetailPage").then((m) => ({ default: m.PrivateTourDetailPage })),
-  "PrivateTourDetailPage"
+  () =>
+    import("./components/PrivateTourDetailPage").then((m) => ({
+      default: m.PrivateTourDetailPage,
+    })),
+  "PrivateTourDetailPage",
 );
 // Force rebuild - Private tour detail page added
 
 const RouteMapPage = lazyWithErrorHandling(
-  () => import("./components/RouteMapPage").then((m) => ({ default: m.RouteMapPage })),
-  "RouteMapPage"
+  () =>
+    import("./components/RouteMapPage").then((m) => ({
+      default: m.RouteMapPage,
+    })),
+  "RouteMapPage",
 );
 
 const SunsetSpecialPurchasePage = lazyWithErrorHandling(
-  () => import("./components/SunsetSpecialPurchasePage").then(
-    (m) => ({
-      default: m.SunsetSpecialPurchasePage,
-    }),
-  ),
-  "SunsetSpecialPurchasePage"
+  () =>
+    import("./components/SunsetSpecialPurchasePage").then(
+      (m) => ({
+        default: m.SunsetSpecialPurchasePage,
+      }),
+    ),
+  "SunsetSpecialPurchasePage",
 );
 
 // Loading fallback component for lazy-loaded pages
@@ -415,8 +498,10 @@ export default function App() {
   useEffect(() => {
     // TEMPORARILY DISABLED - Service worker causing module loading errors
     // Will re-enable after fixing the root cause
-    console.log('[App] Service worker registration disabled to fix module errors');
-    
+    console.log(
+      "[App] Service worker registration disabled to fix module errors",
+    );
+
     /* 
     // Only register service worker in production (when not on localhost)
     const isProduction =
@@ -735,17 +820,24 @@ export default function App() {
           <BuyTicketPage
             onNavigate={handleNavigate}
             onBookingComplete={(booking) => {
-              console.log('🎫 Booking complete, auto-logging in user...');
+              console.log(
+                "🎫 Booking complete, auto-logging in user...",
+              );
               setBookingData(booking);
               // Automatically log in the user with their new booking
               try {
                 createSessionFromBooking(booking);
-                console.log('✅ Session created, showing toast...');
+                console.log(
+                  "✅ Session created, showing toast...",
+                );
                 toast.success("🎉 You're now logged in!", {
                   duration: 4000,
                 });
               } catch (error) {
-                console.error('❌ Error creating session:', error);
+                console.error(
+                  "❌ Error creating session:",
+                  error,
+                );
                 toast.error("Login failed. Please try again.");
               }
               // Small delay to ensure toast renders before navigation
@@ -766,8 +858,17 @@ export default function App() {
         );
       case "request-pickup":
         return (
-          <Suspense fallback={<div className="flex h-screen items-center justify-center"><div className="text-primary">Loading...</div></div>}>
-            <RequestPickupPage onNavigate={handleNavigate} language={language} />
+          <Suspense
+            fallback={
+              <div className="flex h-screen items-center justify-center">
+                <div className="text-primary">Loading...</div>
+              </div>
+            }
+          >
+            <RequestPickupPage
+              onNavigate={handleNavigate}
+              language={language}
+            />
           </Suspense>
         );
       case "about":
@@ -824,7 +925,10 @@ export default function App() {
         return <OperationsPage onNavigate={handleNavigate} />;
       case "manual-booking":
         return (
-          <ManualBookingPage onNavigate={handleNavigate} language={language} />
+          <ManualBookingPage
+            onNavigate={handleNavigate}
+            language={language}
+          />
         );
       case "qr-scanner":
         return <QRScannerPage onNavigate={handleNavigate} />;
@@ -905,7 +1009,9 @@ export default function App() {
   return (
     <>
       {/* Initial Loading Screen */}
-      {isInitialLoad && <LoadingIndicator type="both" fullScreen />}
+      {isInitialLoad && (
+        <LoadingIndicator type="both" fullScreen />
+      )}
 
       <div className="flex min-h-screen flex-col w-full overflow-x-hidden">
         {/* SEO Meta Tags */}
@@ -914,121 +1020,124 @@ export default function App() {
           currentPage !== "operations" &&
           currentPage !== "manual-booking" &&
           currentPage !== "qr-scanner" &&
-        currentPage !== "diagnostics" &&
-        currentPage !== "driver-login" &&
-        currentPage !== "driver-dashboard" && (
-          <SEOHead
-            title={seoConfig.title}
-            description={seoConfig.description}
-            keywords={seoConfig.keywords}
-            canonicalPath={seoConfig.path}
-            language={language}
-            structuredDataType={seoConfig.type}
-            noindex={seoConfig.noindex}
-          />
-        )}
+          currentPage !== "diagnostics" &&
+          currentPage !== "driver-login" &&
+          currentPage !== "driver-dashboard" && (
+            <SEOHead
+              title={seoConfig.title}
+              description={seoConfig.description}
+              keywords={seoConfig.keywords}
+              canonicalPath={seoConfig.path}
+              language={language}
+              structuredDataType={seoConfig.type}
+              noindex={seoConfig.noindex}
+            />
+          )}
 
-      {currentPage !== "admin" &&
-        currentPage !== "analytics" &&
-        currentPage !== "operations" &&
-        currentPage !== "manual-booking" &&
-        currentPage !== "qr-scanner" &&
-        currentPage !== "diagnostics" &&
-        currentPage !== "driver-login" &&
-        currentPage !== "driver-dashboard" && (
-          <Header
-            currentPage={currentPage}
-            onNavigate={handleNavigate}
-            language={language}
-            onLanguageChange={handleLanguageChange}
-          />
-        )}
+        {currentPage !== "admin" &&
+          currentPage !== "analytics" &&
+          currentPage !== "operations" &&
+          currentPage !== "manual-booking" &&
+          currentPage !== "qr-scanner" &&
+          currentPage !== "diagnostics" &&
+          currentPage !== "driver-login" &&
+          currentPage !== "driver-dashboard" && (
+            <Header
+              currentPage={currentPage}
+              onNavigate={handleNavigate}
+              language={language}
+              onLanguageChange={handleLanguageChange}
+            />
+          )}
 
-      <main className="flex-1">
-        <Suspense fallback={<PageLoader />}>
-          {renderPage()}
-        </Suspense>
-      </main>
+        <main className="flex-1">
+          <Suspense fallback={<PageLoader />}>
+            {renderPage()}
+          </Suspense>
+        </main>
 
-      {currentPage !== "admin" &&
-        currentPage !== "analytics" &&
-        currentPage !== "operations" &&
-        currentPage !== "manual-booking" &&
-        currentPage !== "diagnostics" && (
-          <Footer
-            onNavigate={handleNavigate}
-            language={language}
-          />
-        )}
-      {currentPage !== "admin" &&
-        currentPage !== "analytics" &&
-        currentPage !== "operations" &&
-        currentPage !== "manual-booking" &&
-        currentPage !== "diagnostics" && (
-          <LiveChat onNavigate={handleNavigate} language={language} />
-        )}
-      {/* Show floating CTA on all pages except buy-ticket and admin */}
-      {currentPage !== "buy-ticket" &&
-        currentPage !== "admin" &&
-        currentPage !== "analytics" &&
-        currentPage !== "operations" &&
-        currentPage !== "manual-booking" &&
-        currentPage !== "booking-confirmation" &&
-        currentPage !== "qr-scanner" &&
-        currentPage !== "diagnostics" && (
-          <FloatingCTA onNavigate={handleNavigate} />
-        )}
+        {currentPage !== "admin" &&
+          currentPage !== "analytics" &&
+          currentPage !== "operations" &&
+          currentPage !== "manual-booking" &&
+          currentPage !== "diagnostics" && (
+            <Footer
+              onNavigate={handleNavigate}
+              language={language}
+            />
+          )}
+        {currentPage !== "admin" &&
+          currentPage !== "analytics" &&
+          currentPage !== "operations" &&
+          currentPage !== "manual-booking" &&
+          currentPage !== "diagnostics" && (
+            <LiveChat
+              onNavigate={handleNavigate}
+              language={language}
+            />
+          )}
+        {/* Show floating CTA on all pages except buy-ticket and admin */}
+        {currentPage !== "buy-ticket" &&
+          currentPage !== "admin" &&
+          currentPage !== "analytics" &&
+          currentPage !== "operations" &&
+          currentPage !== "manual-booking" &&
+          currentPage !== "booking-confirmation" &&
+          currentPage !== "qr-scanner" &&
+          currentPage !== "diagnostics" && (
+            <FloatingCTA onNavigate={handleNavigate} />
+          )}
 
-      {/* Cookie Consent Banner */}
-      {currentPage !== "admin" &&
-        currentPage !== "analytics" &&
-        currentPage !== "operations" &&
-        currentPage !== "manual-booking" &&
-        currentPage !== "qr-scanner" &&
-        currentPage !== "diagnostics" && (
-          <CookieConsent
-            language={language}
-            onNavigate={handleNavigate}
-          />
-        )}
+        {/* Cookie Consent Banner */}
+        {currentPage !== "admin" &&
+          currentPage !== "analytics" &&
+          currentPage !== "operations" &&
+          currentPage !== "manual-booking" &&
+          currentPage !== "qr-scanner" &&
+          currentPage !== "diagnostics" && (
+            <CookieConsent
+              language={language}
+              onNavigate={handleNavigate}
+            />
+          )}
 
-      {/* PWA Install Prompt */}
-      <InstallPrompt />
+        {/* PWA Install Prompt */}
+        <InstallPrompt />
 
-      {/* Offline Indicator */}
-      <OfflineIndicator />
+        {/* Offline Indicator */}
+        <OfflineIndicator />
 
-      {/* Backend Status Indicator */}
-      <BackendStatusIndicator />
+        {/* Backend Status Indicator */}
+        <BackendStatusIndicator />
 
-      {/* Dynamic Manifest Loader */}
-      <DynamicManifest />
+        {/* Dynamic Manifest Loader */}
+        <DynamicManifest />
 
-      {/* Dynamic Favicon Loader */}
-      <DynamicFavicon />
+        {/* Dynamic Favicon Loader */}
+        <DynamicFavicon />
 
-      {/* Toast notifications */}
-      <Toaster 
-        position="top-center" 
-        richColors 
-        expand={true}
-        closeButton
-        toastOptions={{
-          style: {
-            zIndex: 9999,
-          },
-        }}
-      />
+        {/* Toast notifications */}
+        <Toaster
+          position="top-center"
+          richColors
+          expand={true}
+          closeButton
+          toastOptions={{
+            style: {
+              zIndex: 9999,
+            },
+          }}
+        />
 
-      {/* Vercel Analytics */}
-      <Analytics />
+        {/* Vercel Analytics */}
+        <Analytics />
 
-      {/* Google Analytics */}
-      <GoogleAnalytics measurementId={GA_MEASUREMENT_ID} />
+        {/* Google Analytics */}
+        <GoogleAnalytics measurementId={GA_MEASUREMENT_ID} />
 
-      {/* Microsoft Clarity */}
-      <MicrosoftClarity projectId={CLARITY_PROJECT_ID} />
-    </div>
+        {/* Microsoft Clarity */}
+        <MicrosoftClarity projectId={CLARITY_PROJECT_ID} />
+      </div>
     </>
   );
 }

@@ -6,7 +6,6 @@ import {
   ChevronRight,
   Clock,
   Lightbulb,
-  MapPin,
   Star,
   Ticket,
 } from "lucide-react";
