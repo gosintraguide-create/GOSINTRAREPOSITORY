@@ -84,7 +84,11 @@ export function SEOHead({
       canonical.rel = "canonical";
       document.head.appendChild(canonical);
     }
-    canonical.href = `https://www.hoponsintra.com${canonicalPath}`;
+    // Each language version should have a self-referencing canonical URL
+    const canonicalUrl = language === 'en' 
+      ? `https://www.hoponsintra.com${canonicalPath}`
+      : `https://www.hoponsintra.com${canonicalPath}?lang=${language}`;
+    canonical.href = canonicalUrl;
 
     // Remove old hreflang tags
     document.querySelectorAll('link[rel="alternate"]').forEach(link => link.remove());

@@ -6457,4 +6457,325 @@ app.post("/make-server-3bd0ade8/admin/cleanup/availability", async (c) => {
   }
 });
 
+// ==================== PRIVATE TOURS ROUTES ====================
+
+// Get all private tours
+app.get("/make-server-3bd0ade8/private-tours", async (c) => {
+  try {
+    const tours = await kv.getByPrefix("private_tour_");
+    
+    // Sort by order
+    const sortedTours = tours.sort((a, b) => (a.order || 0) - (b.order || 0));
+    
+    return c.json({
+      success: true,
+      tours: sortedTours,
+    });
+  } catch (error) {
+    console.error("Error fetching private tours:", error);
+    return c.json(
+      {
+        success: false,
+        error: "Failed to fetch tours",
+      },
+      500
+    );
+  }
+});
+
+// Save or update a private tour
+app.post("/make-server-3bd0ade8/private-tours", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { tour } = body;
+    
+    if (!tour || !tour.id) {
+      return c.json(
+        {
+          success: false,
+          error: "Invalid tour data",
+        },
+        400
+      );
+    }
+    
+    const tourData = {
+      ...tour,
+      updatedAt: new Date().toISOString(),
+    };
+    
+    await kv.set(`private_tour_${tour.id}`, tourData);
+    
+    console.log(`✅ Saved private tour: ${tour.id}`);
+    
+    return c.json({
+      success: true,
+      tour: tourData,
+    });
+  } catch (error) {
+    console.error("Error saving private tour:", error);
+    return c.json(
+      {
+        success: false,
+        error: "Failed to save tour",
+      },
+      500
+    );
+  }
+});
+
+// Delete a private tour
+app.delete("/make-server-3bd0ade8/private-tours/:tourId", async (c) => {
+  try {
+    const tourId = c.req.param("tourId");
+    
+    await kv.del(`private_tour_${tourId}`);
+    
+    console.log(`✅ Deleted private tour: ${tourId}`);
+    
+    return c.json({
+      success: true,
+    });
+  } catch (error) {
+    console.error("Error deleting private tour:", error);
+    return c.json(
+      {
+        success: false,
+        error: "Failed to delete tour",
+      },
+      500
+    );
+  }
+});
+
+// Reorder tours
+app.post("/make-server-3bd0ade8/private-tours/reorder", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { tours } = body;
+    
+    if (!tours || !Array.isArray(tours)) {
+      return c.json(
+        {
+          success: false,
+          error: "Invalid tours data",
+        },
+        400
+      );
+    }
+    
+    // Save all tours with updated order
+    for (const tour of tours) {
+      await kv.set(`private_tour_${tour.id}`, {
+        ...tour,
+        updatedAt: new Date().toISOString(),
+      });
+    }
+    
+    console.log(`✅ Reordered ${tours.length} tours`);
+    
+    return c.json({
+      success: true,
+    });
+  } catch (error) {
+    console.error("Error reordering tours:", error);
+    return c.json(
+      {
+        success: false,
+        error: "Failed to reorder tours",
+      },
+      500
+    );
+  }
+});
+
+// ==================== TOUR REQUESTS ROUTES ====================
+
+// Get all tour requests
+app.get("/make-server-3bd0ade8/tour-requests", async (c) => {
+  try {
+    const requests = await kv.getByPrefix("tour_request_");
+    
+    // Sort by creation date (newest first)
+    const sortedRequests = requests.sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+    
+    return c.json({
+      success: true,
+      requests: sortedRequests,
+    });
+  } catch (error) {
+    console.error("Error fetching tour requests:", error);
+    return c.json(
+      {
+        success: false,
+        error: "Failed to fetch tour requests",
+      },
+      500
+    );
+  }
+});
+
+// Create a new tour request
+app.post("/make-server-3bd0ade8/tour-requests", async (c) => {
+  try {
+    const body = await c.req.json();
+    const {
+      tourTitle,
+      customerName,
+      email,
+      phone,
+      preferredDate,
+      numberOfPeople,
+      message,
+    } = body;
+    
+    if (!tourTitle || !customerName || !email) {
+      return c.json(
+        {
+          success: false,
+          error: "Missing required fields",
+        },
+        400
+      );
+    }
+    
+    const requestId = `REQ_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const request = {
+      id: requestId,
+      tourTitle,
+      customerName,
+      email,
+      phone,
+      preferredDate,
+      numberOfPeople,
+      message,
+      status: "pending",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    
+    await kv.set(`tour_request_${requestId}`, request);
+    
+    console.log(`✅ Created tour request: ${requestId} from ${customerName}`);
+    
+    // TODO: Send notification email to admin
+    
+    return c.json({
+      success: true,
+      request,
+    });
+  } catch (error) {
+    console.error("Error creating tour request:", error);
+    return c.json(
+      {
+        success: false,
+        error: "Failed to create tour request",
+      },
+      500
+    );
+  }
+});
+
+// Update tour request status
+app.post("/make-server-3bd0ade8/tour-requests/:requestId/status", async (c) => {
+  try {
+    const requestId = c.req.param("requestId");
+    const body = await c.req.json();
+    const { status } = body;
+    
+    if (!["pending", "contacted", "confirmed", "cancelled"].includes(status)) {
+      return c.json(
+        {
+          success: false,
+          error: "Invalid status",
+        },
+        400
+      );
+    }
+    
+    const existingRequest = await kv.get(`tour_request_${requestId}`);
+    
+    if (!existingRequest) {
+      return c.json(
+        {
+          success: false,
+          error: "Request not found",
+        },
+        404
+      );
+    }
+    
+    const updatedRequest = {
+      ...existingRequest,
+      status,
+      updatedAt: new Date().toISOString(),
+    };
+    
+    await kv.set(`tour_request_${requestId}`, updatedRequest);
+    
+    console.log(`✅ Updated tour request ${requestId} status to ${status}`);
+    
+    return c.json({
+      success: true,
+      request: updatedRequest,
+    });
+  } catch (error) {
+    console.error("Error updating tour request status:", error);
+    return c.json(
+      {
+        success: false,
+        error: "Failed to update status",
+      },
+      500
+    );
+  }
+});
+
+// Update tour request notes
+app.post("/make-server-3bd0ade8/tour-requests/:requestId/notes", async (c) => {
+  try {
+    const requestId = c.req.param("requestId");
+    const body = await c.req.json();
+    const { notes } = body;
+    
+    const existingRequest = await kv.get(`tour_request_${requestId}`);
+    
+    if (!existingRequest) {
+      return c.json(
+        {
+          success: false,
+          error: "Request not found",
+        },
+        404
+      );
+    }
+    
+    const updatedRequest = {
+      ...existingRequest,
+      adminNotes: notes,
+      updatedAt: new Date().toISOString(),
+    };
+    
+    await kv.set(`tour_request_${requestId}`, updatedRequest);
+    
+    console.log(`✅ Updated tour request ${requestId} notes`);
+    
+    return c.json({
+      success: true,
+      request: updatedRequest,
+    });
+  } catch (error) {
+    console.error("Error updating tour request notes:", error);
+    return c.json(
+      {
+        success: false,
+        error: "Failed to update notes",
+      },
+      500
+    );
+  }
+});
+
 Deno.serve(app.fetch);

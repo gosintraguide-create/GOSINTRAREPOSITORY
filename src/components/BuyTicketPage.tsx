@@ -48,6 +48,7 @@ import {
   Receipt,
   RefreshCw,
   Info,
+  Phone,
 } from "lucide-react";
 import { format } from "date-fns";
 import { StripePaymentForm } from "./StripePaymentForm";
@@ -191,6 +192,8 @@ export function BuyTicketPage({
     fullName: "",
     email: "",
     confirmEmail: "",
+    phonePrefix: "+351",
+    phoneNumber: "",
     date: "",
     timeSlot: "",
     selectedAttractions: [] as string[],
@@ -445,6 +448,7 @@ export function BuyTicketPage({
       const response = await createPaymentIntent(totalPrice, {
         customerName: formData.fullName,
         customerEmail: formData.email,
+        customerPhone: `${formData.phonePrefix}${formData.phoneNumber}`,
         date: formData.date,
         timeSlot: formData.timeSlot,
         quantity: formData.quantity,
@@ -521,7 +525,7 @@ export function BuyTicketPage({
         contactInfo: {
           name: formData.fullName,
           email: formData.email,
-          phone: "",
+          phone: `${formData.phonePrefix}${formData.phoneNumber}`,
         },
         selectedDate: formData.date,
         timeSlot: formData.timeSlot,
@@ -768,7 +772,8 @@ export function BuyTicketPage({
     formData.fullName &&
     formData.email &&
     formData.confirmEmail &&
-    formData.email === formData.confirmEmail;
+    formData.email === formData.confirmEmail &&
+    formData.phoneNumber.length >= 7;
 
   return (
     <div className="flex-1 bg-white">
@@ -1740,6 +1745,58 @@ export function BuyTicketPage({
                           {ct.buyTicketPage.step4.emailsDontMatch}
                         </p>
                       )}
+                  </div>
+
+                  <div>
+                    <Label
+                      htmlFor="phoneNumber"
+                      className="text-foreground font-semibold"
+                    >
+                      Phone Number
+                    </Label>
+                    <div className="mt-2 flex">
+                      <div className="relative">
+                        <Phone className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                        <Input
+                          type="text"
+                          placeholder="+351"
+                          value={formData.phonePrefix}
+                          onChange={(e) => {
+                            let value = e.target.value;
+                            // Ensure it starts with +
+                            if (!value.startsWith('+')) {
+                              value = '+' + value.replace(/\+/g, '');
+                            }
+                            // Only allow + and digits
+                            value = value.replace(/[^\d+]/g, '');
+                            // Limit to reasonable length (+ followed by up to 4 digits)
+                            if (value.length <= 5) {
+                              handleInputChange("phonePrefix", value);
+                            }
+                          }}
+                          className="w-[120px] rounded-r-none border-r-0 border-border text-center bg-white pl-10"
+                          maxLength={5}
+                        />
+                      </div>
+                      <Input
+                        id="phoneNumber"
+                        type="tel"
+                        placeholder="123456789"
+                        value={formData.phoneNumber}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, '');
+                          if (value.length <= 12) {
+                            handleInputChange("phoneNumber", value);
+                          }
+                        }}
+                        className="flex-1 rounded-l-none border-border bg-white"
+                        maxLength={12}
+                        required
+                      />
+                    </div>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      We'll use this to contact you if needed
+                    </p>
                   </div>
                 </div>
 

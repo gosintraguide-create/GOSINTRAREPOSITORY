@@ -11,7 +11,7 @@
 export const featureFlags = {
   // Set to true to enable the full Private Tours page
   // Set to false to show "Coming Soon" message
-  privateToursEnabled: false,
+  privateToursEnabled: true,
   
   // Add more feature flags here as needed
   // example: newFeatureEnabled: false,

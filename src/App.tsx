@@ -1,4 +1,5 @@
 // Child pricing feature: ages 7-12 - Build 2024-12-19-002
+// Force rebuild - Private Tour Detail Page - Build 2025-01-09
 import { useState, useEffect, lazy, Suspense } from "react";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
@@ -133,6 +134,13 @@ const PrivateToursPage = lazyWithErrorHandling(
   () => import("./components/PrivateToursPage").then((m) => ({ default: m.PrivateToursPage })),
   "PrivateToursPage"
 );
+// Private tours enabled - force rebuild
+
+const PrivateTourDetailPage = lazyWithErrorHandling(
+  () => import("./components/PrivateTourDetailPage").then((m) => ({ default: m.PrivateTourDetailPage })),
+  "PrivateTourDetailPage"
+);
+// Force rebuild - Private tour detail page added
 
 const RouteMapPage = lazyWithErrorHandling(
   () => import("./components/RouteMapPage").then((m) => ({ default: m.RouteMapPage })),
@@ -661,6 +669,17 @@ export default function App() {
           path: "/private-tours",
           type: "product" as const,
         };
+      case "private-tour-detail":
+        return {
+          title:
+            "Private Tour Detail - Personalized Guided Experiences",
+          description:
+            "Experience Sintra your way with a private tour. Expert local guides, custom itineraries, and flexible schedules. Perfect for families, couples, and groups seeking a personalized adventure.",
+          keywords:
+            "Sintra private tours, private Sintra guide, custom Sintra tour, personalized Sintra experience, private guide Sintra",
+          path: `/private-tour-detail/${pageData?.tourId || ""}`,
+          type: "product" as const,
+        };
       case "route-map":
         return {
           title: "Route Map & Stops - Hop On Sintra Locations",
@@ -772,6 +791,14 @@ export default function App() {
         return (
           <PrivateToursPage
             onNavigate={handleNavigate}
+            language={language}
+          />
+        );
+      case "private-tour-detail":
+        return (
+          <PrivateTourDetailPage
+            onNavigate={handleNavigate}
+            tourId={pageData?.tourId || ""}
             language={language}
           />
         );

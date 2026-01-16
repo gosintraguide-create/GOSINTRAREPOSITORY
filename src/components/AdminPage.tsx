@@ -32,6 +32,7 @@ import {
   Trash2,
   Archive,
   ArchiveRestore,
+  Car,
 } from "lucide-react";
 import { DestinationTracker } from "./DestinationTracker";
 import { Button } from "./ui/button";
@@ -86,6 +87,8 @@ import { DatabaseCleanup } from "./DatabaseCleanup";
 import { BookingDiagnostics } from "./BookingDiagnostics";
 import { SunsetSpecialManager } from "./SunsetSpecialManager";
 import { BookingLogs } from "./BookingLogs";
+import { PrivateTourManager } from "./PrivateTourManager";
+import { TourRequestsManagement } from "./TourRequestsManagement";
 import {
   LineChart,
   Line,
@@ -2096,6 +2099,40 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                       variant="ghost"
                       className="w-full justify-start gap-3"
                       onClick={() => {
+                        setActiveTab("private-tours");
+                        setMoreMenuOpen(false);
+                      }}
+                    >
+                      <Car className="h-5 w-5" />
+                      <div className="flex flex-col items-start">
+                        <span>Private Tours</span>
+                        <span className="text-xs text-muted-foreground">
+                          Manage tour packages
+                        </span>
+                      </div>
+                    </Button>
+
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-3"
+                      onClick={() => {
+                        setActiveTab("tour-requests");
+                        setMoreMenuOpen(false);
+                      }}
+                    >
+                      <MessageCircle className="h-5 w-5" />
+                      <div className="flex flex-col items-start">
+                        <span>Tour Requests</span>
+                        <span className="text-xs text-muted-foreground">
+                          Manage booking inquiries
+                        </span>
+                      </div>
+                    </Button>
+
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-3"
+                      onClick={() => {
                         setActiveTab("seo");
                         setMoreMenuOpen(false);
                       }}
@@ -3552,6 +3589,16 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
           {/* ====== BLOG TAB ====== */}
           <TabsContent value="blog" className="space-y-6">
             <BlogEditor />
+          </TabsContent>
+
+          {/* ====== PRIVATE TOURS TAB ====== */}
+          <TabsContent value="private-tours" className="space-y-6">
+            <PrivateTourManager />
+          </TabsContent>
+
+          {/* ====== TOUR REQUESTS TAB ====== */}
+          <TabsContent value="tour-requests" className="space-y-6">
+            <TourRequestsManagement />
           </TabsContent>
 
           {/* ====== SEO TAB ====== */}

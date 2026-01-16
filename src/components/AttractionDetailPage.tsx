@@ -278,54 +278,54 @@ export function AttractionDetailPage({
           alt={attraction.name}
           className="h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/20" />
 
         <div className="absolute inset-0 flex items-end">
-          <div className="w-full pb-8 sm:pb-12 md:pb-16">
+          <div className="w-full pb-8 sm:pb-12 md:pb-16 lg:pb-20">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <motion.div
-                className="mb-3 sm:mb-4 flex flex-wrap gap-2 sm:gap-3"
+              <motion.h1
+                className="mb-4 sm:mb-6 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-              >
-                <div className="flex items-center gap-1.5 sm:gap-2 rounded-full bg-white/20 px-3 py-1.5 sm:px-4 sm:py-2 backdrop-blur-sm">
-                  <Ticket className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
-                  <span className="text-sm sm:text-base text-white">
-                    €{getCurrentPrice()}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5 sm:gap-2 rounded-full bg-white/20 px-3 py-1.5 sm:px-4 sm:py-2 backdrop-blur-sm">
-                  <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
-                  <span className="text-sm sm:text-base text-white">
-                    {attraction.duration}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5 sm:gap-2 rounded-full bg-white/20 px-3 py-1.5 sm:px-4 sm:py-2 backdrop-blur-sm">
-                  <Star className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-yellow-400 text-yellow-400" />
-                  <span className="text-sm sm:text-base text-white">
-                    Must-See!
-                  </span>
-                </div>
-              </motion.div>
-
-              <motion.h1
-                className="mb-3 sm:mb-4 text-white"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
               >
                 {attraction.name}
               </motion.h1>
 
               <motion.p
-                className="max-w-3xl text-base sm:text-lg md:text-xl text-white/90"
+                className="max-w-2xl text-lg sm:text-xl md:text-2xl text-white/95 mb-6 sm:mb-8 leading-relaxed"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                {attraction.shortDescription}
+              </motion.p>
+
+              <motion.div
+                className="flex flex-wrap gap-2 sm:gap-3"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
               >
-                {attraction.shortDescription}
-              </motion.p>
+                <div className="flex items-center gap-1.5 rounded-lg bg-white/15 px-3 py-1.5 backdrop-blur-md border border-white/20">
+                  <Ticket className="h-3.5 w-3.5 text-white/90" />
+                  <span className="text-sm font-medium text-white/90">
+                    €{getCurrentPrice()}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 rounded-lg bg-white/15 px-3 py-1.5 backdrop-blur-md border border-white/20">
+                  <Clock className="h-3.5 w-3.5 text-white/90" />
+                  <span className="text-sm font-medium text-white/90">
+                    {attraction.duration}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 rounded-lg bg-white/15 px-3 py-1.5 backdrop-blur-md border border-white/20">
+                  <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+                  <span className="text-sm font-medium text-white/90">
+                    Must-See
+                  </span>
+                </div>
+              </motion.div>
             </div>
           </div>
         </div>
@@ -336,20 +336,17 @@ export function AttractionDetailPage({
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-6 sm:gap-8 lg:grid-cols-3">
             {/* Left Column - Information */}
-            <div className="space-y-6 sm:space-y-8 lg:col-span-2 min-w-0">
+            <div className="space-y-8 sm:space-y-12 lg:col-span-2 min-w-0">
               {/* Description */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
               >
-                <Badge className="mb-3 sm:mb-4">
-                  About This Gem
-                </Badge>
-                <h2 className="mb-3 sm:mb-4 text-foreground">
+                <h2 className="mb-4 sm:mb-5 text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">
                   What Makes It Special
                 </h2>
-                <p className="text-base sm:text-lg text-muted-foreground">
+                <p className="text-base sm:text-lg leading-relaxed text-muted-foreground">
                   {attraction.longDescription}
                 </p>
               </motion.div>
@@ -510,25 +507,24 @@ export function AttractionDetailPage({
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
               >
-                <Badge className="mb-4">Highlights</Badge>
-                <h3 className="mb-4 text-foreground">
+                <h3 className="mb-5 sm:mb-6 text-xl sm:text-2xl md:text-3xl font-bold text-foreground">
                   Don't Miss These!
                 </h3>
-                <div className="grid gap-3">
+                <div className="grid gap-4">
                   {attraction.highlights.map(
                     (highlight, index) => (
                       <motion.div
                         key={index}
-                        className="flex items-start gap-3 rounded-xl border bg-white p-4 transition-all hover:shadow-lg"
+                        className="flex items-start gap-3 sm:gap-4 rounded-xl border border-border/50 bg-white p-4 sm:p-5 transition-all hover:shadow-md hover:border-primary/20"
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: index * 0.05 }}
                       >
-                        <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary">
-                          <Check className="h-4 w-4 text-white" />
+                        <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary mt-0.5">
+                          <Check className="h-3.5 w-3.5 text-white" />
                         </div>
-                        <span className="text-foreground">
+                        <span className="text-base sm:text-lg text-foreground leading-relaxed">
                           {highlight}
                         </span>
                       </motion.div>
@@ -544,23 +540,22 @@ export function AttractionDetailPage({
                 viewport={{ once: true }}
                 transition={{ delay: 0.2 }}
               >
-                <Badge className="mb-4">Pro Tips</Badge>
-                <h3 className="mb-4 text-foreground">
-                  Insider Advice
+                <h3 className="mb-5 sm:mb-6 text-xl sm:text-2xl md:text-3xl font-bold text-foreground">
+                  Insider Tips
                 </h3>
-                <div className="grid gap-3">
+                <div className="grid gap-4">
                   {attraction.tips.map((tip, index) => (
                     <motion.div
                       key={index}
-                      className="rounded-xl border bg-secondary/30 p-4 transition-all hover:shadow-lg"
+                      className="rounded-xl border border-accent/20 bg-accent/5 p-4 sm:p-5 transition-all hover:shadow-md hover:bg-accent/10"
                       initial={{ opacity: 0, x: -20 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: index * 0.05 }}
                     >
-                      <div className="flex items-start gap-3">
+                      <div className="flex items-start gap-3 sm:gap-4">
                         <Lightbulb className="mt-0.5 h-5 w-5 flex-shrink-0 text-accent" />
-                        <p className="text-foreground">{tip}</p>
+                        <p className="text-base sm:text-lg text-foreground leading-relaxed">{tip}</p>
                       </div>
                     </motion.div>
                   ))}
