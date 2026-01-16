@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vercel Routing Test</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0A4D5C 0%, #D97843 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #0A4D5C;
+            margin-bottom: 10px;
+        }
+        .status {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+        .status.success {
+            background: #10b981;
+            color: white;
+        }
+        .status.error {
+            background: #ef4444;
+            color: white;
+        }
+        .section {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #0A4D5C;
+        }
+        .section h2 {
+            color: #D97843;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #64748b;
+        }
+        .info-value {
+            font-family: 'Courier New', monospace;
+            background: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            word-break: break-all;
+        }
+        .test-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .test-link {
+            display: block;
+            padding: 12px 20px;
+            background: #0A4D5C;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .test-link:hover {
+            background: #D97843;
+            transform: translateY(-2px);
+        }
+        .alert {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+        .alert h3 {
+            color: #92400e;
+            margin-bottom: 10px;
+        }
+        code {
+            background: #1e293b;
+            color: #10b981;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Vercel Routing Diagnostic</h1>
+        <div class="status error" id="status">⚠️ This page should NOT be visible</div>
+        
+        <div class="alert">
+            <h3>⚠️ IMPORTANT</h3>
+            <p>If you're seeing this page after clicking one of the test links below, it means Vercel's rewrites are NOT working correctly. You should see the main React app instead.</p>
+        </div>
+
+        <div class="section">
+            <h2>📍 Current Location</h2>
+            <div class="info-grid">
+                <div class="info-label">URL:</div>
+                <div class="info-value" id="url"></div>
+                
+                <div class="info-label">Pathname:</div>
+                <div class="info-value" id="pathname"></div>
+                
+                <div class="info-label">Host:</div>
+                <div class="info-value" id="host"></div>
+                
+                <div class="info-label">Protocol:</div>
+                <div class="info-value" id="protocol"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🧪 Test These Routes</h2>
+            <p style="margin-bottom: 15px;">Click each link. You should see the React app, NOT this page:</p>
+            <div class="test-links">
+                <a href="/" class="test-link">Home</a>
+                <a href="/attractions" class="test-link">Attractions</a>
+                <a href="/buy-ticket" class="test-link">Buy Ticket</a>
+                <a href="/about" class="test-link">About</a>
+                <a href="/contact" class="test-link">Contact</a>
+                <a href="/faq" class="test-link">FAQ</a>
+                <a href="/route-map" class="test-link">Route Map</a>
+                <a href="/pena-palace" class="test-link">Pena Palace</a>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>✅ What Should Happen</h2>
+            <ol style="line-height: 1.8;">
+                <li>You click a link above</li>
+                <li>Vercel receives the request (e.g., <code>/attractions</code>)</li>
+                <li>Vercel checks <code>vercel.json</code> rewrites</li>
+                <li>Vercel serves <code>/index.html</code> (React app)</li>
+                <li>React app loads and reads URL</li>
+                <li>React app displays correct page</li>
+            </ol>
+        </div>
+
+        <div class="section">
+            <h2>❌ Current Problem</h2>
+            <p style="line-height: 1.8;">
+                If you're seeing THIS page, it means Vercel is serving <code>/vercel-test.html</code> 
+                instead of <code>/index.html</code>. This indicates the rewrites in 
+                <code>vercel.json</code> are not working.
+            </p>
+        </div>
+
+        <div class="section">
+            <h2>🔧 Fix</h2>
+            <p style="line-height: 1.8; margin-bottom: 15px;">
+                Your <code>vercel.json</code> should have:
+            </p>
+            <pre style="background: #1e293b; color: #10b981; padding: 15px; border-radius: 6px; overflow-x: auto;"><code>{
+  "rewrites": [
+    {
+      "source": "/((?!api|assets|sw\\.js|manifest\\.json|.*\\.(?:png|jpg|svg|ico|js|css)).*)",
+      "destination": "/index.html"
+    }
+  ]
+}</code></pre>
+            <p style="margin-top: 15px; line-height: 1.8;">
+                After updating, redeploy WITHOUT cache in Vercel Dashboard.
+            </p>
+        </div>
+
+        <div class="section">
+            <h2>📞 Need Help?</h2>
+            <p style="line-height: 1.8;">
+                Check the <code>DEPLOY_NOW.md</code> and <code>VERCEL_TROUBLESHOOTING.md</code> 
+                files in your repository for detailed instructions.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Populate current location info
+        document.getElementById('url').textContent = window.location.href;
+        document.getElementById('pathname').textContent = window.location.pathname;
+        document.getElementById('host').textContent = window.location.host;
+        document.getElementById('protocol').textContent = window.location.protocol;
+
+        // Update status based on pathname
+        const status = document.getElementById('status');
+        if (window.location.pathname === '/vercel-test.html') {
+            status.className = 'status error';
+            status.textContent = '⚠️ This is the test page';
+        } else {
+            status.className = 'status error';
+            status.textContent = '❌ Rewrites NOT working - seeing test page at: ' + window.location.pathname;
+        }
+    </script>
+</body>
+</html>
