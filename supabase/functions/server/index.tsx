@@ -4101,36 +4101,34 @@ app.post("/make-server-3bd0ade8/pickup-requests", async (c) => {
     // Generate pickup request ID
     const timestamp = Date.now();
     const requestId = `REQ${timestamp}`;
+    const requestKey = `pickup_request:${requestId}`;
     const requestTime = new Date().toISOString();
 
     const pickupRequest = {
-      id: requestId,
+      id: requestKey, // Use full key as ID so it can be used directly
       groupSize: parseInt(groupSize),
-      pickupLocation,
-      destination: destination || null,
+      location: pickupLocation, // Use "location" field consistently
+      destination: destination || "",
       customerName: customerName || "Guest",
       customerPhone: customerPhone || null,
-      status: "pending", // pending, assigned, completed, cancelled
-      requestTime,
+      status: "pending", // pending, accepted, completed, cancelled
       createdAt: requestTime,
-      estimatedArrival: new Date(
-        Date.now() + 5 * 60000,
-      ).toISOString(), // 5 minutes
       vehiclesNeeded: Math.ceil(parseInt(groupSize) / 6),
     };
 
     // Store the pickup request with consistent key format
-    await kv.set(`pickup_request:${requestId}`, pickupRequest);
+    await kv.set(requestKey, pickupRequest);
 
-    // Also add to active requests list for easy querying
+    // Also add to active requests list for easy querying - use full key
     const activeRequests =
       (await kv.get("active_pickup_requests")) || [];
-    activeRequests.push(requestId);
+    activeRequests.push(requestKey);
     await kv.set("active_pickup_requests", activeRequests);
 
     console.log(
-      `🚗 Pickup request created: ${requestId} - ${groupSize} passengers at ${pickupLocation}`,
+      `🚗 Pickup request created: ${requestKey} - ${groupSize} passengers at ${pickupLocation}`,
     );
+    console.log(`📋 Active requests after adding:`, activeRequests);
 
     return c.json({
       success: true,
@@ -4195,13 +4193,21 @@ app.get("/make-server-3bd0ade8/pickup/active", async (c) => {
     const activeRequestIds =
       (await kv.get("active_pickup_requests")) || [];
 
+    console.log(`🔍 Fetching active pickup requests. Found ${activeRequestIds.length} IDs:`, activeRequestIds);
+
     const requests = [];
     for (const requestId of activeRequestIds) {
       const request = await kv.get(requestId);
-      if (request && request.status === "pending") {
+      console.log(`📦 Retrieved request ${requestId}:`, request);
+      // Include both pending and accepted requests
+      if (request && (request.status === "pending" || request.status === "accepted")) {
         requests.push(request);
+      } else {
+        console.log(`⚠️ Skipping request ${requestId} - status: ${request?.status || 'null'}`);
       }
     }
+
+    console.log(`✅ Returning ${requests.length} active pickup requests`);
 
     // Sort by creation time (newest first)
     requests.sort(
@@ -4239,6 +4245,8 @@ app.post(
       const body = await c.req.json();
       const { status, driverName, vehicleInfo } = body;
 
+      console.log(`📝 Updating pickup request status: ${requestId} to ${status}`);
+
       if (!status) {
         return c.json(
           {
@@ -4250,7 +4258,10 @@ app.post(
       }
 
       const request = await kv.get(requestId);
+      console.log(`📦 Retrieved request for status update:`, request);
+      
       if (!request) {
+        console.log(`❌ Request not found: ${requestId}`);
         return c.json(
           {
             success: false,
@@ -5389,71 +5400,6 @@ app.get("/make-server-3bd0ade8/pickup-requests", async (c) => {
   }
 });
 
-// Create a new pickup request
-app.post("/make-server-3bd0ade8/pickup-requests", async (c) => {
-  try {
-    const body = await c.req.json();
-    const {
-      customerName,
-      customerPhone,
-      pickupLocation,
-      destination,
-      groupSize,
-    } = body;
-
-    if (
-      !customerName ||
-      !customerPhone ||
-      !pickupLocation ||
-      !groupSize
-    ) {
-      return c.json(
-        {
-          success: false,
-          error: "Missing required fields",
-        },
-        400,
-      );
-    }
-
-    const requestId = `REQ${Date.now()}`;
-    const request = {
-      id: requestId,
-      customerName,
-      customerPhone,
-      pickupLocation,
-      destination: destination || "To be decided",
-      groupSize,
-      requestTime: new Date().toISOString(),
-      status: "pending",
-      estimatedWait: 10, // Default 10 minutes
-    };
-
-    await kv.set(`pickup_request:${requestId}`, request);
-
-    console.log(`✅ Pickup request created: ${requestId}`, {
-      customerName,
-      pickupLocation,
-      groupSize,
-      status: request.status
-    });
-
-    return c.json({
-      success: true,
-      request,
-    });
-  } catch (error) {
-    console.error("Error creating pickup request:", error);
-    return c.json(
-      {
-        success: false,
-        error: "Failed to create pickup request",
-      },
-      500,
-    );
-  }
-});
-
 // Cancel a pickup request
 app.post(
   "/make-server-3bd0ade8/pickup-requests/:id/cancel",
@@ -5476,6 +5422,13 @@ app.post(
 
       request.status = "cancelled";
       await kv.set(`pickup_request:${requestId}`, request);
+
+      // Remove from active pickup requests list
+      const activeRequests = (await kv.get("active_pickup_requests")) || [];
+      const updatedRequests = activeRequests.filter(
+        (id: string) => id !== `pickup_request:${requestId}`
+      );
+      await kv.set("active_pickup_requests", updatedRequests);
 
       return c.json({
         success: true,

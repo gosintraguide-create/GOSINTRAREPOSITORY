@@ -1607,6 +1607,10 @@
     min-width: 8rem;
   }
 
+  .min-w-\[20px\] {
+    min-width: 20px;
+  }
+
   .min-w-\[60px\] {
     min-width: 60px;
   }
@@ -6186,6 +6190,13 @@
   }
 
   @media (width >= 48rem) {
+    .md\:text-base {
+      font-size: var(--text-base);
+      line-height: var(--tw-leading, var(--text-base--line-height));
+    }
+  }
+
+  @media (width >= 48rem) {
     .md\:text-sm {
       font-size: var(--text-sm);
       line-height: var(--tw-leading, var(--text-sm--line-height));
@@ -6480,6 +6491,13 @@
     .xl\:text-base {
       font-size: var(--text-base);
       line-height: var(--tw-leading, var(--text-base--line-height));
+    }
+  }
+
+  @media (width >= 80rem) {
+    .xl\:text-lg {
+      font-size: var(--text-lg);
+      line-height: var(--tw-leading, var(--text-lg--line-height));
     }
   }
 
@@ -6871,6 +6889,11 @@
 .slick-dots li.slick-active button:before {
   opacity: 1;
   color: #fff;
+}
+
+@font-face {
+  font-family: system-ui;
+  font-display: swap;
 }
 
 :root {

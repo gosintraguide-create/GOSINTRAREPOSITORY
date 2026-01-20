@@ -91,9 +91,9 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
                 <button
                   key={item.id}
                   onClick={() => onNavigate(item.id)}
-                  className={`transition-all whitespace-nowrap text-xs xl:text-base flex-shrink-0 ${
+                  className={`transition-all whitespace-nowrap text-sm md:text-base xl:text-lg px-3 py-2 rounded-md flex-shrink-0 ${
                     currentPage === item.id
-                      ? "text-primary"
+                      ? "text-primary font-medium"
                       : "text-muted-foreground hover:text-primary"
                   }`}
                 >

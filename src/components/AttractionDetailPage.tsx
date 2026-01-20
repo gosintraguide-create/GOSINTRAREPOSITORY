@@ -229,13 +229,9 @@ export function AttractionDetailPage({
         "ratingValue": "4.8",
         "reviewCount": "250",
         "bestRating": "5"
-      }
+      },
+      ...(attraction.price && { "priceRange": "€€" })
     };
-
-    // Add price information if available
-    if (attraction.price) {
-      structuredData["priceRange"] = `€€`;
-    }
 
     return structuredData;
   };

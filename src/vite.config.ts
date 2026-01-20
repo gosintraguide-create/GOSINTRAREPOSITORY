@@ -39,8 +39,15 @@ export default defineConfig({
       compress: {
         drop_console: false, // Keep console logs for debugging
         drop_debugger: true,
+        passes: 2, // Multiple passes for better compression
+        pure_funcs: ['console.log'], // Remove console.log in production
+      },
+      mangle: {
+        safari10: true, // Handle Safari 10 issues
       },
     },
+    cssMinify: true,
+    cssCodeSplit: true, // Split CSS into separate chunks
     rollupOptions: {
       output: {
         manualChunks: {
@@ -82,6 +89,9 @@ export default defineConfig({
       },
     },
     chunkSizeWarningLimit: 1000,
+    reportCompressedSize: false, // Faster builds
+    // Enable modern browser optimizations
+    target: 'es2020',
   },
   optimizeDeps: {
     include: [

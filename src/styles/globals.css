@@ -1,5 +1,11 @@
 @custom-variant dark (&:is(.dark *));
 
+/* Font loading optimization */
+@font-face {
+  font-family: system-ui;
+  font-display: swap; /* Show fallback font immediately, swap when custom font loads */
+}
+
 :root {
   --font-size: 16px;
   --background: #fffbf7;
