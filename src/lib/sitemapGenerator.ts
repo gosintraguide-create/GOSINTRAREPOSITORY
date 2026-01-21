@@ -1,4 +1,5 @@
 import { getPublishedArticles } from './blogManager';
+import { projectId, publicAnonKey } from '../utils/supabase/info';
 
 interface SitemapUrl {
   loc: string;
@@ -7,7 +8,37 @@ interface SitemapUrl {
   priority: string;
 }
 
-export function generateSitemap(): string {
+interface PrivateTour {
+  id: string;
+  title: string;
+  published: boolean;
+}
+
+// Fetch published private tours
+async function getPublishedPrivateTours(): Promise<PrivateTour[]> {
+  try {
+    const response = await fetch(
+      `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/private-tours`,
+      {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${publicAnonKey}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      return (data.tours || []).filter((tour: PrivateTour) => tour.published);
+    }
+  } catch (error) {
+    console.error('Error fetching private tours for sitemap:', error);
+  }
+  return [];
+}
+
+export async function generateSitemap(): Promise<string> {
   const baseUrl = typeof window !== 'undefined' 
     ? `${window.location.protocol}//${window.location.host}`
     : 'https://www.hoponsintra.com';
@@ -69,6 +100,17 @@ export function generateSitemap(): string {
     });
   });
 
+  // Private tours
+  const privateTours = await getPublishedPrivateTours();
+  privateTours.forEach(tour => {
+    urls.push({
+      loc: `${baseUrl}/private-tours/${tour.id}`,
+      lastmod: new Date().toISOString().split('T')[0],
+      changefreq: 'monthly',
+      priority: '0.7',
+    });
+  });
+
   // Generate XML
   const xml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
@@ -85,8 +127,8 @@ export function generateSitemap(): string {
   return xml;
 }
 
-export function downloadSitemap(): void {
-  const xml = generateSitemap();
+export async function downloadSitemap(): Promise<void> {
+  const xml = await generateSitemap();
   const blob = new Blob([xml], { type: 'application/xml' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
