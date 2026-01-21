@@ -1,4 +1,44 @@
-import { getTranslation, getUITranslation } from "../lib/translations";
+import { useState, useEffect } from "react";
+import {
+  getTranslation,
+  getUITranslation,
+} from "../lib/translations";
+import { Button } from "./ui/button";
+import { Card } from "./ui/card";
+import { Badge } from "./ui/badge";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import { Textarea } from "./ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "./ui/popover";
+import { Calendar } from "./ui/calendar";
+import {
+  ArrowLeft,
+  Clock,
+  Users,
+  Check,
+  MessageCircle,
+  User,
+  Mail,
+  Phone,
+  Calendar as CalendarIcon,
+} from "lucide-react";
+import { toast } from "sonner@2.0.3";
+import { ImageWithFallback } from "./figma/ImageWithFallback";
+import {
+  projectId,
+  publicAnonKey,
+} from "../utils/supabase/info";
 
 // Force rebuild - pricing moved to Quick Details card
 
@@ -35,8 +75,9 @@ export function PrivateTourDetailPage({
   const uiT = getUITranslation(language);
   const [tour, setTour] = useState<PrivateTour | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showRequestDialog, setShowRequestDialog] = useState(false);
-  
+  const [showRequestDialog, setShowRequestDialog] =
+    useState(false);
+
   // Form state
   const [formData, setFormData] = useState({
     customerName: "",
@@ -63,12 +104,14 @@ export function PrivateTourDetailPage({
             Authorization: `Bearer ${publicAnonKey}`,
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       if (response.ok) {
         const data = await response.json();
-        const foundTour = (data.tours || []).find((t: PrivateTour) => t.id === tourId);
+        const foundTour = (data.tours || []).find(
+          (t: PrivateTour) => t.id === tourId,
+        );
         if (foundTour && foundTour.published) {
           setTour(foundTour);
         }
@@ -104,15 +147,20 @@ export function PrivateTourDetailPage({
             customerName: formData.customerName,
             email: formData.email,
             phone: formData.phone,
-            preferredDate: formData.preferredDate?.toISOString(),
-            numberOfPeople: formData.numberOfPeople ? parseInt(formData.numberOfPeople) : undefined,
+            preferredDate:
+              formData.preferredDate?.toISOString(),
+            numberOfPeople: formData.numberOfPeople
+              ? parseInt(formData.numberOfPeople)
+              : undefined,
             message: formData.message,
           }),
-        }
+        },
       );
 
       if (response.ok) {
-        toast.success("Request submitted! We'll contact you soon.");
+        toast.success(
+          "Request submitted! We'll contact you soon.",
+        );
         setShowRequestDialog(false);
         setFormData({
           customerName: "",
@@ -123,11 +171,15 @@ export function PrivateTourDetailPage({
           message: "",
         });
       } else {
-        toast.error("Failed to submit request. Please try again.");
+        toast.error(
+          "Failed to submit request. Please try again.",
+        );
       }
     } catch (error) {
       console.error("Error submitting tour request:", error);
-      toast.error("Failed to submit request. Please try again.");
+      toast.error(
+        "Failed to submit request. Please try again.",
+      );
     } finally {
       setSubmitting(false);
     }
@@ -136,7 +188,9 @@ export function PrivateTourDetailPage({
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <p className="text-muted-foreground">Loading tour details...</p>
+        <p className="text-muted-foreground">
+          Loading tour details...
+        </p>
       </div>
     );
   }
@@ -177,7 +231,10 @@ export function PrivateTourDetailPage({
       {/* Hero Image */}
       <section className="relative h-[300px] overflow-hidden sm:h-[400px]">
         <ImageWithFallback
-          src={tour.heroImage || "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1600&h=900&fit=crop"}
+          src={
+            tour.heroImage ||
+            "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1600&h=900&fit=crop"
+          }
           alt={tour.title}
           className="h-full w-full object-cover"
         />
@@ -200,19 +257,25 @@ export function PrivateTourDetailPage({
                   {tour.badge}
                 </Badge>
               )}
-              <h1 className="mb-3 text-foreground">{tour.title}</h1>
+              <h1 className="mb-3 text-foreground">
+                {tour.title}
+              </h1>
               <div className="flex flex-wrap items-center gap-4 text-muted-foreground">
                 <div className="flex items-center gap-2">
                   <Clock className="h-5 w-5" />
-                  <span className="text-lg">{tour.duration}</span>
+                  <span className="text-lg">
+                    {tour.duration}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Users className="h-5 w-5" />
-                  <span className="text-lg">Private group experience</span>
+                  <span className="text-lg">
+                    Private group experience
+                  </span>
                 </div>
               </div>
             </div>
-            
+
             {/* Removed pricing box - now in Quick Details card */}
           </div>
         </div>
@@ -225,25 +288,36 @@ export function PrivateTourDetailPage({
             {/* Left Column - Tour Details */}
             <div className="lg:col-span-2">
               <Card className="mb-8 p-6 sm:p-8">
-                <h2 className="mb-4 text-foreground">About This Tour</h2>
+                <h2 className="mb-4 text-foreground">
+                  About This Tour
+                </h2>
                 <p className="whitespace-pre-wrap leading-relaxed text-muted-foreground">
                   {tour.longDescription || tour.description}
                 </p>
               </Card>
 
               <Card className="mb-8 p-6 sm:p-8">
-                <h2 className="mb-6 text-foreground">What's Included</h2>
+                <h2 className="mb-6 text-foreground">
+                  What's Included
+                </h2>
                 <div className="grid gap-4 sm:grid-cols-2">
                   {tour.features.map((feature, index) => (
-                    <div key={index} className="flex items-start gap-3">
-                      <div className={`mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full ${
-                        tour.badgeColor === "accent"
-                          ? "bg-accent"
-                          : "bg-primary"
-                      }`}>
+                    <div
+                      key={index}
+                      className="flex items-start gap-3"
+                    >
+                      <div
+                        className={`mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full ${
+                          tour.badgeColor === "accent"
+                            ? "bg-accent"
+                            : "bg-primary"
+                        }`}
+                      >
                         <Check className="h-4 w-4 text-white" />
                       </div>
-                      <span className="text-sm leading-relaxed">{feature}</span>
+                      <span className="text-sm leading-relaxed">
+                        {feature}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -256,19 +330,29 @@ export function PrivateTourDetailPage({
                 <ul className="space-y-3 text-sm text-muted-foreground">
                   <li className="flex items-start gap-2">
                     <span className="text-primary">•</span>
-                    <span>Private tours are customizable to your preferences</span>
+                    <span>
+                      Private tours are customizable to your
+                      preferences
+                    </span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary">•</span>
-                    <span>Prices may vary based on group size and specific requirements</span>
+                    <span>
+                      Prices may vary based on group size and
+                      specific requirements
+                    </span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary">•</span>
-                    <span>Hotel pickup and drop-off can be arranged</span>
+                    <span>
+                      Hotel pickup and drop-off can be arranged
+                    </span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary">•</span>
-                    <span>Contact us to discuss your ideal itinerary</span>
+                    <span>
+                      Contact us to discuss your ideal itinerary
+                    </span>
                   </li>
                 </ul>
               </Card>
@@ -279,7 +363,9 @@ export function PrivateTourDetailPage({
               <Card className="sticky top-4 border-2 border-primary p-6">
                 {/* Price Display - Mobile */}
                 <div className="mb-6 block text-center sm:hidden">
-                  <p className="mb-1 text-sm text-muted-foreground">Starting from</p>
+                  <p className="mb-1 text-sm text-muted-foreground">
+                    Starting from
+                  </p>
                   <p className="mb-1 text-3xl font-bold text-primary">
                     {tour.price}
                   </p>
@@ -291,24 +377,36 @@ export function PrivateTourDetailPage({
                 </div>
 
                 <div className="mb-6 space-y-4 border-t border-border pt-6 sm:border-t-0 sm:pt-0">
-                  <h3 className="font-semibold text-foreground">Quick Details</h3>
+                  <h3 className="font-semibold text-foreground">
+                    Quick Details
+                  </h3>
                   <div className="space-y-3">
                     <div className="flex items-start gap-3 text-sm">
                       <Clock className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
                       <div>
-                        <p className="font-medium text-foreground">Duration</p>
-                        <p className="text-muted-foreground">{tour.duration}</p>
+                        <p className="font-medium text-foreground">
+                          Duration
+                        </p>
+                        <p className="text-muted-foreground">
+                          {tour.duration}
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 text-sm">
                       <Users className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
                       <div>
-                        <p className="font-medium text-foreground">Group Type</p>
-                        <p className="text-muted-foreground">Private experience</p>
+                        <p className="font-medium text-foreground">
+                          Group Type
+                        </p>
+                        <p className="text-muted-foreground">
+                          Private experience
+                        </p>
                       </div>
                     </div>
                     <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 text-center">
-                      <p className="mb-1 text-xs text-muted-foreground">Starting from</p>
+                      <p className="mb-1 text-xs text-muted-foreground">
+                        Starting from
+                      </p>
                       <p className="mb-0.5 text-2xl font-bold text-primary">
                         {tour.price}
                       </p>
@@ -340,7 +438,8 @@ export function PrivateTourDetailPage({
                 </Button>
 
                 <p className="mt-4 text-center text-xs text-muted-foreground">
-                  We'll respond within 24 hours with a personalized quote
+                  We'll respond within 24 hours with a
+                  personalized quote
                 </p>
               </Card>
             </div>
@@ -349,20 +448,31 @@ export function PrivateTourDetailPage({
       </section>
 
       {/* Tour Request Dialog */}
-      <Dialog open={showRequestDialog} onOpenChange={setShowRequestDialog}>
+      <Dialog
+        open={showRequestDialog}
+        onOpenChange={setShowRequestDialog}
+      >
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Request This Private Tour</DialogTitle>
             <DialogDescription>
-              Fill in your details and we'll get back to you shortly with a personalized quote for "{tour.title}".
+              Fill in your details and we'll get back to you
+              shortly with a personalized quote for "
+              {tour.title}".
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
             <div className="rounded-lg bg-secondary/50 p-4">
-              <p className="text-sm font-medium text-muted-foreground">Tour</p>
-              <p className="text-lg font-semibold text-foreground">{tour.title}</p>
-              <p className="text-sm text-muted-foreground">{tour.price} • {tour.duration}</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                Tour
+              </p>
+              <p className="text-lg font-semibold text-foreground">
+                {tour.title}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {tour.price} • {tour.duration}
+              </p>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
@@ -374,7 +484,10 @@ export function PrivateTourDetailPage({
                     id="name"
                     value={formData.customerName}
                     onChange={(e) =>
-                      setFormData({ ...formData, customerName: e.target.value })
+                      setFormData({
+                        ...formData,
+                        customerName: e.target.value,
+                      })
                     }
                     placeholder="John Doe"
                     className="pl-10"
@@ -391,7 +504,10 @@ export function PrivateTourDetailPage({
                     type="email"
                     value={formData.email}
                     onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
+                      setFormData({
+                        ...formData,
+                        email: e.target.value,
+                      })
                     }
                     placeholder="john@example.com"
                     className="pl-10"
@@ -408,7 +524,10 @@ export function PrivateTourDetailPage({
                     type="tel"
                     value={formData.phone}
                     onChange={(e) =>
-                      setFormData({ ...formData, phone: e.target.value })
+                      setFormData({
+                        ...formData,
+                        phone: e.target.value,
+                      })
                     }
                     placeholder="+351 123 456 789"
                     className="pl-10"
@@ -426,7 +545,10 @@ export function PrivateTourDetailPage({
                     min="1"
                     value={formData.numberOfPeople}
                     onChange={(e) =>
-                      setFormData({ ...formData, numberOfPeople: e.target.value })
+                      setFormData({
+                        ...formData,
+                        numberOfPeople: e.target.value,
+                      })
                     }
                     placeholder="2"
                     className="pl-10"
@@ -453,7 +575,10 @@ export function PrivateTourDetailPage({
                       mode="single"
                       selected={formData.preferredDate}
                       onSelect={(date) =>
-                        setFormData({ ...formData, preferredDate: date })
+                        setFormData({
+                          ...formData,
+                          preferredDate: date,
+                        })
                       }
                       disabled={(date) => date < new Date()}
                       initialFocus
@@ -463,12 +588,17 @@ export function PrivateTourDetailPage({
               </div>
 
               <div className="sm:col-span-2">
-                <Label htmlFor="message">Additional Information (Optional)</Label>
+                <Label htmlFor="message">
+                  Additional Information (Optional)
+                </Label>
                 <Textarea
                   id="message"
                   value={formData.message}
                   onChange={(e) =>
-                    setFormData({ ...formData, message: e.target.value })
+                    setFormData({
+                      ...formData,
+                      message: e.target.value,
+                    })
                   }
                   placeholder="Tell us about your preferences, special requirements, or any questions..."
                   rows={4}
@@ -482,7 +612,9 @@ export function PrivateTourDetailPage({
                 disabled={submitting}
                 className="flex-1"
               >
-                {submitting ? "Submitting..." : "Submit Request"}
+                {submitting
+                  ? "Submitting..."
+                  : "Submit Request"}
               </Button>
               <Button
                 variant="outline"

@@ -369,7 +369,7 @@ export function BlogArticlePage({
                 components={{
                   h1: ({ node, ...props }) => (
                     <h1
-                      className="mb-8 mt-2 text-foreground"
+                      className="mb-8 mt-2 text-3xl font-bold text-foreground md:text-4xl"
                       {...props}
                     />
                   ),

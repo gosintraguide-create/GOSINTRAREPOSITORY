@@ -227,7 +227,7 @@ export function OperationsPage({ onNavigate }: OperationsPageProps) {
         
         // Show browser notification
         if ('Notification' in window && Notification.permission === 'granted') {
-          new Notification('🚗 New Pickup Request!', {
+          new Notification('���� New Pickup Request!', {
             body: `${newRequests} new pickup request${newRequests > 1 ? 's' : ''} waiting`,
             icon: '/icon-72x72.png',
             badge: '/icon-72x72.png',
@@ -466,6 +466,18 @@ export function OperationsPage({ onNavigate }: OperationsPageProps) {
                                 </span>
                               )}
                             </div>
+                            {/* Customer Name */}
+                            {request.customerName && (
+                              <p className="text-sm font-medium text-foreground mb-1">
+                                {request.customerName}
+                              </p>
+                            )}
+                            {/* Phone Number */}
+                            {request.customerPhone && (
+                              <p className="text-xs text-muted-foreground mb-1">
+                                📞 {request.customerPhone}
+                              </p>
+                            )}
                             <p className="text-xs text-muted-foreground">Requested at {timeAgo}</p>
                             {isAccepted && request.driverName && (
                               <div className="mt-2 flex items-center gap-1.5">

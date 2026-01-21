@@ -35,6 +35,7 @@ import {
   AccordionTrigger,
 } from "./ui/accordion";
 import { ImageSelector } from "./ImageSelector";
+import { MultiImageSelector } from "./MultiImageSelector";
 import { ProductCardEditor } from "./ProductCardEditor";
 
 // Supported languages with display names and flags
@@ -1457,6 +1458,15 @@ export function ContentEditor() {
                             onChange={(url) => 
                               updateContent(["attractions", "attractionDetails", key, "cardImage"], url)
                             }
+                          />
+                          <MultiImageSelector
+                            label="Carousel Gallery Images"
+                            description="Images shown in the carousel/gallery on the attraction detail page"
+                            value={attraction.gallery || []}
+                            onChange={(urls) => 
+                              updateContent(["attractions", "attractionDetails", key, "gallery"], urls)
+                            }
+                            maxImages={10}
                           />
                         </div>
                       </div>

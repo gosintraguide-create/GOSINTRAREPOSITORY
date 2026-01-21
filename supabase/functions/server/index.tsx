@@ -3586,6 +3586,23 @@ app.post("/make-server-3bd0ade8/chat/start", async (c) => {
       console.log(
         `💬 Resuming existing chat conversation: ${existingConversation.id} for ${customerEmail}`
       );
+      
+      // Update conversation with latest name and ensure 'name' field exists
+      const updatedConversation = {
+        ...existingConversation,
+        customerName,
+        customerEmail,
+        name: customerName, // Ensure 'name' field exists for frontend
+        email: customerEmail, // Ensure 'email' field exists for frontend
+        archived: existingConversation.archived || false,
+      };
+      
+      // Save updated conversation
+      await kv.set(
+        `chat_conversation_${existingConversation.id}`,
+        updatedConversation,
+      );
+      
       return c.json({
         success: true,
         conversationId: existingConversation.id,
@@ -3601,8 +3618,11 @@ app.post("/make-server-3bd0ade8/chat/start", async (c) => {
       id: conversationId,
       customerName,
       customerEmail,
+      name: customerName, // Add 'name' field for frontend compatibility
+      email: customerEmail, // Add 'email' field for frontend compatibility
       status: "open", // open, closed
       unreadByAdmin: 0,
+      archived: false, // Add archived field
       createdAt: new Date().toISOString(),
       lastMessageAt: new Date().toISOString(),
     };
@@ -3759,7 +3779,16 @@ app.get(
       }
 
       const conversations = data
-        ? data.map((entry: any) => entry.value)
+        ? data.map((entry: any) => {
+            // Ensure backward compatibility by adding 'name' and 'email' fields if missing
+            const conv = entry.value;
+            return {
+              ...conv,
+              name: conv.name || conv.customerName || "Anonymous",
+              email: conv.email || conv.customerEmail || "",
+              archived: conv.archived || false,
+            };
+          })
         : [];
 
       // Sort by last message time (most recent first)
@@ -3918,6 +3947,65 @@ app.post(
         {
           success: false,
           error: "Failed to unarchive conversation",
+        },
+        500,
+      );
+    }
+  },
+);
+
+// Migration endpoint to fix existing conversations with missing 'name' field
+app.post(
+  "/make-server-3bd0ade8/chat/migrate-conversations",
+  async (c) => {
+    try {
+      console.log('🔧 Starting conversation migration...');
+      
+      // Get all conversations
+      const { data, error } = await supabase
+        .from("kv_store_3bd0ade8")
+        .select("key, value")
+        .like("key", "chat_conversation_%");
+
+      if (error) {
+        throw error;
+      }
+
+      let updatedCount = 0;
+      const conversations = data || [];
+
+      for (const entry of conversations) {
+        const conv = entry.value;
+        
+        // Check if 'name' field is missing or if it's set to "Anonymous"
+        if (!conv.name || conv.name === "Anonymous") {
+          const updatedConv = {
+            ...conv,
+            name: conv.customerName || "Anonymous",
+            email: conv.customerEmail || "",
+            archived: conv.archived || false,
+          };
+          
+          await kv.set(entry.key, updatedConv);
+          updatedCount++;
+          console.log(`✅ Updated conversation ${conv.id}: ${conv.customerName || 'Anonymous'}`);
+        }
+      }
+
+      console.log(`🎉 Migration complete! Updated ${updatedCount} conversations.`);
+
+      return c.json({
+        success: true,
+        message: `Migration complete. Updated ${updatedCount} conversations.`,
+        totalConversations: conversations.length,
+        updatedCount,
+      });
+    } catch (error) {
+      console.error("Error migrating conversations:", error);
+      return c.json(
+        {
+          success: false,
+          error: "Failed to migrate conversations",
         },
         500,
       );

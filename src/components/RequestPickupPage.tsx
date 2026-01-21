@@ -208,9 +208,7 @@ export function RequestPickupPage({ onNavigate, language = "en" }: RequestPickup
       
       if (result.success) {
         console.log('✅ Pickup request created successfully:', result.request.id);
-        toast.success('🚗 Pickup request sent successfully!', {
-          duration: 4000,
-        });
+        toast.success('🚗 Pickup request sent successfully!');
         // ✅ Only show success if server confirms
         setTimeout(() => {
           setStep("confirmed");

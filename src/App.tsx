@@ -830,9 +830,7 @@ export default function App() {
                 console.log(
                   "✅ Session created, showing toast...",
                 );
-                toast.success("🎉 You're now logged in!", {
-                  duration: 4000,
-                });
+                toast.success("🎉 You're now logged in!");
               } catch (error) {
                 console.error(
                   "❌ Error creating session:",
@@ -1122,6 +1120,8 @@ export default function App() {
           richColors
           expand={true}
           closeButton
+          duration={1000}
+          visibleToasts={2}
           toastOptions={{
             style: {
               zIndex: 9999,
