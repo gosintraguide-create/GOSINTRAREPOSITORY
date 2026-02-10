@@ -100,18 +100,39 @@ export function AnalyticsPage({ onNavigate }: AnalyticsPageProps) {
     try {
       const checkIns = [];
       for (let i = 0; i < passengerCount; i++) {
-        const response = await fetch(
-          `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/checkin-status/${bookingId}_${i}`,
-          {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${publicAnonKey}`,
-              'Content-Type': 'application/json',
-            },
+        try {
+          const response = await fetch(
+            `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/checkin-status/${bookingId}_${i}`,
+            {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${publicAnonKey}`,
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+          
+          // Check if response is ok before trying to parse JSON
+          if (!response.ok) {
+            console.warn(`Failed to fetch check-in status for ${bookingId}_${i}: HTTP ${response.status}`);
+            checkIns.push([]);
+            continue;
           }
-        );
-        const result = await response.json();
-        checkIns.push(result.checkIns || []);
+          
+          // Check content type to avoid parsing HTML as JSON
+          const contentType = response.headers.get('content-type');
+          if (!contentType || !contentType.includes('application/json')) {
+            console.warn(`Non-JSON response for check-in status ${bookingId}_${i}`);
+            checkIns.push([]);
+            continue;
+          }
+          
+          const result = await response.json();
+          checkIns.push(result.checkIns || []);
+        } catch (innerError) {
+          console.warn(`Error loading individual check-in for ${bookingId}_${i}:`, innerError);
+          checkIns.push([]);
+        }
       }
       return checkIns;
     } catch (error) {

@@ -1,16 +1,15 @@
-import { MapPin, Navigation } from "lucide-react";
-import { getTranslation } from "../lib/translations";
 import { Button } from "./ui/button";
+import { ArrowRight, MapPin, Navigation } from "lucide-react";
+import { useOutletContext } from "react-router";
+import { getTranslation } from "../lib/translations";
 
-interface RouteMapPageProps {
-  onNavigate: (page: string) => void;
+interface OutletContext {
   language: string;
+  onNavigate: (page: string, data?: any) => void;
 }
 
-export function RouteMapPage({
-  onNavigate,
-  language,
-}: RouteMapPageProps) {
+export function RouteMapPage() {
+  const { language = "en", onNavigate } = useOutletContext<OutletContext>();
   const content = getTranslation(language);
 
   return (

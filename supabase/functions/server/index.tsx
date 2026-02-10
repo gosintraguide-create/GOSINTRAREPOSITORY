@@ -1581,6 +1581,47 @@ app.post("/make-server-3bd0ade8/blog-categories", async (c) => {
   }
 });
 
+// Get monuments
+app.get("/make-server-3bd0ade8/monuments", async (c) => {
+  try {
+    console.log("🏛️ Fetching monuments from database...");
+    const monuments = await kv.get("monuments");
+
+    if (monuments) {
+      console.log(`✅ Found ${monuments.length || 0} monuments in database`);
+      return c.json({ success: true, monuments });
+    } else {
+      console.log("⚠️ No monuments found in database");
+      return c.json({ success: true, monuments: [] });
+    }
+  } catch (error) {
+    console.error("❌ Error fetching monuments:", error);
+    return c.json(
+      { success: false, error: "Failed to fetch monuments" },
+      500
+    );
+  }
+});
+
+// Save monuments
+app.post("/make-server-3bd0ade8/monuments", async (c) => {
+  try {
+    const body = await c.req.json();
+    console.log(`📝 Saving ${body.monuments?.length || 0} monuments to database...`);
+
+    await kv.set("monuments", body.monuments);
+    console.log("✅ Monuments saved successfully");
+
+    return c.json({ success: true });
+  } catch (error) {
+    console.error("❌ Error saving monuments:", error);
+    return c.json(
+      { success: false, error: "Failed to save monuments" },
+      500
+    );
+  }
+});
+
 // Get comprehensive website content
 app.get(
   "/make-server-3bd0ade8/comprehensive-content",
@@ -3272,6 +3313,35 @@ app.get(
         {
           success: false,
           message: "Failed to fetch check-ins",
+        },
+        500,
+      );
+    }
+  },
+);
+
+// Get check-in status for a passenger (analytics endpoint)
+// This endpoint accepts bookingId_passengerIndex format (e.g., "AB-1234_0")
+app.get(
+  "/make-server-3bd0ade8/checkin-status/:fullId",
+  async (c) => {
+    try {
+      const fullId = c.req.param("fullId");
+
+      // The fullId is in format "bookingId_passengerIndex"
+      const checkInsKey = `checkins_${fullId}`;
+      const checkIns = (await kv.get(checkInsKey)) || [];
+
+      return c.json({
+        success: true,
+        checkIns: checkIns,
+      });
+    } catch (error) {
+      console.error("Error fetching check-in status:", error);
+      return c.json(
+        {
+          success: false,
+          message: "Failed to fetch check-in status",
         },
         500,
       );
@@ -6817,6 +6887,34 @@ app.post("/make-server-3bd0ade8/tour-requests/:requestId/notes", async (c) => {
       500
     );
   }
+});
+
+// Catch-all 404 handler - MUST return JSON to prevent "Unexpected token '<'" errors
+app.notFound((c) => {
+  const path = c.req.path;
+  console.warn(`⚠️ 404 Not Found: ${path}`);
+  return c.json(
+    {
+      success: false,
+      error: "Endpoint not found",
+      path: path,
+      message: `The requested endpoint ${path} does not exist. Please check the API documentation.`,
+    },
+    404
+  );
+});
+
+// Error handler - ensures all errors return JSON
+app.onError((err, c) => {
+  console.error('❌ Server error:', err);
+  return c.json(
+    {
+      success: false,
+      error: "Internal server error",
+      message: err.message,
+    },
+    500
+  );
 });
 
 Deno.serve(app.fetch);

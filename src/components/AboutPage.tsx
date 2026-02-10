@@ -1,78 +1,28 @@
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
+import { useState, useEffect } from "react";
+import { useOutletContext } from "react-router";
+import { Users, Car, Award, Camera, Heart, Shield, Target } from "lucide-react";
+import {
+  loadContentWithLanguage,
+  type WebsiteContent,
+  DEFAULT_CONTENT,
+} from "../lib/contentManager";
 import { Card } from "./ui/card";
 import { Badge } from "./ui/badge";
-import { Textarea } from "./ui/textarea";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
-import { useState, useEffect } from "react";
-import { loadContentWithLanguage, type WebsiteContent, DEFAULT_CONTENT } from "../lib/contentManager";
-import { getUITranslation } from "../lib/translations";
 import { motion } from "motion/react";
-import { toast } from "sonner@2.0.3";
-import { projectId, publicAnonKey } from '../utils/supabase/info';
-import { getComponentTranslation } from "../lib/translations/component-translations";
-import { Heart, Users, Car, Award, Camera, Shield, Target, Mail, MapPin, Clock, MessageSquare, ArrowRight } from "lucide-react";
 
-interface AboutPageProps {
-  language?: string;
+interface OutletContext {
+  language: string;
+  onNavigate: (page: string, data?: any) => void;
 }
 
-export function AboutPage({ language = "en" }: AboutPageProps) {
+export function AboutPage() {
+  const { language = "en" } = useOutletContext<OutletContext>();
   const [content, setContent] = useState<WebsiteContent>(DEFAULT_CONTENT);
-  const t = getUITranslation(language);
-  const tc = getComponentTranslation(language);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
-  });
 
   useEffect(() => {
     setContent(loadContentWithLanguage(language));
   }, [language]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    try {
-      const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/contact`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${publicAnonKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formData),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`Server error: ${response.status}`);
-      }
-
-      const result = await response.json();
-      
-      if (result.success) {
-        toast.success(tc.aboutPage.messageSent);
-        setFormData({ name: '', email: '', subject: '', message: '' });
-      } else {
-        throw new Error(result.error || tc.aboutPage.messageError);
-      }
-    } catch (error) {
-      console.error('Contact form error:', error);
-      toast.error(
-        tc.aboutPage.messageError,
-        { duration: 6000 }
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   const perks = [
     { icon: Users, title: "Small Groups", description: "Just 2-6 guests per vehicle for a cozy, personal experience" },
@@ -236,127 +186,8 @@ export function AboutPage({ language = "en" }: AboutPageProps) {
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section className="py-20 sm:py-28" id="contact">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-16 text-center">
-            <Badge className="mb-4">Get In Touch</Badge>
-            <h2 className="mb-4 text-foreground">Let's Chat!</h2>
-            <p className="text-muted-foreground">Questions? Ideas? We'd love to hear from you!</p>
-          </div>
-
-          <div className="grid gap-8 lg:grid-cols-3">
-            {/* Contact Info Cards */}
-            <div className="space-y-6">
-              <Card className="p-6 transition-all hover:shadow-lg">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                  <Mail className="h-6 w-6 text-primary" />
-                </div>
-                <h4 className="mb-2 text-foreground">Email Us</h4>
-                <p className="text-muted-foreground">{content.company.email}</p>
-                <p className="text-sm text-muted-foreground">Response within 24 hours</p>
-              </Card>
-
-              <Card className="p-6 transition-all hover:shadow-lg">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                  <MapPin className="h-6 w-6 text-primary" />
-                </div>
-                <h4 className="mb-2 text-foreground">Find Us</h4>
-                <p className="text-muted-foreground">{content.company.location}</p>
-              </Card>
-
-              <Card className="p-6 transition-all hover:shadow-lg">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                  <Clock className="h-6 w-6 text-primary" />
-                </div>
-                <h4 className="mb-2 text-foreground">Hours</h4>
-                <p className="text-muted-foreground">{content.company.operatingHours}</p>
-              </Card>
-            </div>
-
-            {/* Contact Form */}
-            <div className="lg:col-span-2">
-              <Card className="p-8 shadow-xl">
-                <div className="mb-6">
-                  <div className="mb-3 flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                      <MessageSquare className="h-6 w-6 text-primary" />
-                    </div>
-                    <h3 className="text-foreground">Send a Message</h3>
-                  </div>
-                </div>
-
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid gap-6 sm:grid-cols-2">
-                    <div>
-                      <Label htmlFor="name">Name</Label>
-                      <Input
-                        id="name"
-                        type="text"
-                        placeholder="Your name"
-                        className="mt-2"
-                        required
-                        value={formData.name}
-                        onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="email">Email</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="your.email@example.com"
-                        className="mt-2"
-                        required
-                        value={formData.email}
-                        onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="subject">Subject</Label>
-                    <Input
-                      id="subject"
-                      type="text"
-                      placeholder="How can we help?"
-                      className="mt-2"
-                      required
-                      value={formData.subject}
-                      onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="message">Message</Label>
-                    <Textarea
-                      id="message"
-                      placeholder="Tell us what's on your mind..."
-                      className="mt-2 min-h-[150px]"
-                      required
-                      value={formData.message}
-                      onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
-                    />
-                  </div>
-
-                  <Button
-                    type="submit"
-                    className="w-full sm:w-auto"
-                    size="lg"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? tc.aboutPage.sending : tc.aboutPage.sendMessage}
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </form>
-              </Card>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* FAQ Section */}
-      <section className="border-t border-border bg-secondary/30 py-20 sm:py-28">
+      <section className="py-20 sm:py-28">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <div className="mb-12 text-center">
             <Badge className="mb-4">FAQ</Badge>

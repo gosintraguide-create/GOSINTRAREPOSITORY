@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useOutletContext } from 'react-router';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
@@ -21,14 +22,20 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { createClient } from '../utils/supabase/client';
 
+interface OutletContext {
+  language: string;
+  onNavigate: (page: string, data?: any) => void;
+}
+
 interface DriverDashboardProps {
   driver: any;
   token: string;
   onLogout: () => void;
-  onNavigate?: (page: string) => void;
 }
 
-export function DriverDashboard({ driver, token, onLogout, onNavigate }: DriverDashboardProps) {
+export function DriverDashboard({ driver, token, onLogout }: DriverDashboardProps) {
+  const { onNavigate } = useOutletContext<OutletContext>();
+
   // Block search engines from indexing this page
   useEffect(() => {
     const metaRobots = document.querySelector('meta[name="robots"]');

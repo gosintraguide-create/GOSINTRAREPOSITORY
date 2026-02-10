@@ -1728,6 +1728,139 @@ export function ContentEditor() {
               </div>
             </div>
           </Card>
+
+          <Card className="p-6">
+            <h3 className="mb-4 text-foreground">Hop On Service Detail Page</h3>
+            <div className="space-y-4">
+              <div>
+                <Label>Hero Title</Label>
+                <Input
+                  value={content.hopOnService.hero.title}
+                  onChange={(e) => updateContent(["hopOnService", "hero", "title"], e.target.value)}
+                />
+              </div>
+              <div>
+                <Label>Hero Subtitle</Label>
+                <Textarea
+                  value={content.hopOnService.hero.subtitle}
+                  onChange={(e) => updateContent(["hopOnService", "hero", "subtitle"], e.target.value)}
+                  rows={2}
+                />
+              </div>
+              <div>
+                <Label>Main Description Title</Label>
+                <Input
+                  value={content.hopOnService.description.mainTitle}
+                  onChange={(e) => updateContent(["hopOnService", "description", "mainTitle"], e.target.value)}
+                />
+              </div>
+              <div>
+                <Label>Description Paragraph 1</Label>
+                <Textarea
+                  value={content.hopOnService.description.paragraphs[0]}
+                  onChange={(e) => {
+                    const newParagraphs = [...content.hopOnService.description.paragraphs];
+                    newParagraphs[0] = e.target.value;
+                    updateContent(["hopOnService", "description", "paragraphs"], newParagraphs);
+                  }}
+                  rows={3}
+                />
+              </div>
+              <div>
+                <Label>Description Paragraph 2</Label>
+                <Textarea
+                  value={content.hopOnService.description.paragraphs[1]}
+                  onChange={(e) => {
+                    const newParagraphs = [...content.hopOnService.description.paragraphs];
+                    newParagraphs[1] = e.target.value;
+                    updateContent(["hopOnService", "description", "paragraphs"], newParagraphs);
+                  }}
+                  rows={3}
+                />
+              </div>
+            </div>
+            
+            <div className="mt-6">
+              <h4 className="mb-4">Features</h4>
+              <Accordion type="single" collapsible className="w-full">
+                {content.hopOnService.features.map((feature, index) => (
+                  <AccordionItem key={index} value={`feature-${index}`}>
+                    <AccordionTrigger>
+                      {feature.title}
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <div className="space-y-4 pt-4">
+                        <div>
+                          <Label>Title</Label>
+                          <Input
+                            value={feature.title}
+                            onChange={(e) => 
+                              updateArrayItem(["hopOnService", "features"], index, "title", e.target.value)
+                            }
+                          />
+                        </div>
+                        <div>
+                          <Label>Description</Label>
+                          <Textarea
+                            value={feature.description}
+                            onChange={(e) => 
+                              updateArrayItem(["hopOnService", "features"], index, "description", e.target.value)
+                            }
+                            rows={2}
+                          />
+                        </div>
+                        <div>
+                          <Label>Icon Name</Label>
+                          <Input
+                            value={feature.icon}
+                            onChange={(e) => 
+                              updateArrayItem(["hopOnService", "features"], index, "icon", e.target.value)
+                            }
+                          />
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </div>
+
+            <div className="mt-6">
+              <h4 className="mb-4">FAQ Questions</h4>
+              <Accordion type="single" collapsible className="w-full">
+                {content.hopOnService.faq.map((qa, index) => (
+                  <AccordionItem key={index} value={`faq-${index}`}>
+                    <AccordionTrigger>
+                      {qa.question}
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <div className="space-y-4 pt-4">
+                        <div>
+                          <Label>Question</Label>
+                          <Input
+                            value={qa.question}
+                            onChange={(e) => 
+                              updateArrayItem(["hopOnService", "faq"], index, "question", e.target.value)
+                            }
+                          />
+                        </div>
+                        <div>
+                          <Label>Answer</Label>
+                          <Textarea
+                            value={qa.answer}
+                            onChange={(e) => 
+                              updateArrayItem(["hopOnService", "faq"], index, "answer", e.target.value)
+                            }
+                            rows={4}
+                          />
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </div>
+          </Card>
         </TabsContent>
 
         {/* Common Tab */}

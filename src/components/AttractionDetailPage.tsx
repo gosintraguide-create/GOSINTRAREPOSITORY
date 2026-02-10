@@ -1,19 +1,20 @@
-import {
-  ArrowLeft,
-  Check,
-  Camera,
-  ChevronLeft,
-  ChevronRight,
-  Clock,
-  Lightbulb,
-  Star,
-  Ticket,
-} from "lucide-react";
+import { useState, useEffect } from "react";
+import { useOutletContext, useParams } from "react-router";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Card } from "./ui/card";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
-import { useState, useEffect } from "react";
+import { 
+  ArrowLeft, 
+  Ticket, 
+  Clock, 
+  Star, 
+  Camera, 
+  Check, 
+  Lightbulb, 
+  ChevronRight,
+  ChevronLeft
+} from "lucide-react";
 import {
   loadComprehensiveContent,
   loadComprehensiveContentForLanguage,
@@ -24,40 +25,39 @@ import { motion } from "motion/react";
 import Slider from "react-slick";
 import "../styles/slick-custom.css";
 
-interface AttractionDetailPageProps {
-  onNavigate: (page: string) => void;
-  attractionId: string;
-  language?: string;
+// Custom arrow components for slider
+const PrevArrow = (props: any) => (
+  <button
+    {...props}
+    className="slick-prev"
+    aria-label="Previous slide"
+  >
+    <ChevronLeft className="h-6 w-6" />
+  </button>
+);
+
+const NextArrow = (props: any) => (
+  <button
+    {...props}
+    className="slick-next"
+    aria-label="Next slide"
+  >
+    <ChevronRight className="h-6 w-6" />
+  </button>
+);
+
+interface OutletContext {
+  language: string;
+  onNavigate: (page: string, data?: any) => void;
 }
 
-// Custom arrow components for the carousel
-const PrevArrow = ({ onClick }: { onClick?: () => void }) => (
-  <button
-    onClick={onClick}
-    className="absolute left-2 sm:left-4 top-1/2 z-50 flex h-8 w-8 sm:h-10 sm:w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-primary shadow-lg transition-all hover:bg-white hover:scale-110"
-    aria-label="Previous image"
-    type="button"
-  >
-    <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
-  </button>
-);
-
-const NextArrow = ({ onClick }: { onClick?: () => void }) => (
-  <button
-    onClick={onClick}
-    className="absolute right-2 sm:right-4 top-1/2 z-50 flex h-8 w-8 sm:h-10 sm:w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-primary shadow-lg transition-all hover:bg-white hover:scale-110"
-    aria-label="Next image"
-    type="button"
-  >
-    <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
-  </button>
-);
-
-export function AttractionDetailPage({
-  onNavigate,
-  attractionId,
-  language,
-}: AttractionDetailPageProps) {
+export function AttractionDetailPage() {
+  const { language = "en", onNavigate } = useOutletContext<OutletContext>();
+  const { slug } = useParams<{ slug: string }>();
+  
+  // Map slug to attraction ID - we'll need to find the attraction by slug or ID
+  const attractionId = slug || "";
+  
   const [content, setContent] = useState<ComprehensiveContent>(
     DEFAULT_COMPREHENSIVE_CONTENT,
   );

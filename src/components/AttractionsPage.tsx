@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useOutletContext } from "react-router";
 import {
   Star,
   Clock,
@@ -27,15 +28,13 @@ import {
 } from "../lib/blogManager";
 import { motion } from "motion/react";
 
-interface AttractionsPageProps {
+interface OutletContext {
+  language: string;
   onNavigate: (page: string, data?: any) => void;
-  language?: string;
 }
 
-export function AttractionsPage({
-  onNavigate,
-  language = "en",
-}: AttractionsPageProps) {
+export function AttractionsPage() {
+  const { language = "en", onNavigate } = useOutletContext<OutletContext>();
   const [content, setContent] = useState<ComprehensiveContent>(
     DEFAULT_COMPREHENSIVE_CONTENT,
   );

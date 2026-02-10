@@ -16,13 +16,15 @@ interface HeaderProps {
 export function Header({ currentPage, onNavigate, language, onLanguageChange }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const t = getUITranslation(language);
   const content = getTranslation(language);
 
   // Close menu when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node) &&
+          menuButtonRef.current && !menuButtonRef.current.contains(event.target as Node)) {
         setIsMenuOpen(false);
       }
     }
@@ -46,8 +48,7 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
     
   //   return () => {
   //     document.body.style.overflow = 'unset';
-  //   };
-  // }, [isMenuOpen]);
+  //   };\n  // }, [isMenuOpen]);
 
   const navItems = [
     { id: "attractions", label: t.attractions },
@@ -68,6 +69,7 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
               size="sm"
               className="text-primary hover:bg-secondary lg:hidden relative z-10 flex-shrink-0"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
+              ref={menuButtonRef}
             >
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </Button>

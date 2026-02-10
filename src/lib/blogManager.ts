@@ -56,7 +56,7 @@ export interface BlogArticle {
   isPublished: boolean;
   readTimeMinutes: number;
   faqs?: FAQItem[];
-  
+
   // Multi-language content - keyed by language code ('en', 'pt', 'es', etc.)
   translations: {
     [languageCode: string]: ArticleTranslation;
@@ -64,12 +64,20 @@ export interface BlogArticle {
 }
 
 // Helper to get article content in a specific language with fallback to English
-export function getArticleTranslation(article: BlogArticle, language: string): ArticleTranslation {
-  return article.translations[language] || article.translations['en'];
+export function getArticleTranslation(
+  article: BlogArticle,
+  language: string,
+): ArticleTranslation {
+  return (
+    article.translations[language] || article.translations["en"]
+  );
 }
 
 // Helper to get article title in a specific language
-export function getArticleTitle(article: BlogArticle, language: string): string {
+export function getArticleTitle(
+  article: BlogArticle,
+  language: string,
+): string {
   return getArticleTranslation(article, language).title;
 }
 
@@ -82,7 +90,7 @@ export interface CategoryTranslation {
 export interface BlogCategory {
   id: string;
   slug: string;
-  
+
   // Multi-language content
   translations: {
     [languageCode: string]: CategoryTranslation;
@@ -90,8 +98,14 @@ export interface BlogCategory {
 }
 
 // Helper to get category content in a specific language with fallback to English
-export function getCategoryTranslation(category: BlogCategory, language: string): CategoryTranslation {
-  return category.translations[language] || category.translations['en'];
+export function getCategoryTranslation(
+  category: BlogCategory,
+  language: string,
+): CategoryTranslation {
+  return (
+    category.translations[language] ||
+    category.translations["en"]
+  );
 }
 
 // Default categories with English translations (add more languages as needed)
@@ -102,9 +116,10 @@ export const DEFAULT_CATEGORIES: BlogCategory[] = [
     translations: {
       en: {
         name: "Planning Your Visit",
-        description: "Everything you need to know to plan the perfect Sintra day trip"
-      }
-    }
+        description:
+          "Everything you need to know to plan the perfect Sintra day trip",
+      },
+    },
   },
   {
     id: "getting-there",
@@ -112,9 +127,10 @@ export const DEFAULT_CATEGORIES: BlogCategory[] = [
     translations: {
       en: {
         name: "Getting There",
-        description: "Transportation guides and tips for reaching Sintra"
-      }
-    }
+        description:
+          "Transportation guides and tips for reaching Sintra",
+      },
+    },
   },
   {
     id: "attractions",
@@ -122,9 +138,10 @@ export const DEFAULT_CATEGORIES: BlogCategory[] = [
     translations: {
       en: {
         name: "Attractions & Sights",
-        description: "In-depth guides to Sintra's palaces, castles, and gardens"
-      }
-    }
+        description:
+          "In-depth guides to Sintra's palaces, castles, and gardens",
+      },
+    },
   },
   {
     id: "tips",
@@ -132,9 +149,10 @@ export const DEFAULT_CATEGORIES: BlogCategory[] = [
     translations: {
       en: {
         name: "Travel Tips",
-        description: "Insider tips and local advice for exploring Sintra"
-      }
-    }
+        description:
+          "Insider tips and local advice for exploring Sintra",
+      },
+    },
   },
   {
     id: "history",
@@ -142,10 +160,11 @@ export const DEFAULT_CATEGORIES: BlogCategory[] = [
     translations: {
       en: {
         name: "History & Culture",
-        description: "Learn about Sintra's rich history and cultural heritage"
-      }
-    }
-  }
+        description:
+          "Learn about Sintra's rich history and cultural heritage",
+      },
+    },
+  },
 ];
 
 // Sample default articles (in legacy format - will be migrated automatically)
@@ -154,7 +173,8 @@ export const DEFAULT_ARTICLES: LegacyBlogArticle[] = [
     id: "how-to-get-to-sintra",
     title: "How to Get to Sintra from Lisbon",
     slug: "how-to-get-to-sintra",
-    excerpt: "A complete guide to reaching Sintra from Lisbon by train, car, or organized tour. Learn about schedules, costs, and the best transportation options.",
+    excerpt:
+      "A complete guide to reaching Sintra from Lisbon by train, car, or organized tour. Learn about schedules, costs, and the best transportation options.",
     content: `# How to Get to Sintra from Lisbon
 
 Sintra is just 30 kilometers northwest of Lisbon, making it an easy and popular day trip destination. Here's everything you need to know about getting there.
@@ -232,40 +252,51 @@ Plan to catch your return train by 6-7 PM to avoid rush hour crowds. Evening tra
     author: "Hop On Sintra Team",
     publishDate: "2025-10-15",
     lastModified: "2025-10-15",
-    featuredImage: "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200",
+    featuredImage:
+      "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200",
     category: "getting-there",
     tags: ["transportation", "train", "lisbon", "travel-tips"],
     isPublished: true,
     readTimeMinutes: 5,
     faqs: [
       {
-        question: "How much does the train from Lisbon to Sintra cost?",
-        answer: "A one-way train ticket from Lisbon to Sintra costs approximately €2.30 with a Viva Viagem card. A return ticket costs around €4.60 total."
+        question:
+          "How much does the train from Lisbon to Sintra cost?",
+        answer:
+          "A one-way train ticket from Lisbon to Sintra costs approximately €2.30 with a Viva Viagem card. A return ticket costs around €4.60 total.",
       },
       {
-        question: "How long does the train take from Lisbon to Sintra?",
-        answer: "The train journey from Lisbon Rossio station to Sintra takes approximately 40 minutes."
+        question:
+          "How long does the train take from Lisbon to Sintra?",
+        answer:
+          "The train journey from Lisbon Rossio station to Sintra takes approximately 40 minutes.",
       },
       {
         question: "How often do trains run to Sintra?",
-        answer: "Trains run every 15-20 minutes during the day from Rossio station in Lisbon."
+        answer:
+          "Trains run every 15-20 minutes during the day from Rossio station in Lisbon.",
       },
       {
         question: "Should I drive or take the train to Sintra?",
-        answer: "Taking the train is highly recommended. Parking in Sintra is very limited and expensive, while the train is affordable, frequent, and stress-free."
-      }
+        answer:
+          "Taking the train is highly recommended. Parking in Sintra is very limited and expensive, while the train is affordable, frequent, and stress-free.",
+      },
     ],
     seo: {
-      title: "How to Get to Sintra from Lisbon - Complete Transportation Guide 2025",
-      description: "Complete guide to traveling from Lisbon to Sintra by train, car, or tour. Includes schedules, costs, and insider tips for the best experience.",
-      keywords: "Sintra transportation, Lisbon to Sintra train, how to get to Sintra, Sintra travel guide"
-    }
+      title:
+        "How to Get to Sintra from Lisbon - Complete Transportation Guide 2025",
+      description:
+        "Complete guide to traveling from Lisbon to Sintra by train, car, or tour. Includes schedules, costs, and insider tips for the best experience.",
+      keywords:
+        "Sintra transportation, Lisbon to Sintra train, how to get to Sintra, Sintra travel guide",
+    },
   },
   {
     id: "planning-your-perfect-day",
     title: "Planning Your Perfect Day in Sintra",
     slug: "planning-your-perfect-day",
-    excerpt: "Expert advice on how to plan an unforgettable day in Sintra. Learn which attractions to visit, the best order to see them, and how to maximize your time.",
+    excerpt:
+      "Expert advice on how to plan an unforgettable day in Sintra. Learn which attractions to visit, the best order to see them, and how to maximize your time.",
     content: `# Planning Your Perfect Day in Sintra
 
 Sintra has so much to offer that trying to see everything in one day can be overwhelming. Here's how to plan the perfect day based on your interests and energy level.
@@ -407,7 +438,8 @@ With proper planning, your day in Sintra will be one of the highlights of your P
     author: "Hop On Sintra Team",
     publishDate: "2025-10-14",
     lastModified: "2025-10-14",
-    featuredImage: "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200",
+    featuredImage:
+      "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200",
     category: "planning",
     tags: ["itinerary", "planning", "day-trip", "travel-tips"],
     isPublished: true,
@@ -415,32 +447,40 @@ With proper planning, your day in Sintra will be one of the highlights of your P
     faqs: [
       {
         question: "How many days do you need in Sintra?",
-        answer: "One full day is enough to see the main highlights of Sintra. However, if you want to visit all the palaces and gardens at a leisurely pace, 2 days would be ideal."
+        answer:
+          "One full day is enough to see the main highlights of Sintra. However, if you want to visit all the palaces and gardens at a leisurely pace, 2 days would be ideal.",
       },
       {
         question: "What is the best time to visit Sintra?",
-        answer: "The best time to visit Sintra is during spring (March-May) or fall (September-November) for pleasant weather and fewer crowds. Arrive early in the morning (before 10 AM) to avoid peak crowds."
+        answer:
+          "The best time to visit Sintra is during spring (March-May) or fall (September-November) for pleasant weather and fewer crowds. Arrive early in the morning (before 10 AM) to avoid peak crowds.",
       },
       {
         question: "Can you see all of Sintra in one day?",
-        answer: "While you can visit 3-4 major attractions in one day, it's not recommended to try to see everything. Focus on quality over quantity - pick your must-see sites and enjoy them fully."
+        answer:
+          "While you can visit 3-4 major attractions in one day, it's not recommended to try to see everything. Focus on quality over quantity - pick your must-see sites and enjoy them fully.",
       },
       {
         question: "How much does a day trip to Sintra cost?",
-        answer: "A typical day trip to Sintra costs €80-130 per person, including train tickets (€5-10), day pass (€25-30), attraction tickets (€30-50), and meals (€20-40)."
-      }
+        answer:
+          "A typical day trip to Sintra costs €80-130 per person, including train tickets (€5-10), day pass (€25-30), attraction tickets (€30-50), and meals (€20-40).",
+      },
     ],
     seo: {
-      title: "Planning Your Perfect Day in Sintra - Complete Itinerary Guide 2025",
-      description: "Expert guide to planning an unforgettable day in Sintra. Includes sample itineraries, timing tips, and insider advice to make the most of your visit.",
-      keywords: "Sintra itinerary, plan Sintra day trip, Sintra planning guide, what to see in Sintra"
-    }
+      title:
+        "Planning Your Perfect Day in Sintra - Complete Itinerary Guide 2025",
+      description:
+        "Expert guide to planning an unforgettable day in Sintra. Includes sample itineraries, timing tips, and insider advice to make the most of your visit.",
+      keywords:
+        "Sintra itinerary, plan Sintra day trip, Sintra planning guide, what to see in Sintra",
+    },
   },
   {
     id: "pena-palace-complete-guide",
     title: "Pena Palace: The Complete Visitor's Guide",
     slug: "pena-palace-complete-guide",
-    excerpt: "Everything you need to know about visiting Pena Palace, Sintra's most iconic attraction. Includes history, tips, and how to avoid the crowds.",
+    excerpt:
+      "Everything you need to know about visiting Pena Palace, Sintra's most iconic attraction. Includes history, tips, and how to avoid the crowds.",
     content: `# Pena Palace: The Complete Visitor's Guide
 
 Pena Palace is the crown jewel of Sintra and one of Portugal's most visited attractions. This comprehensive guide will help you make the most of your visit.
@@ -641,26 +681,32 @@ Pena Palace is truly magical and deserves a leisurely visit. Take your time, soa
     author: "Hop On Sintra Team",
     publishDate: "2025-10-13",
     lastModified: "2025-10-13",
-    featuredImage: "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200",
+    featuredImage:
+      "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200",
     category: "attractions",
     tags: ["pena-palace", "attractions", "guide", "history"],
     isPublished: true,
     readTimeMinutes: 10,
     seo: {
-      title: "Pena Palace Complete Guide - Tips, Tickets & History 2025",
-      description: "Everything you need to know about visiting Pena Palace in Sintra. Includes history, ticket options, timing tips, and insider advice.",
-      keywords: "Pena Palace, Sintra palace, Pena Palace tickets, visit Pena Palace, Sintra attractions"
-    }
-  }
+      title:
+        "Pena Palace Complete Guide - Tips, Tickets & History 2025",
+      description:
+        "Everything you need to know about visiting Pena Palace in Sintra. Includes history, ticket options, timing tips, and insider advice.",
+      keywords:
+        "Pena Palace, Sintra palace, Pena Palace tickets, visit Pena Palace, Sintra attractions",
+    },
+  },
 ];
 
 // Migration helper - converts old format articles to new multi-language format
-export function migrateArticleToMultiLanguage(oldArticle: any): BlogArticle {
+export function migrateArticleToMultiLanguage(
+  oldArticle: any,
+): BlogArticle {
   // Check if already in new format
   if (oldArticle.translations) {
     return oldArticle as BlogArticle;
   }
-  
+
   // Convert old format to new format with English as default
   return {
     id: oldArticle.id,
@@ -681,19 +727,21 @@ export function migrateArticleToMultiLanguage(oldArticle: any): BlogArticle {
         title: oldArticle.title,
         excerpt: oldArticle.excerpt,
         content: oldArticle.content,
-        seo: oldArticle.seo
-      }
-    }
+        seo: oldArticle.seo,
+      },
+    },
   };
 }
 
 // Migration helper - converts old format categories to new multi-language format
-export function migrateCategoryToMultiLanguage(oldCategory: any): BlogCategory {
+export function migrateCategoryToMultiLanguage(
+  oldCategory: any,
+): BlogCategory {
   // Check if already in new format
   if (oldCategory.translations) {
     return oldCategory as BlogCategory;
   }
-  
+
   // Convert old format to new format with English as default
   return {
     id: oldCategory.id,
@@ -701,15 +749,18 @@ export function migrateCategoryToMultiLanguage(oldCategory: any): BlogCategory {
     translations: {
       en: {
         name: oldCategory.name,
-        description: oldCategory.description
-      }
-    }
+        description: oldCategory.description,
+      },
+    },
   };
 }
 
 // Storage functions
 export function saveArticles(articles: BlogArticle[]): void {
-  localStorage.setItem("blog-articles", JSON.stringify(articles));
+  localStorage.setItem(
+    "blog-articles",
+    JSON.stringify(articles),
+  );
 }
 
 export function loadArticles(): BlogArticle[] {
@@ -718,17 +769,26 @@ export function loadArticles(): BlogArticle[] {
     try {
       const parsed = JSON.parse(saved);
       // Migrate old format articles to new format
-      return parsed.map((article: any) => migrateArticleToMultiLanguage(article));
+      return parsed.map((article: any) =>
+        migrateArticleToMultiLanguage(article),
+      );
     } catch (error) {
       console.error("Error parsing saved articles:", error);
-      return DEFAULT_ARTICLES.map(migrateArticleToMultiLanguage);
+      return DEFAULT_ARTICLES.map(
+        migrateArticleToMultiLanguage,
+      );
     }
   }
   return DEFAULT_ARTICLES.map(migrateArticleToMultiLanguage);
 }
 
-export function saveCategories(categories: BlogCategory[]): void {
-  localStorage.setItem("blog-categories", JSON.stringify(categories));
+export function saveCategories(
+  categories: BlogCategory[],
+): void {
+  localStorage.setItem(
+    "blog-categories",
+    JSON.stringify(categories),
+  );
 }
 
 export function loadCategories(): BlogCategory[] {
@@ -737,7 +797,9 @@ export function loadCategories(): BlogCategory[] {
     try {
       const parsed = JSON.parse(saved);
       // Migrate old format categories to new format
-      return parsed.map((category: any) => migrateCategoryToMultiLanguage(category));
+      return parsed.map((category: any) =>
+        migrateCategoryToMultiLanguage(category),
+      );
     } catch (error) {
       console.error("Error parsing saved categories:", error);
       return DEFAULT_CATEGORIES;
@@ -750,8 +812,8 @@ export function loadCategories(): BlogCategory[] {
 export function generateSlug(title: string): string {
   return title
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 export function estimateReadTime(content: string): number {
@@ -760,33 +822,81 @@ export function estimateReadTime(content: string): number {
   return Math.ceil(wordCount / wordsPerMinute);
 }
 
-export function getArticleBySlug(slug: string): BlogArticle | undefined {
+export function getArticleBySlug(
+  slug: string,
+): BlogArticle | undefined {
   const articles = loadArticles();
-  return articles.find(article => article.slug === slug);
+  return articles.find((article) => article.slug === slug);
 }
 
 export function getPublishedArticles(): BlogArticle[] {
-  return loadArticles().filter(article => article.isPublished);
+  return loadArticles().filter(
+    (article) => article.isPublished,
+  );
 }
 
-export function getArticlesByCategory(categorySlug: string): BlogArticle[] {
-  return getPublishedArticles().filter(article => article.category === categorySlug);
+export function getArticlesByCategory(
+  categorySlug: string,
+): BlogArticle[] {
+  return getPublishedArticles().filter(
+    (article) => article.category === categorySlug,
+  );
 }
 
-export function searchArticles(query: string, language: string = 'en'): BlogArticle[] {
+export function searchArticles(
+  query: string,
+  language: string = "en",
+): BlogArticle[] {
   const lowerQuery = query.toLowerCase();
-  return getPublishedArticles().filter(article => {
-    const translation = getArticleTranslation(article, language);
+  return getPublishedArticles().filter((article) => {
+    const translation = getArticleTranslation(
+      article,
+      language,
+    );
     return (
       translation.title.toLowerCase().includes(lowerQuery) ||
       translation.excerpt.toLowerCase().includes(lowerQuery) ||
-      article.tags.some(tag => tag.toLowerCase().includes(lowerQuery))
+      article.tags.some((tag) =>
+        tag.toLowerCase().includes(lowerQuery),
+      )
     );
   });
 }
 
 // Server-sync functions for fetching/saving blog data
-export async function loadArticlesFromServer(projectId: string, publicAnonKey: string): Promise<BlogArticle[]> {
+export async function loadArticlesFromServer(
+  projectId: string,
+  publicAnonKey: string,
+): Promise<BlogArticle[]> {
+  // Check cache first with a 5-minute TTL
+  const cacheKey = "blog-articles-cache";
+  const cacheTimestampKey = "blog-articles-cache-timestamp";
+  const cacheTTL = 5 * 60 * 1000; // 5 minutes in milliseconds
+
+  const cachedTimestamp = localStorage.getItem(
+    cacheTimestampKey,
+  );
+  const cachedData = localStorage.getItem(cacheKey);
+
+  if (cachedTimestamp && cachedData) {
+    const timestamp = parseInt(cachedTimestamp, 10);
+    const now = Date.now();
+
+    // If cache is still valid, return it immediately
+    if (now - timestamp < cacheTTL) {
+      try {
+        const parsed = JSON.parse(cachedData);
+        console.log("Using cached blog articles");
+        return parsed.map((article: any) =>
+          migrateArticleToMultiLanguage(article),
+        );
+      } catch (error) {
+        console.error("Error parsing cached articles:", error);
+      }
+    }
+  }
+
+  // Cache miss or expired - fetch from server
   try {
     const response = await fetch(
       `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/blog-articles`,
@@ -796,16 +906,33 @@ export async function loadArticlesFromServer(projectId: string, publicAnonKey: s
           Authorization: `Bearer ${publicAnonKey}`,
           "Content-Type": "application/json",
         },
-      }
+      },
     );
 
     if (response.ok) {
       const result = await response.json();
-      if (result.success && result.articles && result.articles.length > 0) {
+      if (
+        result.success &&
+        result.articles &&
+        result.articles.length > 0
+      ) {
         // Migrate articles to new format if needed
-        const migratedArticles = result.articles.map((article: any) => migrateArticleToMultiLanguage(article));
-        // Cache in localStorage for faster subsequent loads
-        localStorage.setItem("blog-articles", JSON.stringify(migratedArticles));
+        const migratedArticles = result.articles.map(
+          (article: any) =>
+            migrateArticleToMultiLanguage(article),
+        );
+        // Cache with timestamp for faster subsequent loads
+        localStorage.setItem(
+          cacheKey,
+          JSON.stringify(migratedArticles),
+        );
+        localStorage.setItem(
+          cacheTimestampKey,
+          Date.now().toString(),
+        );
+        console.log(
+          "Fetched and cached blog articles from server",
+        );
         return migratedArticles;
       }
     }
@@ -817,7 +944,11 @@ export async function loadArticlesFromServer(projectId: string, publicAnonKey: s
   return loadArticles();
 }
 
-export async function saveArticlesToServer(articles: BlogArticle[], projectId: string, publicAnonKey: string): Promise<boolean> {
+export async function saveArticlesToServer(
+  articles: BlogArticle[],
+  projectId: string,
+  publicAnonKey: string,
+): Promise<boolean> {
   try {
     const response = await fetch(
       `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/blog-articles`,
@@ -828,8 +959,15 @@ export async function saveArticlesToServer(articles: BlogArticle[], projectId: s
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ articles }),
-      }
+      },
     );
+
+    if (response.ok) {
+      // Clear cache so fresh data is loaded next time
+      localStorage.removeItem("blog-articles-cache");
+      localStorage.removeItem("blog-articles-cache-timestamp");
+      console.log("Saved articles and cleared cache");
+    }
 
     return response.ok;
   } catch (error) {
@@ -838,7 +976,42 @@ export async function saveArticlesToServer(articles: BlogArticle[], projectId: s
   }
 }
 
-export async function loadCategoriesFromServer(projectId: string, publicAnonKey: string): Promise<BlogCategory[]> {
+export async function loadCategoriesFromServer(
+  projectId: string,
+  publicAnonKey: string,
+): Promise<BlogCategory[]> {
+  // Check cache first with a 5-minute TTL
+  const cacheKey = "blog-categories-cache";
+  const cacheTimestampKey = "blog-categories-cache-timestamp";
+  const cacheTTL = 5 * 60 * 1000; // 5 minutes in milliseconds
+
+  const cachedTimestamp = localStorage.getItem(
+    cacheTimestampKey,
+  );
+  const cachedData = localStorage.getItem(cacheKey);
+
+  if (cachedTimestamp && cachedData) {
+    const timestamp = parseInt(cachedTimestamp, 10);
+    const now = Date.now();
+
+    // If cache is still valid, return it immediately
+    if (now - timestamp < cacheTTL) {
+      try {
+        const parsed = JSON.parse(cachedData);
+        console.log("Using cached blog categories");
+        return parsed.map((category: any) =>
+          migrateCategoryToMultiLanguage(category),
+        );
+      } catch (error) {
+        console.error(
+          "Error parsing cached categories:",
+          error,
+        );
+      }
+    }
+  }
+
+  // Cache miss or expired - fetch from server
   try {
     const response = await fetch(
       `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/blog-categories`,
@@ -848,28 +1021,52 @@ export async function loadCategoriesFromServer(projectId: string, publicAnonKey:
           Authorization: `Bearer ${publicAnonKey}`,
           "Content-Type": "application/json",
         },
-      }
+      },
     );
 
     if (response.ok) {
       const result = await response.json();
-      if (result.success && result.categories && result.categories.length > 0) {
+      if (
+        result.success &&
+        result.categories &&
+        result.categories.length > 0
+      ) {
         // Migrate categories to new format if needed
-        const migratedCategories = result.categories.map((category: any) => migrateCategoryToMultiLanguage(category));
-        // Cache in localStorage
-        localStorage.setItem("blog-categories", JSON.stringify(migratedCategories));
+        const migratedCategories = result.categories.map(
+          (category: any) =>
+            migrateCategoryToMultiLanguage(category),
+        );
+        // Cache with timestamp in localStorage
+        localStorage.setItem(
+          cacheKey,
+          JSON.stringify(migratedCategories),
+        );
+        localStorage.setItem(
+          cacheTimestampKey,
+          Date.now().toString(),
+        );
+        console.log(
+          "Fetched and cached blog categories from server",
+        );
         return migratedCategories;
       }
     }
   } catch (error) {
-    console.error("Error loading categories from server:", error);
+    console.error(
+      "Error loading categories from server:",
+      error,
+    );
   }
 
   // Fall back to localStorage or defaults
   return loadCategories();
 }
 
-export async function saveCategoriesToServer(categories: BlogCategory[], projectId: string, publicAnonKey: string): Promise<boolean> {
+export async function saveCategoriesToServer(
+  categories: BlogCategory[],
+  projectId: string,
+  publicAnonKey: string,
+): Promise<boolean> {
   try {
     const response = await fetch(
       `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/blog-categories`,
@@ -880,7 +1077,7 @@ export async function saveCategoriesToServer(categories: BlogCategory[], project
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ categories }),
-      }
+      },
     );
 
     return response.ok;

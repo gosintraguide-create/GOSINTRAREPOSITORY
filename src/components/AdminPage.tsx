@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useOutletContext } from "react-router";
 import {
   Settings,
   Lock,
@@ -105,8 +106,9 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-interface AdminPageProps {
-  onNavigate: (page: string) => void;
+interface OutletContext {
+  language: string;
+  onNavigate: (page: string, data?: any) => void;
 }
 
 interface PricingSettings {
@@ -184,7 +186,8 @@ const CHART_COLORS = [
   "#e74c3c",
 ];
 
-export function AdminPage({ onNavigate }: AdminPageProps) {
+export function AdminPage() {
+  const { onNavigate } = useOutletContext<OutletContext>();
   // Block search engines from indexing this page
   useEffect(() => {
     const metaRobots = document.querySelector(
