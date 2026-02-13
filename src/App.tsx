@@ -21,8 +21,12 @@ function App() {
   return (
     <HelmetProvider>
       {/* Analytics */}
-      {GA_MEASUREMENT_ID && <GoogleAnalytics measurementId={GA_MEASUREMENT_ID} />}
-      {CLARITY_PROJECT_ID && <MicrosoftClarity projectId={CLARITY_PROJECT_ID} />}
+      {GA_MEASUREMENT_ID && (
+        <GoogleAnalytics measurementId={GA_MEASUREMENT_ID} />
+      )}
+      {CLARITY_PROJECT_ID && (
+        <MicrosoftClarity projectId={CLARITY_PROJECT_ID} />
+      )}
       <Analytics />
 
       {/* PWA & System Components */}
