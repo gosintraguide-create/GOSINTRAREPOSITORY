@@ -345,6 +345,14 @@ export function BuyTicketPage() {
     }
   }, [currentStep]);
 
+  // Scroll to top whenever step changes
+  useEffect(() => {
+    // Scroll both window and document element to ensure it works
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, [currentStep]);
+
   const loadAvailabilityForDate = async (date: string) => {
     setLoadingAvailability(true);
 
@@ -485,14 +493,12 @@ export function BuyTicketPage() {
   const handleNext = () => {
     if (currentStep < 5) {
       setCurrentStep(currentStep + 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 

@@ -289,6 +289,12 @@ export function ContentEditor() {
   };
 
   const updateContent = (path: string[], value: any) => {
+    // Check if this is an image field (heroImage, cardImage, gallery, etc.)
+    const lastPathElement = path[path.length - 1];
+    const isImageField = 
+      lastPathElement.toLowerCase().includes('image') || 
+      lastPathElement === 'gallery';
+    
     setContent(prev => {
       const newContent = JSON.parse(JSON.stringify(prev)); // Deep clone
       let current: any = newContent;
@@ -300,13 +306,51 @@ export function ContentEditor() {
       current[path[path.length - 1]] = value;
       
       // Update the contentByLanguage cache
-      setContentByLanguage(prevByLang => ({
-        ...prevByLang,
-        [currentLanguage]: newContent,
-      }));
+      setContentByLanguage(prevByLang => {
+        // If this is an image field, sync it to ALL languages
+        if (isImageField) {
+          const updatedAllLanguages: Record<string, ComprehensiveContent> = {};
+          
+          SUPPORTED_LANGUAGES.forEach(lang => {
+            const langContent = JSON.parse(JSON.stringify(prevByLang[lang.code] || prev));
+            let current: any = langContent;
+            
+            for (let i = 0; i < path.length - 1; i++) {
+              current = current[path[i]];
+            }
+            
+            current[path[path.length - 1]] = value;
+            updatedAllLanguages[lang.code] = langContent;
+          });
+          
+          // Mark all languages as modified when an image is updated
+          setModifiedLanguages(prev => {
+            const newSet = new Set(prev);
+            SUPPORTED_LANGUAGES.forEach(lang => newSet.add(lang.code));
+            return newSet;
+          });
+          
+          // Show a toast notification that image was synced to all languages
+          if (value) {
+            toast.success(`Image synced to all ${SUPPORTED_LANGUAGES.length} languages!`, {
+              description: "This image will appear in all language versions"
+            });
+          }
+          
+          return updatedAllLanguages;
+        } else {
+          // For non-image fields, only update current language
+          return {
+            ...prevByLang,
+            [currentLanguage]: newContent,
+          };
+        }
+      });
       
-      // Mark this language as modified
-      setModifiedLanguages(prev => new Set(prev).add(currentLanguage));
+      // Mark this language as modified (or all if image)
+      if (!isImageField) {
+        setModifiedLanguages(prev => new Set(prev).add(currentLanguage));
+      }
       setHasChanges(true);
       
       return newContent;
@@ -335,6 +379,11 @@ export function ContentEditor() {
   };
 
   const updateArrayItem = (path: string[], index: number, field: string, value: any) => {
+    // Check if this is an image field
+    const isImageField = 
+      field.toLowerCase().includes('image') || 
+      field === 'src'; // 'src' is used in product card images
+    
     setContent(prev => {
       const newContent = JSON.parse(JSON.stringify(prev));
       let current: any = newContent;
@@ -346,13 +395,51 @@ export function ContentEditor() {
       current[index][field] = value;
       
       // Update the contentByLanguage cache
-      setContentByLanguage(prevByLang => ({
-        ...prevByLang,
-        [currentLanguage]: newContent,
-      }));
+      setContentByLanguage(prevByLang => {
+        // If this is an image field, sync it to ALL languages
+        if (isImageField) {
+          const updatedAllLanguages: Record<string, ComprehensiveContent> = {};
+          
+          SUPPORTED_LANGUAGES.forEach(lang => {
+            const langContent = JSON.parse(JSON.stringify(prevByLang[lang.code] || prev));
+            let current: any = langContent;
+            
+            for (let i = 0; i < path.length; i++) {
+              current = current[path[i]];
+            }
+            
+            current[index][field] = value;
+            updatedAllLanguages[lang.code] = langContent;
+          });
+          
+          // Mark all languages as modified when an image is updated
+          setModifiedLanguages(prev => {
+            const newSet = new Set(prev);
+            SUPPORTED_LANGUAGES.forEach(lang => newSet.add(lang.code));
+            return newSet;
+          });
+          
+          // Show a toast notification that image was synced to all languages
+          if (value) {
+            toast.success(`Image synced to all ${SUPPORTED_LANGUAGES.length} languages!`, {
+              description: "This image will appear in all language versions"
+            });
+          }
+          
+          return updatedAllLanguages;
+        } else {
+          // For non-image fields, only update current language
+          return {
+            ...prevByLang,
+            [currentLanguage]: newContent,
+          };
+        }
+      });
       
-      // Mark this language as modified
-      setModifiedLanguages(prev => new Set(prev).add(currentLanguage));
+      // Mark this language as modified (or all if image)
+      if (!isImageField) {
+        setModifiedLanguages(prev => new Set(prev).add(currentLanguage));
+      }
       setHasChanges(true);
       
       return newContent;
@@ -870,6 +957,12 @@ export function ContentEditor() {
 
           <Card className="p-6">
             <h3 className="mb-4 text-foreground">Hero Images</h3>
+            <Alert className="mb-4">
+              <Globe className="h-4 w-4" />
+              <AlertDescription>
+                Images are automatically shared across all languages. Upload once and they'll appear everywhere!
+              </AlertDescription>
+            </Alert>
             <div className="space-y-4">
               <ImageSelector
                 label="Main Hero Background Image"
@@ -1428,6 +1521,12 @@ export function ContentEditor() {
                       </div>
                       <div className="border-t pt-4">
                         <h4 className="mb-4 font-medium">Images</h4>
+                        <Alert className="mb-4">
+                          <Globe className="h-4 w-4" />
+                          <AlertDescription>
+                            Images are automatically shared across all languages. Upload once and they'll appear everywhere!
+                          </AlertDescription>
+                        </Alert>
                         <div className="space-y-4">
                           <ImageSelector
                             label="Hero Image"

@@ -31,6 +31,7 @@ export function HeroSection({
   const heroSubtitle = editableContent?.homepage?.hero?.subtitle || legacyContent.homepage.hero.subtitle;
   const heroCtaButton = editableContent?.homepage?.hero?.ctaButton || legacyContent.homepage.hero.ctaButton;
   const heroBenefitPills = editableContent?.homepage?.hero?.benefitPills || legacyContent.homepage.hero.benefitPills || [];
+  const heroImage = editableContent?.homepage?.hero?.heroImage || "https://dwiznaefeqnduglmcivr.supabase.co/storage/v1/object/sign/make-3bd0ade8-images/1762977905581_pena-palace-3.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmFjMWMyYy1lNjZlLTQwYWEtYjcwNS1kNTcwYzA5NGZmYzMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtYWtlLTNiZDBhZGU4LWltYWdlcy8xNzYyOTc3OTA1NTgxX3BlbmEtcGFsYWNlLTMuanBnIiwiaWF0IjoxNzYyOTc3OTA1LCJleHAiOjIwNzgzMzc5MDV9.yMxtg8g3UvVUzf-xdAwUmGyjRATPWQwdvRlpIa8D7eY";
   
   return (
     <section className="relative overflow-hidden">
@@ -39,7 +40,7 @@ export function HeroSection({
         <div className="relative min-h-[600px] lg:min-h-[650px]">
           <div className="absolute inset-0">
             <ImageWithFallback
-              src="https://dwiznaefeqnduglmcivr.supabase.co/storage/v1/object/sign/make-3bd0ade8-images/1762977905581_pena-palace-3.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmFjMWMyYy1lNjZlLTQwYWEtYjcwNS1kNTcwYzA5NGZmYzMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtYWtlLTNiZDBhZGU4LWltYWdlcy8xNzYyOTc3OTA1NTgxX3BlbmEtcGFsYWNlLTMuanBnIiwiaWF0IjoxNzYyOTc3OTA1LCJleHAiOjIwNzgzMzc5MDV9.yMxtg8g3UvVUzf-xdAwUmGyjRATPWQwdvRlpIa8D7eY"
+              src={heroImage}
               alt="Tuk tuk sightseeing in Sintra with colorful Pena Palace"
               className="h-full w-full object-cover object-center"
             />

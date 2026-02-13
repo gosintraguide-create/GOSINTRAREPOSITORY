@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Edit, Trash2, Plus, Image as ImageIcon } from "lucide-react";
+import { Edit, Trash2, Plus, Image as ImageIcon, Globe } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { Card } from "./ui/card";
+import { Alert, AlertDescription } from "./ui/alert";
 import {
   Dialog,
   DialogContent,
@@ -225,6 +226,13 @@ export function ProductCardEditor({
                 <p className="text-sm text-muted-foreground">
                   Add or edit images for the carousel
                 </p>
+                
+                <Alert>
+                  <Globe className="h-4 w-4" />
+                  <AlertDescription>
+                    Images are automatically shared across all languages. Upload once and they'll appear everywhere!
+                  </AlertDescription>
+                </Alert>
 
                 <div className="space-y-3">
                   {getCardData(editingCard)?.images?.map((image: any, index: number) => (

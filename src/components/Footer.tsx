@@ -108,7 +108,7 @@ export function Footer({ onNavigate, language = "en" }: FooterProps) {
                 <DropdownMenuItem onClick={() => onNavigate?.("admin")}>
                   {legacyContent.footer.adminPortal}
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onNavigate?.("operations")}>
+                <DropdownMenuItem onClick={() => onNavigate?.("driver-portal")}>
                   {legacyContent.footer.driverPortal}
                 </DropdownMenuItem>
               </DropdownMenuContent>

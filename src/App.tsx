@@ -1,8 +1,8 @@
 // Child pricing feature: ages 7-12 - Build 2024-12-19-002
-// Force rebuild - React Router implementation - Build 2025-02-10
+// Force rebuild - React Router implementation - Build 2025-02-13
 import { RouterProvider } from "react-router";
 import { HelmetProvider } from "react-helmet-async";
-import { router } from "./routes.tsx";
+import { router } from "./routes";
 import { GoogleAnalytics } from "./components/GoogleAnalytics";
 import { MicrosoftClarity } from "./components/MicrosoftClarity";
 import { CookieConsent } from "./components/CookieConsent";
