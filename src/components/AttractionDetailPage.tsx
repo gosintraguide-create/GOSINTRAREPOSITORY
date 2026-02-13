@@ -4,16 +4,16 @@ import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Card } from "./ui/card";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
-import { 
-  ArrowLeft, 
-  Ticket, 
-  Clock, 
-  Star, 
-  Camera, 
-  Check, 
-  Lightbulb, 
+import {
+  ArrowLeft,
+  Ticket,
+  Clock,
+  Star,
+  Camera,
+  Check,
+  Lightbulb,
   ChevronRight,
-  ChevronLeft
+  ChevronLeft,
 } from "lucide-react";
 import {
   loadComprehensiveContent,
@@ -21,6 +21,7 @@ import {
   type ComprehensiveContent,
   DEFAULT_COMPREHENSIVE_CONTENT,
 } from "../lib/comprehensiveContent";
+import { useEditableContent } from "../lib/useEditableContent";
 import { motion } from "motion/react";
 import Slider from "react-slick";
 import "../styles/slick-custom.css";
@@ -52,15 +53,16 @@ interface OutletContext {
 }
 
 export function AttractionDetailPage() {
-  const { language = "en", onNavigate } = useOutletContext<OutletContext>();
+  const { language = "en", onNavigate } =
+    useOutletContext<OutletContext>();
   const { slug } = useParams<{ slug: string }>();
-  
+
   // Map slug to attraction ID - we'll need to find the attraction by slug or ID
   const attractionId = slug || "";
-  
-  const [content, setContent] = useState<ComprehensiveContent>(
-    DEFAULT_COMPREHENSIVE_CONTENT,
-  );
+
+  // Use the hook that auto-updates when content changes
+  const content = useEditableContent(language);
+
   const [ticketQuantity, setTicketQuantity] = useState(1);
   const [selectedOption, setSelectedOption] = useState("");
 
@@ -83,18 +85,6 @@ export function AttractionDetailPage() {
     "villa-sassetti":
       "https://images.unsplash.com/photo-1670060434149-220a5fce89da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx2aWxsYSUyMHNhc3NldHRpJTIwc2ludHJhfGVufDF8fHx8MTc2MzE2NjYwNnww&ixlib=rb-4.1.0&q=80&w=1080",
   };
-
-  useEffect(() => {
-    const freshContent = loadComprehensiveContentForLanguage(language || "en");
-    setContent(freshContent);
-
-    // Debug: log the gallery URLs
-    console.log(
-      "Attraction gallery URLs:",
-      freshContent.attractions.attractionDetails[attractionId]
-        ?.gallery,
-    );
-  }, [attractionId, language]);
 
   const attraction =
     content.attractions.attractionDetails[attractionId];
@@ -138,99 +128,104 @@ export function AttractionDetailPage() {
   // Generate structured data for SEO
   const generateStructuredData = () => {
     if (!attraction) return null;
-    
+
     // Address mapping for each attraction
     const attractionAddresses: { [key: string]: any } = {
       "pena-palace": {
         "@type": "PostalAddress",
-        "streetAddress": "Estrada da Pena",
-        "addressLocality": "Sintra",
-        "postalCode": "2710-609",
-        "addressCountry": "PT"
+        streetAddress: "Estrada da Pena",
+        addressLocality: "Sintra",
+        postalCode: "2710-609",
+        addressCountry: "PT",
       },
       "quinta-regaleira": {
         "@type": "PostalAddress",
-        "streetAddress": "Rua Barbosa du Bocage",
-        "addressLocality": "Sintra",
-        "postalCode": "2710-567",
-        "addressCountry": "PT"
+        streetAddress: "Rua Barbosa du Bocage",
+        addressLocality: "Sintra",
+        postalCode: "2710-567",
+        addressCountry: "PT",
       },
       "moorish-castle": {
         "@type": "PostalAddress",
-        "streetAddress": "Estrada da Pena",
-        "addressLocality": "Sintra",
-        "postalCode": "2710-609",
-        "addressCountry": "PT"
+        streetAddress: "Estrada da Pena",
+        addressLocality: "Sintra",
+        postalCode: "2710-609",
+        addressCountry: "PT",
       },
       "monserrate-palace": {
         "@type": "PostalAddress",
-        "streetAddress": "R. Visc. de Monserrate",
-        "addressLocality": "Sintra",
-        "postalCode": "2710-591",
-        "addressCountry": "PT"
+        streetAddress: "R. Visc. de Monserrate",
+        addressLocality: "Sintra",
+        postalCode: "2710-591",
+        addressCountry: "PT",
       },
       "sintra-palace": {
         "@type": "PostalAddress",
-        "streetAddress": "Largo Rainha Dona Amélia",
-        "addressLocality": "Sintra",
-        "postalCode": "2710-616",
-        "addressCountry": "PT"
+        streetAddress: "Largo Rainha Dona Amélia",
+        addressLocality: "Sintra",
+        postalCode: "2710-616",
+        addressCountry: "PT",
       },
       "convento-capuchos": {
         "@type": "PostalAddress",
-        "streetAddress": "Convento dos Capuchos",
-        "addressLocality": "Sintra",
-        "postalCode": "2710-405",
-        "addressCountry": "PT"
+        streetAddress: "Convento dos Capuchos",
+        addressLocality: "Sintra",
+        postalCode: "2710-405",
+        addressCountry: "PT",
       },
       "cabo-da-roca": {
         "@type": "PostalAddress",
-        "streetAddress": "Estrada do Cabo da Roca",
-        "addressLocality": "Colares",
-        "postalCode": "2705-001",
-        "addressCountry": "PT"
+        streetAddress: "Estrada do Cabo da Roca",
+        addressLocality: "Colares",
+        postalCode: "2705-001",
+        addressCountry: "PT",
       },
       "villa-sassetti": {
         "@type": "PostalAddress",
-        "streetAddress": "Estrada da Pena",
-        "addressLocality": "Sintra",
-        "postalCode": "2710-609",
-        "addressCountry": "PT"
-      }
+        streetAddress: "Estrada da Pena",
+        addressLocality: "Sintra",
+        postalCode: "2710-609",
+        addressCountry: "PT",
+      },
     };
-    
+
     const structuredData = {
       "@context": "https://schema.org",
       "@type": "TouristAttraction",
-      "name": attraction.name,
-      "description": attraction.longDescription || attraction.shortDescription,
-      "image": attraction.heroImage || attractionFallbackImages[attractionId] || "",
-      "address": attractionAddresses[attractionId] || {
+      name: attraction.name,
+      description:
+        attraction.longDescription ||
+        attraction.shortDescription,
+      image:
+        attraction.heroImage ||
+        attractionFallbackImages[attractionId] ||
+        "",
+      address: attractionAddresses[attractionId] || {
         "@type": "PostalAddress",
-        "addressLocality": "Sintra",
-        "addressCountry": "PT"
+        addressLocality: "Sintra",
+        addressCountry: "PT",
       },
-      "openingHoursSpecification": {
+      openingHoursSpecification: {
         "@type": "OpeningHoursSpecification",
-        "dayOfWeek": [
+        dayOfWeek: [
           "Monday",
-          "Tuesday", 
+          "Tuesday",
           "Wednesday",
           "Thursday",
           "Friday",
           "Saturday",
-          "Sunday"
+          "Sunday",
         ],
-        "opens": "09:00",
-        "closes": "19:00"
+        opens: "09:00",
+        closes: "19:00",
       },
-      "aggregateRating": {
+      aggregateRating: {
         "@type": "AggregateRating",
-        "ratingValue": "4.8",
-        "reviewCount": "250",
-        "bestRating": "5"
+        ratingValue: "4.8",
+        reviewCount: "250",
+        bestRating: "5",
       },
-      ...(attraction.price && { "priceRange": "€€" })
+      ...(attraction.price && { priceRange: "€€" }),
     };
 
     return structuredData;
@@ -550,7 +545,9 @@ export function AttractionDetailPage() {
                     >
                       <div className="flex items-start gap-3 sm:gap-4">
                         <Lightbulb className="mt-0.5 h-5 w-5 flex-shrink-0 text-accent" />
-                        <p className="text-base sm:text-lg text-foreground leading-relaxed">{tip}</p>
+                        <p className="text-base sm:text-lg text-foreground leading-relaxed">
+                          {tip}
+                        </p>
                       </div>
                     </motion.div>
                   ))}

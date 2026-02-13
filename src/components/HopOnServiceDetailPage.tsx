@@ -1,3 +1,10 @@
+import {
+  loadComprehensiveContentForLanguage,
+  DEFAULT_COMPREHENSIVE_CONTENT,
+  type ComprehensiveContent,
+} from "../lib/comprehensiveContent";
+import { useEditableContent } from "../lib/useEditableContent";
+
 import { useState, useEffect } from "react";
 import { useOutletContext, useNavigate } from "react-router";
 import { Helmet } from "react-helmet-async";
@@ -30,11 +37,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "./ui/accordion";
-import {
-  loadComprehensiveContentForLanguage,
-  DEFAULT_COMPREHENSIVE_CONTENT,
-  type ComprehensiveContent,
-} from "../lib/comprehensiveContent";
 
 // Custom arrow components for slider
 const PrevArrow = (props: any) => {
@@ -71,6 +73,9 @@ interface OutletContext {
 export function HopOnServiceDetailPage() {
   const { language = "en", onNavigate } = useOutletContext<OutletContext>();
   const navigate = useNavigate();
+
+  // Use the hook that auto-updates when content changes
+  const comprehensiveContent = useEditableContent(language);
 
   // Gallery images for the service
   const galleryImages = [
@@ -256,18 +261,6 @@ export function HopOnServiceDetailPage() {
       breadcrumb: breadcrumbSchema
     };
   };
-
-  // State to hold comprehensive content
-  const [comprehensiveContent, setComprehensiveContent] = useState<ComprehensiveContent>(DEFAULT_COMPREHENSIVE_CONTENT);
-
-  // Effect to load comprehensive content based on language
-  useEffect(() => {
-    const loadContent = async () => {
-      const content = await loadComprehensiveContentForLanguage(language);
-      setComprehensiveContent(content);
-    };
-    loadContent();
-  }, [language]);
 
   return (
     <div className="flex-1">

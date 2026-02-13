@@ -21,6 +21,7 @@ import {
   type ComprehensiveContent,
   DEFAULT_COMPREHENSIVE_CONTENT,
 } from "../lib/comprehensiveContent";
+import { useEditableContent } from "../lib/useEditableContent";
 import { getUITranslation } from "../lib/translations";
 import {
   searchArticles,
@@ -35,9 +36,10 @@ interface OutletContext {
 
 export function AttractionsPage() {
   const { language = "en", onNavigate } = useOutletContext<OutletContext>();
-  const [content, setContent] = useState<ComprehensiveContent>(
-    DEFAULT_COMPREHENSIVE_CONTENT,
-  );
+  
+  // Use the hook that auto-updates when content changes
+  const content = useEditableContent(language);
+  
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<
     BlogArticle[]
@@ -45,10 +47,6 @@ export function AttractionsPage() {
   const [showResults, setShowResults] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   const t = getUITranslation(language);
-
-  useEffect(() => {
-    setContent(loadComprehensiveContentForLanguage(language));
-  }, [language]);
 
   useEffect(() => {
     if (searchQuery.trim().length > 1) {
