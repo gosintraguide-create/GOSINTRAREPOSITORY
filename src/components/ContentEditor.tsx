@@ -390,6 +390,16 @@ export function ContentEditor() {
       
       for (let i = 0; i < path.length; i++) {
         current = current[path[i]];
+        if (!current) {
+          console.warn(`Path not found:`, path.slice(0, i + 1));
+          return prev;
+        }
+      }
+      
+      // Ensure the array exists and has the required index
+      if (!Array.isArray(current) || !current[index]) {
+        console.warn(`Array or index ${index} not found at path:`, path);
+        return prev;
       }
       
       current[index][field] = value;
@@ -404,8 +414,39 @@ export function ContentEditor() {
             const langContent = JSON.parse(JSON.stringify(prevByLang[lang.code] || prev));
             let current: any = langContent;
             
+            // Navigate to the array
             for (let i = 0; i < path.length; i++) {
+              if (!current[path[i]]) {
+                console.warn(`Path not found in language ${lang.code}:`, path.slice(0, i + 1));
+                // Use the existing language content as fallback
+                updatedAllLanguages[lang.code] = prevByLang[lang.code] || prev;
+                return;
+              }
               current = current[path[i]];
+            }
+            
+            // Ensure the array exists and has the required index
+            if (!Array.isArray(current)) {
+              console.warn(`Not an array in language ${lang.code} at path:`, path);
+              updatedAllLanguages[lang.code] = prevByLang[lang.code] || prev;
+              return;
+            }
+            
+            // If the index doesn't exist, initialize it from the current language's data
+            if (!current[index]) {
+              // Copy the structure from the current language (English)
+              let currentLangArray: any = prev;
+              for (let i = 0; i < path.length; i++) {
+                currentLangArray = currentLangArray[path[i]];
+              }
+              
+              if (currentLangArray && currentLangArray[index]) {
+                current[index] = JSON.parse(JSON.stringify(currentLangArray[index]));
+              } else {
+                console.warn(`Array index ${index} not found in language ${lang.code}`);
+                updatedAllLanguages[lang.code] = prevByLang[lang.code] || prev;
+                return;
+              }
             }
             
             current[index][field] = value;

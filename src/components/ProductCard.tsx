@@ -27,70 +27,16 @@ export function ProductCard({ onNavigate, basePrice, language = "en", productTyp
   const isPriceLoaded = basePrice > 0;
   const t = getComponentTranslation(language);
 
-  const defaultProductImages = {
-    daypass: [
-      {
-        src: "https://dwiznaefeqnduglmcivr.supabase.co/storage/v1/object/sign/make-3bd0ade8-images/1762977905581_pena-palace-3.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmFjMWMyYy1lNjZlLTQwYWEtYjcwNS1kNTcwYzA5NGZmYzMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtYWtlLTNiZDBhZGU4LWltYWdlcy8xNzYyOTc3OTA1NTgxX3BlbmEtcGFsYWNlLTMuanBnIiwiaWF0IjoxNzYyOTc3OTA1LCJleHAiOjIwNzgzMzc5MDV9.yMxtg8g3UvVUzf-xdAwUmGyjRATPWQwdvRlpIa8D7eY",
-        alt: "Colorful Pena Palace in Sintra",
-      },
-      {
-        src: "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=800&h=500&fit=crop",
-        alt: "Tuk Tuk exploring Sintra",
-      },
-      {
-        src: "https://images.unsplash.com/photo-1609137144813-7d9921338f24?w=800&h=500&fit=crop",
-        alt: "Quinta da Regaleira",
-      },
-      {
-        src: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&h=500&fit=crop",
-        alt: "Sintra Mountains view",
-      },
-    ],
-    "insight-tour": [
-      {
-        src: "https://images.unsplash.com/photo-1528127269322-539801943592?w=800&h=500&fit=crop",
-        alt: "Professional tour guide",
-      },
-      {
-        src: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&h=500&fit=crop",
-        alt: "Guided tour experience",
-      },
-      {
-        src: "https://images.unsplash.com/photo-1523874134873-4cd054343be4?w=800&h=500&fit=crop",
-        alt: "Historical storytelling",
-      },
-      {
-        src: "https://dwiznaefeqnduglmcivr.supabase.co/storage/v1/object/sign/make-3bd0ade8-images/1762977905581_pena-palace-3.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmFjMWMyYy1lNjZlLTQwYWEtYjcwNS1kNTcwYzA5NGZmYzMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtYWtlLTNiZDBhZGU4LWltYWdlcy8xNzYyOTc3OTA1NTgxX3BlbmEtcGFsYWNlLTMuanBnIiwiaWF0IjoxNzYyOTc3OTA1LCJleHAiOjIwNzgzMzc5MDV9.yMxtg8g3UvVUzf-xdAwUmGyjRATPWQwdvRlpIa8D7eY",
-        alt: "Pena Palace tour",
-      },
-    ],
-    monuments: [
-      {
-        src: "https://dwiznaefeqnduglmcivr.supabase.co/storage/v1/object/sign/make-3bd0ade8-images/1762977905581_pena-palace-3.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmFjMWMyYy1lNjZlLTQwYWEtYjcwNS1kNTcwYzA5NGZmYzMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtYWtlLTNiZDBhZGU4LWltYWdlcy8xNzYyOTc3OTA1NTgxX3BlbmEtcGFsYWNlLTMuanBnIiwiaWF0IjoxNzYyOTc3OTA1LCJleHAiOjIwNzgzMzc5MDV9.yMxtg8g3UvVUzf-xdAwUmGyjRATPWQwdvRlpIa8D7eY",
-        alt: "Pena Palace",
-      },
-      {
-        src: "https://images.unsplash.com/photo-1609137144813-7d9921338f24?w=800&h=500&fit=crop",
-        alt: "Quinta da Regaleira",
-      },
-      {
-        src: "https://images.unsplash.com/photo-1562979314-bee7453e911c?w=800&h=500&fit=crop",
-        alt: "Moorish Castle",
-      },
-      {
-        src: "https://images.unsplash.com/photo-1555881490-a0b9f8f4b6b5?w=800&h=500&fit=crop",
-        alt: "Monserrate Palace",
-      },
-    ],
-  };
-
-  const images = customImages || defaultProductImages[productType];
+  // Use only custom images from the Content Editor - no hardcoded defaults
+  const images = customImages || [];
 
   const nextImage = () => {
+    if (images.length === 0) return;
     setCurrentImageIndex((prev) => (prev + 1) % images.length);
   };
 
   const prevImage = () => {
+    if (images.length === 0) return;
     setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
   };
 
@@ -145,52 +91,60 @@ export function ProductCard({ onNavigate, basePrice, language = "en", productTyp
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        <div 
-          className="flex h-full transition-transform duration-500 ease-out w-full"
-          style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
-        >
-          {images.map((image, index) => (
-            <div key={index} className="min-w-full h-full flex-shrink-0 w-full">
-              <ImageWithFallback
-                src={image.src}
-                alt={image.alt}
-                className="h-full w-full object-cover"
-              />
+        {images.length === 0 ? (
+          <div className="flex items-center justify-center h-full bg-gray-200">
+            <p className="text-gray-500 text-sm">No images added</p>
+          </div>
+        ) : (
+          <>
+            <div 
+              className="flex h-full transition-transform duration-500 ease-out w-full"
+              style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
+            >
+              {images.map((image, index) => (
+                <div key={index} className="min-w-full h-full flex-shrink-0 w-full">
+                  <ImageWithFallback
+                    src={image.src}
+                    alt={image.alt}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
 
-        {/* Navigation Arrows - Desktop */}
-        <button
-          onClick={prevImage}
-          className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-1.5 shadow-lg transition-all opacity-0 group-hover:opacity-100 hidden sm:block"
-          aria-label="Previous image"
-        >
-          <ChevronLeft className="h-3.5 w-3.5 text-gray-800" />
-        </button>
-        <button
-          onClick={nextImage}
-          className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-1.5 shadow-lg transition-all opacity-0 group-hover:opacity-100 hidden sm:block"
-          aria-label="Next image"
-        >
-          <ChevronRight className="h-3.5 w-3.5 text-gray-800" />
-        </button>
-
-        {/* Dots Indicator */}
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
-          {images.map((_, index) => (
+            {/* Navigation Arrows - Desktop */}
             <button
-              key={index}
-              onClick={() => setCurrentImageIndex(index)}
-              className={`h-1.5 rounded-full transition-all ${
-                index === currentImageIndex
-                  ? "bg-white w-5"
-                  : "bg-white/60 w-1.5 hover:bg-white/80"
-              }`}
-              aria-label={`Go to image ${index + 1}`}
-            />
-          ))}
-        </div>
+              onClick={prevImage}
+              className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-1.5 shadow-lg transition-all opacity-0 group-hover:opacity-100 hidden sm:block"
+              aria-label="Previous image"
+            >
+              <ChevronLeft className="h-3.5 w-3.5 text-gray-800" />
+            </button>
+            <button
+              onClick={nextImage}
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-1.5 shadow-lg transition-all opacity-0 group-hover:opacity-100 hidden sm:block"
+              aria-label="Next image"
+            >
+              <ChevronRight className="h-3.5 w-3.5 text-gray-800" />
+            </button>
+
+            {/* Dots Indicator */}
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+              {images.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentImageIndex(index)}
+                  className={`h-1.5 rounded-full transition-all ${
+                    index === currentImageIndex
+                      ? "bg-white w-5"
+                      : "bg-white/60 w-1.5 hover:bg-white/80"
+                  }`}
+                  aria-label={`Go to image ${index + 1}`}
+                />
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Header */}

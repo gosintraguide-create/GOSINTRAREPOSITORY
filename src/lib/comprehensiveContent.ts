@@ -568,24 +568,7 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
     },
     productCards: {
       daypass: {
-        images: [
-          {
-            src: "https://dwiznaefeqnduglmcivr.supabase.co/storage/v1/object/sign/make-3bd0ade8-images/1762977905581_pena-palace-3.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmFjMWMyYy1lNjZlLTQwYWEtYjcwNS1kNTcwYzA5NGZmYzMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtYWtlLTNiZDBhZGU4LWltYWdlcy8xNzYyOTc3OTA1NTgxX3BlbmEtcGFsYWNlLTMuanBnIiwiaWF0IjoxNzYyOTc3OTA1LCJleHAiOjIwNzgzMzc5MDV9.yMxtg8g3UvVUzf-xdAwUmGyjRATPWQwdvRlpIa8D7eY",
-            alt: "Colorful Pena Palace in Sintra",
-          },
-          {
-            src: "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=800&h=500&fit=crop",
-            alt: "Tuk Tuk exploring Sintra",
-          },
-          {
-            src: "https://images.unsplash.com/photo-1609137144813-7d9921338f24?w=800&h=500&fit=crop",
-            alt: "Quinta da Regaleira",
-          },
-          {
-            src: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&h=500&fit=crop",
-            alt: "Sintra Mountains view",
-          },
-        ],
+        images: [],
         title: "Full Day Pass",
         description: "Unlimited rides across all Sintra attractions",
         features: [
@@ -599,48 +582,14 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
         buttonText: "Book Your Pass",
       },
       travelGuide: {
-        images: [
-          {
-            src: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&h=500&fit=crop",
-            alt: "Sintra travel guide",
-          },
-          {
-            src: "https://images.unsplash.com/photo-1488085061387-422e29b40080?w=800&h=500&fit=crop",
-            alt: "Travel planning",
-          },
-          {
-            src: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&h=500&fit=crop",
-            alt: "Local tips and guides",
-          },
-          {
-            src: "https://images.unsplash.com/photo-1455849318743-b2233052fcff?w=800&h=500&fit=crop",
-            alt: "Sintra exploration",
-          },
-        ],
+        images: [],
         title: "Sintra Travel Guide",
         description: "Expert tips, local insights, and hidden gems",
         content: "Discover the best of Sintra with our comprehensive travel guides. From the best time to visit each palace to secret viewpoints locals love, our blog shares insider knowledge to help you make the most of your Sintra adventure.",
         buttonText: "Read Travel Guides",
       },
       monuments: {
-        images: [
-          {
-            src: "https://dwiznaefeqnduglmcivr.supabase.co/storage/v1/object/sign/make-3bd0ade8-images/1762977905581_pena-palace-3.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmFjMWMyYy1lNjZlLTQwYWEtYjcwNS1kNTcwYzA5NGZmYzMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtYWtlLTNiZDBhZGU4LWltYWdlcy8xNzYyOTc3OTA1NTgxX3BlbmEtcGFsYWNlLTMuanBnIiwiaWF0IjoxNzYyOTc3OTA1LCJleHAiOjIwNzgzMzc5MDV9.yMxtg8g3UvVUzf-xdAwUmGyjRATPWQwdvRlpIa8D7eY",
-            alt: "Pena Palace",
-          },
-          {
-            src: "https://images.unsplash.com/photo-1609137144813-7d9921338f24?w=800&h=500&fit=crop",
-            alt: "Quinta da Regaleira",
-          },
-          {
-            src: "https://images.unsplash.com/photo-1562979314-bee7453e911c?w=800&h=500&fit=crop",
-            alt: "Moorish Castle",
-          },
-          {
-            src: "https://images.unsplash.com/photo-1555881490-a0b9f8f4b6b5?w=800&h=500&fit=crop",
-            alt: "Monserrate Palace",
-          },
-        ],
+        images: [],
         title: "Sintra's Top Attractions",
         description: "Explore UNESCO World Heritage monuments",
         content: "Sintra is home to some of Portugal's most spectacular palaces and gardens. From the colorful Pena Palace perched atop the hills to the mystical Quinta da Regaleira with its enchanting gardens, each monument tells a unique story.",

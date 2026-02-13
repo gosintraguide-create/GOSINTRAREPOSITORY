@@ -22,46 +22,8 @@ export function InfoCard({ onNavigate, language = "en", cardType, customImages, 
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
 
-  const defaultCardImages = {
-    "travel-guide": [
-      {
-        src: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&h=500&fit=crop",
-        alt: "Sintra travel guide",
-      },
-      {
-        src: "https://images.unsplash.com/photo-1488085061387-422e29b40080?w=800&h=500&fit=crop",
-        alt: "Travel planning",
-      },
-      {
-        src: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&h=500&fit=crop",
-        alt: "Local tips and guides",
-      },
-      {
-        src: "https://images.unsplash.com/photo-1455849318743-b2233052fcff?w=800&h=500&fit=crop",
-        alt: "Sintra exploration",
-      },
-    ],
-    monuments: [
-      {
-        src: "https://dwiznaefeqnduglmcivr.supabase.co/storage/v1/object/sign/make-3bd0ade8-images/1762977905581_pena-palace-3.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmFjMWMyYy1lNjZlLTQwYWEtYjcwNS1kNTcwYzA5NGZmYzMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtYWtlLTNiZDBhZGU4LWltYWdlcy8xNzYyOTc3OTA1NTgxX3BlbmEtcGFsYWNlLTMuanBnIiwiaWF0IjoxNzYyOTc3OTA1LCJleHAiOjIwNzgzMzc5MDV9.yMxtg8g3UvVUzf-xdAwUmGyjRATPWQwdvRlpIa8D7eY",
-        alt: "Pena Palace",
-      },
-      {
-        src: "https://images.unsplash.com/photo-1609137144813-7d9921338f24?w=800&h=500&fit=crop",
-        alt: "Quinta da Regaleira",
-      },
-      {
-        src: "https://images.unsplash.com/photo-1562979314-bee7453e911c?w=800&h=500&fit=crop",
-        alt: "Moorish Castle",
-      },
-      {
-        src: "https://images.unsplash.com/photo-1555881490-a0b9f8f4b6b5?w=800&h=500&fit=crop",
-        alt: "Monserrate Palace",
-      },
-    ],
-  };
-
-  const images = customImages || defaultCardImages[cardType];
+  // Use only custom images from the Content Editor - no hardcoded defaults
+  const images = customImages || [];
 
   const translations = {
     en: {
@@ -174,10 +136,12 @@ export function InfoCard({ onNavigate, language = "en", cardType, customImages, 
   } : defaultContent;
 
   const nextImage = () => {
+    if (images.length === 0) return;
     setCurrentImageIndex((prev) => (prev + 1) % images.length);
   };
 
   const prevImage = () => {
+    if (images.length === 0) return;
     setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
   };
 

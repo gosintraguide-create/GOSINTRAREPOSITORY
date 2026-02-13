@@ -222,7 +222,24 @@ export function ProductCardEditor({
 
               {/* Images Section */}
               <div className="space-y-4 rounded-lg border border-border bg-secondary/20 p-4">
-                <h4 className="text-foreground">Carousel Images</h4>
+                <div className="flex items-center justify-between">
+                  <h4 className="text-foreground">Carousel Images</h4>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => {
+                      if (confirm('Are you sure you want to clear all images for this card?')) {
+                        updateContent(
+                          ["homepage", "productCards", editingCard, "images"],
+                          []
+                        );
+                      }
+                    }}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Clear All Images
+                  </Button>
+                </div>
                 <p className="text-sm text-muted-foreground">
                   Add or edit images for the carousel
                 </p>
