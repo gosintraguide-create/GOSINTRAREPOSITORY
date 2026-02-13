@@ -228,14 +228,26 @@ export function ProductCard({ onNavigate, basePrice, language = "en", productTyp
             </div>
           )}
 
+          {/* Learn More Link - Only for daypass */}
+          {productType === "daypass" && (
+            <Button
+              onClick={() => onNavigate("hop-on-service")}
+              className="h-11 w-full bg-accent text-white hover:bg-accent/90 shadow-md text-sm mb-2"
+              size="lg"
+            >
+              Learn more about the service
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          )}
+
           {/* Book Now Button */}
           <Button
             onClick={() => onNavigate("buy-ticket")}
-            className="h-11 w-full bg-accent text-white hover:bg-accent/90 shadow-md text-sm"
-            size="lg"
+            variant="outline"
+            className="h-10 w-full text-sm border-primary text-primary hover:bg-primary/5"
+            size="default"
           >
             {content.bookNow}
-            <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </div>
       </div>

@@ -119,6 +119,7 @@ export const pt: WebsiteContent = {
     },
   },
   header: {
+    hopOnService: "Hop On Hop Off",
     privateTours: "Tours Privados",
     travelGuide: "Guia de Viagem",
   },

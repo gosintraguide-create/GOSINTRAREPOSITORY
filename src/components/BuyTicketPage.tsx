@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useOutletContext, useLocation } from "react-router";
 import { toast } from "sonner@2.0.3";
 import { createBooking, createPaymentIntent } from "../lib/api";
 import {
@@ -54,10 +55,9 @@ import { format } from "date-fns";
 import { StripePaymentForm } from "./StripePaymentForm";
 import { PickupLocationMap } from "./PickupLocationMap";
 
-interface BuyTicketPageProps {
-  onNavigate: (page: string) => void;
-  onBookingComplete: (booking: any) => void;
+interface OutletContext {
   language: string;
+  onNavigate: (page: string, data?: any) => void;
 }
 
 interface PricingSettings {
@@ -119,13 +119,17 @@ const TIME_SLOTS = [
   { value: "16:00", label: "4:00 PM" },
 ];
 
-export function BuyTicketPage({
-  onNavigate,
-  onBookingComplete,
-  language,
-}: BuyTicketPageProps) {
+export function BuyTicketPage() {
+  const { language = "en", onNavigate } = useOutletContext<OutletContext>();
+  const location = useLocation();
   const t = getTranslation(language);
   const ct = getComponentTranslation(language);
+  
+  // Handle booking complete callback
+  const onBookingComplete = (booking: any) => {
+    // Store booking in session storage for potential future confirmation page
+    sessionStorage.setItem("lastBooking", JSON.stringify(booking));
+  };
 
   const PICKUP_LOCATIONS = [
     {

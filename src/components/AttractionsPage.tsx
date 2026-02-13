@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useOutletContext } from "react-router";
 import {
   Star,
   Clock,
@@ -27,15 +28,13 @@ import {
 } from "../lib/blogManager";
 import { motion } from "motion/react";
 
-interface AttractionsPageProps {
+interface OutletContext {
+  language: string;
   onNavigate: (page: string, data?: any) => void;
-  language?: string;
 }
 
-export function AttractionsPage({
-  onNavigate,
-  language = "en",
-}: AttractionsPageProps) {
+export function AttractionsPage() {
+  const { language = "en", onNavigate } = useOutletContext<OutletContext>();
   const [content, setContent] = useState<ComprehensiveContent>(
     DEFAULT_COMPREHENSIVE_CONTENT,
   );
@@ -217,7 +216,7 @@ export function AttractionsPage({
               <Card
                 key={attraction.id}
                 className="group h-full cursor-pointer overflow-hidden border bg-white shadow-md transition-all hover:shadow-xl"
-                onClick={() => onNavigate(attraction.id)}
+                onClick={() => onNavigate("attraction-detail", { slug: attraction.id })}
               >
                 {/* Image - Larger, more prominent */}
                 <div className="relative aspect-[16/10] overflow-hidden">

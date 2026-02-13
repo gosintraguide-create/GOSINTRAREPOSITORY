@@ -21,22 +21,79 @@ import {
 import { getPublishedArticles } from "../lib/blogManager";
 import { SEOAnalyzer } from "./SEOAnalyzer";
 import { useState, useEffect } from "react";
+import {
+  projectId,
+  publicAnonKey,
+} from "../utils/supabase/info";
 
 export function SEOTools() {
-  const [sitemapUrl, setSitemapUrl] = useState('https://www.hoponsintra.com/sitemap.xml');
-  const [robotsUrl, setRobotsUrl] = useState('https://www.hoponsintra.com/robots.txt');
+  const [sitemapUrl, setSitemapUrl] = useState(
+    "https://www.hoponsintra.com/sitemap.xml",
+  );
+  const [robotsUrl, setRobotsUrl] = useState(
+    "https://www.hoponsintra.com/robots.txt",
+  );
+  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const baseUrl = `${window.location.protocol}//${window.location.host}`;
       setSitemapUrl(`${baseUrl}/sitemap.xml`);
       setRobotsUrl(`${baseUrl}/robots.txt`);
     }
+
+    // Calculate total pages dynamically
+    calculateTotalPages();
   }, []);
 
-  const handleDownloadSitemap = () => {
-    downloadSitemap();
-    toast.success("Sitemap downloaded successfully!");
+  const calculateTotalPages = async () => {
+    const publishedArticles = getPublishedArticles();
+    const staticPages = 11; // Home, attractions, buy-ticket, about, blog, private-tours, sunset-special, request-pickup, manage-booking, privacy, terms
+    const attractionPages = 8; // 8 attractions
+
+    // Fetch private tours count
+    let privateToursCount = 0;
+    try {
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/private-tours`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${publicAnonKey}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        privateToursCount = (data.tours || []).filter(
+          (tour: any) => tour.published,
+        ).length;
+      }
+    } catch (error) {
+      console.error(
+        "Error fetching private tours count:",
+        error,
+      );
+    }
+
+    setTotalPages(
+      staticPages +
+        attractionPages +
+        publishedArticles.length +
+        privateToursCount,
+    );
+  };
+
+  const handleDownloadSitemap = async () => {
+    try {
+      await downloadSitemap();
+      toast.success("Sitemap downloaded successfully!");
+    } catch (error) {
+      console.error("Error downloading sitemap:", error);
+      toast.error("Failed to download sitemap");
+    }
   };
 
   const handleDownloadRobotsTxt = () => {
@@ -44,22 +101,21 @@ export function SEOTools() {
     toast.success("robots.txt downloaded successfully!");
   };
 
-  const handleCopySitemap = () => {
-    const xml = generateSitemap();
-    
-    // Try modern Clipboard API first
-    if (navigator.clipboard && window.isSecureContext) {
-      navigator.clipboard.writeText(xml)
-        .then(() => {
-          toast.success("Sitemap XML copied to clipboard!");
-        })
-        .catch(() => {
-          // Fallback to older method
-          fallbackCopyText(xml);
-        });
-    } else {
-      // Use fallback for non-secure contexts
-      fallbackCopyText(xml);
+  const handleCopySitemap = async () => {
+    try {
+      const xml = await generateSitemap();
+
+      // Try modern Clipboard API first
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(xml);
+        toast.success("Sitemap XML copied to clipboard!");
+      } else {
+        // Use fallback for non-secure contexts
+        fallbackCopyText(xml);
+      }
+    } catch (error) {
+      console.error("Error copying sitemap:", error);
+      toast.error("Failed to copy sitemap");
     }
   };
 
@@ -147,9 +203,7 @@ export function SEOTools() {
                 <Globe className="h-6 w-6 text-green-600" />
               </div>
               <div>
-                <p className="text-2xl">
-                  {5 + publishedArticles.length + 7}
-                </p>
+                <p className="text-2xl">{totalPages}</p>
                 <p className="text-sm text-muted-foreground">
                   Pages in Sitemap
                 </p>

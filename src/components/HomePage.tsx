@@ -3,6 +3,7 @@ import { RouteOverview } from "./RouteOverview";
 import { ProductCard } from "./ProductCard";
 import { HeroSection } from "./HeroSectionNew";
 import { useState, useEffect } from "react";
+import { useOutletContext } from "react-router";
 import {
   loadContentWithLanguage,
   type WebsiteContent,
@@ -41,17 +42,14 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
-interface HomePageProps {
-  onNavigate: (page: string) => void;
-  language?: string;
-  websiteContent?: WebsiteContent;
+interface OutletContext {
+  language: string;
+  onNavigate: (page: string, data?: any) => void;
 }
 
-export function HomePage({
-  onNavigate,
-  language = "en",
-  websiteContent,
-}: HomePageProps) {
+export function HomePage() {
+  const { language = "en", onNavigate } = useOutletContext<OutletContext>();
+
   // Check feature flags
   const [sunsetSpecialEnabled, setSunsetSpecialEnabled] = useState(true);
 
@@ -162,22 +160,8 @@ export function HomePage({
 
     loadPricingFromDB();
 
-    // Update legacy content when language or websiteContent changes
-    if (websiteContent) {
-      setLegacyContent(websiteContent);
-    } else {
-      setLegacyContent(loadContentWithLanguage(language));
-    }
-  }, [language, websiteContent]);
-
-  // Listen for content updates from admin panel
-  useEffect(() => {
-    const handleContentUpdate = () => {
-      setLegacyContent(loadContentWithLanguage(language));
-    };
-
-    window.addEventListener('content-updated', handleContentUpdate);
-    return () => window.removeEventListener('content-updated', handleContentUpdate);
+    // Update legacy content when language changes
+    setLegacyContent(loadContentWithLanguage(language));
   }, [language]);
 
   // Listen for PWA install prompt

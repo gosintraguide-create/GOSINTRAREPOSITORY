@@ -1581,6 +1581,47 @@ app.post("/make-server-3bd0ade8/blog-categories", async (c) => {
   }
 });
 
+// Get monuments
+app.get("/make-server-3bd0ade8/monuments", async (c) => {
+  try {
+    console.log("🏛️ Fetching monuments from database...");
+    const monuments = await kv.get("monuments");
+
+    if (monuments) {
+      console.log(`✅ Found ${monuments.length || 0} monuments in database`);
+      return c.json({ success: true, monuments });
+    } else {
+      console.log("⚠️ No monuments found in database");
+      return c.json({ success: true, monuments: [] });
+    }
+  } catch (error) {
+    console.error("❌ Error fetching monuments:", error);
+    return c.json(
+      { success: false, error: "Failed to fetch monuments" },
+      500
+    );
+  }
+});
+
+// Save monuments
+app.post("/make-server-3bd0ade8/monuments", async (c) => {
+  try {
+    const body = await c.req.json();
+    console.log(`📝 Saving ${body.monuments?.length || 0} monuments to database...`);
+
+    await kv.set("monuments", body.monuments);
+    console.log("✅ Monuments saved successfully");
+
+    return c.json({ success: true });
+  } catch (error) {
+    console.error("❌ Error saving monuments:", error);
+    return c.json(
+      { success: false, error: "Failed to save monuments" },
+      500
+    );
+  }
+});
+
 // Get comprehensive website content
 app.get(
   "/make-server-3bd0ade8/comprehensive-content",
@@ -3279,6 +3320,35 @@ app.get(
   },
 );
 
+// Get check-in status for a passenger (analytics endpoint)
+// This endpoint accepts bookingId_passengerIndex format (e.g., "AB-1234_0")
+app.get(
+  "/make-server-3bd0ade8/checkin-status/:fullId",
+  async (c) => {
+    try {
+      const fullId = c.req.param("fullId");
+
+      // The fullId is in format "bookingId_passengerIndex"
+      const checkInsKey = `checkins_${fullId}`;
+      const checkIns = (await kv.get(checkInsKey)) || [];
+
+      return c.json({
+        success: true,
+        checkIns: checkIns,
+      });
+    } catch (error) {
+      console.error("Error fetching check-in status:", error);
+      return c.json(
+        {
+          success: false,
+          message: "Failed to fetch check-in status",
+        },
+        500,
+      );
+    }
+  },
+);
+
 // Get destination statistics for today
 app.get("/make-server-3bd0ade8/destinations/stats", async (c) => {
   try {
@@ -3586,6 +3656,23 @@ app.post("/make-server-3bd0ade8/chat/start", async (c) => {
       console.log(
         `💬 Resuming existing chat conversation: ${existingConversation.id} for ${customerEmail}`
       );
+      
+      // Update conversation with latest name and ensure 'name' field exists
+      const updatedConversation = {
+        ...existingConversation,
+        customerName,
+        customerEmail,
+        name: customerName, // Ensure 'name' field exists for frontend
+        email: customerEmail, // Ensure 'email' field exists for frontend
+        archived: existingConversation.archived || false,
+      };
+      
+      // Save updated conversation
+      await kv.set(
+        `chat_conversation_${existingConversation.id}`,
+        updatedConversation,
+      );
+      
       return c.json({
         success: true,
         conversationId: existingConversation.id,
@@ -3601,8 +3688,11 @@ app.post("/make-server-3bd0ade8/chat/start", async (c) => {
       id: conversationId,
       customerName,
       customerEmail,
+      name: customerName, // Add 'name' field for frontend compatibility
+      email: customerEmail, // Add 'email' field for frontend compatibility
       status: "open", // open, closed
       unreadByAdmin: 0,
+      archived: false, // Add archived field
       createdAt: new Date().toISOString(),
       lastMessageAt: new Date().toISOString(),
     };
@@ -3759,7 +3849,16 @@ app.get(
       }
 
       const conversations = data
-        ? data.map((entry: any) => entry.value)
+        ? data.map((entry: any) => {
+            // Ensure backward compatibility by adding 'name' and 'email' fields if missing
+            const conv = entry.value;
+            return {
+              ...conv,
+              name: conv.name || conv.customerName || "Anonymous",
+              email: conv.email || conv.customerEmail || "",
+              archived: conv.archived || false,
+            };
+          })
         : [];
 
       // Sort by last message time (most recent first)
@@ -3918,6 +4017,65 @@ app.post(
         {
           success: false,
           error: "Failed to unarchive conversation",
+        },
+        500,
+      );
+    }
+  },
+);
+
+// Migration endpoint to fix existing conversations with missing 'name' field
+app.post(
+  "/make-server-3bd0ade8/chat/migrate-conversations",
+  async (c) => {
+    try {
+      console.log('🔧 Starting conversation migration...');
+      
+      // Get all conversations
+      const { data, error } = await supabase
+        .from("kv_store_3bd0ade8")
+        .select("key, value")
+        .like("key", "chat_conversation_%");
+
+      if (error) {
+        throw error;
+      }
+
+      let updatedCount = 0;
+      const conversations = data || [];
+
+      for (const entry of conversations) {
+        const conv = entry.value;
+        
+        // Check if 'name' field is missing or if it's set to "Anonymous"
+        if (!conv.name || conv.name === "Anonymous") {
+          const updatedConv = {
+            ...conv,
+            name: conv.customerName || "Anonymous",
+            email: conv.customerEmail || "",
+            archived: conv.archived || false,
+          };
+          
+          await kv.set(entry.key, updatedConv);
+          updatedCount++;
+          console.log(`✅ Updated conversation ${conv.id}: ${conv.customerName || 'Anonymous'}`);
+        }
+      }
+
+      console.log(`🎉 Migration complete! Updated ${updatedCount} conversations.`);
+
+      return c.json({
+        success: true,
+        message: `Migration complete. Updated ${updatedCount} conversations.`,
+        totalConversations: conversations.length,
+        updatedCount,
+      });
+    } catch (error) {
+      console.error("Error migrating conversations:", error);
+      return c.json(
+        {
+          success: false,
+          error: "Failed to migrate conversations",
         },
         500,
       );
@@ -6729,6 +6887,34 @@ app.post("/make-server-3bd0ade8/tour-requests/:requestId/notes", async (c) => {
       500
     );
   }
+});
+
+// Catch-all 404 handler - MUST return JSON to prevent "Unexpected token '<'" errors
+app.notFound((c) => {
+  const path = c.req.path;
+  console.warn(`⚠️ 404 Not Found: ${path}`);
+  return c.json(
+    {
+      success: false,
+      error: "Endpoint not found",
+      path: path,
+      message: `The requested endpoint ${path} does not exist. Please check the API documentation.`,
+    },
+    404
+  );
+});
+
+// Error handler - ensures all errors return JSON
+app.onError((err, c) => {
+  console.error('❌ Server error:', err);
+  return c.json(
+    {
+      success: false,
+      error: "Internal server error",
+      message: err.message,
+    },
+    500
+  );
 });
 
 Deno.serve(app.fetch);

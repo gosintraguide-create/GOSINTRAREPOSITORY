@@ -18,8 +18,9 @@ export function ImageManager() {
   const [images, setImages] = useState<UploadedImage[]>([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string>("");
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [uploadProgress, setUploadProgress] = useState<{ current: number; total: number } | null>(null);
 
   useEffect(() => {
     loadImages();
@@ -54,77 +55,111 @@ export function ImageManager() {
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // Validate file type
-      if (!file.type.startsWith("image/")) {
-        toast.error("Please select an image file");
-        return;
+    const files = e.target.files;
+    if (files) {
+      const validFiles: File[] = [];
+      const urls: string[] = [];
+
+      for (const file of files) {
+        // Validate file type
+        if (!file.type.startsWith("image/")) {
+          toast.error("Please select an image file");
+          return;
+        }
+
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          toast.error("Image must be smaller than 5MB");
+          return;
+        }
+
+        validFiles.push(file);
+        // Create preview URL
+        const url = URL.createObjectURL(file);
+        urls.push(url);
       }
 
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error("Image must be smaller than 5MB");
-        return;
-      }
-
-      setSelectedFile(file);
-      // Create preview URL
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
+      setSelectedFiles(validFiles);
+      setPreviewUrls(urls);
     }
   };
 
   const handleUpload = async () => {
-    if (!selectedFile) return;
+    if (!selectedFiles.length) return;
 
     setUploading(true);
+    setUploadProgress({ current: 0, total: selectedFiles.length });
+
     try {
-      // Convert file to base64
-      const reader = new FileReader();
-      reader.readAsDataURL(selectedFile);
-      
-      reader.onload = async () => {
-        const base64 = reader.result as string;
+      let successCount = 0;
+      let failCount = 0;
+
+      // Upload all files sequentially to show progress
+      for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i];
         
-        const response = await fetch(
-          `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/images/upload`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${publicAnonKey}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              fileName: selectedFile.name,
-              fileData: base64,
-              fileType: selectedFile.type,
-            }),
+        try {
+          // Convert file to base64
+          const base64 = await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = reject;
+          });
+          
+          const response = await fetch(
+            `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/images/upload`,
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${publicAnonKey}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                fileName: file.name,
+                fileData: base64,
+                fileType: file.type,
+              }),
+            }
+          );
+
+          const result = await response.json();
+          if (result.success) {
+            successCount++;
+            setUploadProgress({ current: i + 1, total: selectedFiles.length });
+          } else {
+            failCount++;
+            console.error(`Failed to upload ${file.name}:`, result.error);
           }
-        );
-
-        const result = await response.json();
-        if (result.success) {
-          toast.success("Image uploaded successfully!");
-          setSelectedFile(null);
-          setPreviewUrl("");
-          // Reset file input
-          const fileInput = document.getElementById("image-upload") as HTMLInputElement;
-          if (fileInput) fileInput.value = "";
-          // Reload images
-          loadImages();
-        } else {
-          toast.error(`Upload failed: ${result.error}`);
+        } catch (error) {
+          failCount++;
+          console.error(`Error uploading ${file.name}:`, error);
         }
-      };
+      }
 
-      reader.onerror = () => {
-        toast.error("Failed to read file");
-        setUploading(false);
-      };
+      // Show summary message
+      if (successCount > 0 && failCount === 0) {
+        toast.success(`Successfully uploaded ${successCount} image${successCount > 1 ? 's' : ''}!`);
+      } else if (successCount > 0 && failCount > 0) {
+        toast.warning(`Uploaded ${successCount} image${successCount > 1 ? 's' : ''}, ${failCount} failed`);
+      } else {
+        toast.error("All uploads failed");
+      }
+
+      // Reset state
+      setSelectedFiles([]);
+      setPreviewUrls([]);
+      setUploadProgress(null);
+      
+      // Reset file input
+      const fileInput = document.getElementById("image-upload") as HTMLInputElement;
+      if (fileInput) fileInput.value = "";
+      
+      // Reload images
+      await loadImages();
     } catch (error) {
-      console.error("Error uploading image:", error);
-      toast.error("Failed to upload image");
+      console.error("Error uploading images:", error);
+      toast.error("Failed to upload images");
     } finally {
       setUploading(false);
     }
@@ -218,50 +253,77 @@ export function ImageManager() {
 
         <div className="space-y-4">
           <div>
-            <Label htmlFor="image-upload">Select Image</Label>
+            <Label htmlFor="image-upload">Select Images (Multiple)</Label>
             <Input
               id="image-upload"
               type="file"
               accept="image/*"
               onChange={handleFileSelect}
               className="mt-2"
+              multiple
             />
+            <p className="mt-1 text-xs text-muted-foreground">
+              You can select multiple images at once. Hold Ctrl/Cmd to select multiple files.
+            </p>
           </div>
 
-          {previewUrl && (
+          {previewUrls.length > 0 && (
             <div className="rounded-lg border border-border p-4">
-              <p className="mb-2 text-sm text-muted-foreground">Preview:</p>
-              <div className="flex items-start gap-4">
-                <img
-                  src={previewUrl}
-                  alt="Preview"
-                  className="max-h-48 rounded-lg border border-border object-contain"
+              <p className="mb-3 text-sm font-medium">
+                Selected Images ({selectedFiles.length})
+              </p>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {previewUrls.map((url, index) => (
+                  <div key={index} className="relative overflow-hidden rounded-lg border border-border bg-white p-3">
+                    <img
+                      src={url}
+                      alt={`Preview ${index + 1}`}
+                      className="aspect-video w-full rounded object-cover"
+                    />
+                    <div className="mt-2 space-y-1 text-xs">
+                      <p className="truncate font-medium" title={selectedFiles[index]?.name}>
+                        {selectedFiles[index]?.name}
+                      </p>
+                      <p className="text-muted-foreground">
+                        {selectedFiles[index] && formatFileSize(selectedFiles[index].size)}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {uploadProgress && (
+            <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+              <div className="mb-2 flex items-center justify-between text-sm">
+                <span className="font-medium">Uploading images...</span>
+                <span className="text-muted-foreground">
+                  {uploadProgress.current} / {uploadProgress.total}
+                </span>
+              </div>
+              <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
+                <div
+                  className="h-full bg-primary transition-all duration-300"
+                  style={{
+                    width: `${(uploadProgress.current / uploadProgress.total) * 100}%`,
+                  }}
                 />
-                <div className="flex-1 space-y-2 text-sm">
-                  <p>
-                    <span className="text-muted-foreground">Name:</span>{" "}
-                    {selectedFile?.name}
-                  </p>
-                  <p>
-                    <span className="text-muted-foreground">Size:</span>{" "}
-                    {selectedFile && formatFileSize(selectedFile.size)}
-                  </p>
-                  <p>
-                    <span className="text-muted-foreground">Type:</span>{" "}
-                    {selectedFile?.type}
-                  </p>
-                </div>
               </div>
             </div>
           )}
 
           <Button
             onClick={handleUpload}
-            disabled={!selectedFile || uploading}
+            disabled={!selectedFiles.length || uploading}
             className="bg-primary hover:bg-primary/90"
           >
             <Upload className="mr-2 h-4 w-4" />
-            {uploading ? "Uploading..." : "Upload Image"}
+            {uploading 
+              ? `Uploading ${uploadProgress?.current || 0} of ${selectedFiles.length}...` 
+              : selectedFiles.length > 0
+              ? `Upload ${selectedFiles.length} Image${selectedFiles.length > 1 ? 's' : ''}`
+              : "Upload Images"}
           </Button>
         </div>
       </Card>

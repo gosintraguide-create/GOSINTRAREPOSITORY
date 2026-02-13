@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useOutletContext } from "react-router";
 import {
   Search,
   Clock,
@@ -33,15 +34,13 @@ import { motion } from "motion/react";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
 import { SmallSpinner } from "./LoadingIndicator";
 
-interface BlogPageProps {
-  onNavigate: (page: string, data?: any) => void;
+interface OutletContext {
   language: string;
+  onNavigate: (page: string, data?: any) => void;
 }
 
-export function BlogPage({
-  onNavigate,
-  language,
-}: BlogPageProps) {
+export function BlogPage() {
+  const { language = "en", onNavigate } = useOutletContext<OutletContext>();
   const content = loadContentWithLanguage(language);
   const [articles, setArticles] = useState<BlogArticle[]>([]);
   const [categories, setCategories] = useState<BlogCategory[]>(

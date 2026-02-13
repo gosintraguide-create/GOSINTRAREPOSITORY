@@ -119,6 +119,7 @@ export const en: WebsiteContent = {
     },
   },
   header: {
+    hopOnService: "Hop On Hop Off",
     privateTours: "Private Tours",
     travelGuide: "Travel Guide",
   },

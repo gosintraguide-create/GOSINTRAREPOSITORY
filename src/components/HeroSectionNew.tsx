@@ -94,7 +94,7 @@ export function HeroSection({
                   <div className="flex flex-col items-center gap-4">
                     <Button
                       size="lg"
-                      className="h-14 w-full max-w-sm bg-accent px-10 text-lg shadow-2xl hover:scale-105 hover:bg-accent/90"
+                      className="h-14 w-full max-w-sm border-2 border-white/90 bg-accent px-10 text-lg shadow-2xl hover:scale-105 hover:bg-accent/90"
                       onClick={() => onNavigate("buy-ticket")}
                     >
                       {heroCtaButton}

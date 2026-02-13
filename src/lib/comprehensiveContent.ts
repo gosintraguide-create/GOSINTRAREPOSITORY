@@ -353,6 +353,37 @@ export interface ComprehensiveContent {
     };
   };
 
+  // Hop On Service Detail Page
+  hopOnService: {
+    hero: {
+      title: string;
+      subtitle: string;
+      badges: Array<{ icon: string; text: string }>;
+    };
+    description: {
+      mainTitle: string;
+      paragraphs: string[];
+    };
+    features: Array<{
+      title: string;
+      description: string;
+      icon: string;
+    }>;
+    faq: Array<{
+      question: string;
+      answer: string;
+    }>;
+    cta: {
+      mobileTitle: string;
+      mobileDescription: string;
+      desktopTitle: string;
+      desktopDescription: string;
+      bookButton: string;
+      whyChooseTitle: string;
+      whyChooseItems: Array<string>;
+    };
+  };
+
   // Operations Page (Driver Portal)
   operations: {
     hero: {
@@ -489,6 +520,7 @@ export interface ComprehensiveContent {
     attractions: { title: string; description: string; keywords: string };
     buyTicket: { title: string; description: string; keywords: string };
     about: { title: string; description: string; keywords: string };
+    hopOnService: { title: string; description: string; keywords: string };
     manageBooking: { title: string; description: string; keywords: string };
     requestPickup: { title: string; description: string; keywords: string };
   };
@@ -1335,6 +1367,104 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
     },
   },
 
+  hopOnService: {
+    hero: {
+      title: "Hop On Sintra Day Pass",
+      subtitle: "Unlimited hop-on/hop-off access to all of Sintra's top attractions with guaranteed seating",
+      badges: [
+        { icon: "Bus", text: "Unlimited Rides" },
+        { icon: "Clock", text: "9am - 7pm Daily" },
+      ],
+    },
+    description: {
+      mainTitle: "Your Ticket to Explore Sintra",
+      paragraphs: [
+        "The Hop On Sintra day pass is your key to discovering one of Portugal's most enchanting destinations. With unlimited rides throughout the day, you have the freedom to explore Sintra's magnificent palaces, historic castles, and breathtaking viewpoints at your own pace.",
+        "No fixed schedules, no rushing between attractions. Simply show your pass at any of our designated stops and hop aboard one of our comfortable tuk-tuks or UMM jeeps. Our professional drivers know Sintra's winding roads like the back of their hand, ensuring safe and efficient transportation while you sit back and enjoy the scenery.",
+      ],
+    },
+    features: [
+      {
+        title: "Unlimited Rides",
+        description: "Hop on and off as many times as you want throughout the day",
+        icon: "Bus",
+      },
+      {
+        title: "9am to 7pm Service",
+        description: "Full day access from morning to evening",
+        icon: "Clock",
+      },
+      {
+        title: "Guaranteed Seating",
+        description: "Reserved seats in tuk-tuks and UMM jeeps",
+        icon: "Users",
+      },
+      {
+        title: "All Major Attractions",
+        description: "Access to Pena Palace, Quinta da Regaleira, and more",
+        icon: "MapPin",
+      },
+      {
+        title: "Professional Drivers",
+        description: "Safe and comfortable transportation",
+        icon: "Shield",
+      },
+      {
+        title: "Skip the Wait",
+        description: "No need to worry about parking or public transport schedules",
+        icon: "Zap",
+      },
+    ],
+    faq: [
+      {
+        question: "How does the day pass work?",
+        answer: "Your day pass gives you unlimited access to our hop-on/hop-off service from 9am to 7pm. Simply show your pass to board any of our vehicles at designated stops throughout Sintra. You can get on and off as many times as you like to explore the attractions at your own pace.",
+      },
+      {
+        question: "What vehicles do you use?",
+        answer: "We operate a fleet of tuk-tuks and UMM jeeps, all equipped with comfortable seating. Our vehicles are perfect for navigating Sintra's narrow, winding roads and provide an authentic Portuguese experience.",
+      },
+      {
+        question: "Where can I board the service?",
+        answer: "We have multiple pickup points throughout Sintra, including the train station, town center, and near major attractions. Check our route map for all stop locations and schedules.",
+      },
+      {
+        question: "Is the pass valid for multiple days?",
+        answer: "Each pass is valid for one full day of service. If you need transportation for multiple days, you can purchase additional day passes at the time of booking or separately.",
+      },
+      {
+        question: "Can I bring luggage?",
+        answer: "Small bags and backpacks are fine, but large luggage may not fit comfortably in our vehicles. If you have significant luggage, please contact us in advance to discuss your options.",
+      },
+      {
+        question: "Do you offer group discounts?",
+        answer: "Yes! When booking multiple passes (for groups), you'll benefit from our group pricing. Children aged 7-12 also receive reduced pricing.",
+      },
+      {
+        question: "What if I miss a ride?",
+        answer: "No problem! Our service runs continuously throughout the day with regular intervals. Just wait at any designated stop and the next vehicle will pick you up. Your pass is valid all day, so there's no rush.",
+      },
+      {
+        question: "Are attraction tickets included?",
+        answer: "The day pass covers transportation only. However, you can add attraction tickets to your booking during checkout for a bundled experience. This saves you time and often money compared to buying separately.",
+      },
+    ],
+    cta: {
+      mobileTitle: "Ready to Explore Sintra?",
+      mobileDescription: "Get your day pass now and start discovering Sintra's magical attractions at your own pace.",
+      desktopTitle: "Book Your Pass",
+      desktopDescription: "Unlimited access to all attractions",
+      bookButton: "Book Now",
+      whyChooseTitle: "Why Passengers Love Us",
+      whyChooseItems: [
+        "No waiting for buses or taxis",
+        "Skip parking hassles completely",
+        "See more in less time",
+        "Authentic Portuguese vehicles",
+      ],
+    },
+  },
+
   operations: {
     hero: {
       title: "Driver Portal",
@@ -1485,6 +1615,11 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
       title: "About Hop On Sintra - Premium Small Vehicle Tour Service",
       description: "Hop On Sintra offers premium hop-on/hop-off service with guaranteed seating in small vehicles. Regular departures every 30 minutes throughout Sintra.",
       keywords: "about Hop On Sintra, Sintra tour company, premium Sintra tours, small group Sintra",
+    },
+    hopOnService: {
+      title: "Hop On Sintra Day Pass - Unlimited Access to All Attractions",
+      description: "Explore Sintra with unlimited hop-on/hop-off access. Guaranteed seating, 9am-7pm service. Visit all major palaces and attractions at your pace.",
+      keywords: "Sintra day pass, hop on hop off Sintra, Sintra unlimited transport, Sintra tuk tuk service, Sintra sightseeing pass",
     },
     manageBooking: {
       title: "Manage Your Booking - Hop On Sintra",

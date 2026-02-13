@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./ui/dialog";
+import { ImageSelector } from "./ImageSelector";
 
 interface ProductCardEditorProps {
   content: any;
@@ -246,21 +247,19 @@ export function ProductCardEditor({
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
-                      <div>
-                        <Label className="text-xs">Image URL</Label>
-                        <Input
-                          value={image.src}
-                          onChange={(e) =>
-                            updateArrayItem(
-                              ["homepage", "productCards", editingCard, "images"],
-                              index,
-                              "src",
-                              e.target.value
-                            )
-                          }
-                          placeholder="Enter image URL"
-                        />
-                      </div>
+                      <ImageSelector
+                        label="Image"
+                        description="Select an image from your uploaded images"
+                        value={image.src}
+                        onChange={(url) =>
+                          updateArrayItem(
+                            ["homepage", "productCards", editingCard, "images"],
+                            index,
+                            "src",
+                            url
+                          )
+                        }
+                      />
                       <div>
                         <Label className="text-xs">Alt Text</Label>
                         <Input
@@ -276,15 +275,6 @@ export function ProductCardEditor({
                           placeholder="Image description"
                         />
                       </div>
-                      {image.src && (
-                        <div className="mt-2 overflow-hidden rounded-lg border border-border">
-                          <img
-                            src={image.src}
-                            alt={image.alt}
-                            className="h-24 w-full object-cover"
-                          />
-                        </div>
-                      )}
                     </div>
                   ))}
                   <Button

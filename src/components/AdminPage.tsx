@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useOutletContext } from "react-router";
 import {
   Settings,
   Lock,
@@ -105,8 +106,9 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-interface AdminPageProps {
-  onNavigate: (page: string) => void;
+interface OutletContext {
+  language: string;
+  onNavigate: (page: string, data?: any) => void;
 }
 
 interface PricingSettings {
@@ -184,7 +186,8 @@ const CHART_COLORS = [
   "#e74c3c",
 ];
 
-export function AdminPage({ onNavigate }: AdminPageProps) {
+export function AdminPage() {
+  const { onNavigate } = useOutletContext<OutletContext>();
   // Block search engines from indexing this page
   useEffect(() => {
     const metaRobots = document.querySelector(
@@ -1389,6 +1392,26 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     }
   };
 
+  const migrateConversations = async () => {
+    const result = await safeJsonFetch<any>(
+      `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/chat/migrate-conversations`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${publicAnonKey}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    if (result?.success) {
+      toast.success(result.message || "Conversations migrated successfully");
+      loadConversations();
+    } else {
+      toast.error("Failed to migrate conversations");
+    }
+  };
+
   const handleCloseConversation = async (
     conversationId: string,
   ) => {
@@ -2240,32 +2263,44 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                     <h2 className="text-foreground">
                       Messages
                     </h2>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() =>
-                        setShowArchivedConversations(
-                          !showArchivedConversations,
-                        )
-                      }
-                      className="gap-2"
-                    >
-                      {showArchivedConversations ? (
-                        <>
-                          <MessageCircle className="h-4 w-4" />
-                          <span className="hidden md:inline">
-                            Active
-                          </span>
-                        </>
-                      ) : (
-                        <>
-                          <Archive className="h-4 w-4" />
-                          <span className="hidden md:inline">
-                            Archived
-                          </span>
-                        </>
-                      )}
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      {/* Hidden migration button - double-click to activate */}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onDoubleClick={migrateConversations}
+                        className="gap-2 opacity-30 hover:opacity-100"
+                        title="Double-click to fix Anonymous conversations"
+                      >
+                        <RefreshCw className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() =>
+                          setShowArchivedConversations(
+                            !showArchivedConversations,
+                          )
+                        }
+                        className="gap-2"
+                      >
+                        {showArchivedConversations ? (
+                          <>
+                            <MessageCircle className="h-4 w-4" />
+                            <span className="hidden md:inline">
+                              Active
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <Archive className="h-4 w-4" />
+                            <span className="hidden md:inline">
+                              Archived
+                            </span>
+                          </>
+                        )}
+                      </Button>
+                    </div>
                   </div>
                   <p className="text-xs text-muted-foreground">
                     {showArchivedConversations

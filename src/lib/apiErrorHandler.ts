@@ -46,8 +46,20 @@ export async function safeJsonFetch<T>(url: string, options?: RequestInit): Prom
       return null;
     }
     
+    // Check content type to prevent "Unexpected token '<'" errors
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      console.warn(`Non-JSON response from ${url}, content-type: ${contentType}`);
+      logApiWarning(url, `Expected JSON but got ${contentType}`);
+      return null;
+    }
+    
     return await response.json();
   } catch (error) {
+    // Check if it's a JSON parsing error
+    if (error instanceof SyntaxError && error.message.includes('JSON')) {
+      console.error(`JSON parsing error for ${url}. This usually means the endpoint returned HTML instead of JSON.`, error);
+    }
     logApiWarning(url, error);
     return null;
   }

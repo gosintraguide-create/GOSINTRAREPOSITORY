@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useOutletContext } from "react-router";
+// Force rebuild - all fields required - Build 2025-02-10
 import {
   ArrowRight,
   Check,
@@ -59,15 +61,14 @@ interface PrivateTour {
   heroImage?: string;
 }
 
-interface PrivateToursPageProps {
+interface OutletContext {
+  language: string;
   onNavigate: (page: string, data?: any) => void;
-  language?: string;
 }
 
-export function PrivateToursPage({
-  onNavigate,
-  language = "en",
-}: PrivateToursPageProps) {
+export function PrivateToursPage() {
+  const { language = "en", onNavigate } = useOutletContext<OutletContext>();
+  
   const content = getTranslation(language);
   const t = content.privateTours;
   const uiT = getUITranslation(language);
@@ -464,7 +465,7 @@ export function PrivateToursPage({
                 </div>
 
                 <div>
-                  <Label htmlFor="phone">Phone (Optional)</Label>
+                  <Label htmlFor="phone">Phone *</Label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
@@ -476,12 +477,13 @@ export function PrivateToursPage({
                       }
                       placeholder="+351 123 456 789"
                       className="pl-10"
+                      required
                     />
                   </div>
                 </div>
 
                 <div>
-                  <Label htmlFor="people">Number of People</Label>
+                  <Label htmlFor="people">Number of People *</Label>
                   <div className="relative">
                     <Users className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
@@ -494,12 +496,13 @@ export function PrivateToursPage({
                       }
                       placeholder="2"
                       className="pl-10"
+                      required
                     />
                   </div>
                 </div>
 
                 <div className="sm:col-span-2">
-                  <Label>Preferred Date (Optional)</Label>
+                  <Label>Preferred Date *</Label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
@@ -527,7 +530,7 @@ export function PrivateToursPage({
                 </div>
 
                 <div className="sm:col-span-2">
-                  <Label htmlFor="message">Additional Information (Optional)</Label>
+                  <Label htmlFor="message">Additional Information *</Label>
                   <Textarea
                     id="message"
                     value={formData.message}
@@ -536,6 +539,7 @@ export function PrivateToursPage({
                     }
                     placeholder="Any special requirements or questions?"
                     rows={4}
+                    required
                   />
                 </div>
               </div>
