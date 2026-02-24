@@ -27,20 +27,20 @@ export function RouteOverview({ language = "en", onNavigate }: RouteOverviewProp
   ];
 
   return (
-    <section className="bg-gradient-to-b from-white to-gray-50 py-16 sm:py-20 lg:py-24 pb-8 sm:pb-10 lg:pb-12">
+    <section className="bg-gradient-to-b from-white to-gray-50 py-12 sm:py-16 lg:py-20 pb-8 sm:pb-10 lg:pb-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="mb-12 text-center">
-          <h2 className="mb-4">{content.routes.title}</h2>
-          <p className="text-muted-foreground">
+        <div className="mb-8 sm:mb-12 text-center">
+          <h2 className="mb-3 sm:mb-4">{content.routes.title}</h2>
+          <p className="text-muted-foreground text-sm sm:text-base">
             {content.routes.subtitle}
           </p>
         </div>
 
         {/* Routes Display */}
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
           {/* Route 1 */}
-          <div className="rounded-2xl border-2 border-primary/20 bg-white p-6 shadow-lg">
+          <div className="rounded-2xl border-2 border-primary/20 bg-white p-4 sm:p-6 shadow-lg">
             <div className="mb-4 flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
                 <span className="text-sm text-white">1</span>
@@ -92,7 +92,7 @@ export function RouteOverview({ language = "en", onNavigate }: RouteOverviewProp
           </div>
 
           {/* Route 2 */}
-          <div className="rounded-2xl border-2 border-accent/20 bg-white p-6 shadow-lg">
+          <div className="rounded-2xl border-2 border-accent/20 bg-white p-4 sm:p-6 shadow-lg">
             <div className="mb-4 flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent">
                 <span className="text-sm text-white">2</span>
@@ -150,7 +150,7 @@ export function RouteOverview({ language = "en", onNavigate }: RouteOverviewProp
             <Button
               onClick={() => onNavigate("route-map")}
               variant="outline"
-              className="gap-2"
+              className="gap-2 h-11"
             >
               <MapPin className="h-4 w-4" />
               {content.routes.viewMapButton}

@@ -1,7 +1,7 @@
 // Service Worker for Go Sintra PWA
-// Version 1.3.4 - Fix module loading errors
+// Version 1.3.5 - Optimized caching strategy
 
-const CACHE_NAME = 'go-sintra-v8'; // Bumped to clear old cache
+const CACHE_NAME = 'go-sintra-v9'; // Bumped cache version
 const OFFLINE_URL = '/offline.html';
 
 // Core assets to cache for offline functionality
@@ -9,6 +9,7 @@ const OFFLINE_URL = '/offline.html';
 const CORE_ASSETS = [
   '/offline.html',
   '/icon-72x72.png',
+  '/manifest.json'
 ];
 
 // Install event - cache core assets
@@ -108,7 +109,8 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // For navigation requests, use network-first strategy
+  // Network First Strategy for HTML navigation requests
+  // This ensures users always get the latest version of pages when online
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
@@ -134,44 +136,51 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // For other requests, use cache-first strategy
-  event.respondWith(
-    caches.match(request).then((cachedResponse) => {
-      if (cachedResponse) {
-        // Return cached version and update cache in background
-        fetch(request).then((response) => {
-          if (response.status === 200) {
+  // Stale-While-Revalidate Strategy for static assets (images, fonts, scripts)
+  // Serve from cache immediately, then update cache in background
+  if (
+    request.destination === 'style' ||
+    request.destination === 'script' ||
+    request.destination === 'image' ||
+    request.destination === 'font'
+  ) {
+    event.respondWith(
+      caches.match(request).then((cachedResponse) => {
+        const networkFetch = fetch(request).then((response) => {
+          // Update cache with fresh version
+          if (response && response.status === 200 && response.type === 'basic') {
             const responseToCache = response.clone();
             caches.open(CACHE_NAME).then((cache) => {
               cache.put(request, responseToCache);
             });
           }
+          return response;
         }).catch(() => {
-          // Network failed, but we have cache so it's ok
+          // Network failure is fine, we have cache or will fallback below
         });
+
+        // Return cached response immediately if available, otherwise wait for network
+        return cachedResponse || networkFetch;
+      })
+    );
+    return;
+  }
+
+  // Default: Cache First, Fallback to Network
+  event.respondWith(
+    caches.match(request).then((cachedResponse) => {
+      if (cachedResponse) {
         return cachedResponse;
       }
-
-      // Not in cache, fetch from network
       return fetch(request).then((response) => {
-        // Don't cache if not successful
-        if (!response || response.status !== 200) {
+        if (!response || response.status !== 200 || response.type !== 'basic') {
           return response;
         }
-
-        // Clone and cache the response
         const responseToCache = response.clone();
         caches.open(CACHE_NAME).then((cache) => {
           cache.put(request, responseToCache);
         });
-
         return response;
-      }).catch(() => {
-        // Network failed and no cache - return offline response
-        return new Response('Offline - Content not available', {
-          status: 503,
-          statusText: 'Service Unavailable',
-        });
       });
     })
   );
@@ -189,24 +198,7 @@ self.addEventListener('sync', (event) => {
 // Sync offline bookings when back online
 async function syncOfflineBookings() {
   console.log('[SW] Syncing offline bookings...');
-  
-  try {
-    // Get offline queue from IndexedDB (if implemented)
-    // This would sync any bookings created while offline
-    // For now, just log
-    console.log('[SW] Offline bookings synced');
-    
-    // Notify all clients that sync is complete
-    const clients = await self.clients.matchAll();
-    clients.forEach(client => {
-      client.postMessage({
-        type: 'SYNC_COMPLETE',
-        message: 'Offline bookings synced successfully'
-      });
-    });
-  } catch (error) {
-    console.error('[SW] Sync failed:', error);
-  }
+  // Placeholder for offline sync logic
 }
 
 // Handle messages from the app

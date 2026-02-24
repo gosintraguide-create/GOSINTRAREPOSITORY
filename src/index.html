@@ -2,12 +2,15 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#0A4D5C" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0A4D5C" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0A4D5C" media="(prefers-color-scheme: dark)" />
     <!-- Modern PWA meta tags -->
     <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Hop On Sintra" />
+    <meta name="format-detection" content="telephone=no" />
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
@@ -36,17 +39,17 @@
     </style>
     
     <!-- Initial meta tags (will be updated by SEOHead component) -->
-    <title>Hop On Sintra - Premium Hop-On/Hop-Off Day Pass | Small Vehicle Tours</title>
-    <meta name="description" content="Explore Sintra's UNESCO World Heritage palaces and attractions with guaranteed seating in small vehicles. Premium hop-on/hop-off day pass with unlimited rides. Book your Sintra adventure online." />
-    <meta name="keywords" content="Sintra tours, Sintra transport, hop on hop off Sintra, Pena Palace, Quinta da Regaleira, Sintra day pass, Portugal tours, Sintra attractions, Moorish Castle, Monserrate Palace, small vehicle tours, tuk tuk Sintra" />
+    <title>Hop On Sintra - Unlimited Day Pass for Sintra Sightseeing | Hop-On/Hop-Off</title>
+    <meta name="description" content="Explore Sintra's UNESCO World Heritage palaces and attractions with guaranteed seating in tuk-tuks and UMM jeeps. Unlimited hop-on/hop-off day pass from €25. Buy your Sintra day pass online." />
+    <meta name="keywords" content="Sintra day pass, Sintra transportation, hop on hop off Sintra, Sintra sightseeing, Pena Palace transport, Sintra tuk tuk, Quinta da Regaleira, Moorish Castle, Sintra attractions, Portugal tours" />
     <meta name="author" content="Hop On Sintra" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.hoponsintra.com/" />
-    <meta property="og:title" content="Hop On Sintra - Premium Hop-On/Hop-Off Day Pass | Small Vehicle Tours" />
-    <meta property="og:description" content="Explore Sintra's UNESCO World Heritage palaces and attractions with guaranteed seating in small vehicles. Premium hop-on/hop-off day pass with unlimited rides." />
+    <meta property="og:title" content="Hop On Sintra - Unlimited Day Pass for Sintra Sightseeing" />
+    <meta property="og:description" content="Explore Sintra's UNESCO World Heritage palaces and attractions with guaranteed seating in tuk-tuks and UMM jeeps. Unlimited hop-on/hop-off day pass from €25." />
     <meta property="og:image" content="https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -56,8 +59,8 @@
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="https://www.hoponsintra.com/" />
-    <meta name="twitter:title" content="Hop On Sintra - Premium Hop-On/Hop-Off Day Pass | Small Vehicle Tours" />
-    <meta name="twitter:description" content="Explore Sintra's UNESCO World Heritage palaces and attractions with guaranteed seating in small vehicles. Premium hop-on/hop-off day pass with unlimited rides." />
+    <meta name="twitter:title" content="Hop On Sintra - Unlimited Day Pass for Sintra Sightseeing" />
+    <meta name="twitter:description" content="Explore Sintra's UNESCO World Heritage palaces and attractions with guaranteed seating in tuk-tuks and UMM jeeps. Unlimited hop-on/hop-off day pass from €25." />
     <meta name="twitter:image" content="https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop" />
     
     <!-- Geo tags -->
@@ -72,16 +75,19 @@
       "@context": "https://schema.org",
       "@graph": [
         {
-          "@type": "TouristAttraction",
-          "@id": "https://www.hoponsintra.com/#touristattraction",
+          "@type": "LocalBusiness",
+          "@id": "https://www.hoponsintra.com/#business",
           "name": "Hop On Sintra",
-          "description": "Premium hop-on/hop-off day pass service in Sintra, Portugal with guaranteed seating in small vehicles. Visit Pena Palace, Quinta da Regaleira, Moorish Castle, and more.",
+          "description": "Unlimited hop-on/hop-off day pass service in Sintra, Portugal with guaranteed seating in tuk-tuks and UMM jeeps. Visit Pena Palace, Quinta da Regaleira, Moorish Castle, and more.",
           "url": "https://www.hoponsintra.com",
-          "image": "https://images.unsplash.com/photo-1585208798174-6cedd86e019a",
+          "image": "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop",
+          "telephone": "+351",
           "address": {
             "@type": "PostalAddress",
+            "streetAddress": "Sintra Historic Center",
             "addressLocality": "Sintra",
             "addressRegion": "Lisboa",
+            "postalCode": "2710",
             "addressCountry": "PT"
           },
           "geo": {
@@ -96,6 +102,33 @@
             "closes": "19:00"
           },
           "priceRange": "€€",
+          "currenciesAccepted": "EUR",
+          "paymentAccepted": "Credit Card, Cash",
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.8",
+            "reviewCount": "250",
+            "bestRating": "5"
+          },
+          "sameAs": []
+        },
+        {
+          "@type": "Product",
+          "@id": "https://www.hoponsintra.com/#daypass",
+          "name": "Sintra Unlimited Day Pass",
+          "description": "Unlimited hop-on/hop-off rides between all Sintra attractions for one full day. Guaranteed seating in tuk-tuks and UMM jeeps. Service runs 9am to 7pm daily.",
+          "brand": {
+            "@type": "Brand",
+            "name": "Hop On Sintra"
+          },
+          "offers": {
+            "@type": "Offer",
+            "url": "https://www.hoponsintra.com/buy-ticket",
+            "priceCurrency": "EUR",
+            "price": "25",
+            "availability": "https://schema.org/InStock",
+            "validFrom": "2026-01-01"
+          },
           "aggregateRating": {
             "@type": "AggregateRating",
             "ratingValue": "4.8",
@@ -104,43 +137,47 @@
           }
         },
         {
-          "@type": "Service",
-          "@id": "https://www.hoponsintra.com/#service",
-          "serviceType": "Hop-on Hop-off Day Pass",
-          "provider": {
-            "@type": "Organization",
-            "name": "Hop On Sintra"
-          },
-          "areaServed": {
-            "@type": "City",
-            "name": "Sintra"
-          },
-          "hasOfferCatalog": {
-            "@type": "OfferCatalog",
-            "name": "Day Pass Options",
-            "itemListElement": [
-              {
-                "@type": "Offer",
-                "itemOffered": {
-                  "@type": "Product",
-                  "name": "Full Day Pass",
-                  "description": "Unlimited rides between all Sintra attractions"
-                }
-              }
-            ]
-          }
-        },
-        {
           "@type": "WebSite",
           "@id": "https://www.hoponsintra.com/#website",
           "url": "https://www.hoponsintra.com",
           "name": "Hop On Sintra",
-          "description": "Premium hop-on/hop-off day pass service in Sintra, Portugal",
+          "description": "Unlimited hop-on/hop-off day pass service in Sintra, Portugal",
+          "inLanguage": ["en", "pt", "es", "fr", "de", "nl", "it"],
           "potentialAction": {
             "@type": "SearchAction",
-            "target": "https://www.hoponsintra.com/?search={search_term_string}",
+            "target": "https://www.hoponsintra.com/attractions?q={search_term_string}",
             "query-input": "required name=search_term_string"
           }
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://www.hoponsintra.com/#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What is a Hop On Sintra Day Pass?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "The Hop On Sintra Day Pass gives you unlimited hop-on/hop-off rides between all major Sintra attractions for one full day, from 9am to 7pm. Travel in small tuk-tuks and UMM jeeps with guaranteed seating."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How much does a day pass cost?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Adult day passes start from €25. Child passes (ages 7-12) are available at a reduced rate. Children under 7 ride free."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Which attractions can I visit with the day pass?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "The day pass covers transportation to Pena Palace, Quinta da Regaleira, Moorish Castle, Monserrate Palace, Sintra National Palace, and more. Attraction entrance tickets can be bundled with your pass."
+              }
+            }
+          ]
         }
       ]
     }
@@ -165,6 +202,20 @@
     </script> -->
   </head>
   <body>
+    <!-- Noscript fallback for SEO crawlers -->
+    <noscript>
+      <div style="padding: 2rem; text-align: center; font-family: system-ui, sans-serif;">
+        <h1>Hop On Sintra - Unlimited Day Pass for Sintra Sightseeing</h1>
+        <p>Explore Sintra's UNESCO World Heritage palaces and attractions with guaranteed seating in tuk-tuks and UMM jeeps. Unlimited hop-on/hop-off day pass from €25.</p>
+        <p>Please enable JavaScript to use this website.</p>
+        <nav>
+          <a href="/attractions">Attractions</a> |
+          <a href="/hop-on-service">Day Pass Details</a> |
+          <a href="/blog">Travel Guide</a> |
+          <a href="/about">About Us</a>
+        </nav>
+      </div>
+    </noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

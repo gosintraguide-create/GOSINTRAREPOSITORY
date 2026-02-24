@@ -84,29 +84,29 @@ export function SEOHead({
       canonical.rel = "canonical";
       document.head.appendChild(canonical);
     }
-    // Each language version should have a self-referencing canonical URL
-    const canonicalUrl = language === 'en' 
-      ? `https://www.hoponsintra.com${canonicalPath}`
-      : `https://www.hoponsintra.com${canonicalPath}?lang=${language}`;
+    // Consistent canonical URL - always use www.hoponsintra.com without lang query params
+    const canonicalUrl = `https://www.hoponsintra.com${canonicalPath}`;
     canonical.href = canonicalUrl;
 
     // Remove old hreflang tags
-    document.querySelectorAll('link[rel="alternate"]').forEach(link => link.remove());
+    document.querySelectorAll('link[hreflang]').forEach(link => link.remove());
 
     // Add hreflang tags for all supported languages
     const languages = ["en", "pt", "es", "fr", "de", "nl", "it"];
     languages.forEach(lang => {
       const hreflang = document.createElement("link");
       hreflang.rel = "alternate";
-      hreflang.hreflang = lang;
-      hreflang.href = `https://www.hoponsintra.com${canonicalPath}?lang=${lang}`;
+      hreflang.setAttribute("hreflang", lang);
+      hreflang.href = lang === "en" 
+        ? `https://www.hoponsintra.com${canonicalPath}`
+        : `https://www.hoponsintra.com${canonicalPath}?lang=${lang}`;
       document.head.appendChild(hreflang);
     });
 
     // Add x-default hreflang
     const defaultLang = document.createElement("link");
     defaultLang.rel = "alternate";
-    defaultLang.hreflang = "x-default";
+    defaultLang.setAttribute("hreflang", "x-default");
     defaultLang.href = `https://www.hoponsintra.com${canonicalPath}`;
     document.head.appendChild(defaultLang);
 

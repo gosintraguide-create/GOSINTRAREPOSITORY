@@ -490,13 +490,28 @@ export function BlogEditor() {
                     </AlertDescription>
                   </Alert>
 
+                  <Alert className="mb-3 border-accent/30 bg-accent/5">
+                    <AlertDescription className="text-sm">
+                      <div className="space-y-1">
+                        <div>🖼️ <strong>Images:</strong> Add images using Markdown syntax:</div>
+                        <code className="block px-2 py-1 bg-background rounded">![Alt text](image-url)</code>
+                        <div className="mt-2">For captions, add italic text on the next line:</div>
+                        <code className="block px-2 py-1 bg-background rounded">*Your caption here*</code>
+                        <div className="mt-2">Example:</div>
+                        <code className="block px-2 py-1 bg-background rounded text-xs">
+                          ![Pena Palace](https://images.unsplash.com/photo-...){'\n'}*The colorful Pena Palace on a sunny day*
+                        </code>
+                      </div>
+                    </AlertDescription>
+                  </Alert>
+
                   <Textarea
                     ref={contentTextareaRef}
                     value={currentTranslation.content}
                     onChange={(e) =>
                       updateCurrentTranslation({ content: e.target.value })
                     }
-                    placeholder="Write your article content here using Markdown formatting...&#10;&#10;# Your Article Title&#10;&#10;Start writing your content here. Use the 'Insert Internal Link' button above to easily add links to other articles and attractions.&#10;&#10;## Section Heading&#10;&#10;Write more content..."
+                    placeholder="Write your article content here using Markdown formatting...&#10;&#10;# Your Article Title&#10;&#10;Start writing your content here. Use the 'Insert Internal Link' button above to easily add links to other articles and attractions.&#10;&#10;## Section Heading&#10;&#10;Write more content...&#10;&#10;![Image description](https://images.unsplash.com/photo-...)&#10;*Image caption in italics*"
                     rows={15}
                     className="font-mono"
                   />

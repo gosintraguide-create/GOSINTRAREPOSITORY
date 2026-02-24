@@ -423,7 +423,7 @@ export function HomePage() {
       </section>
 
       {/* Final CTA - More Exciting */}
-      <section className="relative overflow-hidden bg-gradient-to-r from-primary via-primary/95 to-accent py-14 sm:py-20">
+      <section className="relative overflow-hidden bg-gradient-to-r from-primary via-primary/95 to-accent py-12 sm:py-16 lg:py-20">
         <div className="absolute inset-0 opacity-20">
           <div
             className="absolute left-1/4 top-10 h-32 w-32 animate-bounce rounded-full bg-white/30 blur-2xl"
@@ -439,22 +439,22 @@ export function HomePage() {
         </div>
 
         <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-          <div className="mb-6 flex justify-center">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white shadow-2xl">
-              <Ticket className="h-10 w-10 text-accent" />
+          <div className="mb-5 sm:mb-6 flex justify-center">
+            <div className="flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-white shadow-2xl">
+              <Ticket className="h-8 w-8 sm:h-10 sm:w-10 text-accent" />
             </div>
           </div>
 
-          <h2 className="mb-4 text-white drop-shadow-lg">
+          <h2 className="mb-3 sm:mb-4 text-white drop-shadow-lg">
             {legacyContent.homepage.finalCtaTitle}
           </h2>
-          <p className="mb-8 text-xl text-white/95 drop-shadow-md">
+          <p className="mb-6 sm:mb-8 text-lg sm:text-xl text-white/95 drop-shadow-md">
             {legacyContent.homepage.finalCtaSubtitle}
           </p>
 
           <Button
             size="lg"
-            className="bg-accent text-white shadow-2xl transition-all hover:scale-105 hover:bg-accent/90 hover:shadow-accent/50"
+            className="bg-accent text-white shadow-2xl transition-all hover:scale-105 hover:bg-accent/90 hover:shadow-accent/50 h-12 sm:h-14 px-8 text-base sm:text-lg"
             onClick={() => onNavigate("buy-ticket")}
           >
             <Ticket className="mr-2 h-5 w-5" />
@@ -468,19 +468,17 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* TEMPORARY TESTING ACCESS - REMOVE IN PRODUCTION */}
-      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2"></div>
-
       {/* Floating Buy Day Pass Button - Mobile Only */}
       {showFloatingButton && (
-        <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 md:hidden">
+        <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 md:hidden safe-bottom">
           <Button
             size="lg"
-            className="h-12 animate-in slide-in-from-bottom-2 gap-2 bg-accent px-6 text-white shadow-2xl transition-all hover:scale-105 hover:bg-accent/90"
+            className="h-12 gap-2 bg-accent px-6 text-white shadow-2xl transition-all hover:scale-105 hover:bg-accent/90 rounded-full"
             onClick={() => onNavigate("buy-ticket")}
+            aria-label="Buy Day Pass"
           >
             <Ticket className="h-4 w-4" />
-            Buy Day Pass
+            {t.buyTicket || "Buy Day Pass"}
             <ArrowRight className="h-4 w-4" />
           </Button>
         </div>

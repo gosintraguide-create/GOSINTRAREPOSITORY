@@ -629,6 +629,21 @@ export interface WebsiteContent {
   featureFlags?: {
     enableAttractionTickets?: boolean;
   };
+  liveChat?: {
+    liveSupport?: string;
+    hereToHelp?: string;
+    chatOnWhatsApp?: string;
+    orStartWebChat?: string;
+    startWebChat?: string;
+    starting?: string;
+    conversationSaved?: string;
+    welcomeMessage?: string;
+    enterName?: string;
+    enterEmail?: string;
+    enterMessage?: string;
+    sendMessage?: string;
+    goBack?: string;
+  };
 }
 
 export const DEFAULT_CONTENT: WebsiteContent = {

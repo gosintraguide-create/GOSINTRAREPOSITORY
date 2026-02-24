@@ -359,11 +359,13 @@ export interface ComprehensiveContent {
       title: string;
       subtitle: string;
       badges: Array<{ icon: string; text: string }>;
+      heroImage?: string;
     };
     description: {
       mainTitle: string;
       paragraphs: string[];
     };
+    galleryImages: string[];
     features: Array<{
       title: string;
       description: string;
@@ -1324,6 +1326,7 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
         { icon: "Bus", text: "Unlimited Rides" },
         { icon: "Clock", text: "9am - 7pm Daily" },
       ],
+      heroImage: "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1920&h=1080&fit=crop",
     },
     description: {
       mainTitle: "Your Ticket to Explore Sintra",
@@ -1332,6 +1335,13 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
         "No fixed schedules, no rushing between attractions. Simply show your pass at any of our designated stops and hop aboard one of our comfortable tuk-tuks or UMM jeeps. Our professional drivers know Sintra's winding roads like the back of their hand, ensuring safe and efficient transportation while you sit back and enjoy the scenery.",
       ],
     },
+    galleryImages: [
+      "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1668377298351-3f7a745a56fe?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1651520011190-6f37b5213684?w=1200&h=800&fit=crop"
+    ],
     features: [
       {
         title: "Unlimited Rides",

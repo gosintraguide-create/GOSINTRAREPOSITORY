@@ -269,7 +269,7 @@ export function PrivateToursPage() {
       <section className="border-b border-border bg-white py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="mb-3 text-foreground">
+            <h1 className="mb-3 text-primary font-extrabold text-[24px]">
               {t.hero?.title || "Private Tours in Sintra"}
             </h1>
             <p className="mx-auto max-w-2xl text-lg text-muted-foreground">

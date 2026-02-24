@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { useOutletContext, useParams } from "react-router";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
@@ -6,16 +5,19 @@ import { Card } from "./ui/card";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import {
   ArrowLeft,
-  Clock,
   Users,
-  Car,
-  Star,
+  Clock,
   Check,
-  ChevronRight,
+  Euro,
   MapPin,
   Calendar,
+  ChevronRight,
 } from "lucide-react";
-import { motion } from "motion/react";
+import {
+  loadComprehensiveContentForLanguage,
+  type PrivateTour,
+} from "../lib/comprehensiveContent";
+import { useEditableContent } from "../lib/useEditableContent";
 
 interface OutletContext {
   language: string;
@@ -27,7 +29,7 @@ export function PrivateTourDetailPage() {
   const { slug } = useParams<{ slug: string }>();
 
   // Placeholder data - in a real app this would come from your content management system
-  const tour = {
+  const tour: PrivateTour = {
     id: slug,
     name: "Private Tour",
     description: "Experience Sintra with a private guide tailored to your interests.",
@@ -71,21 +73,12 @@ export function PrivateTourDetailPage() {
         <div className="absolute inset-0 flex items-end">
           <div className="w-full pb-12 md:pb-16">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <motion.h1
-                className="mb-4 text-4xl font-bold text-white sm:text-5xl md:text-6xl"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
+              <h1 className="mb-4 text-4xl font-bold text-white sm:text-5xl md:text-6xl">
                 {tour.name}
-              </motion.h1>
-              <motion.p
-                className="max-w-2xl text-lg text-white/90 sm:text-xl"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-              >
+              </h1>
+              <p className="max-w-2xl text-lg text-white/90 sm:text-xl">
                 {tour.description}
-              </motion.p>
+              </p>
             </div>
           </div>
         </div>

@@ -1,36 +1,42 @@
+import { useOutletContext, useNavigate } from "react-router";
 import { useState, useEffect } from "react";
-import { useOutletContext } from "react-router";
+import { Button } from "./ui/button";
+import { Card } from "./ui/card";
+import { Badge } from "./ui/badge";
+import { Input } from "./ui/input";
+import { ImageWithFallback } from "./figma/ImageWithFallback";
+// SEOHead replaced with inline useEffect DOM manipulation (matching pattern used across all other pages)
 import {
   Search,
   Clock,
   Calendar,
+  User,
   Tag,
-  BookOpen,
+  Sparkles,
   ArrowRight,
   Filter,
+  X,
+  BookOpen,
   Compass,
+  Map,
+  Camera,
+  Utensils,
+  Bus,
 } from "lucide-react";
-import { SEOHead } from "./SEOHead";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Card } from "./ui/card";
-import { Badge } from "./ui/badge";
-import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { getUITranslation } from "../lib/translations";
 import {
   loadArticles,
+  getArticleTranslation,
   loadCategories,
-  getPublishedArticles,
-  getArticlesByCategory,
-  searchArticles,
+  getBlogSettings,
+  getBlogStats,
   loadArticlesFromServer,
   loadCategoriesFromServer,
-  getArticleTranslation,
   getCategoryTranslation,
   type BlogArticle,
   type BlogCategory,
 } from "../lib/blogManager";
 import { loadContentWithLanguage } from "../lib/contentManager";
-import { motion } from "motion/react";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
 import { SmallSpinner } from "./LoadingIndicator";
 
@@ -53,6 +59,49 @@ export function BlogPage() {
     useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+
+  // Inline SEO via direct DOM manipulation (replaces SEOHead component)
+  useEffect(() => {
+    const seoTitle = content.seo?.blog?.title || "Sintra Travel Guide & Blog - Expert Tips, Guides & Itineraries";
+    const seoDescription = content.seo?.blog?.description || "Comprehensive travel guides for visiting Sintra, Portugal. Expert tips on transportation, attractions, planning your trip, and making the most of your Sintra adventure.";
+    const seoKeywords = content.seo?.blog?.keywords || "Sintra travel guide, Sintra blog, visit Sintra, Sintra tips, Pena Palace guide, Sintra itinerary, how to visit Sintra, Sintra Portugal";
+    const canonicalPath = "/blog";
+    const ogImage = "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop";
+
+    document.title = seoTitle;
+
+    const updateMetaTag = (name: string, value: string, property = false) => {
+      const attribute = property ? "property" : "name";
+      let el = document.querySelector(`meta[${attribute}="${name}"]`);
+      if (!el) {
+        el = document.createElement("meta");
+        el.setAttribute(attribute, name);
+        document.head.appendChild(el);
+      }
+      el.setAttribute("content", value);
+    };
+
+    updateMetaTag("description", seoDescription);
+    updateMetaTag("keywords", seoKeywords);
+    updateMetaTag("robots", "index, follow");
+    updateMetaTag("og:title", seoTitle, true);
+    updateMetaTag("og:description", seoDescription, true);
+    updateMetaTag("og:image", ogImage, true);
+    updateMetaTag("og:type", "website", true);
+    updateMetaTag("og:url", `https://www.hoponsintra.com${canonicalPath}`, true);
+    updateMetaTag("twitter:card", "summary_large_image");
+    updateMetaTag("twitter:title", seoTitle);
+    updateMetaTag("twitter:description", seoDescription);
+    updateMetaTag("twitter:image", ogImage);
+
+    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
+    if (!canonical) {
+      canonical = document.createElement("link");
+      canonical.rel = "canonical";
+      document.head.appendChild(canonical);
+    }
+    canonical.href = `https://www.hoponsintra.com${canonicalPath}`;
+  }, [language, content]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -147,32 +196,24 @@ export function BlogPage() {
     );
   };
 
+  const getCategoryIcon = (categoryName: string) => {
+    const iconMap: Record<string, typeof Search> = {
+      "Pena Palace": Search,
+      "Sintra Castle": Map,
+      "Palácio Nacional de Sintra": Camera,
+      "Sintra Village": Utensils,
+      "Sintra Transportation": Bus,
+    };
+    return iconMap[categoryName] || Search;
+  };
+
   return (
     <div className="flex-1">
-      <SEOHead
-        title={
-          content.seo?.blog?.title ||
-          "Sintra Travel Guide & Blog - Expert Tips, Guides & Itineraries"
-        }
-        description={
-          content.seo?.blog?.description ||
-          "Comprehensive travel guides for visiting Sintra, Portugal. Expert tips on transportation, attractions, planning your trip, and making the most of your Sintra adventure."
-        }
-        keywords={
-          content.seo?.blog?.keywords ||
-          "Sintra travel guide, Sintra blog, visit Sintra, Sintra tips, Pena Palace guide, Sintra itinerary, how to visit Sintra, Sintra Portugal"
-        }
-        canonicalPath="/blog"
-        language={language}
-        structuredDataType="article"
-        ogImage="https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop"
-      />
-
-      {/* Hero Section */}
+      {/* SEOHead replaced with inline useEffect DOM manipulation (matching pattern used across all other pages) */}
       <section className="border-b border-border bg-white py-12">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="mb-6 text-center">
-            <h1 className="mb-3 text-foreground">
+            <h1 className="mb-3 text-primary font-extrabold text-[23px]">
               {content.blog.pageTitle}
             </h1>
             <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
@@ -276,13 +317,7 @@ export function BlogPage() {
 
               <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                 {filteredArticles.map((article, index) => (
-                  <motion.div
-                    key={article.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
-                  >
+                  <div key={article.id}>
                     <Card
                       className="group h-full cursor-pointer overflow-hidden transition-all hover:shadow-xl"
                       onClick={() =>
@@ -353,7 +388,7 @@ export function BlogPage() {
                         </div>
                       </div>
                     </Card>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
             </>
@@ -376,19 +411,21 @@ export function BlogPage() {
             </p>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {categories.map((category, index) => {
-              const categoryArticleCount = articles.filter(
-                (a) => a.category === category.slug,
-              ).length;
+              const catTranslation = getCategoryTranslation(category, language);
+              const Icon = getCategoryIcon(catTranslation.name);
+              const articlesInCategory =
+                articles.filter(
+                  (article) =>
+                    article.category === category.id ||
+                    article.category === category.slug,
+                ).length;
 
               return (
-                <motion.div
+                <div
                   key={category.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
+                  className="group"
                 >
                   <Card
                     className="group h-full cursor-pointer p-6 transition-all hover:shadow-lg"
@@ -397,7 +434,7 @@ export function BlogPage() {
                     }
                   >
                     <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                      <BookOpen className="h-6 w-6 text-primary" />
+                      <Icon className="h-6 w-6 text-primary" />
                     </div>
                     <h3 className="mb-2 text-foreground group-hover:text-primary">
                       {getCategoryName(category.slug)}
@@ -405,19 +442,19 @@ export function BlogPage() {
                     <p className="mb-4 text-muted-foreground">
                       {content.blog.categoryDescriptions[
                         category.slug as keyof typeof content.blog.categoryDescriptions
-                      ] || category.description}
+                      ] || catTranslation.description}
                     </p>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">
-                        {categoryArticleCount}{" "}
-                        {categoryArticleCount === 1
+                        {articlesInCategory}{" "}
+                        {articlesInCategory === 1
                           ? content.blog.guide
                           : content.blog.guides}
                       </span>
                       <ArrowRight className="h-4 w-4 text-primary transition-transform group-hover:translate-x-2" />
                     </div>
                   </Card>
-                </motion.div>
+                </div>
               );
             })}
           </div>

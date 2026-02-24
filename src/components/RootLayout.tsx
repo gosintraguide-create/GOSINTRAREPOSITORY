@@ -1,12 +1,28 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense, lazy } from "react";
 import { Outlet, useLocation, useNavigate, useMatches } from "react-router";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { Toaster } from "./ui/sonner";
-import { Helmet } from "react-helmet-async";
+import { LoadingIndicator } from "./LoadingIndicator";
+import { ArrowUp } from "lucide-react";
+
+// Lazy load LiveChatWidget to avoid initial bundle bloat
+const LiveChatWidget = lazy(() => import("./LiveChatWidget").then(m => ({ default: m.LiveChatWidget })));
+
+// Language to locale mapping
+const LOCALE_MAP: Record<string, string> = {
+  en: "en_US",
+  pt: "pt_PT",
+  es: "es_ES",
+  fr: "fr_FR",
+  de: "de_DE",
+  nl: "nl_NL",
+  it: "it_IT",
+};
 
 export function RootLayout() {
   const [language, setLanguage] = useState<string>("en");
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const matches = useMatches();
@@ -39,6 +55,25 @@ export function RootLayout() {
       setLanguage(savedLanguage);
     }
   }, []);
+
+  // Scroll restoration on route change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+  }, [location.pathname]);
+
+  // Scroll-to-top button visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 600);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Update html lang attribute when language changes
+  useEffect(() => {
+    document.documentElement.lang = language;
+  }, [language]);
 
   // Save language to localStorage when it changes
   const handleLanguageChange = (lang: string) => {
@@ -96,50 +131,70 @@ export function RootLayout() {
       .replace(/^-+|-+$/g, "");
   };
 
+  // Consistent canonical base URL
+  const canonicalBase = "https://www.hoponsintra.com";
+
+  // Manage meta tags via direct DOM manipulation (replaces react-helmet-async)
+  useEffect(() => {
+    const updateMeta = (attr: string, attrValue: string, content: string) => {
+      let el = document.querySelector(`meta[${attr}="${attrValue}"]`);
+      if (!el) {
+        el = document.createElement("meta");
+        el.setAttribute(attr, attrValue);
+        document.head.appendChild(el);
+      }
+      el.setAttribute("content", content);
+    };
+
+    const pageTitle = (meta as any).title || "Hop On Sintra";
+    const pageDesc = (meta as any).description || "Explore Sintra with unlimited hop-on/hop-off day pass";
+    const pageKeywords = (meta as any).keywords;
+    const shouldIndex = (meta as any).index !== false;
+    const canonicalUrl = `${canonicalBase}${location.pathname}`;
+
+    // Title
+    document.title = pageTitle;
+
+    // Standard meta
+    updateMeta("name", "description", pageDesc);
+    if (pageKeywords) {
+      updateMeta("name", "keywords", pageKeywords);
+    }
+    updateMeta("name", "robots", shouldIndex ? "index, follow" : "noindex, nofollow");
+
+    // Canonical
+    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
+    if (!canonical) {
+      canonical = document.createElement("link");
+      canonical.rel = "canonical";
+      document.head.appendChild(canonical);
+    }
+    canonical.href = canonicalUrl;
+
+    // Open Graph
+    updateMeta("property", "og:type", "website");
+    updateMeta("property", "og:site_name", "Hop On Sintra");
+    updateMeta("property", "og:title", pageTitle);
+    updateMeta("property", "og:description", pageDesc);
+    updateMeta("property", "og:url", canonicalUrl);
+    updateMeta("property", "og:image", "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop");
+    updateMeta("property", "og:image:width", "1200");
+    updateMeta("property", "og:image:height", "630");
+    updateMeta("property", "og:locale", LOCALE_MAP[language] || "en_US");
+
+    // Twitter Card
+    updateMeta("name", "twitter:card", "summary_large_image");
+    updateMeta("name", "twitter:title", pageTitle);
+    updateMeta("name", "twitter:description", pageDesc);
+    updateMeta("name", "twitter:image", "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop");
+  }, [meta, location.pathname, language]);
+
   return (
     <>
-      <Helmet>
-        <title>{meta.title || "Hop On Sintra"}</title>
-        <meta
-          name="description"
-          content={
-            meta.description ||
-            "Explore Sintra with unlimited hop-on/hop-off day pass"
-          }
-        />
-        {meta.keywords && <meta name="keywords" content={meta.keywords} />}
-        {meta.index === false && <meta name="robots" content="noindex, nofollow" />}
-        <link rel="canonical" href={`https://hoponsintra.com${location.pathname}`} />
-        
-        {/* Open Graph tags for social media sharing */}
-        <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="Hop On Sintra" />
-        <meta property="og:title" content={meta.title || "Hop On Sintra"} />
-        <meta 
-          property="og:description" 
-          content={
-            meta.description ||
-            "Explore Sintra with unlimited hop-on/hop-off day pass"
-          } 
-        />
-        <meta property="og:url" content={`https://hoponsintra.com${location.pathname}`} />
-        <meta property="og:image" content="https://hoponsintra.com/og-image.jpg" />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:locale" content={language === 'en' ? 'en_US' : `${language}_${language.toUpperCase()}`} />
-        
-        {/* Twitter Card tags */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={meta.title || "Hop On Sintra"} />
-        <meta 
-          name="twitter:description" 
-          content={
-            meta.description ||
-            "Explore Sintra with unlimited hop-on/hop-off day pass"
-          } 
-        />
-        <meta name="twitter:image" content="https://hoponsintra.com/og-image.jpg" />
-      </Helmet>
+      {/* Skip to content link for accessibility */}
+      <a href="#main-content" className="skip-to-content">
+        Skip to main content
+      </a>
 
       <div className="flex min-h-screen flex-col bg-background">
         <Header
@@ -148,12 +203,35 @@ export function RootLayout() {
           onLanguageChange={handleLanguageChange}
           onNavigate={handleNavigate}
         />
-        <main className="flex-1">
-          <Outlet context={{ language, onNavigate: handleNavigate }} />
+        <main id="main-content" className="flex-1">
+          <Suspense fallback={<div className="flex h-[50vh] w-full items-center justify-center"><LoadingIndicator type="spinner" fullScreen={false} /></div>}>
+            <Outlet context={{ language, onNavigate: handleNavigate }} />
+          </Suspense>
         </main>
         <Footer onNavigate={handleNavigate} language={language} />
       </div>
+
+      {/* Scroll-to-top button - mobile optimized */}
+      {showScrollTop && (
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="fixed bottom-20 right-4 z-40 flex h-11 w-11 items-center justify-center rounded-full bg-primary text-white shadow-lg transition-all hover:bg-primary/90 hover:scale-110 active:scale-95 md:bottom-8 md:right-6"
+          aria-label="Scroll to top"
+        >
+          <ArrowUp className="h-5 w-5" />
+        </button>
+      )}
+
       <Toaster />
+      
+      {/* Live Chat Widget - show on all pages except admin, driver, and live-chat */}
+      {!location.pathname.startsWith("/admin") && 
+       !location.pathname.startsWith("/driver") && 
+       location.pathname !== "/live-chat" && (
+        <Suspense fallback={null}>
+          <LiveChatWidget language={language} />
+        </Suspense>
+      )}
     </>
   );
 }

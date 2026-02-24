@@ -37,27 +37,28 @@ export function HeroSection({
     <section className="relative overflow-hidden">
       <div className="relative">
         {/* Hero Image with Overlay */}
-        <div className="relative min-h-[600px] lg:min-h-[650px]">
+        <div className="relative min-h-[500px] sm:min-h-[550px] lg:min-h-[650px]">
           <div className="absolute inset-0">
             <ImageWithFallback
               src={heroImage}
               alt="Tuk tuk sightseeing in Sintra with colorful Pena Palace"
               className="h-full w-full object-cover object-center"
+              loading="eager"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/60" />
           </div>
 
           {/* Hero Content */}
-          <div className="absolute inset-0 flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-8">
+          <div className="absolute inset-0 flex flex-col justify-center px-4 py-8 sm:py-12 sm:px-6 lg:px-8">
             <div className="mx-auto w-full max-w-7xl">
               <div className="flex flex-col items-center text-center">
                 {/* Hero Text */}
                 <div className="max-w-4xl">
-                  <h1 className="mb-4 text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight drop-shadow-[0_8px_32px_rgba(0,0,0,1)] sm:mb-5">
+                  <h1 className="mb-3 sm:mb-4 text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold tracking-tight drop-shadow-[0_8px_32px_rgba(0,0,0,1)] sm:mb-5">
                     {heroTitle}
                   </h1>
 
-                  <p className="mb-6 text-base sm:text-lg md:text-xl text-white/95 drop-shadow-[0_6px_20px_rgba(0,0,0,1)] sm:mb-7">
+                  <p className="mb-4 sm:mb-6 text-sm sm:text-base md:text-lg lg:text-xl text-white/95 drop-shadow-[0_6px_20px_rgba(0,0,0,1)] sm:mb-7 max-w-2xl mx-auto">
                     {heroSubtitle}
                   </p>
 
@@ -92,10 +93,10 @@ export function HeroSection({
                   </div>
 
                   {/* CTA Button */}
-                  <div className="flex flex-col items-center gap-4">
+                  <div className="flex flex-col items-center gap-3 sm:gap-4">
                     <Button
                       size="lg"
-                      className="h-14 w-full max-w-sm border-2 border-white/90 bg-accent px-10 text-lg shadow-2xl hover:scale-105 hover:bg-accent/90"
+                      className="h-12 sm:h-14 w-full max-w-xs sm:max-w-sm border-2 border-white/90 bg-accent px-8 sm:px-10 text-base sm:text-lg shadow-2xl hover:scale-105 hover:bg-accent/90"
                       onClick={() => onNavigate("buy-ticket")}
                     >
                       {heroCtaButton}

@@ -1,20 +1,24 @@
 import { createBrowserRouter, Navigate } from "react-router";
+import { lazy } from "react";
 import { RootLayout } from "./components/RootLayout";
-import { HomePage } from "./components/HomePage";
-import { AttractionsPage } from "./components/AttractionsPage";
-import { AttractionDetailPage } from "./components/AttractionDetailPage";
-import { PrivateToursPage } from "./components/PrivateToursPage";
-import { PrivateTourDetailPage } from "./components/PrivateTourDetailPage";
-import { HopOnServiceDetailPage } from "./components/HopOnServiceDetailPage";
-import { BuyTicketPage } from "./components/BuyTicketPage";
-import { LiveChatPage } from "./components/LiveChatPage";
-import { AboutPage } from "./components/AboutPage";
-import { BlogPage } from "./components/BlogPage";
-import { BlogArticlePage } from "./components/BlogArticlePage";
-import { RouteMapPage } from "./components/RouteMapPage";
-import { AdminPage } from "./components/AdminPage";
-import { DriverPortalPage } from "./components/DriverPortalPage";
-import { NotFoundPage } from "./components/NotFoundPage";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+
+// Lazy load pages
+const HomePage = lazy(() => import("./components/HomePage").then(m => ({ default: m.HomePage })));
+const AttractionsPage = lazy(() => import("./components/AttractionsPage").then(m => ({ default: m.AttractionsPage })));
+const AttractionDetailPage = lazy(() => import("./components/AttractionDetailPage").then(m => ({ default: m.AttractionDetailPage })));
+const PrivateToursPage = lazy(() => import("./components/PrivateToursPage").then(m => ({ default: m.PrivateToursPage })));
+const PrivateTourDetailPage = lazy(() => import("./components/PrivateTourDetailPage").then(m => ({ default: m.PrivateTourDetailPage })));
+const HopOnServiceDetailPage = lazy(() => import("./components/HopOnServiceDetailPage").then(m => ({ default: m.HopOnServiceDetailPage })));
+const BuyTicketPage = lazy(() => import("./components/BuyTicketPage").then(m => ({ default: m.BuyTicketPage })));
+const LiveChatPage = lazy(() => import("./components/LiveChatPage").then(m => ({ default: m.LiveChatPage })));
+const AboutPage = lazy(() => import("./components/AboutPage").then(m => ({ default: m.AboutPage })));
+const BlogPage = lazy(() => import("./components/BlogPage").then(m => ({ default: m.BlogPage })));
+const BlogArticlePage = lazy(() => import("./components/BlogArticlePage").then(m => ({ default: m.BlogArticlePage })));
+const RouteMapPage = lazy(() => import("./components/RouteMapPage").then(m => ({ default: m.RouteMapPage })));
+const AdminPage = lazy(() => import("./components/AdminPage").then(m => ({ default: m.AdminPage })));
+const DriverPortalPage = lazy(() => import("./components/DriverPortalPage").then(m => ({ default: m.DriverPortalPage })));
+const NotFoundPage = lazy(() => import("./components/NotFoundPage").then(m => ({ default: m.NotFoundPage })));
 
 // Slug generation helper
 export function generateSlug(title: string): string {
@@ -71,7 +75,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "attractions",
-        element: <AttractionsPage />,
+        element: (
+          <ErrorBoundary>
+            <AttractionsPage />
+          </ErrorBoundary>
+        ),
         handle: {
           meta: {
             title: "Sintra Attractions - Top Palaces & Historic Sites",
@@ -85,7 +93,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "attractions/:slug",
-        element: <AttractionDetailPage />,
+        element: (
+          <ErrorBoundary>
+            <AttractionDetailPage />
+          </ErrorBoundary>
+        ),
         handle: {
           meta: {
             // Dynamic meta will be set by the component based on attraction
@@ -184,7 +196,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "buy-ticket",
-        element: <BuyTicketPage />,
+        element: (
+          <ErrorBoundary>
+            <BuyTicketPage />
+          </ErrorBoundary>
+        ),
         handle: {
           meta: {
             title: "Buy Day Pass - Hop On Sintra",
@@ -195,7 +211,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "admin",
-        element: <AdminPage />,
+        element: (
+          <ErrorBoundary>
+            <AdminPage />
+          </ErrorBoundary>
+        ),
         handle: {
           meta: {
             title: "Admin Portal",
@@ -206,7 +226,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "driver",
-        element: <DriverPortalPage />,
+        element: (
+          <ErrorBoundary>
+            <DriverPortalPage />
+          </ErrorBoundary>
+        ),
         handle: {
           meta: {
             title: "Driver Portal",

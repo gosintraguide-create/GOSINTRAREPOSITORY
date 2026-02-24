@@ -1,6 +1,18 @@
 User-agent: *
 Allow: /
+
+# Public pages
+Allow: /hop-on-service
+Allow: /attractions
+Allow: /blog
+Allow: /private-tours
+Allow: /about
+Allow: /route-map
+Allow: /live-chat
+
+# Private / admin areas
 Disallow: /admin
+Disallow: /driver
 Disallow: /analytics
 Disallow: /operations
 Disallow: /diagnostics
@@ -9,5 +21,7 @@ Disallow: /driver-dashboard
 Disallow: /manual-booking
 Disallow: /qr-scanner
 Disallow: /sunset-special
+Disallow: /404
 
+# Sitemap
 Sitemap: https://www.hoponsintra.com/sitemap.xml

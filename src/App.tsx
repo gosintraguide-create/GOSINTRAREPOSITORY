@@ -1,7 +1,8 @@
 // Child pricing feature: ages 7-12 - Build 2024-12-19-002
 // Force rebuild - React Router implementation - Build 2025-02-13
+// Motion/React refresh - Build 2025-02-18
+// Motion library removal - CSS animations - Build 2025-02-18-v2
 import { RouterProvider } from "react-router";
-import { HelmetProvider } from "react-helmet-async";
 import { router } from "./routes";
 import { GoogleAnalytics } from "./components/GoogleAnalytics";
 import { MicrosoftClarity } from "./components/MicrosoftClarity";
@@ -19,7 +20,7 @@ const CLARITY_PROJECT_ID = "";
 
 function App() {
   return (
-    <HelmetProvider>
+    <>
       {/* Analytics */}
       {GA_MEASUREMENT_ID && (
         <GoogleAnalytics measurementId={GA_MEASUREMENT_ID} />
@@ -39,7 +40,7 @@ function App() {
 
       {/* Main Router */}
       <RouterProvider router={router} />
-    </HelmetProvider>
+    </>
   );
 }
 

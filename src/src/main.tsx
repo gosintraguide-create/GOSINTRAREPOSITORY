@@ -14,32 +14,33 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   </React.StrictMode>,
 );
 
-// TEMPORARILY DISABLED - Service Worker registration
-// Uncomment this section once the module loading errors are resolved
-/*
+// Register Service Worker for offline capabilities
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
       .register("/sw.js")
       .then((registration) => {
-        console.log("Service Worker registered:", registration);
+        console.log("Service Worker registered with scope:", registration.scope);
+        
+        // Handle updates
+        registration.onupdatefound = () => {
+          const installingWorker = registration.installing;
+          if (installingWorker) {
+            installingWorker.onstatechange = () => {
+              if (installingWorker.state === 'installed') {
+                if (navigator.serviceWorker.controller) {
+                  console.log('New content is available; please refresh.');
+                  // Optional: Show a toast or banner to the user
+                } else {
+                  console.log('Content is cached for offline use.');
+                }
+              }
+            };
+          }
+        };
       })
       .catch((error) => {
-        console.log(
-          "Service Worker registration failed:",
-          error,
-        );
+        console.error("Service Worker registration failed:", error);
       });
-  });
-}
-*/
-
-// Unregister any existing service workers to clear old cache
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.getRegistrations().then((registrations) => {
-    registrations.forEach((registration) => {
-      console.log("Unregistering service worker:", registration);
-      registration.unregister();
-    });
   });
 }

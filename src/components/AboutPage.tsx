@@ -9,7 +9,6 @@ import {
 import { Card } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
-import { motion } from "motion/react";
 
 interface OutletContext {
   language: string;
@@ -34,48 +33,29 @@ export function AboutPage() {
   return (
     <div className="flex-1">
       {/* Hero Section */}
-      <section className="bg-primary py-16 sm:py-24">
+      <section className="bg-primary py-12 sm:py-16 lg:py-24">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-          <motion.div
-            className="mb-6 flex justify-center"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 0.5, type: "spring" }}
-          >
-            <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-white shadow-xl sm:h-24 sm:w-24">
-              <Heart className="h-10 w-10 text-accent sm:h-12 sm:w-12" />
+          <div className="mb-4 sm:mb-6 flex justify-center animate-[scaleIn_0.5s_ease-out]">
+            <div className="flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-2xl bg-white shadow-xl lg:h-24 lg:w-24">
+              <Heart className="h-8 w-8 sm:h-10 sm:w-10 text-accent lg:h-12 lg:w-12" />
             </div>
-          </motion.div>
+          </div>
 
-          <motion.h1
-            className="mb-4 text-white"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
+          <h1 className="mb-4 text-white animate-[fadeInUp_0.6s_ease-out_0.2s_both]">
             {content.about.title}
-          </motion.h1>
+          </h1>
 
-          <motion.p
-            className="mx-auto max-w-2xl text-xl text-white/90"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
+          <p className="mx-auto max-w-2xl text-base sm:text-lg lg:text-xl text-white/90 animate-[fadeInUp_0.6s_ease-out_0.3s_both]">
             {content.about.subtitle}
-          </motion.p>
+          </p>
         </div>
       </section>
 
       {/* Story Section */}
-      <section className="py-16 sm:py-24">
+      <section className="py-12 sm:py-16 lg:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-2 lg:items-center lg:gap-16">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
+            <div>
               <Badge className="mb-4">Our Journey</Badge>
               <h2 className="mb-6 text-foreground">How Hop On Sintra Was Born</h2>
               <div className="space-y-4 text-muted-foreground">
@@ -83,21 +63,15 @@ export function AboutPage() {
                   <p key={index}>{paragraph}</p>
                 ))}
               </div>
-            </motion.div>
+            </div>
 
-            <motion.div
-              className="overflow-hidden rounded-2xl shadow-2xl"
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              whileHover={{ scale: 1.02 }}
-            >
+            <div className="overflow-hidden rounded-2xl shadow-2xl transition-transform hover:scale-[1.02]">
               <ImageWithFallback
                 src="https://images.unsplash.com/photo-1668945306762-a31d14d8a940?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzaW50cmElMjBwb3J0dWdhbCUyMHBhbGFjZXxlbnwxfHx8fDE3NjAxNDAyMDB8MA&ixlib=rb-4.1.0&q=80&w=1080"
                 alt="Sintra Palace"
                 className="h-full w-full object-cover"
               />
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -126,13 +100,7 @@ export function AboutPage() {
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {perks.map((perk, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
+              <div key={index}>
                 <Card className="h-full p-6 transition-all hover:shadow-lg">
                   <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                     <perk.icon className="h-6 w-6 text-primary" />
@@ -140,7 +108,7 @@ export function AboutPage() {
                   <h3 className="mb-2 text-foreground">{perk.title}</h3>
                   <p className="text-sm text-muted-foreground">{perk.description}</p>
                 </Card>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -163,13 +131,7 @@ export function AboutPage() {
                 Target;
               
               return (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.15 }}
-                >
+                <div key={index}>
                   <Card className="h-full p-8 text-center transition-all hover:shadow-lg">
                     <div className="mb-6 flex justify-center">
                       <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-primary/10">
@@ -179,7 +141,7 @@ export function AboutPage() {
                     <h3 className="mb-3 text-foreground">{value.title}</h3>
                     <p className="text-muted-foreground">{value.description}</p>
                   </Card>
-                </motion.div>
+                </div>
               );
             })}
           </div>
@@ -218,18 +180,12 @@ export function AboutPage() {
                 a: "Vehicles with professional driver-guides depart every 30 minutes from all major attractions during operating hours (9:00 AM - 7:00 PM)."
               }
             ].map((faq, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
-              >
+              <div key={index}>
                 <Card className="p-6 transition-all hover:shadow-lg">
                   <h4 className="mb-2 text-foreground">{faq.q}</h4>
                   <p className="text-muted-foreground">{faq.a}</p>
                 </Card>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>

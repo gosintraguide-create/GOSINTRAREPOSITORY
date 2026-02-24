@@ -6,11 +6,11 @@ import { Checkbox } from "./ui/checkbox";
 import { getCookieContent } from "../lib/translations";
 
 interface CookieConsentProps {
-  language: string;
-  onNavigate: (page: string) => void;
+  language?: string;
+  onNavigate?: (page: string) => void;
 }
 
-export function CookieConsent({ language, onNavigate }: CookieConsentProps) {
+export function CookieConsent({ language = "en", onNavigate }: CookieConsentProps) {
   const [showBanner, setShowBanner] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [preferences, setPreferences] = useState({
@@ -92,7 +92,7 @@ export function CookieConsent({ language, onNavigate }: CookieConsentProps) {
                 <p className="mb-4 text-muted-foreground">
                   {content.description}{" "}
                   <button
-                    onClick={() => onNavigate("privacy-policy")}
+                    onClick={() => onNavigate?.("privacy-policy")}
                     className="text-primary hover:underline"
                   >
                     {content.privacyLink}
