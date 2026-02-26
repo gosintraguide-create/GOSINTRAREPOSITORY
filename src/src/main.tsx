@@ -2,9 +2,10 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "../App.tsx";
 import { ErrorBoundary } from "../components/ErrorBoundary.tsx";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 import "../styles/globals.css";
+
+// Note: slick-carousel CSS is loaded via slick-custom.css instead
+// to avoid potential module resolution issues
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -21,18 +22,16 @@ if ("serviceWorker" in navigator) {
       .register("/sw.js")
       .then((registration) => {
         console.log("Service Worker registered with scope:", registration.scope);
-        
-        // Handle updates
+
         registration.onupdatefound = () => {
           const installingWorker = registration.installing;
           if (installingWorker) {
             installingWorker.onstatechange = () => {
-              if (installingWorker.state === 'installed') {
+              if (installingWorker.state === "installed") {
                 if (navigator.serviceWorker.controller) {
-                  console.log('New content is available; please refresh.');
-                  // Optional: Show a toast or banner to the user
+                  console.log("New content is available; please refresh.");
                 } else {
-                  console.log('Content is cached for offline use.');
+                  console.log("Content is cached for offline use.");
                 }
               }
             };

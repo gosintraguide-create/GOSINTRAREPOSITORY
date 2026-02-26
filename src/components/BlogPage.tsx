@@ -5,7 +5,6 @@ import { Card } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Input } from "./ui/input";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
-// SEOHead replaced with inline useEffect DOM manipulation (matching pattern used across all other pages)
 import {
   Search,
   Clock,
@@ -22,6 +21,9 @@ import {
   Camera,
   Utensils,
   Bus,
+  Car,
+  Landmark,
+  ChevronRight,
 } from "lucide-react";
 import { getUITranslation } from "../lib/translations";
 import {
@@ -49,14 +51,9 @@ export function BlogPage() {
   const { language = "en", onNavigate } = useOutletContext<OutletContext>();
   const content = loadContentWithLanguage(language);
   const [articles, setArticles] = useState<BlogArticle[]>([]);
-  const [categories, setCategories] = useState<BlogCategory[]>(
-    [],
-  );
-  const [filteredArticles, setFilteredArticles] = useState<
-    BlogArticle[]
-  >([]);
-  const [selectedCategory, setSelectedCategory] =
-    useState<string>("all");
+  const [categories, setCategories] = useState<BlogCategory[]>([]);
+  const [filteredArticles, setFilteredArticles] = useState<BlogArticle[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
@@ -107,10 +104,9 @@ export function BlogPage() {
     const loadData = async () => {
       setIsLoading(true);
       try {
-        // Load from server first (which will cache to localStorage)
         const loadedArticles = await loadArticlesFromServer(projectId, publicAnonKey);
         const loadedCategories = await loadCategoriesFromServer(projectId, publicAnonKey);
-        
+
         const publishedArticles = loadedArticles.filter(article => article.isPublished);
         setArticles(publishedArticles);
         setCategories(loadedCategories);
@@ -121,19 +117,17 @@ export function BlogPage() {
         setIsLoading(false);
       }
     };
-    
+
     loadData();
   }, []);
 
   useEffect(() => {
     let filtered = articles;
 
-    // Filter by category
     if (selectedCategory !== "all") {
       filtered = filtered.filter(article => article.category === selectedCategory);
     }
 
-    // Filter by search query (search in current language)
     if (searchQuery.trim()) {
       const lowerQuery = searchQuery.toLowerCase();
       filtered = filtered.filter(article => {
@@ -146,7 +140,6 @@ export function BlogPage() {
       });
     }
 
-    // Sort by publish date
     filtered = [...filtered].sort(
       (a, b) =>
         new Date(b.publishDate).getTime() -
@@ -162,7 +155,6 @@ export function BlogPage() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    // Map language codes to locale strings
     const localeMap: Record<string, string> = {
       en: "en-US",
       pt: "pt-PT",
@@ -188,7 +180,6 @@ export function BlogPage() {
       const categoryTranslation = getCategoryTranslation(category, language);
       return categoryTranslation.name;
     }
-    // Fallback to translated category name from content
     return (
       content.blog.categories[
         categorySlug as keyof typeof content.blog.categories
@@ -200,7 +191,7 @@ export function BlogPage() {
     const iconMap: Record<string, typeof Search> = {
       "Pena Palace": Search,
       "Sintra Castle": Map,
-      "Palácio Nacional de Sintra": Camera,
+      "Palacio Nacional de Sintra": Camera,
       "Sintra Village": Utensils,
       "Sintra Transportation": Bus,
     };
@@ -209,7 +200,7 @@ export function BlogPage() {
 
   return (
     <div className="flex-1">
-      {/* SEOHead replaced with inline useEffect DOM manipulation (matching pattern used across all other pages) */}
+      {/* Hero / Search Section */}
       <section className="border-b border-border bg-white py-12">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="mb-6 text-center">
@@ -218,7 +209,7 @@ export function BlogPage() {
             </h1>
             <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
               {content.blog.pageSubtitle
-                .replace(/✨/g, "")
+                .replace(/\u2728/g, "")
                 .trim()}
             </p>
           </div>
@@ -316,7 +307,7 @@ export function BlogPage() {
               </div>
 
               <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                {filteredArticles.map((article, index) => (
+                {filteredArticles.map((article) => (
                   <div key={article.id}>
                     <Card
                       className="group h-full cursor-pointer overflow-hidden transition-all hover:shadow-xl"
@@ -396,6 +387,88 @@ export function BlogPage() {
         </div>
       </section>
 
+      {/* Explore More Section */}
+      <section className="py-16 sm:py-20 bg-white">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-12 text-center">
+            <h2 className="mb-4 text-foreground">
+              Plan Your Sintra Adventure
+            </h2>
+            <p className="mx-auto max-w-2xl text-muted-foreground">
+              Ready to explore? Choose the best way to experience Sintra
+            </p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            {/* Hop On Service Link */}
+            <Card
+              className="p-6 shadow-md hover:shadow-xl transition-all cursor-pointer group"
+              onClick={() => onNavigate("hop-on-service")}
+            >
+              <div className="mb-4">
+                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
+                  <Car className="h-7 w-7" />
+                </div>
+              </div>
+              <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                Hop On Service
+                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+              </h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Unlimited hop-on/hop-off day pass to all major attractions with guaranteed seating
+              </p>
+              <Badge className="bg-primary/10 text-primary">
+                Most Flexible
+              </Badge>
+            </Card>
+
+            {/* Attractions Link */}
+            <Card
+              className="p-6 shadow-md hover:shadow-xl transition-all cursor-pointer group"
+              onClick={() => onNavigate("attractions")}
+            >
+              <div className="mb-4">
+                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 group-hover:bg-amber-500/20 transition-colors">
+                  <Landmark className="h-7 w-7" />
+                </div>
+              </div>
+              <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                Attractions
+                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+              </h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Explore UNESCO palaces, castles, and historic sites across Sintra
+              </p>
+              <Badge className="bg-amber-500/10 text-amber-600">
+                11+ Destinations
+              </Badge>
+            </Card>
+
+            {/* Private Tours Link */}
+            <Card
+              className="p-6 shadow-md hover:shadow-xl transition-all cursor-pointer group"
+              onClick={() => onNavigate("private-tours")}
+            >
+              <div className="mb-4">
+                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-purple-500/10 text-purple-600 group-hover:bg-purple-500/20 transition-colors">
+                  <Compass className="h-7 w-7" />
+                </div>
+              </div>
+              <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                Private Tours
+                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+              </h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Personalized guided experiences with local experts and custom itineraries
+              </p>
+              <Badge className="bg-purple-500/10 text-purple-600">
+                Exclusive Access
+              </Badge>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* Categories Overview */}
       <section className="border-t border-border bg-secondary/30 py-16 sm:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -412,7 +485,7 @@ export function BlogPage() {
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {categories.map((category, index) => {
+            {categories.map((category) => {
               const catTranslation = getCategoryTranslation(category, language);
               const Icon = getCategoryIcon(catTranslation.name);
               const articlesInCategory =

@@ -1,10 +1,11 @@
-import { useEffect, useState, Suspense, lazy } from "react";
+import { useEffect, useState, Suspense, lazy, useRef } from "react";
 import { Outlet, useLocation, useNavigate, useMatches } from "react-router";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { Toaster } from "./ui/sonner";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { ArrowUp } from "lucide-react";
+import { useEditableContent } from "../lib/useEditableContent";
 
 // Lazy load LiveChatWidget to avoid initial bundle bloat
 const LiveChatWidget = lazy(() => import("./LiveChatWidget").then(m => ({ default: m.LiveChatWidget })));
@@ -23,9 +24,49 @@ const LOCALE_MAP: Record<string, string> = {
 export function RootLayout() {
   const [language, setLanguage] = useState<string>("en");
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [isLanguageInitialized, setIsLanguageInitialized] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const matches = useMatches();
+
+  // Get content for OG images - useEditableContent returns ComprehensiveContent directly
+  const editableContent = useEditableContent(language);
+
+  // Get enabled languages from admin settings and stabilize the array reference
+  const enabledLanguages = editableContent?.adminSettings?.enabledLanguages || ['en', 'pt', 'es', 'fr', 'de', 'nl', 'it'];
+  const enabledLanguagesKey = JSON.stringify(enabledLanguages);
+  const prevEnabledLanguagesKeyRef = useRef<string>('');
+
+  // Helper function to get browser's preferred language
+  const getBrowserLanguage = (): string => {
+    // Get browser language (e.g., "en-US", "pt-BR", "es")
+    const browserLang = navigator.language || (navigator as any).userLanguage;
+    // Extract the language code (e.g., "en" from "en-US")
+    const langCode = browserLang.split('-')[0].toLowerCase();
+    return langCode;
+  };
+
+  // Helper function to get the best available language based on preference and enabled languages
+  const getBestAvailableLanguage = (preferredLang: string | null, availableLanguages: string[]): string => {
+    // If preferred language is enabled, use it
+    if (preferredLang && availableLanguages.includes(preferredLang)) {
+      return preferredLang;
+    }
+    
+    // Try browser language
+    const browserLang = getBrowserLanguage();
+    if (availableLanguages.includes(browserLang)) {
+      return browserLang;
+    }
+    
+    // Otherwise, fall back to first enabled language (preferably English)
+    if (availableLanguages.includes('en')) {
+      return 'en';
+    }
+    
+    // If English is disabled, use the first enabled language
+    return availableLanguages[0] || 'en';
+  };
 
   // Get meta data from route handle
   const currentRoute = matches[matches.length - 1];
@@ -48,13 +89,23 @@ export function RootLayout() {
     return "home";
   };
 
-  // Load language from localStorage
+  // Load language from localStorage or detect from browser, respecting enabled languages
   useEffect(() => {
-    const savedLanguage = localStorage.getItem("language");
-    if (savedLanguage) {
-      setLanguage(savedLanguage);
+    // Only validate if enabled languages actually changed or on first initialization
+    if (prevEnabledLanguagesKeyRef.current !== enabledLanguagesKey) {
+      const savedLanguage = localStorage.getItem("language");
+      const bestLanguage = getBestAvailableLanguage(savedLanguage, enabledLanguages);
+      
+      // Only update if different from current
+      if (bestLanguage !== language) {
+        setLanguage(bestLanguage);
+        localStorage.setItem("language", bestLanguage);
+      }
+      
+      prevEnabledLanguagesKeyRef.current = enabledLanguagesKey;
+      setIsLanguageInitialized(true);
     }
-  }, []);
+  }, [enabledLanguagesKey]); // Re-run when enabled languages key changes
 
   // Scroll restoration on route change
   useEffect(() => {
@@ -92,13 +143,11 @@ export function RootLayout() {
     } else if (page === "attractions") {
       navigate("/attractions");
     } else if (page === "attraction-detail") {
-      // Generate slug from attraction name or use provided slug
       const slug = data?.slug || generateSlugFromName(data?.attractionName);
       navigate(`/attractions/${slug}`, { state: data });
     } else if (page === "private-tours") {
       navigate("/private-tours");
     } else if (page === "private-tour-detail") {
-      // Generate slug from tour ID or use provided slug
       const slug = data?.slug || data?.tourId;
       navigate(`/private-tours/${slug}`, { state: data });
     } else if (page === "blog") {
@@ -117,7 +166,6 @@ export function RootLayout() {
     } else if (page === "driver-portal") {
       navigate("/driver");
     } else {
-      // Fallback for any unknown pages
       navigate(`/${page}`);
     }
   };
@@ -134,16 +182,16 @@ export function RootLayout() {
   // Consistent canonical base URL
   const canonicalBase = "https://www.hoponsintra.com";
 
-  // Manage meta tags via direct DOM manipulation (replaces react-helmet-async)
+  // Manage meta tags via direct DOM manipulation
   useEffect(() => {
-    const updateMeta = (attr: string, attrValue: string, content: string) => {
+    const updateMeta = (attr: string, attrValue: string, metaContent: string) => {
       let el = document.querySelector(`meta[${attr}="${attrValue}"]`);
       if (!el) {
         el = document.createElement("meta");
         el.setAttribute(attr, attrValue);
         document.head.appendChild(el);
       }
-      el.setAttribute("content", content);
+      el.setAttribute("content", metaContent);
     };
 
     const pageTitle = (meta as any).title || "Hop On Sintra";
@@ -172,12 +220,17 @@ export function RootLayout() {
     canonical.href = canonicalUrl;
 
     // Open Graph
+    const defaultOgImage = "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop&q=80";
+    const ogImage = editableContent?.seo?.defaultOgImage || defaultOgImage;
+
     updateMeta("property", "og:type", "website");
     updateMeta("property", "og:site_name", "Hop On Sintra");
     updateMeta("property", "og:title", pageTitle);
     updateMeta("property", "og:description", pageDesc);
     updateMeta("property", "og:url", canonicalUrl);
-    updateMeta("property", "og:image", "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop");
+    updateMeta("property", "og:image", ogImage);
+    updateMeta("property", "og:image:secure_url", ogImage);
+    updateMeta("property", "og:image:alt", pageTitle);
     updateMeta("property", "og:image:width", "1200");
     updateMeta("property", "og:image:height", "630");
     updateMeta("property", "og:locale", LOCALE_MAP[language] || "en_US");
@@ -186,8 +239,9 @@ export function RootLayout() {
     updateMeta("name", "twitter:card", "summary_large_image");
     updateMeta("name", "twitter:title", pageTitle);
     updateMeta("name", "twitter:description", pageDesc);
-    updateMeta("name", "twitter:image", "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop");
-  }, [meta, location.pathname, language]);
+    updateMeta("name", "twitter:image", ogImage);
+    updateMeta("name", "twitter:image:alt", pageTitle);
+  }, [meta, location.pathname, language, editableContent]);
 
   return (
     <>
@@ -223,10 +277,10 @@ export function RootLayout() {
       )}
 
       <Toaster />
-      
+
       {/* Live Chat Widget - show on all pages except admin, driver, and live-chat */}
-      {!location.pathname.startsWith("/admin") && 
-       !location.pathname.startsWith("/driver") && 
+      {!location.pathname.startsWith("/admin") &&
+       !location.pathname.startsWith("/driver") &&
        location.pathname !== "/live-chat" && (
         <Suspense fallback={null}>
           <LiveChatWidget language={language} />

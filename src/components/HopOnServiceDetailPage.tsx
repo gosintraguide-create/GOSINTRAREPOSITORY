@@ -24,6 +24,8 @@ import {
   Sparkles,
   CalendarCheck,
   Star,
+  BookOpen,
+  Compass,
 } from "lucide-react";
 import {
   loadContentWithLanguage,
@@ -289,7 +291,8 @@ export function HopOnServiceDetailPage() {
     updateMeta("property", "og:title", "Hop On Sintra Day Pass - Unlimited Access to All Attractions");
     updateMeta("property", "og:description", "Explore Sintra with unlimited hop-on/hop-off access. Guaranteed seating, 9am-7pm service. Visit all major palaces and attractions at your pace.");
     updateMeta("property", "og:url", "https://hoponsintra.com/hop-on-service");
-    updateMeta("property", "og:image", "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1200&h=630&fit=crop");
+    updateMeta("property", "og:image", comprehensiveContent.content?.seo?.hopOnService?.ogImage || comprehensiveContent.content?.seo?.defaultOgImage || "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1200&h=630&fit=crop&q=80");
+    updateMeta("property", "og:image:secure_url", comprehensiveContent.content?.seo?.hopOnService?.ogImage || comprehensiveContent.content?.seo?.defaultOgImage || "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1200&h=630&fit=crop&q=80");
     updateMeta("property", "og:image:width", "1200");
     updateMeta("property", "og:image:height", "630");
     updateMeta("property", "og:image:alt", "Hop On Sintra - Tuk-tuk transportation in Sintra, Portugal");
@@ -302,7 +305,7 @@ export function HopOnServiceDetailPage() {
     updateMeta("name", "twitter:card", "summary_large_image");
     updateMeta("name", "twitter:title", "Hop On Sintra Day Pass - Unlimited Access to All Attractions");
     updateMeta("name", "twitter:description", "Explore Sintra with unlimited hop-on/hop-off access. Guaranteed seating, 9am-7pm service. Visit all major palaces and attractions at your pace.");
-    updateMeta("name", "twitter:image", "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1200&h=630&fit=crop");
+    updateMeta("name", "twitter:image", comprehensiveContent.content?.seo?.hopOnService?.ogImage || comprehensiveContent.content?.seo?.defaultOgImage || "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1200&h=630&fit=crop&q=80");
     updateMeta("name", "twitter:image:alt", "Hop On Sintra - Tuk-tuk transportation in Sintra, Portugal");
 
     // Additional meta
@@ -316,7 +319,7 @@ export function HopOnServiceDetailPage() {
       document.head.appendChild(canonical);
     }
     canonical.href = "https://hoponsintra.com/hop-on-service";
-  }, [language]);
+  }, [language, comprehensiveContent]);
 
   return (
     <div className="flex-1">
@@ -518,6 +521,56 @@ export function HopOnServiceDetailPage() {
                     </AccordionItem>
                   ))}
                 </Accordion>
+              </div>
+
+              {/* Explore More Section */}
+              <div>
+                <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-foreground">
+                  Plan Your Perfect Trip
+                </h2>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {/* Travel Guide Link */}
+                  <Card
+                    className="p-6 shadow-md hover:shadow-xl transition-all cursor-pointer group"
+                    onClick={() => navigate("/blog")}
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 group-hover:bg-blue-500/20 transition-colors">
+                        <BookOpen className="h-6 w-6" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                          Travel Guide
+                          <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          Discover insider tips, best times to visit each palace, and hidden gems of Sintra
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+
+                  {/* Private Tours Link */}
+                  <Card
+                    className="p-6 shadow-md hover:shadow-xl transition-all cursor-pointer group"
+                    onClick={() => navigate("/private-tours")}
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-purple-500/10 text-purple-600 group-hover:bg-purple-500/20 transition-colors">
+                        <Compass className="h-6 w-6" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                          Private Tours
+                          <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          Want a personalized experience? Explore custom tours with expert local guides
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
               </div>
 
               {/* Call to Action - Mobile */}

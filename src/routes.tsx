@@ -100,7 +100,6 @@ export const router = createBrowserRouter([
         ),
         handle: {
           meta: {
-            // Dynamic meta will be set by the component based on attraction
             index: true,
           },
         },
@@ -124,7 +123,6 @@ export const router = createBrowserRouter([
         element: <PrivateTourDetailPage />,
         handle: {
           meta: {
-            // Dynamic meta will be set by the component based on tour
             index: true,
           },
         },
@@ -148,7 +146,6 @@ export const router = createBrowserRouter([
         element: <BlogArticlePage />,
         handle: {
           meta: {
-            // Dynamic meta will be set by the component based on article
             index: true,
           },
         },
@@ -205,7 +202,7 @@ export const router = createBrowserRouter([
           meta: {
             title: "Buy Day Pass - Hop On Sintra",
             description: "Purchase your Sintra day pass for unlimited hop-on/hop-off access.",
-            index: false, // Not indexed - users should arrive via home or detail pages
+            index: false,
           },
         },
       },

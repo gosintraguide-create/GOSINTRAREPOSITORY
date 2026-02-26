@@ -64,6 +64,8 @@ export function SEOHead({
     updateMetaTag("og:title", title, true);
     updateMetaTag("og:description", description, true);
     updateMetaTag("og:image", ogImage, true);
+    updateMetaTag("og:image:secure_url", ogImage, true); // Important for HTTPS sites
+    updateMetaTag("og:image:alt", title, true); // Accessibility for social previews
     updateMetaTag("og:image:width", "1200", true);
     updateMetaTag("og:image:height", "630", true);
     updateMetaTag("og:type", "website", true);

@@ -12,6 +12,10 @@ import {
   ArrowRight,
   Landmark,
   Ticket,
+  Car,
+  Compass,
+  BookOpen,
+  ChevronRight,
 } from "lucide-react";
 import {
   loadArticles,
@@ -383,20 +387,84 @@ export function AttractionsPage() {
         </div>
       </section>
 
-      {/* Listing Info Section - matches BlogPage categories overview style */}
-      <section className="border-t border-border bg-secondary/30 py-16 sm:py-20">
+      {/* Explore More Section */}
+      <section className="py-16 sm:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="mb-12 text-center">
-            <Badge className="mb-4">
-              <MapPin className="mr-1 h-3 w-3" />
-              {content.navigation?.attractions || "Attractions"}
-            </Badge>
             <h2 className="mb-4 text-foreground">
-              {content.attractions.listingIntro?.title || "Where Your Day Pass Takes You"}
+              More Ways to Explore Sintra
             </h2>
-            <p className="text-muted-foreground">
-              {content.attractions.listingIntro?.description || "All these incredible attractions are included in your hop-on/hop-off route. Visit as many as you like in a single day."}
+            <p className="mx-auto max-w-2xl text-muted-foreground">
+              Discover our services designed to make your Sintra experience unforgettable
             </p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            {/* Hop On Service Link */}
+            <Card
+              className="p-6 shadow-md hover:shadow-xl transition-all cursor-pointer group"
+              onClick={() => navigate("/hop-on-service")}
+            >
+              <div className="mb-4">
+                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
+                  <Car className="h-7 w-7" />
+                </div>
+              </div>
+              <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                Hop On Service
+                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+              </h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Unlimited hop-on/hop-off day pass to visit all attractions at your own pace
+              </p>
+              <Badge className="bg-primary/10 text-primary">
+                9am - 7pm Daily
+              </Badge>
+            </Card>
+
+            {/* Private Tours Link */}
+            <Card
+              className="p-6 shadow-md hover:shadow-xl transition-all cursor-pointer group"
+              onClick={() => navigate("/private-tours")}
+            >
+              <div className="mb-4">
+                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-purple-500/10 text-purple-600 group-hover:bg-purple-500/20 transition-colors">
+                  <Compass className="h-7 w-7" />
+                </div>
+              </div>
+              <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                Private Tours
+                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+              </h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Personalized guided tours with expert local guides and custom itineraries
+              </p>
+              <Badge className="bg-purple-500/10 text-purple-600">
+                Custom Experience
+              </Badge>
+            </Card>
+
+            {/* Travel Guide Link */}
+            <Card
+              className="p-6 shadow-md hover:shadow-xl transition-all cursor-pointer group"
+              onClick={() => navigate("/blog")}
+            >
+              <div className="mb-4">
+                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 group-hover:bg-blue-500/20 transition-colors">
+                  <BookOpen className="h-7 w-7" />
+                </div>
+              </div>
+              <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                Travel Guide
+                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+              </h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Insider tips, photography spots, and expert advice for visiting Sintra
+              </p>
+              <Badge className="bg-blue-500/10 text-blue-600">
+                Local Insights
+              </Badge>
+            </Card>
           </div>
         </div>
       </section>

@@ -107,6 +107,7 @@ export function ContentEditor() {
             ...contentByLanguage[langCode],
             adminSettings: {
               autoTranslateEnabled,
+              enabledLanguages: contentByLanguage[langCode].adminSettings?.enabledLanguages || ['en', 'pt', 'es', 'fr', 'de', 'nl', 'it'],
             },
           };
           
@@ -295,11 +296,18 @@ export function ContentEditor() {
       lastPathElement.toLowerCase().includes('image') || 
       lastPathElement === 'gallery';
     
+    // Check if this is an admin setting that should sync across all languages
+    const isAdminSetting = path[0] === 'adminSettings';
+    
     setContent(prev => {
       const newContent = JSON.parse(JSON.stringify(prev)); // Deep clone
       let current: any = newContent;
       
       for (let i = 0; i < path.length - 1; i++) {
+        // Initialize path if it doesn't exist
+        if (current[path[i]] === undefined) {
+          current[path[i]] = {};
+        }
         current = current[path[i]];
       }
       
@@ -307,8 +315,8 @@ export function ContentEditor() {
       
       // Update the contentByLanguage cache
       setContentByLanguage(prevByLang => {
-        // If this is an image field, sync it to ALL languages
-        if (isImageField) {
+        // If this is an image field or admin setting, sync it to ALL languages
+        if (isImageField || isAdminSetting) {
           const updatedAllLanguages: Record<string, ComprehensiveContent> = {};
           
           SUPPORTED_LANGUAGES.forEach(lang => {
@@ -316,6 +324,10 @@ export function ContentEditor() {
             let current: any = langContent;
             
             for (let i = 0; i < path.length - 1; i++) {
+              // Initialize path if it doesn't exist
+              if (current[path[i]] === undefined) {
+                current[path[i]] = {};
+              }
               current = current[path[i]];
             }
             
@@ -323,23 +335,25 @@ export function ContentEditor() {
             updatedAllLanguages[lang.code] = langContent;
           });
           
-          // Mark all languages as modified when an image is updated
+          // Mark all languages as modified when an image or admin setting is updated
           setModifiedLanguages(prev => {
             const newSet = new Set(prev);
             SUPPORTED_LANGUAGES.forEach(lang => newSet.add(lang.code));
             return newSet;
           });
           
-          // Show a toast notification that image was synced to all languages
-          if (value) {
+          // Show a toast notification
+          if (isImageField && value) {
             toast.success(`Image synced to all ${SUPPORTED_LANGUAGES.length} languages!`, {
               description: "This image will appear in all language versions"
             });
+          } else if (isAdminSetting) {
+            toast.success(`Setting synced to all ${SUPPORTED_LANGUAGES.length} languages!`);
           }
           
           return updatedAllLanguages;
         } else {
-          // For non-image fields, only update current language
+          // For non-image fields and non-admin settings, only update current language
           return {
             ...prevByLang,
             [currentLanguage]: newContent,
@@ -347,8 +361,8 @@ export function ContentEditor() {
         }
       });
       
-      // Mark this language as modified (or all if image)
-      if (!isImageField) {
+      // Mark this language as modified (or all if image/admin setting)
+      if (!isImageField && !isAdminSetting) {
         setModifiedLanguages(prev => new Set(prev).add(currentLanguage));
       }
       setHasChanges(true);
@@ -1054,6 +1068,66 @@ export function ContentEditor() {
                   onChange={(e) => updateContent(["navigation", "manageBooking"], e.target.value)}
                 />
               </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <h3 className="mb-4 text-foreground flex items-center gap-2">
+              <Languages className="h-5 w-5" />
+              Language Settings
+            </h3>
+            <Alert className="mb-4">
+              <Globe className="h-4 w-4" />
+              <AlertDescription>
+                Control which languages are visible to end users. You can still edit all languages here, but only enabled languages will appear in the language selector on your website. English is always enabled as the fallback language.
+              </AlertDescription>
+            </Alert>
+            <div className="space-y-3">
+              {SUPPORTED_LANGUAGES.map((lang) => {
+                const isEnabled = content.adminSettings?.enabledLanguages?.includes(lang.code) ?? true;
+                const isEnglish = lang.code === 'en';
+                
+                return (
+                  <div key={lang.code} className="flex items-center justify-between rounded-lg border border-border bg-card p-4">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">{lang.flag}</span>
+                      <div>
+                        <p className="font-medium text-foreground">{lang.name}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {lang.code.toUpperCase()}
+                          {isEnglish && " (Required)"}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {isEnabled ? (
+                        <Badge variant="default" className="bg-green-500">
+                          <Check className="mr-1 h-3 w-3" />
+                          Enabled
+                        </Badge>
+                      ) : (
+                        <Badge variant="secondary">
+                          Disabled
+                        </Badge>
+                      )}
+                      <Switch
+                        checked={isEnabled}
+                        disabled={isEnglish}
+                        onCheckedChange={(checked) => {
+                          if (isEnglish) return; // Prevent disabling English
+                          
+                          const currentEnabledLanguages = content.adminSettings?.enabledLanguages || ['en', 'pt', 'es', 'fr', 'de', 'nl', 'it'];
+                          const newEnabledLanguages = checked
+                            ? [...currentEnabledLanguages, lang.code]
+                            : currentEnabledLanguages.filter(code => code !== lang.code);
+                          
+                          updateContent(["adminSettings", "enabledLanguages"], newEnabledLanguages);
+                        }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </Card>
         </TabsContent>
@@ -2806,8 +2880,42 @@ export function ContentEditor() {
 
           <Card className="p-6">
             <h3 className="mb-4 text-foreground">SEO Meta Tags</h3>
+            
+            {/* Default OG Image Setting */}
+            <div className="mb-6 rounded-lg border border-border bg-muted/30 p-4">
+              <Label className="mb-2 block text-base font-semibold">Default Open Graph Image</Label>
+              <p className="mb-3 text-sm text-muted-foreground">
+                This is the preview image that appears when sharing links on WhatsApp, Facebook, Twitter, etc. 
+                Recommended size: 1200x630px. This image will be used site-wide unless a page-specific image is set below.
+              </p>
+              <div className="space-y-3">
+                <Input
+                  value={content.seo.defaultOgImage}
+                  onChange={(e) => updateContent(["seo", "defaultOgImage"], e.target.value)}
+                  placeholder="https://images.unsplash.com/photo-..."
+                />
+                {content.seo.defaultOgImage && (
+                  <div className="overflow-hidden rounded-md border border-border">
+                    <img 
+                      src={content.seo.defaultOgImage} 
+                      alt="Default OG Preview" 
+                      className="h-auto w-full"
+                      style={{ maxHeight: '200px', objectFit: 'cover' }}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Page-Specific SEO Settings */}
             <Accordion type="single" collapsible className="w-full">
-              {Object.entries(content.seo).map(([page, seoData]) => (
+              {Object.entries(content.seo).filter(([key]) => key !== 'defaultOgImage').map(([page, seoData]) => {
+                // Type guard: ensure seoData is an object with the expected properties
+                if (typeof seoData === 'string' || !seoData || !('title' in seoData)) {
+                  return null;
+                }
+                
+                return (
                 <AccordionItem key={page} value={page}>
                   <AccordionTrigger>
                     {page.charAt(0).toUpperCase() + page.slice(1)} Page
@@ -2836,10 +2944,32 @@ export function ContentEditor() {
                           onChange={(e) => updateContent(["seo", page, "keywords"], e.target.value)}
                         />
                       </div>
+                      <div>
+                        <Label>Page-Specific Open Graph Image (Optional)</Label>
+                        <p className="mb-2 text-xs text-muted-foreground">
+                          Leave empty to use the default OG image above
+                        </p>
+                        <Input
+                          value={seoData.ogImage || ''}
+                          onChange={(e) => updateContent(["seo", page, "ogImage"], e.target.value)}
+                          placeholder="Use default OG image"
+                        />
+                        {seoData.ogImage && (
+                          <div className="mt-2 overflow-hidden rounded-md border border-border">
+                            <img 
+                              src={seoData.ogImage} 
+                              alt="Page OG Preview" 
+                              className="h-auto w-full"
+                              style={{ maxHeight: '150px', objectFit: 'cover' }}
+                            />
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </AccordionContent>
                 </AccordionItem>
-              ))}
+                );
+              })}
             </Accordion>
           </Card>
         </TabsContent>

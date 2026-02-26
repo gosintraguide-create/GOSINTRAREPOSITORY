@@ -6,6 +6,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { FlagGB, FlagPT, FlagES, FlagFR, FlagDE, FlagNL, FlagIT } from "./FlagIcons";
+import { useEditableContent } from "../lib/useEditableContent";
 
 interface Language {
   code: string;
@@ -30,7 +31,17 @@ interface LanguageSelectorProps {
 }
 
 export function LanguageSelector({ currentLanguage, onLanguageChange }: LanguageSelectorProps) {
-  const selectedLanguage = languages.find((lang) => lang.code === currentLanguage) || languages[0];
+  // Get enabled languages from content settings
+  const content = useEditableContent(currentLanguage);
+  const enabledLanguages = content?.adminSettings?.enabledLanguages || ['en', 'pt', 'es', 'fr', 'de', 'nl', 'it'];
+  
+  // Filter languages to only show enabled ones
+  const availableLanguages = languages.filter(lang => enabledLanguages.includes(lang.code));
+  
+  // Ensure at least English is available
+  const finalLanguages = availableLanguages.length > 0 ? availableLanguages : [languages[0]];
+  
+  const selectedLanguage = finalLanguages.find((lang) => lang.code === currentLanguage) || finalLanguages[0];
   const SelectedFlag = selectedLanguage.FlagComponent;
 
   return (
@@ -40,7 +51,7 @@ export function LanguageSelector({ currentLanguage, onLanguageChange }: Language
         <span className="text-sm">{selectedLanguage.code.toUpperCase()}</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
-        {languages.map((language) => {
+        {finalLanguages.map((language) => {
           const FlagComponent = language.FlagComponent;
           return (
             <DropdownMenuItem

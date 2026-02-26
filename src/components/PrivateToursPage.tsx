@@ -14,6 +14,10 @@ import {
   Mail,
   Phone,
   User,
+  Car,
+  Landmark,
+  BookOpen,
+  ChevronRight,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
@@ -380,6 +384,88 @@ export function PrivateToursPage() {
               </p>
             </div>
           )}
+        </div>
+      </section>
+
+      {/* Explore More Section */}
+      <section className="py-16 sm:py-20">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-12 text-center">
+            <h2 className="mb-4 text-foreground">
+              Other Ways to Experience Sintra
+            </h2>
+            <p className="mx-auto max-w-2xl text-muted-foreground">
+              Explore our flexible options for discovering Sintra's treasures
+            </p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            {/* Hop On Service Link */}
+            <Card
+              className="p-6 shadow-md hover:shadow-xl transition-all cursor-pointer group"
+              onClick={() => onNavigate("hop-on-service")}
+            >
+              <div className="mb-4">
+                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
+                  <Car className="h-7 w-7" />
+                </div>
+              </div>
+              <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                Hop On Service
+                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+              </h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Explore at your own pace with unlimited hop-on/hop-off rides to all major attractions
+              </p>
+              <Badge className="bg-primary/10 text-primary">
+                Freedom & Flexibility
+              </Badge>
+            </Card>
+
+            {/* Attractions Link */}
+            <Card
+              className="p-6 shadow-md hover:shadow-xl transition-all cursor-pointer group"
+              onClick={() => onNavigate("attractions")}
+            >
+              <div className="mb-4">
+                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 group-hover:bg-amber-500/20 transition-colors">
+                  <Landmark className="h-7 w-7" />
+                </div>
+              </div>
+              <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                Attractions
+                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+              </h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Discover UNESCO World Heritage palaces, castles, and historic sites
+              </p>
+              <Badge className="bg-amber-500/10 text-amber-600">
+                11+ Locations
+              </Badge>
+            </Card>
+
+            {/* Travel Guide Link */}
+            <Card
+              className="p-6 shadow-md hover:shadow-xl transition-all cursor-pointer group"
+              onClick={() => onNavigate("blog")}
+            >
+              <div className="mb-4">
+                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 group-hover:bg-blue-500/20 transition-colors">
+                  <BookOpen className="h-7 w-7" />
+                </div>
+              </div>
+              <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                Travel Guide
+                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+              </h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Expert tips, photography spots, and insider advice for visiting Sintra
+              </p>
+              <Badge className="bg-blue-500/10 text-blue-600">
+                Local Expertise
+              </Badge>
+            </Card>
+          </div>
         </div>
       </section>
 

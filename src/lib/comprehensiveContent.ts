@@ -517,19 +517,21 @@ export interface ComprehensiveContent {
 
   // SEO Content
   seo: {
-    home: { title: string; description: string; keywords: string };
-    howItWorks: { title: string; description: string; keywords: string };
-    attractions: { title: string; description: string; keywords: string };
-    buyTicket: { title: string; description: string; keywords: string };
-    about: { title: string; description: string; keywords: string };
-    hopOnService: { title: string; description: string; keywords: string };
-    manageBooking: { title: string; description: string; keywords: string };
-    requestPickup: { title: string; description: string; keywords: string };
+    defaultOgImage: string; // Default Open Graph image for social sharing (WhatsApp, Facebook, etc.)
+    home: { title: string; description: string; keywords: string; ogImage?: string };
+    howItWorks: { title: string; description: string; keywords: string; ogImage?: string };
+    attractions: { title: string; description: string; keywords: string; ogImage?: string };
+    buyTicket: { title: string; description: string; keywords: string; ogImage?: string };
+    about: { title: string; description: string; keywords: string; ogImage?: string };
+    hopOnService: { title: string; description: string; keywords: string; ogImage?: string };
+    manageBooking: { title: string; description: string; keywords: string; ogImage?: string };
+    requestPickup: { title: string; description: string; keywords: string; ogImage?: string };
   };
 
   // Admin Settings (persisted across sessions and devices)
   adminSettings?: {
     autoTranslateEnabled: boolean;
+    enabledLanguages: string[]; // Array of enabled language codes (e.g., ['en', 'pt', 'es'])
   };
 }
 
@@ -1550,10 +1552,12 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
   },
 
   seo: {
+    defaultOgImage: "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop&q=80",
     home: {
       title: "Hop On Sintra - Premium Hop-On/Hop-Off Day Pass | Small Vehicle Tours",
       description: "Explore Sintra's UNESCO World Heritage sites with guaranteed seating in small vehicles. Unlimited rides every 30 minutes. Book your flexible day pass online now.",
       keywords: "Sintra tours, hop on hop off Sintra, Sintra transport, small group tours Sintra, Pena Palace tours, Sintra day pass",
+      ogImage: "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop&q=80",
     },
     howItWorks: {
       title: "How It Works - Hop On Sintra Hop-On/Hop-Off Service",
@@ -1593,6 +1597,7 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
   },
   adminSettings: {
     autoTranslateEnabled: false,
+    enabledLanguages: ['en', 'pt', 'es', 'fr', 'de', 'nl', 'it'], // All languages enabled by default
   },
 };
 
