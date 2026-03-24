@@ -134,10 +134,10 @@ export function ProductCard({ onNavigate, basePrice, language = "en", productTyp
                 <button
                   key={index}
                   onClick={() => setCurrentImageIndex(index)}
-                  className={`h-1.5 rounded-full transition-all ${
+                  className={`h-1 md:h-1.5 rounded-full transition-all ${
                     index === currentImageIndex
-                      ? "bg-white w-5"
-                      : "bg-white/60 w-1.5 hover:bg-white/80"
+                      ? "bg-white w-3 md:w-5"
+                      : "bg-white/60 w-1 md:w-1.5 hover:bg-white/80"
                   }`}
                   aria-label={`Go to image ${index + 1}`}
                 />

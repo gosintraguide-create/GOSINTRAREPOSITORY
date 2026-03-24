@@ -1,4 +1,4 @@
-import { useEffect, useState, Suspense, lazy, useRef } from "react";
+import { useEffect, useState, Suspense, lazy, useRef, useLayoutEffect } from "react";
 import { Outlet, useLocation, useNavigate, useMatches } from "react-router";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
@@ -6,6 +6,7 @@ import { Toaster } from "./ui/sonner";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { ArrowUp } from "lucide-react";
 import { useEditableContent } from "../lib/useEditableContent";
+import { ScrollToTop } from "./ScrollToTop";
 
 // Lazy load LiveChatWidget to avoid initial bundle bloat
 const LiveChatWidget = lazy(() => import("./LiveChatWidget").then(m => ({ default: m.LiveChatWidget })));
@@ -110,7 +111,7 @@ export function RootLayout() {
   // Scroll restoration on route change
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
-  }, [location.pathname]);
+  }, [location.pathname, location.search]);
 
   // Scroll-to-top button visibility
   useEffect(() => {
@@ -421,6 +422,9 @@ export function RootLayout() {
 
   return (
     <>
+      {/* Scroll to top on route change */}
+      <ScrollToTop />
+
       {/* Skip to content link for accessibility */}
       <a href="#main-content" className="skip-to-content">
         Skip to main content

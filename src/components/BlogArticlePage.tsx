@@ -18,9 +18,6 @@ export function BlogArticlePage() {
   const [relatedArticles, setRelatedArticles] = useState<BlogArticle[]>([]);
 
   useEffect(() => {
-    // Scroll to top when component mounts
-    window.scrollTo(0, 0);
-    
     const articles = loadArticles();
     const found = articles.find((a) => a.slug === slug);
     setArticle(found || null);
