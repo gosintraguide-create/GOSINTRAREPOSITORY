@@ -129,15 +129,15 @@ export function ProductCard({ onNavigate, basePrice, language = "en", productTyp
             </button>
 
             {/* Dots Indicator */}
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
               {images.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentImageIndex(index)}
-                  className={`h-1 md:h-1.5 rounded-full transition-all ${
+                  className={`p-0 rounded-full transition-all ${
                     index === currentImageIndex
-                      ? "bg-white w-3 md:w-5"
-                      : "bg-white/60 w-1 md:w-1.5 hover:bg-white/80"
+                      ? "bg-white h-1 w-3 md:h-1.5 md:w-5"
+                      : "bg-white/60 h-1 w-1 md:h-1.5 md:w-1.5 hover:bg-white/80"
                   }`}
                   aria-label={`Go to image ${index + 1}`}
                 />
