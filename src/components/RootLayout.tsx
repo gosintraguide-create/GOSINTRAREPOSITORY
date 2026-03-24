@@ -1,4 +1,4 @@
-import { useEffect, useState, Suspense, lazy, useRef, useLayoutEffect } from "react";
+import { useEffect, useState, Suspense, lazy, useRef } from "react";
 import { Outlet, useLocation, useNavigate, useMatches } from "react-router";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
