@@ -120,92 +120,97 @@ export function BlogArticlePage() {
 
       {/* Article Content */}
       <article className="py-12">
-        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-          <Badge className="mb-4">{categoryName}</Badge>
-          <h1 className="mb-4 text-3xl font-bold leading-tight md:text-4xl">
-            {translation.title}
-          </h1>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col gap-8 lg:flex-row lg:gap-12">
+            {/* Main Article Content */}
+            <div className="flex-1 lg:max-w-3xl">
+              <Badge className="mb-4">{categoryName}</Badge>
+              <h1 className="mb-4 text-3xl font-bold leading-tight md:text-4xl">
+                {translation.title}
+              </h1>
 
-          {/* Meta Information */}
-          <div className="mb-6 flex flex-wrap gap-4 border-b border-border pb-6 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <User className="h-4 w-4" />
-              <span>{article.author}</span>
+              {/* Meta Information */}
+              <div className="mb-6 flex flex-wrap gap-4 border-b border-border pb-6 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  <span>{article.author}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
+                  <span>{formatDate(article.publishDate)}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4" />
+                  <span>{article.readTimeMinutes} min read</span>
+                </div>
+              </div>
+
+              {/* Tags */}
+              {article.tags && article.tags.length > 0 && (
+                <div className="mb-8 flex flex-wrap gap-2">
+                  {article.tags.map((tag) => (
+                    <Badge key={tag} variant="outline" className="gap-1">
+                      <Tag className="h-3 w-3" />
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+
+              {/* Article Body */}
+              <div
+                className="prose prose-article max-w-none"
+                dangerouslySetInnerHTML={{ __html: marked(translation.content) }}
+              />
             </div>
-            <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
-              <span>{formatDate(article.publishDate)}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4" />
-              <span>{article.readTimeMinutes} min read</span>
-            </div>
+
+            {/* Related Articles - Sidebar on Desktop */}
+            {relatedArticles.length > 0 && (
+              <aside className="lg:w-80 lg:flex-shrink-0">
+                <div className="lg:sticky lg:top-8">
+                  <h2 className="mb-6 text-2xl font-bold text-gray-900">
+                    Related guides
+                  </h2>
+                  <div className="space-y-4">
+                    {relatedArticles.map((relatedArticle) => {
+                      const relatedTranslation = getArticleTranslation(relatedArticle, lang);
+                      const relatedCategory = categories.find((c) => c.id === relatedArticle.category);
+                      const relatedCategoryName = relatedCategory
+                        ? (relatedCategory.translations[lang]?.name || relatedCategory.translations.en?.name)
+                        : "Uncategorized";
+                      
+                      return (
+                        <div
+                          key={relatedArticle.slug}
+                          onClick={() => navigate(`/blog/${relatedArticle.slug}`)}
+                          className="flex cursor-pointer gap-4 rounded-lg bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
+                        >
+                          <ImageWithFallback
+                            src={relatedArticle.featuredImage || relatedArticle.heroImage || ""}
+                            alt={relatedTranslation.title}
+                            className="h-20 w-20 flex-shrink-0 rounded-md object-cover"
+                          />
+                          <div className="flex flex-1 flex-col justify-center">
+                            <h3 className="mb-1 text-base font-semibold leading-tight text-gray-900">
+                              {relatedTranslation.title}
+                            </h3>
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <Clock className="h-3.5 w-3.5" />
+                              <span>{relatedArticle.readTimeMinutes} min read</span>
+                              <span className="text-gray-400">•</span>
+                              <span>{relatedCategoryName}</span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </aside>
+            )}
           </div>
-
-          {/* Tags */}
-          {article.tags && article.tags.length > 0 && (
-            <div className="mb-8 flex flex-wrap gap-2">
-              {article.tags.map((tag) => (
-                <Badge key={tag} variant="outline" className="gap-1">
-                  <Tag className="h-3 w-3" />
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-          )}
-
-          {/* Article Body */}
-          <div
-            className="prose prose-article max-w-none"
-            dangerouslySetInnerHTML={{ __html: marked(translation.content) }}
-          />
         </div>
       </article>
-
-      {/* Related Articles */}
-      {relatedArticles.length > 0 && (
-        <section className="border-t border-border bg-gray-50 py-12">
-          <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-            <h2 className="mb-6 text-2xl font-bold text-gray-900">
-              Related guides
-            </h2>
-            <div className="space-y-4">
-              {relatedArticles.map((relatedArticle) => {
-                const relatedTranslation = getArticleTranslation(relatedArticle, lang);
-                const relatedCategory = categories.find((c) => c.id === relatedArticle.category);
-                const relatedCategoryName = relatedCategory
-                  ? (relatedCategory.translations[lang]?.name || relatedCategory.translations.en?.name)
-                  : "Uncategorized";
-                
-                return (
-                  <div
-                    key={relatedArticle.slug}
-                    onClick={() => navigate(`/blog/${relatedArticle.slug}`)}
-                    className="flex cursor-pointer gap-4 rounded-lg bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
-                  >
-                    <ImageWithFallback
-                      src={relatedArticle.featuredImage || relatedArticle.heroImage || ""}
-                      alt={relatedTranslation.title}
-                      className="h-20 w-20 flex-shrink-0 rounded-md object-cover"
-                    />
-                    <div className="flex flex-1 flex-col justify-center">
-                      <h3 className="mb-1 text-base font-semibold leading-tight text-gray-900">
-                        {relatedTranslation.title}
-                      </h3>
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <Clock className="h-3.5 w-3.5" />
-                        <span>{relatedArticle.readTimeMinutes} min read</span>
-                        <span className="text-gray-400">•</span>
-                        <span>{relatedCategoryName}</span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      )}
     </div>
   );
 }
