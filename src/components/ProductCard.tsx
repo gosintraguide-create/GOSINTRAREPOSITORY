@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { Check, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Check,
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
@@ -19,7 +24,14 @@ interface ProductCardProps {
   };
 }
 
-export function ProductCard({ onNavigate, basePrice, language = "en", productType = "daypass", customImages, customContent }: ProductCardProps) {
+export function ProductCard({
+  onNavigate,
+  basePrice,
+  language = "en",
+  productType = "daypass",
+  customImages,
+  customContent,
+}: ProductCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
@@ -37,7 +49,9 @@ export function ProductCard({ onNavigate, basePrice, language = "en", productTyp
 
   const prevImage = () => {
     if (images.length === 0) return;
-    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+    setCurrentImageIndex(
+      (prev) => (prev - 1 + images.length) % images.length,
+    );
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -50,7 +64,7 @@ export function ProductCard({ onNavigate, basePrice, language = "en", productTyp
 
   const handleTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
-    
+
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > 50;
     const isRightSwipe = distance < -50;
@@ -67,25 +81,31 @@ export function ProductCard({ onNavigate, basePrice, language = "en", productTyp
 
   // Map product type to translation key
   const productTypeMap = {
-    "daypass": "daypass",
+    daypass: "daypass",
     "insight-tour": "insightTour",
-    "monuments": "monuments",
+    monuments: "monuments",
   } as const;
-  
+
   const translationKey = productTypeMap[productType];
   const defaultContent = t.productCard[translationKey];
-  
-  const content = customContent ? {
-    title: customContent.title || defaultContent.title,
-    description: customContent.description || defaultContent.description,
-    features: customContent.features || defaultContent.features,
-    bookNow: customContent.buttonText || defaultContent.bookNow,
-  } : defaultContent;
+
+  const content = customContent
+    ? {
+        title: customContent.title || defaultContent.title,
+        description:
+          customContent.description ||
+          defaultContent.description,
+        features:
+          customContent.features || defaultContent.features,
+        bookNow:
+          customContent.buttonText || defaultContent.bookNow,
+      }
+    : defaultContent;
 
   return (
     <Card className="w-full bg-white shadow-xl border-0 overflow-hidden group flex flex-col h-full gap-0">
       {/* Image Carousel */}
-      <div 
+      <div
         className="relative h-48 overflow-hidden bg-gray-100 cursor-pointer select-none flex-shrink-0"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -93,16 +113,23 @@ export function ProductCard({ onNavigate, basePrice, language = "en", productTyp
       >
         {images.length === 0 ? (
           <div className="flex items-center justify-center h-full bg-gray-200">
-            <p className="text-gray-500 text-sm">No images added</p>
+            <p className="text-gray-500 text-sm">
+              No images added
+            </p>
           </div>
         ) : (
           <>
-            <div 
+            <div
               className="flex h-full transition-transform duration-500 ease-out w-full"
-              style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
+              style={{
+                transform: `translateX(-${currentImageIndex * 100}%)`,
+              }}
             >
               {images.map((image, index) => (
-                <div key={index} className="min-w-full h-full flex-shrink-0 w-full">
+                <div
+                  key={index}
+                  className="min-w-full h-full flex-shrink-0 w-full"
+                >
                   <ImageWithFallback
                     src={image.src}
                     alt={image.alt}
@@ -129,16 +156,24 @@ export function ProductCard({ onNavigate, basePrice, language = "en", productTyp
             </button>
 
             {/* Dots Indicator */}
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
               {images.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentImageIndex(index)}
-                  className={`p-0 rounded-full transition-all ${
+                  className={`p-0 m-0 border-0 rounded-full transition-all min-h-0 min-w-0 ${
                     index === currentImageIndex
-                      ? "bg-white h-1 w-3 md:h-1.5 md:w-5"
-                      : "bg-white/60 h-1 w-1 md:h-1.5 md:w-1.5 hover:bg-white/80"
+                      ? "bg-white h-1.5 w-4 md:h-1.5 md:w-5"
+                      : "bg-white/60 h-1.5 w-1.5 hover:bg-white/80"
                   }`}
+                  style={{
+                    padding: 0,
+                    margin: 0,
+                    border: "none",
+                    minHeight: 0,
+                    minWidth: 0,
+                    WebkitTapHighlightColor: "transparent",
+                  }}
                   aria-label={`Go to image ${index + 1}`}
                 />
               ))}
@@ -150,7 +185,9 @@ export function ProductCard({ onNavigate, basePrice, language = "en", productTyp
       {/* Header */}
       <div className="bg-gradient-to-r from-primary to-primary/90 px-5 py-3">
         <h4 className="text-white mb-0.5">{content.title}</h4>
-        <p className="text-white/90 text-xs">{content.description}</p>
+        <p className="text-white/90 text-xs">
+          {content.description}
+        </p>
       </div>
 
       {/* Content */}
@@ -158,13 +195,18 @@ export function ProductCard({ onNavigate, basePrice, language = "en", productTyp
         {/* Features List */}
         <div className="space-y-2 flex-1">
           {content.features.map((feature, index) => (
-            <div key={index} className="flex items-start gap-2.5">
+            <div
+              key={index}
+              className="flex items-start gap-2.5"
+            >
               <div className="flex-shrink-0 mt-0.5">
                 <div className="h-4 w-4 rounded-full bg-accent/10 flex items-center justify-center">
                   <Check className="h-3 w-3 text-accent" />
                 </div>
               </div>
-              <span className="text-xs text-foreground leading-relaxed">{feature}</span>
+              <span className="text-xs text-foreground leading-relaxed">
+                {feature}
+              </span>
             </div>
           ))}
         </div>
@@ -173,8 +215,12 @@ export function ProductCard({ onNavigate, basePrice, language = "en", productTyp
         <div className="border-t border-border pt-3 mt-4">
           {isPriceLoaded ? (
             <div className="flex items-center justify-center mb-3">
-              <span className="text-2xl font-bold text-primary">€{basePrice}</span>
-              <span className="text-xs text-muted-foreground ml-2">per pass</span>
+              <span className="text-2xl font-bold text-primary">
+                €{basePrice}
+              </span>
+              <span className="text-xs text-muted-foreground ml-2">
+                per pass
+              </span>
             </div>
           ) : (
             <div className="flex items-center justify-center mb-3">
