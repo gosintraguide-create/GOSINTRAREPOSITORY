@@ -185,7 +185,7 @@ export function RootLayout() {
   // Manage meta tags via direct DOM manipulation
   useEffect(() => {
     const updateMeta = (attr: string, attrValue: string, metaContent: string) => {
-      let el = document.querySelector(`meta[${attr}="${attrValue}"]`);
+      let el = document.querySelector(`meta[${attr}=\"${attrValue}\"]`);
       if (!el) {
         el = document.createElement("meta");
         el.setAttribute(attr, attrValue);
@@ -194,9 +194,75 @@ export function RootLayout() {
       el.setAttribute("content", metaContent);
     };
 
-    const pageTitle = (meta as any).title || "Hop On Sintra";
-    const pageDesc = (meta as any).description || "Explore Sintra with unlimited hop-on/hop-off day pass";
-    const pageKeywords = (meta as any).keywords;
+    // Helper function to extract slug from URL and find corresponding content
+    const getDynamicMetaForDetailPage = () => {
+      const path = location.pathname;
+      
+      // Attraction detail pages
+      if (path.startsWith('/attractions/') && path !== '/attractions/') {
+        const slug = path.split('/')[2];
+        const attractions = editableContent?.attractions?.list || [];
+        const attraction = attractions.find((a: any) => {
+          const attractionSlug = a.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+          return attractionSlug === slug || a.id === slug;
+        });
+        
+        if (attraction) {
+          return {
+            title: `${attraction.name} - Visit with Hop On Sintra Day Pass`,
+            description: attraction.shortDescription || attraction.longDescription?.substring(0, 160) || `Discover ${attraction.name} in Sintra. Book your hop-on/hop-off day pass for convenient access.`,
+            keywords: `${attraction.name}, Sintra ${attraction.name}, visit ${attraction.name}, ${attraction.name} tickets, Sintra attractions, Hop On Sintra`,
+            ogImage: attraction.imageUrl || editableContent?.seo?.defaultOgImage,
+          };
+        }
+      }
+      
+      // Private tour detail pages
+      if (path.startsWith('/private-tours/') && path !== '/private-tours/') {
+        const slug = path.split('/')[2];
+        const tours = editableContent?.privateTours?.tours || [];
+        const tour = tours.find((t: any) => {
+          const tourSlug = t.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+          return tourSlug === slug || t.id === slug;
+        });
+        
+        if (tour) {
+          return {
+            title: `${tour.name} - Private Tour in Sintra`,
+            description: tour.description?.substring(0, 160) || `Experience ${tour.name} with a private guide. Personalized tour of Sintra's top attractions.`,
+            keywords: `${tour.name}, Sintra private tour, ${tour.name} guide, Sintra guided tour, private Sintra experience`,
+            ogImage: tour.imageUrl || editableContent?.seo?.defaultOgImage,
+          };
+        }
+      }
+      
+      // Blog article pages
+      if (path.startsWith('/blog/') && path !== '/blog/') {
+        const slug = path.split('/')[2];
+        const articles = editableContent?.blog?.articles || [];
+        const article = articles.find((a: any) => {
+          const articleSlug = a.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+          return articleSlug === slug || a.id === slug;
+        });
+        
+        if (article) {
+          return {
+            title: `${article.title} - Hop On Sintra Travel Guide`,
+            description: article.excerpt?.substring(0, 160) || article.content?.substring(0, 160) || `Read our guide about ${article.title}.`,
+            keywords: `${article.title}, Sintra guide, Sintra blog, Sintra travel tips, visit Sintra`,
+            ogImage: article.imageUrl || editableContent?.seo?.defaultOgImage,
+          };
+        }
+      }
+      
+      return null;
+    };
+
+    // Get dynamic meta for detail pages or fall back to route meta
+    const dynamicMeta = getDynamicMetaForDetailPage();
+    const pageTitle = dynamicMeta?.title || (meta as any).title || "Hop On Sintra";
+    const pageDesc = dynamicMeta?.description || (meta as any).description || "Explore Sintra with unlimited hop-on/hop-off day pass";
+    const pageKeywords = dynamicMeta?.keywords || (meta as any).keywords;
     const shouldIndex = (meta as any).index !== false;
     const canonicalUrl = `${canonicalBase}${location.pathname}`;
 
@@ -221,7 +287,7 @@ export function RootLayout() {
 
     // Open Graph
     const defaultOgImage = "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop&q=80";
-    const ogImage = editableContent?.seo?.defaultOgImage || defaultOgImage;
+    const ogImage = dynamicMeta?.ogImage || editableContent?.seo?.defaultOgImage || defaultOgImage;
 
     updateMeta("property", "og:type", "website");
     updateMeta("property", "og:site_name", "Hop On Sintra");
@@ -241,6 +307,116 @@ export function RootLayout() {
     updateMeta("name", "twitter:description", pageDesc);
     updateMeta("name", "twitter:image", ogImage);
     updateMeta("name", "twitter:image:alt", pageTitle);
+
+    // Add structured data (JSON-LD) for detail pages
+    const addStructuredData = () => {
+      const path = location.pathname;
+      let structuredData: any = null;
+
+      // Attraction detail pages - TouristAttraction schema
+      if (path.startsWith('/attractions/') && path !== '/attractions/') {
+        const slug = path.split('/')[2];
+        const attractions = editableContent?.attractions?.list || [];
+        const attraction = attractions.find((a: any) => {
+          const attractionSlug = a.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+          return attractionSlug === slug || a.id === slug;
+        });
+
+        if (attraction) {
+          structuredData = {
+            "@context": "https://schema.org",
+            "@type": "TouristAttraction",
+            "name": attraction.name,
+            "description": attraction.shortDescription || attraction.longDescription,
+            "image": attraction.imageUrl,
+            "url": `${canonicalBase}${path}`,
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Sintra",
+              "addressRegion": "Lisbon",
+              "addressCountry": "PT"
+            }
+          };
+        }
+      }
+
+      // Private tour detail pages - TouristTrip schema
+      if (path.startsWith('/private-tours/') && path !== '/private-tours/') {
+        const slug = path.split('/')[2];
+        const tours = editableContent?.privateTours?.tours || [];
+        const tour = tours.find((t: any) => {
+          const tourSlug = t.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+          return tourSlug === slug || t.id === slug;
+        });
+
+        if (tour) {
+          structuredData = {
+            "@context": "https://schema.org",
+            "@type": "TouristTrip",
+            "name": tour.name,
+            "description": tour.description,
+            "image": tour.imageUrl,
+            "url": `${canonicalBase}${path}`,
+            "provider": {
+              "@type": "Organization",
+              "name": "Hop On Sintra",
+              "url": "https://www.hoponsintra.com"
+            }
+          };
+        }
+      }
+
+      // Blog article pages - Article schema
+      if (path.startsWith('/blog/') && path !== '/blog/') {
+        const slug = path.split('/')[2];
+        const articles = editableContent?.blog?.articles || [];
+        const article = articles.find((a: any) => {
+          const articleSlug = a.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+          return articleSlug === slug || a.id === slug;
+        });
+
+        if (article) {
+          structuredData = {
+            "@context": "https://schema.org",
+            "@type": "Article",
+            "headline": article.title,
+            "description": article.excerpt,
+            "image": article.imageUrl,
+            "url": `${canonicalBase}${path}`,
+            "datePublished": article.date || new Date().toISOString(),
+            "author": {
+              "@type": "Organization",
+              "name": "Hop On Sintra"
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "Hop On Sintra",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.hoponsintra.com/logo.png"
+              }
+            }
+          };
+        }
+      }
+
+      // Update or create JSON-LD script tag
+      let jsonLdScript = document.querySelector('script[type="application/ld+json"]#dynamic-structured-data');
+      if (structuredData) {
+        if (!jsonLdScript) {
+          jsonLdScript = document.createElement('script');
+          jsonLdScript.setAttribute('type', 'application/ld+json');
+          jsonLdScript.setAttribute('id', 'dynamic-structured-data');
+          document.head.appendChild(jsonLdScript);
+        }
+        jsonLdScript.textContent = JSON.stringify(structuredData);
+      } else if (jsonLdScript) {
+        // Remove structured data if not on a detail page
+        jsonLdScript.remove();
+      }
+    };
+
+    addStructuredData();
   }, [meta, location.pathname, language, editableContent]);
 
   return (

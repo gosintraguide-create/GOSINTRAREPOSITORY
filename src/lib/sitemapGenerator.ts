@@ -1,5 +1,6 @@
 import { getPublishedArticles } from './blogManager';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
+import { loadComprehensiveContent } from './comprehensiveContent';
 
 interface SitemapUrl {
   loc: string;
@@ -47,16 +48,13 @@ export async function generateSitemap(): Promise<string> {
   // Static pages
   const staticPages = [
     { path: '/', changefreq: 'daily', priority: '1.0', lastmod: new Date().toISOString().split('T')[0] },
+    { path: '/hop-on-service', changefreq: 'weekly', priority: '0.9', lastmod: new Date().toISOString().split('T')[0] },
     { path: '/attractions', changefreq: 'weekly', priority: '0.9', lastmod: new Date().toISOString().split('T')[0] },
-    { path: '/buy-ticket', changefreq: 'daily', priority: '0.9', lastmod: new Date().toISOString().split('T')[0] },
-    { path: '/about', changefreq: 'monthly', priority: '0.7', lastmod: new Date().toISOString().split('T')[0] },
-    { path: '/blog', changefreq: 'weekly', priority: '0.9', lastmod: new Date().toISOString().split('T')[0] },
     { path: '/private-tours', changefreq: 'weekly', priority: '0.9', lastmod: new Date().toISOString().split('T')[0] },
-    { path: '/sunset-special', changefreq: 'weekly', priority: '0.8', lastmod: new Date().toISOString().split('T')[0] },
-    { path: '/request-pickup', changefreq: 'weekly', priority: '0.7', lastmod: new Date().toISOString().split('T')[0] },
-    { path: '/manage-booking', changefreq: 'weekly', priority: '0.6', lastmod: new Date().toISOString().split('T')[0] },
-    { path: '/privacy-policy', changefreq: 'yearly', priority: '0.3', lastmod: new Date().toISOString().split('T')[0] },
-    { path: '/terms-of-service', changefreq: 'yearly', priority: '0.3', lastmod: new Date().toISOString().split('T')[0] },
+    { path: '/blog', changefreq: 'weekly', priority: '0.9', lastmod: new Date().toISOString().split('T')[0] },
+    { path: '/about', changefreq: 'monthly', priority: '0.7', lastmod: new Date().toISOString().split('T')[0] },
+    { path: '/route-map', changefreq: 'monthly', priority: '0.7', lastmod: new Date().toISOString().split('T')[0] },
+    { path: '/live-chat', changefreq: 'monthly', priority: '0.6', lastmod: new Date().toISOString().split('T')[0] },
   ];
 
   staticPages.forEach(page => {
@@ -68,26 +66,24 @@ export async function generateSitemap(): Promise<string> {
     });
   });
 
-  // Attraction pages
-  const attractions = [
-    'pena-palace',
-    'quinta-regaleira',
-    'moorish-castle',
-    'monserrate-palace',
-    'sintra-palace',
-    'convento-capuchos',
-    'cabo-da-roca',
-    'villa-sassetti',
-  ];
-
-  attractions.forEach(attraction => {
-    urls.push({
-      loc: `${baseUrl}/${attraction}`,
-      lastmod: new Date().toISOString().split('T')[0],
-      changefreq: 'monthly',
-      priority: '0.8',
+  // Dynamically load attraction detail pages from comprehensive content
+  try {
+    const content = await loadComprehensiveContent();
+    const attractions = content?.attractions?.list || [];
+    
+    attractions.forEach((attraction: any) => {
+      // Generate slug from attraction name
+      const slug = attraction.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      urls.push({
+        loc: `${baseUrl}/attractions/${slug}`,
+        lastmod: new Date().toISOString().split('T')[0],
+        changefreq: 'monthly',
+        priority: '0.8',
+      });
     });
-  });
+  } catch (error) {
+    console.error('Error loading attractions for sitemap:', error);
+  }
 
   // Blog articles
   const articles = getPublishedArticles();
@@ -149,9 +145,9 @@ export function generateRobotsTxt(): string {
   return `User-agent: *
 Allow: /
 Disallow: /admin
-Disallow: /analytics
-Disallow: /operations
-Disallow: /diagnostics
+Disallow: /driver
+Disallow: /buy-ticket
+Disallow: /404
 
 Sitemap: ${baseUrl}/sitemap.xml`;
 }

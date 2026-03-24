@@ -8,59 +8,21 @@ import { Label } from "./ui/label";
 import { Alert, AlertDescription } from "./ui/alert";
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { toast } from "sonner@2.0.3";
+import { useEditableContent } from "../lib/useEditableContent";
 
 interface SunsetSpecialCarouselProps {
   onNavigate: (page: string) => void;
   language?: string;
 }
 
-interface SunsetSpecialSettings {
-  enabled: boolean;
-  title: string;
-  description: string;
-  departureTime: string;
-  duration: string;
-  limitedSeats: number;
-  availabilityHour: number;
-  images: Array<{
-    url: string;
-    alt: string;
-  }>;
-}
-
-const DEFAULT_SETTINGS: SunsetSpecialSettings = {
-  enabled: true,
-  title: "Sunset Drive to Cabo da Roca",
-  description: "Experience the breathtaking sunset at Europe's westernmost point with a professional guide.",
-  departureTime: "6:00 PM",
-  duration: "2 Hours",
-  limitedSeats: 8,
-  availabilityHour: 14,
-  images: [
-    {
-      url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80",
-      alt: "Sunset at Cabo da Roca"
-    },
-    {
-      url: "https://images.unsplash.com/photo-1495954484750-af469f2f9be5?w=1200&q=80",
-      alt: "Westernmost point of Europe"
-    },
-    {
-      url: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1200&q=80",
-      alt: "Golden hour coastal views"
-    },
-    {
-      url: "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=1200&q=80",
-      alt: "Breathtaking Atlantic sunset"
-    }
-  ]
-};
-
 export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpecialCarouselProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAvailable, setIsAvailable] = useState(false);
   const [timeUntilAvailable, setTimeUntilAvailable] = useState("");
-  const [settings, setSettings] = useState<SunsetSpecialSettings>(DEFAULT_SETTINGS);
+  
+  // Use editable content
+  const { content } = useEditableContent(language);
+  const sunsetSpecial = content?.homepage?.sunsetSpecial;
   
   // Booking ID verification state
   const [showBookingDialog, setShowBookingDialog] = useState(false);
@@ -68,56 +30,35 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationError, setVerificationError] = useState("");
 
-  // Load settings from localStorage
-  useEffect(() => {
-    const loadSettings = () => {
-      const savedSettings = localStorage.getItem("sunset-special-settings");
-      if (savedSettings) {
-        try {
-          setSettings(JSON.parse(savedSettings));
-        } catch (e) {
-          console.error("Failed to parse sunset special settings:", e);
-        }
-      }
-    };
-
-    loadSettings();
-
-    // Listen for storage events to update when admin changes settings
-    const handleStorageChange = () => {
-      loadSettings();
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
-  }, []);
-
   // Auto-advance carousel
   useEffect(() => {
+    if (!sunsetSpecial?.images?.length) return;
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % settings.images.length);
+      setCurrentSlide((prev) => (prev + 1) % sunsetSpecial.images.length);
     }, 4000);
     return () => clearInterval(interval);
-  }, [settings.images.length]);
+  }, [sunsetSpecial?.images?.length]);
 
   // Check availability based on time
   useEffect(() => {
+    if (!sunsetSpecial) return;
+    
     const checkAvailability = () => {
       const now = new Date();
       const currentHour = now.getHours();
       
-      if (currentHour >= settings.availabilityHour) {
+      if (currentHour >= sunsetSpecial.availabilityHour) {
         setIsAvailable(true);
         setTimeUntilAvailable("");
       } else {
         setIsAvailable(false);
-        const hoursUntil = settings.availabilityHour - currentHour;
+        const hoursUntil = sunsetSpecial.availabilityHour - currentHour;
         const minutesUntil = 60 - now.getMinutes();
         
         if (hoursUntil === 1 && minutesUntil < 60) {
           setTimeUntilAvailable(`Available in ${minutesUntil} minutes`);
         } else if (hoursUntil > 1) {
-          setTimeUntilAvailable(`Available at ${settings.availabilityHour}:00`);
+          setTimeUntilAvailable(`${sunsetSpecial.availableAtText} ${sunsetSpecial.availabilityHour}:00`);
         } else {
           setTimeUntilAvailable(`Available soon`);
         }
@@ -127,14 +68,16 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
     checkAvailability();
     const interval = setInterval(checkAvailability, 60000); // Check every minute
     return () => clearInterval(interval);
-  }, [settings.availabilityHour]);
+  }, [sunsetSpecial]);
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % settings.images.length);
+    if (!sunsetSpecial?.images?.length) return;
+    setCurrentSlide((prev) => (prev + 1) % sunsetSpecial.images.length);
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + settings.images.length) % settings.images.length);
+    if (!sunsetSpecial?.images?.length) return;
+    setCurrentSlide((prev) => (prev - 1 + sunsetSpecial.images.length) % sunsetSpecial.images.length);
   };
 
   const handleBookClick = () => {
@@ -147,7 +90,7 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
 
   const verifyBookingId = async () => {
     if (!bookingId.trim()) {
-      setVerificationError("Please enter your booking ID");
+      setVerificationError(sunsetSpecial?.dialog?.errorGeneric || "Please enter your booking ID");
       return;
     }
 
@@ -183,14 +126,14 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
             onNavigate("sunset-special-purchase");
           }, 500);
         } else {
-          setVerificationError("Booking ID not found. Please check and try again.");
+          setVerificationError(sunsetSpecial?.dialog?.errorNotFound || "Booking ID not found. Please check and try again.");
         }
       } else {
-        setVerificationError("Booking ID not found. Please check and try again.");
+        setVerificationError(sunsetSpecial?.dialog?.errorNotFound || "Booking ID not found. Please check and try again.");
       }
     } catch (error) {
       console.error("Error verifying booking ID:", error);
-      setVerificationError("Unable to verify booking ID. Please try again.");
+      setVerificationError(sunsetSpecial?.dialog?.errorGeneric || "Unable to verify booking ID. Please try again.");
     } finally {
       setIsVerifying(false);
     }
@@ -201,6 +144,11 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
       verifyBookingId();
     }
   };
+
+  // Safety check - don't render if sunsetSpecial is not configured or images are missing
+  if (!sunsetSpecial || !sunsetSpecial.images || sunsetSpecial.images.length === 0) {
+    return null;
+  }
 
   return (
     <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12">
@@ -215,7 +163,7 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
             </div>
 
             {/* Images */}
-            {settings.images.map((image, index) => (
+            {sunsetSpecial?.images.map((image, index) => (
               <div
                 key={index}
                 className={`absolute inset-0 transition-opacity duration-700 ${
@@ -249,7 +197,7 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
 
             {/* Carousel Indicators */}
             <div className="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 gap-1.5">
-              {settings.images.map((_, index) => (
+              {sunsetSpecial?.images.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentSlide(index)}
@@ -270,27 +218,27 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
               <div className="mb-3 flex items-center gap-2">
                 <Sunset className="h-5 w-5 text-orange-500" />
                 <h3 className="text-xl sm:text-2xl text-gray-900">
-                  {settings.title}
+                  {sunsetSpecial?.title}
                 </h3>
               </div>
               
               <p className="mb-4 text-sm text-gray-600 sm:text-base">
-                {settings.description}
+                {sunsetSpecial?.description}
               </p>
 
               {/* Activity Details */}
               <div className="mb-4 flex flex-wrap gap-2">
                 <div className="flex items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-2.5 py-1.5">
                   <Clock className="h-3.5 w-3.5 text-gray-600" />
-                  <span className="text-xs text-gray-700">{settings.departureTime}</span>
+                  <span className="text-xs text-gray-700">{sunsetSpecial?.departureTime}</span>
                 </div>
                 <div className="flex items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-2.5 py-1.5">
                   <MapPin className="h-3.5 w-3.5 text-gray-600" />
-                  <span className="text-xs text-gray-700">{settings.duration}</span>
+                  <span className="text-xs text-gray-700">{sunsetSpecial?.duration}</span>
                 </div>
                 <div className="flex items-center gap-1.5 rounded-lg border border-orange-200 bg-orange-50 px-2.5 py-1.5">
                   <Users className="h-3.5 w-3.5 text-orange-600" />
-                  <span className="text-xs text-orange-700">Only {settings.limitedSeats} Seats</span>
+                  <span className="text-xs text-orange-700">Only {sunsetSpecial?.limitedSeats} Seats</span>
                 </div>
               </div>
             </div>
@@ -308,7 +256,7 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
               {isAvailable && (
                 <div className="flex items-center gap-2 text-sm text-green-700">
                   <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                  <span>Available Now</span>
+                  <span>{sunsetSpecial?.availableNowText || "Available Now"}</span>
                 </div>
               )}
 
@@ -322,7 +270,7 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
                     : "bg-gray-400 cursor-not-allowed"
                 } px-6 py-2.5 text-white shadow-md transition-all hover:shadow-lg disabled:hover:shadow-md`}
               >
-                {isAvailable ? "Book This Experience" : "Coming Soon"}
+                {isAvailable ? (sunsetSpecial?.bookButtonText || "Book This Experience") : (sunsetSpecial?.comingSoonButtonText || "Coming Soon")}
               </Button>
             </div>
           </div>
@@ -335,19 +283,19 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Sunset className="h-5 w-5 text-orange-500" />
-              Verify Your Booking
+              {sunsetSpecial?.dialog?.title || "Verify Your Booking"}
             </DialogTitle>
             <DialogDescription>
-              This exclusive sunset experience is available only to existing Hop On Sintra customers. Please enter your booking ID to continue.
+              {sunsetSpecial?.dialog?.description || "This exclusive sunset experience is available only to existing Hop On Sintra customers. Please enter your booking ID to continue."}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="booking-id">Booking ID</Label>
+              <Label htmlFor="booking-id">{sunsetSpecial?.dialog?.bookingIdLabel || "Booking ID"}</Label>
               <Input
                 id="booking-id"
-                placeholder="e.g., GS-ABC123"
+                placeholder={sunsetSpecial?.dialog?.bookingIdPlaceholder || "e.g., GS-ABC123"}
                 value={bookingId}
                 onChange={(e) => {
                   setBookingId(e.target.value);
@@ -358,7 +306,7 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
                 className="font-mono"
               />
               <p className="text-xs text-muted-foreground">
-                You can find your booking ID in your confirmation email
+                {sunsetSpecial?.dialog?.bookingIdHelp || "You can find your booking ID in your confirmation email"}
               </p>
             </div>
 
@@ -375,7 +323,7 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
                 disabled={isVerifying}
                 className="flex-1"
               >
-                Cancel
+                {sunsetSpecial?.dialog?.cancelButton || "Cancel"}
               </Button>
               <Button
                 onClick={verifyBookingId}
@@ -385,12 +333,12 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
                 {isVerifying ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Verifying...
+                    {sunsetSpecial?.dialog?.verifyingText || "Verifying..."}
                   </>
                 ) : (
                   <>
                     <CheckCircle className="mr-2 h-4 w-4" />
-                    Verify & Continue
+                    {sunsetSpecial?.dialog?.verifyButton || "Verify & Continue"}
                   </>
                 )}
               </Button>
@@ -398,7 +346,7 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
 
             <div className="rounded-lg bg-blue-50 border border-blue-200 p-3 space-y-2">
               <p className="text-xs text-blue-900">
-                <strong>Don't have a booking yet?</strong> You need to book a Hop On Sintra day pass first to access this exclusive experience.
+                <strong>{sunsetSpecial?.dialog?.noBookingTitle || "Don't have a booking yet?"}</strong> {sunsetSpecial?.dialog?.noBookingDescription || "You need to book a Hop On Sintra day pass first to access this exclusive experience."}
               </p>
               <Button
                 variant="outline"
@@ -409,7 +357,7 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
                 }}
                 className="w-full text-xs bg-white hover:bg-blue-50 border-blue-300"
               >
-                Get a Day Pass
+                {sunsetSpecial?.dialog?.getPassButton || "Get a Day Pass"}
               </Button>
             </div>
           </div>

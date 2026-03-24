@@ -8,6 +8,7 @@ import { OfflineIndicator } from "./components/OfflineIndicator";
 import { BackendStatusIndicator } from "./components/BackendStatusIndicator";
 import { DynamicManifest } from "./components/DynamicManifest";
 import { DynamicFavicon } from "./components/DynamicFavicon";
+import { HelmetProvider } from "react-helmet-async";
 // @vercel/analytics removed - not available in Figma Make environment
 
 // Analytics Configuration
@@ -16,7 +17,7 @@ const CLARITY_PROJECT_ID = "";
 
 function App() {
   return (
-    <>
+    <HelmetProvider>
       {/* Analytics */}
       {GA_MEASUREMENT_ID && (
         <GoogleAnalytics measurementId={GA_MEASUREMENT_ID} />
@@ -35,7 +36,7 @@ function App() {
 
       {/* Main Router */}
       <RouterProvider router={router} />
-    </>
+    </HelmetProvider>
   );
 }
 

@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useOutletContext, useParams } from "react-router";
+import { Helmet } from "react-helmet-async";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Card } from "./ui/card";
@@ -26,25 +27,31 @@ import Slider from "react-slick";
 import "../styles/slick-custom.css";
 
 // Custom arrow components for slider
-const PrevArrow = (props: any) => (
-  <button
-    {...props}
-    className="slick-prev"
-    aria-label="Previous slide"
-  >
-    <ChevronLeft className="h-6 w-6" />
-  </button>
-);
+const PrevArrow = (props: any) => {
+  const { currentSlide, slideCount, ...restProps } = props;
+  return (
+    <button
+      {...restProps}
+      className="slick-prev"
+      aria-label="Previous slide"
+    >
+      <ChevronLeft className="h-6 w-6" />
+    </button>
+  );
+};
 
-const NextArrow = (props: any) => (
-  <button
-    {...props}
-    className="slick-next"
-    aria-label="Next slide"
-  >
-    <ChevronRight className="h-6 w-6" />
-  </button>
-);
+const NextArrow = (props: any) => {
+  const { currentSlide, slideCount, ...restProps } = props;
+  return (
+    <button
+      {...restProps}
+      className="slick-next"
+      aria-label="Next slide"
+    >
+      <ChevronRight className="h-6 w-6" />
+    </button>
+  );
+};
 
 interface OutletContext {
   language: string;
@@ -230,6 +237,56 @@ export function AttractionDetailPage() {
 
   return (
     <div className="flex-1">
+      {/* SEO Meta Tags - React Helmet Async */}
+      <Helmet>
+        {/* Primary Meta Tags */}
+        <title>{attraction.name} - Tickets, Hours & Visitor Guide | Hop On Sintra</title>
+        <meta name="title" content={`${attraction.name} - Tickets, Hours & Visitor Guide | Hop On Sintra`} />
+        <meta 
+          name="description" 
+          content={`${attraction.shortDescription} Entry tickets from €${attraction.price}. ${attraction.duration}. ${attraction.longDescription.substring(0, 100)}...`} 
+        />
+        <meta 
+          name="keywords" 
+          content={`${attraction.name}, ${attraction.name} Sintra, ${attraction.name} tickets, ${attraction.name} hours, ${attraction.name} entrance fee, Sintra attractions, visit ${attraction.name}, Portugal UNESCO sites`} 
+        />
+        
+        {/* Canonical URL */}
+        <link rel="canonical" href={`https://www.hoponsintra.com/attractions/${attractionId}`} />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`https://www.hoponsintra.com/attractions/${attractionId}`} />
+        <meta property="og:title" content={`${attraction.name} - Tickets & Visitor Guide`} />
+        <meta property="og:description" content={`${attraction.shortDescription} Entry from €${attraction.price}. ${attraction.duration}.`} />
+        <meta 
+          property="og:image" 
+          content={attraction.heroImage || attractionFallbackImages[attractionId] || "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop"}
+        />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content={`${attraction.name} - Sintra UNESCO Heritage Site`} />
+        <meta property="og:site_name" content="Hop On Sintra" />
+        <meta property="og:locale" content="en_US" />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={`https://www.hoponsintra.com/attractions/${attractionId}`} />
+        <meta name="twitter:title" content={`${attraction.name} - Tickets & Visitor Guide`} />
+        <meta name="twitter:description" content={`${attraction.shortDescription} Entry from €${attraction.price}.`} />
+        <meta 
+          name="twitter:image" 
+          content={attraction.heroImage || attractionFallbackImages[attractionId] || "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop"}
+        />
+        <meta name="twitter:image:alt" content={`${attraction.name} - Sintra`} />
+        
+        {/* Additional SEO */}
+        <meta name="robots" content="index, follow, max-image-preview:large" />
+        <meta name="author" content="Hop On Sintra" />
+        <meta name="geo.placename" content="Sintra, Portugal" />
+        <meta name="geo.region" content="PT-11" />
+      </Helmet>
+
       {/* Structured Data for SEO */}
       {attraction && (
         <script

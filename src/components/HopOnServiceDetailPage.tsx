@@ -348,10 +348,7 @@ export function HopOnServiceDetailPage() {
       {/* Hero Section */}
       <section className="relative h-[50vh] min-h-[400px] sm:h-[60vh] sm:min-h-[500px] overflow-hidden">
         <ImageWithFallback
-          src={
-            comprehensiveContent.hopOnService.hero.heroImage ||
-            "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1920&h=1080&fit=crop"
-          }
+          src="https://dwiznaefeqnduglmcivr.supabase.co/storage/v1/object/sign/make-3bd0ade8-images/1772130531176_DSC00736.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmFjMWMyYy1lNjZlLTQwYWEtYjcwNS1kNTcwYzA5NGZmYzMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtYWtlLTNiZDBhZGU4LWltYWdlcy8xNzcyMTMwNTMxMTc2X0RTQzAwNzM2LmpwZyIsImlhdCI6MTc3MjEzMDUzMSwiZXhwIjoyMDg3NDkwNTMxfQ.NPoVTbN_JDAY3WeJMMOwDBZycryqw2oFM2MYfCaxi-8"
           alt="Hop On Sintra Service"
           className="h-full w-full object-cover"
         />

@@ -85,6 +85,38 @@ export interface ComprehensiveContent {
       description: string;
       buttonText: string;
     };
+    sunsetSpecial: {
+      enabled: boolean;
+      title: string;
+      description: string;
+      departureTime: string;
+      duration: string;
+      limitedSeats: number;
+      availabilityHour: number;
+      bookButtonText: string;
+      comingSoonButtonText: string;
+      availableNowText: string;
+      availableAtText: string;
+      images: Array<{
+        url: string;
+        alt: string;
+      }>;
+      dialog: {
+        title: string;
+        description: string;
+        bookingIdLabel: string;
+        bookingIdPlaceholder: string;
+        bookingIdHelp: string;
+        cancelButton: string;
+        verifyButton: string;
+        verifyingText: string;
+        errorNotFound: string;
+        errorGeneric: string;
+        noBookingTitle: string;
+        noBookingDescription: string;
+        getPassButton: string;
+      };
+    };
   };
 
   // How It Works Page
@@ -790,6 +822,52 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
       title: "Ready to Start Your Adventure?",
       description: "Book your flexible day pass now and experience Sintra the way it should be seen—on your schedule, in comfort.",
       buttonText: "Book Your Day Pass",
+    },
+    sunsetSpecial: {
+      enabled: true,
+      title: "Sunset Drive to Cabo da Roca",
+      description: "Experience the breathtaking sunset at Europe's westernmost point with a professional guide.",
+      departureTime: "6:00 PM",
+      duration: "2 Hours",
+      limitedSeats: 8,
+      availabilityHour: 14,
+      bookButtonText: "Book This Experience",
+      comingSoonButtonText: "Coming Soon",
+      availableNowText: "Available Now",
+      availableAtText: "Available at",
+      images: [
+        {
+          url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80",
+          alt: "Sunset at Cabo da Roca"
+        },
+        {
+          url: "https://images.unsplash.com/photo-1495954484750-af469f2f9be5?w=1200&q=80",
+          alt: "Westernmost point of Europe"
+        },
+        {
+          url: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1200&q=80",
+          alt: "Golden hour coastal views"
+        },
+        {
+          url: "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=1200&q=80",
+          alt: "Breathtaking Atlantic sunset"
+        }
+      ],
+      dialog: {
+        title: "Verify Your Booking",
+        description: "This exclusive sunset experience is available only to existing Hop On Sintra customers. Please enter your booking ID to continue.",
+        bookingIdLabel: "Booking ID",
+        bookingIdPlaceholder: "e.g., GS-ABC123",
+        bookingIdHelp: "You can find your booking ID in your confirmation email",
+        cancelButton: "Cancel",
+        verifyButton: "Verify & Continue",
+        verifyingText: "Verifying...",
+        errorNotFound: "Booking ID not found. Please check and try again.",
+        errorGeneric: "Unable to verify booking ID. Please try again.",
+        noBookingTitle: "Don't have a booking yet?",
+        noBookingDescription: "You need to book a Hop On Sintra day pass first to access this exclusive experience.",
+        getPassButton: "Get a Day Pass",
+      },
     },
   },
 

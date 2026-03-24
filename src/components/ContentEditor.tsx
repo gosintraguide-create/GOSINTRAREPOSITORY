@@ -88,6 +88,14 @@ export function ContentEditor() {
 
   const handleSave = async () => {
     try {
+      // Validate sunset special images before saving
+      if (content.homepage?.sunsetSpecial?.enabled) {
+        if (!content.homepage.sunsetSpecial.images || content.homepage.sunsetSpecial.images.length === 0) {
+          toast.error("Sunset Special must have at least one image. Please add images before saving.");
+          return;
+        }
+      }
+
       // Save all modified languages
       const languagesToSave = Array.from(modifiedLanguages);
       
@@ -1350,6 +1358,92 @@ export function ContentEditor() {
               <div><Label>Title</Label><Input value={content.homepage.callToAction?.title || ""} onChange={(e) => updateContent(["homepage", "callToAction", "title"], e.target.value)} /></div>
               <div><Label>Description</Label><Textarea value={content.homepage.callToAction?.description || ""} onChange={(e) => updateContent(["homepage", "callToAction", "description"], e.target.value)} rows={2} /></div>
               <div><Label>Button Text</Label><Input value={content.homepage.callToAction?.buttonText || ""} onChange={(e) => updateContent(["homepage", "callToAction", "buttonText"], e.target.value)} /></div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-foreground">Sunset Special Carousel</h3>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Enabled</span>
+                <input
+                  type="checkbox"
+                  checked={content.homepage.sunsetSpecial?.enabled || false}
+                  onChange={(e) => updateContent(["homepage", "sunsetSpecial", "enabled"], e.target.checked)}
+                  className="h-4 w-4"
+                />
+              </div>
+            </div>
+            <div className="space-y-4">
+              <div><Label>Title</Label><Input value={content.homepage.sunsetSpecial?.title || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "title"], e.target.value)} /></div>
+              <div><Label>Description</Label><Textarea value={content.homepage.sunsetSpecial?.description || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "description"], e.target.value)} rows={2} /></div>
+              <div className="grid grid-cols-2 gap-4">
+                <div><Label>Departure Time</Label><Input value={content.homepage.sunsetSpecial?.departureTime || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "departureTime"], e.target.value)} placeholder="6:00 PM" /></div>
+                <div><Label>Duration</Label><Input value={content.homepage.sunsetSpecial?.duration || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "duration"], e.target.value)} placeholder="2 Hours" /></div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div><Label>Limited Seats</Label><Input type="number" value={content.homepage.sunsetSpecial?.limitedSeats || 8} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "limitedSeats"], parseInt(e.target.value))} /></div>
+                <div><Label>Availability Hour (24h format)</Label><Input type="number" value={content.homepage.sunsetSpecial?.availabilityHour || 14} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "availabilityHour"], parseInt(e.target.value))} /></div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div><Label>Book Button Text</Label><Input value={content.homepage.sunsetSpecial?.bookButtonText || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "bookButtonText"], e.target.value)} placeholder="Book This Experience" /></div>
+                <div><Label>Coming Soon Button Text</Label><Input value={content.homepage.sunsetSpecial?.comingSoonButtonText || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "comingSoonButtonText"], e.target.value)} placeholder="Coming Soon" /></div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div><Label>Available Now Text</Label><Input value={content.homepage.sunsetSpecial?.availableNowText || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "availableNowText"], e.target.value)} placeholder="Available Now" /></div>
+                <div><Label>Available At Text</Label><Input value={content.homepage.sunsetSpecial?.availableAtText || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "availableAtText"], e.target.value)} placeholder="Available at" /></div>
+              </div>
+            </div>
+            
+            <div className="mt-6">
+              <h4 className="mb-4 font-medium">Carousel Images</h4>
+              {content.homepage.sunsetSpecial?.enabled && (!content.homepage.sunsetSpecial?.images || content.homepage.sunsetSpecial.images.length === 0) && (
+                <div className="mb-4 rounded-lg bg-red-50 border border-red-200 p-3">
+                  <p className="text-sm text-red-900">
+                    <strong>Warning:</strong> The Sunset Special is enabled but has no images. Please add at least one image or the carousel will not display.
+                  </p>
+                </div>
+              )}
+              <Accordion type="single" collapsible className="w-full">
+                {(content.homepage.sunsetSpecial?.images || []).map((image: any, index: number) => (
+                  <AccordionItem key={index} value={`sunset-img-${index}`}>
+                    <AccordionTrigger>Image {index + 1}: {image.alt}</AccordionTrigger>
+                    <AccordionContent>
+                      <div className="space-y-4 pt-4">
+                        <div><Label>Image URL</Label><Input value={image.url} onChange={(e) => updateArrayItem(["homepage", "sunsetSpecial", "images"], index, "url", e.target.value)} /></div>
+                        <div><Label>Alt Text</Label><Input value={image.alt} onChange={(e) => updateArrayItem(["homepage", "sunsetSpecial", "images"], index, "alt", e.target.value)} /></div>
+                        <Button variant="destructive" size="sm" onClick={() => removeArrayItem(["homepage", "sunsetSpecial", "images"], index)}><Trash2 className="mr-2 h-4 w-4" /> Remove Image</Button>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+              <Button variant="outline" className="mt-4" onClick={() => addArrayItem(["homepage", "sunsetSpecial", "images"], { url: "", alt: "Sunset image" })}><Plus className="mr-2 h-4 w-4" /> Add Image</Button>
+            </div>
+
+            <div className="mt-6">
+              <h4 className="mb-4 font-medium">Booking Dialog Content</h4>
+              <div className="space-y-4">
+                <div><Label>Dialog Title</Label><Input value={content.homepage.sunsetSpecial?.dialog?.title || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "dialog", "title"], e.target.value)} placeholder="Verify Your Booking" /></div>
+                <div><Label>Dialog Description</Label><Textarea value={content.homepage.sunsetSpecial?.dialog?.description || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "dialog", "description"], e.target.value)} rows={2} /></div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div><Label>Booking ID Label</Label><Input value={content.homepage.sunsetSpecial?.dialog?.bookingIdLabel || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "dialog", "bookingIdLabel"], e.target.value)} placeholder="Booking ID" /></div>
+                  <div><Label>Booking ID Placeholder</Label><Input value={content.homepage.sunsetSpecial?.dialog?.bookingIdPlaceholder || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "dialog", "bookingIdPlaceholder"], e.target.value)} placeholder="e.g., GS-ABC123" /></div>
+                </div>
+                <div><Label>Booking ID Help Text</Label><Input value={content.homepage.sunsetSpecial?.dialog?.bookingIdHelp || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "dialog", "bookingIdHelp"], e.target.value)} /></div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div><Label>Cancel Button</Label><Input value={content.homepage.sunsetSpecial?.dialog?.cancelButton || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "dialog", "cancelButton"], e.target.value)} placeholder="Cancel" /></div>
+                  <div><Label>Verify Button</Label><Input value={content.homepage.sunsetSpecial?.dialog?.verifyButton || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "dialog", "verifyButton"], e.target.value)} placeholder="Verify & Continue" /></div>
+                </div>
+                <div><Label>Verifying Text</Label><Input value={content.homepage.sunsetSpecial?.dialog?.verifyingText || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "dialog", "verifyingText"], e.target.value)} placeholder="Verifying..." /></div>
+                <div><Label>Error - Not Found</Label><Input value={content.homepage.sunsetSpecial?.dialog?.errorNotFound || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "dialog", "errorNotFound"], e.target.value)} /></div>
+                <div><Label>Error - Generic</Label><Input value={content.homepage.sunsetSpecial?.dialog?.errorGeneric || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "dialog", "errorGeneric"], e.target.value)} /></div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div><Label>No Booking Title</Label><Input value={content.homepage.sunsetSpecial?.dialog?.noBookingTitle || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "dialog", "noBookingTitle"], e.target.value)} placeholder="Don't have a booking yet?" /></div>
+                  <div><Label>Get Pass Button</Label><Input value={content.homepage.sunsetSpecial?.dialog?.getPassButton || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "dialog", "getPassButton"], e.target.value)} placeholder="Get a Day Pass" /></div>
+                </div>
+                <div><Label>No Booking Description</Label><Textarea value={content.homepage.sunsetSpecial?.dialog?.noBookingDescription || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "dialog", "noBookingDescription"], e.target.value)} rows={2} /></div>
+              </div>
             </div>
           </Card>
         </TabsContent>
