@@ -42,7 +42,9 @@ import {
   TrendingUp,
   DollarSign,
   Ticket,
-  QrCode
+  QrCode,
+  Calendar,
+  Eye
 } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
@@ -52,6 +54,9 @@ export function DriverManagement() {
   const [loading, setLoading] = useState(true);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingDriver, setEditingDriver] = useState<any>(null);
+  const [viewingSalesDriver, setViewingSalesDriver] = useState<any>(null);
+  const [salesData, setSalesData] = useState<any>(null);
+  const [loadingSales, setLoadingSales] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     username: '',
@@ -204,6 +209,52 @@ export function DriverManagement() {
       licenseNumber: '',
       status: 'active'
     });
+  };
+
+  const loadDriverSales = async (driverId: string) => {
+    setLoadingSales(true);
+    try {
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/drivers/${driverId}/activity`,
+        {
+          headers: {
+            'Authorization': `Bearer ${publicAnonKey}`
+          }
+        }
+      );
+
+      const data = await response.json();
+      if (data.success) {
+        // Group sales by date
+        const salesByDate: Record<string, { tickets: number; revenue: number; sales: any[] }> = {};
+        
+        data.sales.forEach((sale: any) => {
+          const date = sale.date || sale.timestamp?.split('T')[0];
+          if (!salesByDate[date]) {
+            salesByDate[date] = { tickets: 0, revenue: 0, sales: [] };
+          }
+          salesByDate[date].tickets += parseInt(sale.quantity || 0);
+          salesByDate[date].revenue += parseFloat(sale.amount || 0);
+          salesByDate[date].sales.push(sale);
+        });
+
+        setSalesData({
+          salesByDate,
+          totalSales: data.sales.length,
+          allSales: data.sales
+        });
+      }
+    } catch (error) {
+      console.error('Error loading sales:', error);
+      toast.error('Failed to load sales data');
+    } finally {
+      setLoadingSales(false);
+    }
+  };
+
+  const openSalesDialog = (driver: any) => {
+    setViewingSalesDriver(driver);
+    loadDriverSales(driver.id);
   };
 
   const formatDate = (dateString: string) => {
@@ -437,6 +488,15 @@ export function DriverManagement() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openSalesDialog(driver)}
+                            className="text-[#0A4D5C] hover:bg-[#0A4D5C]/10"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+
                           <Dialog
                             open={editingDriver?.id === driver.id}
                             onOpenChange={(open) => {
@@ -579,6 +639,130 @@ export function DriverManagement() {
           )}
         </CardContent>
       </Card>
+
+      {/* Sales History Dialog */}
+      <Dialog open={!!viewingSalesDriver} onOpenChange={(open) => {
+        if (!open) {
+          setViewingSalesDriver(null);
+          setSalesData(null);
+        }
+      }}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-[#D97843]" />
+              Sales & Revenue Log - {viewingSalesDriver?.name}
+            </DialogTitle>
+            <DialogDescription>
+              Daily sales history and performance metrics
+            </DialogDescription>
+          </DialogHeader>
+
+          {loadingSales ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-gray-500">Loading sales data...</div>
+            </div>
+          ) : salesData && Object.keys(salesData.salesByDate).length > 0 ? (
+            <div className="space-y-6">
+              {/* Summary Cards */}
+              <div className="grid grid-cols-2 gap-4">
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <Ticket className="h-4 w-4 text-[#0A4D5C]" />
+                      Total Transactions
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{salesData.totalSales}</div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <DollarSign className="h-4 w-4 text-green-600" />
+                      Total Revenue
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">
+                      €{Object.values(salesData.salesByDate).reduce((sum: number, day: any) => sum + day.revenue, 0).toFixed(2)}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Daily Breakdown */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-[#D97843]" />
+                  Daily Breakdown
+                </h3>
+                <div className="space-y-4">
+                  {Object.entries(salesData.salesByDate)
+                    .sort((a, b) => new Date(b[0]).getTime() - new Date(a[0]).getTime())
+                    .map(([date, data]: [string, any]) => (
+                    <Card key={date} className="border-l-4 border-l-[#D97843]">
+                      <CardHeader className="pb-3">
+                        <div className="flex justify-between items-center">
+                          <CardTitle className="text-base">
+                            {formatDate(date)}
+                          </CardTitle>
+                          <div className="flex gap-4 text-sm">
+                            <Badge variant="outline" className="flex items-center gap-1">
+                              <Ticket className="h-3 w-3" />
+                              {data.tickets} tickets
+                            </Badge>
+                            <Badge variant="outline" className="flex items-center gap-1 bg-green-50 text-green-700 border-green-200">
+                              <DollarSign className="h-3 w-3" />
+                              €{data.revenue.toFixed(2)}
+                            </Badge>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-2">
+                          {data.sales.map((sale: any, idx: number) => (
+                            <div key={idx} className="flex justify-between items-center text-sm p-3 bg-gray-50 rounded">
+                              <div className="flex-1">
+                                <div className="font-medium">
+                                  Sale #{sale.id?.slice(-8)}
+                                </div>
+                                <div className="text-xs text-gray-500">
+                                  {new Date(sale.timestamp).toLocaleTimeString('en-US', {
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                </div>
+                              </div>
+                              <div className="flex gap-4 items-center">
+                                <div className="text-right">
+                                  <div className="text-xs text-gray-500">Quantity</div>
+                                  <div className="font-medium">{sale.quantity}</div>
+                                </div>
+                                <div className="text-right">
+                                  <div className="text-xs text-gray-500">Amount</div>
+                                  <div className="font-medium text-green-600">€{parseFloat(sale.amount).toFixed(2)}</div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-12 text-gray-500">
+              <TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-20" />
+              <p>No sales recorded yet</p>
+              <p className="text-sm mt-1">Sales will appear here once the driver makes their first transaction</p>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

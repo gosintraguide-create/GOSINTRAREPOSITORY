@@ -1416,50 +1416,60 @@ export async function saveContentAsync(
 }
 
 export function loadContent(): WebsiteContent {
-  // Try localStorage first for immediate response
-  const saved = localStorage.getItem("website-content");
-  if (saved) {
-    try {
-      const parsed = JSON.parse(saved);
+  // Safety check for localStorage availability
+  if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+    return DEFAULT_CONTENT;
+  }
+  
+  try {
+    // Try localStorage first for immediate response
+    const saved = localStorage.getItem("website-content");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
 
-      // 🔥 BRAND UPDATE: Force refresh if using old gosintra email
-      if (parsed.company?.email?.includes("gosintra.com")) {
-        console.log(
-          "🔄 Detected old branding in cache - clearing and using updated defaults",
-        );
-        localStorage.removeItem("website-content");
+        // 🔥 BRAND UPDATE: Force refresh if using old gosintra email
+        if (parsed.company?.email?.includes("gosintra.com")) {
+          console.log(
+            "🔄 Detected old branding in cache - clearing and using updated defaults",
+          );
+          localStorage.removeItem("website-content");
+          return DEFAULT_CONTENT;
+        }
+
+        // Merge with defaults to ensure all fields exist
+        return {
+          ...DEFAULT_CONTENT,
+          ...parsed,
+          company: {
+            ...DEFAULT_CONTENT.company,
+            ...parsed.company,
+          },
+          homepage: {
+            ...DEFAULT_CONTENT.homepage,
+            ...parsed.homepage,
+          },
+          about: { ...DEFAULT_CONTENT.about, ...parsed.about },
+          attractions: {
+            ...DEFAULT_CONTENT.attractions,
+            ...parsed.attractions,
+          },
+          seo: { ...DEFAULT_CONTENT.seo, ...parsed.seo },
+          blog: { ...DEFAULT_CONTENT.blog, ...parsed.blog },
+          featureFlags: {
+            ...DEFAULT_CONTENT.featureFlags,
+            ...parsed.featureFlags,
+          },
+        };
+      } catch {
         return DEFAULT_CONTENT;
       }
-
-      // Merge with defaults to ensure all fields exist
-      return {
-        ...DEFAULT_CONTENT,
-        ...parsed,
-        company: {
-          ...DEFAULT_CONTENT.company,
-          ...parsed.company,
-        },
-        homepage: {
-          ...DEFAULT_CONTENT.homepage,
-          ...parsed.homepage,
-        },
-        about: { ...DEFAULT_CONTENT.about, ...parsed.about },
-        attractions: {
-          ...DEFAULT_CONTENT.attractions,
-          ...parsed.attractions,
-        },
-        seo: { ...DEFAULT_CONTENT.seo, ...parsed.seo },
-        blog: { ...DEFAULT_CONTENT.blog, ...parsed.blog },
-        featureFlags: {
-          ...DEFAULT_CONTENT.featureFlags,
-          ...parsed.featureFlags,
-        },
-      };
-    } catch {
-      return DEFAULT_CONTENT;
     }
+    return DEFAULT_CONTENT;
+  } catch (error) {
+    console.error('Error loading content:', error);
+    return DEFAULT_CONTENT;
   }
-  return DEFAULT_CONTENT;
 }
 
 // Load content with language support

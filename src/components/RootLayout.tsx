@@ -139,6 +139,8 @@ export function RootLayout() {
       navigate("/");
     } else if (page === "buy-ticket") {
       navigate("/buy-ticket", { state: data });
+    } else if (page === "sunset-special-purchase") {
+      navigate("/sunset-special", { state: data });
     } else if (page === "hop-on-service") {
       navigate("/hop-on-service");
     } else if (page === "attractions") {
@@ -166,6 +168,8 @@ export function RootLayout() {
       navigate("/admin");
     } else if (page === "driver-portal") {
       navigate("/driver");
+    } else if (page === "qr-scanner") {
+      navigate("/qr-scanner");
     } else {
       navigate(`/${page}`);
     }

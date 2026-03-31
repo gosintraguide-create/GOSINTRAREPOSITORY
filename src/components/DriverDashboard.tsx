@@ -55,6 +55,7 @@ export function DriverDashboard({ driver, token, onLogout }: DriverDashboardProp
   const [loading, setLoading] = useState(true);
   const [pendingRequests, setPendingRequests] = useState<any[]>([]);
   const [acceptedRequests, setAcceptedRequests] = useState<any[]>([]);
+  const [chartKey, setChartKey] = useState(0);
 
   useEffect(() => {
     loadMetrics();
@@ -81,7 +82,41 @@ export function DriverDashboard({ driver, token, onLogout }: DriverDashboardProp
 
       const data = await response.json();
       if (data.success) {
-        setMetrics(data.metrics);
+        // Remove duplicate dates and add unique IDs
+        const metricsMap = new Map();
+        data.metrics.forEach((item: any) => {
+          if (item.date) {
+            // If date already exists, merge the data
+            if (metricsMap.has(item.date)) {
+              const existing = metricsMap.get(item.date);
+              metricsMap.set(item.date, {
+                date: item.date,
+                ticketsSold: (existing.ticketsSold || 0) + (item.ticketsSold || 0),
+                revenue: (existing.revenue || 0) + (item.revenue || 0),
+                qrScans: (existing.qrScans || 0) + (item.qrScans || 0)
+              });
+            } else {
+              metricsMap.set(item.date, {
+                date: item.date,
+                ticketsSold: item.ticketsSold || 0,
+                revenue: item.revenue || 0,
+                qrScans: item.qrScans || 0
+              });
+            }
+          }
+        });
+        
+        // Convert to array, sort by date, and add unique numeric indices
+        const uniqueMetrics = Array.from(metricsMap.values())
+          .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+          .map((item, index) => ({
+            ...item,
+            index: index,
+            uniqueId: `metric-${index}-${item.date.replace(/-/g, '')}`
+          }));
+        
+        console.log('Loaded metrics:', uniqueMetrics.length, 'unique dates');
+        setMetrics(uniqueMetrics);
       }
     } catch (error) {
       console.error('Error loading metrics:', error);
@@ -492,27 +527,45 @@ export function DriverDashboard({ driver, token, onLogout }: DriverDashboardProp
                   <CardDescription>Daily revenue generated</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <LineChart data={metrics}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis 
-                        dataKey="date" 
-                        tickFormatter={formatDate}
-                        fontSize={12}
-                      />
-                      <YAxis fontSize={12} />
-                      <Tooltip 
-                        formatter={(value: any) => `€${value.toFixed(2)}`}
-                        labelFormatter={formatDate}
-                      />
-                      <Line 
-                        type="monotone" 
-                        dataKey="revenue" 
-                        stroke="#D97843" 
-                        strokeWidth={2}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
+                  {metrics.length > 0 ? (
+                    <ResponsiveContainer width="100%" height={250} key={`revenue-chart-${metrics.length}`}>
+                      <LineChart 
+                        data={metrics}
+                        id="revenue-line-chart"
+                        margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis 
+                          dataKey="uniqueId"
+                          tickFormatter={(id) => {
+                            const item = metrics.find(m => m.uniqueId === id);
+                            return item ? formatDate(item.date) : '';
+                          }}
+                          fontSize={12}
+                        />
+                        <YAxis fontSize={12} />
+                        <Tooltip 
+                          formatter={(value: any) => `€${value.toFixed(2)}`}
+                          labelFormatter={(id) => {
+                            const item = metrics.find(m => m.uniqueId === id);
+                            return item ? formatDate(item.date) : '';
+                          }}
+                        />
+                        <Line 
+                          key="line-revenue"
+                          type="monotone" 
+                          dataKey="revenue" 
+                          stroke="#D97843" 
+                          strokeWidth={2}
+                          isAnimationActive={false}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="h-[250px] flex items-center justify-center text-gray-500">
+                      No data available
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
@@ -523,20 +576,50 @@ export function DriverDashboard({ driver, token, onLogout }: DriverDashboardProp
                   <CardDescription>Daily activity overview</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <BarChart data={metrics}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis 
-                        dataKey="date" 
-                        tickFormatter={formatDate}
-                        fontSize={12}
-                      />
-                      <YAxis fontSize={12} />
-                      <Tooltip labelFormatter={formatDate} />
-                      <Bar dataKey="ticketsSold" fill="#D97843" name="Tickets Sold" />
-                      <Bar dataKey="qrScans" fill="#0A4D5C" name="QR Scans" />
-                    </BarChart>
-                  </ResponsiveContainer>
+                  {metrics.length > 0 ? (
+                    <ResponsiveContainer width="100%" height={250} key={`tickets-chart-${metrics.length}`}>
+                      <BarChart 
+                        data={metrics}
+                        id="tickets-bar-chart"
+                        margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis 
+                          dataKey="uniqueId"
+                          tickFormatter={(id) => {
+                            const item = metrics.find(m => m.uniqueId === id);
+                            return item ? formatDate(item.date) : '';
+                          }}
+                          fontSize={12}
+                        />
+                        <YAxis fontSize={12} />
+                        <Tooltip 
+                          labelFormatter={(id) => {
+                            const item = metrics.find(m => m.uniqueId === id);
+                            return item ? formatDate(item.date) : '';
+                          }}
+                        />
+                        <Bar 
+                          key="bar-tickets"
+                          dataKey="ticketsSold" 
+                          fill="#D97843" 
+                          name="Tickets Sold"
+                          isAnimationActive={false}
+                        />
+                        <Bar 
+                          key="bar-scans"
+                          dataKey="qrScans" 
+                          fill="#0A4D5C" 
+                          name="QR Scans"
+                          isAnimationActive={false}
+                        />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="h-[250px] flex items-center justify-center text-gray-500">
+                      No data available
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useOutletContext } from "react-router";
 import { Button } from "./ui/button";
 import {
   Card,
@@ -42,6 +43,11 @@ import {
   publicAnonKey,
 } from "../utils/supabase/info";
 
+interface OutletContext {
+  language: string;
+  onNavigate: (page: string, data?: any) => void;
+}
+
 interface ScanResult {
   success: boolean;
   booking?: {
@@ -63,10 +69,6 @@ interface ScanResult {
   message: string;
 }
 
-interface QRScannerPageProps {
-  onNavigate: (page: string) => void;
-}
-
 // List of destinations in Sintra
 const DESTINATIONS = [
   "Palácio da Pena",
@@ -79,9 +81,8 @@ const DESTINATIONS = [
   "Other",
 ];
 
-export function QRScannerPage({
-  onNavigate,
-}: QRScannerPageProps) {
+export function QRScannerPage() {
+  const { onNavigate } = useOutletContext<OutletContext>();
   const [scanning, setScanning] = useState(false);
   const [scanResult, setScanResult] =
     useState<ScanResult | null>(null);
@@ -785,3 +786,5 @@ export function QRScannerPage({
     </div>
   );
 }
+
+export default QRScannerPage;

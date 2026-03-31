@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useOutletContext } from "react-router";
 import {
   Sunset,
   Calendar,
@@ -27,6 +28,7 @@ import {
   publicAnonKey,
 } from "../utils/supabase/info";
 import { toast } from "sonner@2.0.3";
+import { useEditableContent } from "../lib/useEditableContent";
 
 interface SunsetSpecialPurchasePageProps {
   onNavigate: (page: string) => void;
@@ -44,41 +46,36 @@ interface Booking {
   totalPrice?: number;
 }
 
-const SUNSET_SPECIAL_PRICE = 25;
+interface OutletContext {
+  language: string;
+  onNavigate: (page: string, data?: any) => void;
+}
 
-export function SunsetSpecialPurchasePage({
-  onNavigate,
-  language = "en",
-}: SunsetSpecialPurchasePageProps) {
+export function SunsetSpecialPurchasePage() {
+  const { language, onNavigate } = useOutletContext<OutletContext>();
+  const content = useEditableContent(language);
+  const sunsetSpecial = content?.homepage?.sunsetSpecial;
+  const SUNSET_SPECIAL_PRICE = sunsetSpecial?.price || 25;
+  
   const [booking, setBooking] = useState<Booking | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [showPayment, setShowPayment] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [sunsetSettings, setSunsetSettings] = useState<any>(null);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [isCreatingPayment, setIsCreatingPayment] = useState(false);
+  const [availableSeats, setAvailableSeats] = useState<number | null>(null);
+  const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
 
   useEffect(() => {
     loadBookingData();
-    loadSunsetSettings();
   }, []);
 
-  const loadSunsetSettings = () => {
-    const savedSettings = localStorage.getItem(
-      "sunset-special-settings",
-    );
-    if (savedSettings) {
-      try {
-        setSunsetSettings(JSON.parse(savedSettings));
-      } catch (e) {
-        console.error(
-          "Failed to parse sunset special settings:",
-          e,
-        );
-      }
+  useEffect(() => {
+    if (booking && sunsetSpecial?.maxSeats) {
+      checkSeatAvailability();
     }
-  };
+  }, [booking, sunsetSpecial?.maxSeats]);
 
   const loadBookingData = async () => {
     try {
@@ -126,7 +123,47 @@ export function SunsetSpecialPurchasePage({
     }
   };
 
+  const checkSeatAvailability = async () => {
+    if (!booking) return;
+    
+    setIsCheckingAvailability(true);
+    try {
+      const dateOnly = booking.selectedDate.split('T')[0];
+      const maxSeats = sunsetSpecial?.maxSeats || 8;
+      
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/sunset-special/availability/${dateOnly}?maxSeats=${maxSeats}`,
+        {
+          headers: {
+            Authorization: `Bearer ${publicAnonKey}`,
+          },
+        },
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setAvailableSeats(data.availableSeats);
+        
+        // Check if enough seats for this booking
+        if (data.availableSeats < booking.passengers.length) {
+          setError(`Sorry, only ${data.availableSeats} seat(s) available for the sunset special on this date.`);
+        }
+      }
+    } catch (error) {
+      console.error("Error checking availability:", error);
+    } finally {
+      setIsCheckingAvailability(false);
+    }
+  };
+
   const handleContinueToPayment = async () => {
+    // Check availability one more time before payment
+    if (availableSeats !== null && availableSeats < booking!.passengers.length) {
+      toast.error(`Sorry, only ${availableSeats} seat(s) available. Please contact support.`);
+      return;
+    }
+
+    setIsCreatingPayment(true);
     setIsCreatingPayment(true);
 
     try {
@@ -198,6 +235,8 @@ export function SunsetSpecialPurchasePage({
             paymentIntentId,
             sunsetSpecialPrice: totalPrice,
             participants: booking!.passengers.length,
+            maxSeats: sunsetSpecial?.maxSeats || 8,
+            departureTime: sunsetSpecial?.departureTime || "6:00 PM",
           }),
         },
       );
@@ -281,23 +320,22 @@ export function SunsetSpecialPurchasePage({
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white">
       {/* Header */}
-      <div className="bg-gradient-to-r from-orange-500 to-pink-500 text-white py-8 px-4">
+      <div className="bg-white border-b py-6 px-4">
         <div className="max-w-4xl mx-auto">
           <Button
             onClick={() => onNavigate("home")}
             variant="ghost"
-            className="text-white hover:bg-white/20 mb-4"
+            className="mb-4"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
           <div className="flex items-center gap-3 mb-2">
-            <Sunset className="h-8 w-8" />
-            <h1 className="text-3xl">Add Sunset Special</h1>
+            <Sunset className="h-6 w-6 text-orange-500" />
+            <h1 className="text-2xl text-foreground">Add Sunset Special</h1>
           </div>
-          <p className="text-white/90">
-            Enhance your Hop On Sintra experience with an
-            exclusive sunset drive
+          <p className="text-muted-foreground">
+            Enhance your Hop On Sintra experience with an exclusive sunset drive
           </p>
         </div>
       </div>
@@ -368,10 +406,10 @@ export function SunsetSpecialPurchasePage({
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {sunsetSettings && (
+                {sunsetSpecial && (
                   <>
                     <p className="text-sm text-gray-700">
-                      {sunsetSettings.description}
+                      {sunsetSpecial.description}
                     </p>
 
                     <div className="grid grid-cols-2 gap-3 pt-2">
@@ -382,7 +420,7 @@ export function SunsetSpecialPurchasePage({
                             Departure
                           </p>
                           <p className="text-sm font-medium">
-                            {sunsetSettings.departureTime}
+                            {sunsetSpecial.departureTime}
                           </p>
                         </div>
                       </div>
@@ -393,19 +431,19 @@ export function SunsetSpecialPurchasePage({
                             Duration
                           </p>
                           <p className="text-sm font-medium">
-                            {sunsetSettings.duration}
+                            {sunsetSpecial.duration}
                           </p>
                         </div>
                       </div>
                     </div>
 
                     {/* Image Preview */}
-                    {sunsetSettings.images &&
-                      sunsetSettings.images[0] && (
+                    {sunsetSpecial.images &&
+                      sunsetSpecial.images[0] && (
                         <div className="rounded-lg overflow-hidden mt-4">
                           <ImageWithFallback
-                            src={sunsetSettings.images[0].url}
-                            alt={sunsetSettings.images[0].alt}
+                            src={sunsetSpecial.images[0].url}
+                            alt={sunsetSpecial.images[0].alt}
                             className="w-full h-40 object-cover"
                           />
                         </div>
@@ -456,6 +494,18 @@ export function SunsetSpecialPurchasePage({
                   </span>
                 </div>
 
+                {/* Seat Availability */}
+                {availableSeats !== null && (
+                  <Alert className={availableSeats >= booking.passengers.length ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"}>
+                    <AlertDescription className={`text-sm ${availableSeats >= booking.passengers.length ? "text-green-900" : "text-red-900"}`}>
+                      {availableSeats >= booking.passengers.length 
+                        ? `✓ ${availableSeats} seat(s) available for this date`
+                        : `⚠️ Only ${availableSeats} seat(s) available. You need ${booking.passengers.length}.`
+                      }
+                    </AlertDescription>
+                  </Alert>
+                )}
+
                 <Alert className="bg-blue-50 border-blue-200">
                   <AlertDescription className="text-sm text-blue-900">
                     This will be added to your existing booking{" "}
@@ -466,14 +516,23 @@ export function SunsetSpecialPurchasePage({
                 {!showPayment && (
                   <Button
                     onClick={handleContinueToPayment}
-                    disabled={isCreatingPayment}
-                    className="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600"
+                    disabled={isCreatingPayment || isCheckingAvailability || (availableSeats !== null && availableSeats < booking.passengers.length)}
+                    className="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 disabled:opacity-50 disabled:cursor-not-allowed"
                     size="lg"
                   >
-                    {isCreatingPayment ? (
+                    {isCheckingAvailability ? (
+                      <>
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        Checking Availability...
+                      </>
+                    ) : isCreatingPayment ? (
                       <>
                         <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                         Preparing Payment...
+                      </>
+                    ) : availableSeats !== null && availableSeats < booking.passengers.length ? (
+                      <>
+                        Sold Out
                       </>
                     ) : (
                       <>
@@ -539,17 +598,17 @@ export function SunsetSpecialPurchasePage({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {sunsetSettings?.instructions ? (
+            {sunsetSpecial?.instructions ? (
               <div className="prose prose-sm max-w-none">
                 <p className="text-gray-700 whitespace-pre-line">
-                  {sunsetSettings.instructions}
+                  {sunsetSpecial.instructions}
                 </p>
               </div>
             ) : (
               <div className="text-gray-600 text-sm">
                 <p>
                   Please arrive 10 minutes before departure time
-                  at the main pickup point. Bring warm clothing
+                  at the Historical Center. Bring warm clothing
                   as it can be windy at the coast.
                 </p>
               </div>

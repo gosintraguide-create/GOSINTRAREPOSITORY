@@ -27,6 +27,7 @@ import {
   loadContent as loadMainContent,
   saveContentAsync as saveMainContentAsync,
   type WebsiteContent,
+  DEFAULT_CONTENT as DEFAULT_MAIN_CONTENT,
 } from "../lib/contentManager";
 import {
   Accordion,
@@ -54,7 +55,14 @@ export function ContentEditor() {
   const [content, setContent] = useState<ComprehensiveContent>(DEFAULT_COMPREHENSIVE_CONTENT);
   const [contentByLanguage, setContentByLanguage] = useState<Record<string, ComprehensiveContent>>({});
   const [modifiedLanguages, setModifiedLanguages] = useState<Set<string>>(new Set());
-  const [mainContent, setMainContent] = useState<WebsiteContent>(loadMainContent());
+  const [mainContent, setMainContent] = useState<WebsiteContent>(() => {
+    try {
+      return loadMainContent();
+    } catch (error) {
+      console.error('Error loading main content during initialization:', error);
+      return DEFAULT_MAIN_CONTENT;
+    }
+  });
   const [hasChanges, setHasChanges] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [isTranslating, setIsTranslating] = useState(false);
@@ -63,7 +71,15 @@ export function ContentEditor() {
     progress: number;
   } | null>(null);
   const [autoTranslateEnabled, setAutoTranslateEnabled] = useState(false);
-  const [translationStatus, setTranslationStatus] = useState(getTranslationStatus());
+  const [translationStatus, setTranslationStatus] = useState(() => {
+    try {
+      return getTranslationStatus();
+    } catch (error) {
+      console.error('Error getting translation status during initialization:', error);
+      return { exists: {} };
+    }
+  });
+  const [isLoading, setIsLoading] = useState(true);
 
   // Load all languages on initial mount
   useEffect(() => {
@@ -77,6 +93,7 @@ export function ContentEditor() {
     
     // Load autoTranslateEnabled from server settings
     setAutoTranslateEnabled(allContent['en'].adminSettings?.autoTranslateEnabled ?? false);
+    setIsLoading(false);
   }, []);
 
   // When switching languages, update the current content from the cache
@@ -476,10 +493,22 @@ export function ContentEditor() {
       
       for (let i = 0; i < path.length; i++) {
         current = current[path[i]];
+<<<<<<< Updated upstream
+=======
+        if (!current) {
+          console.warn('Path not found:', path.slice(0, i + 1));
+          return prev;
+        }
+>>>>>>> Stashed changes
       }
       
       if (Array.isArray(current)) {
         current.splice(index, 1);
+<<<<<<< Updated upstream
+=======
+      } else {
+        console.warn('Attempted to splice non-array:', path);
+>>>>>>> Stashed changes
       }
       return newMainContent;
     });
@@ -624,10 +653,18 @@ export function ContentEditor() {
       let current: any = newContent;
       
       for (let i = 0; i < path.length; i++) {
+        if (current[path[i]] === undefined) {
+          current[path[i]] = [];
+        }
         current = current[path[i]];
       }
       
-      current.push(template);
+      if (Array.isArray(current)) {
+        current.push(template);
+      } else {
+        console.warn('Attempted to push to non-array:', path);
+        return prev;
+      }
       
       // Update the contentByLanguage cache
       setContentByLanguage(prevByLang => ({
@@ -671,9 +708,18 @@ export function ContentEditor() {
       
       for (let i = 0; i < path.length; i++) {
         current = current[path[i]];
+        if (!current) {
+          console.warn('Path not found:', path.slice(0, i + 1));
+          return prev;
+        }
       }
       
-      current.splice(index, 1);
+      if (Array.isArray(current)) {
+        current.splice(index, 1);
+      } else {
+        console.warn('Attempted to splice non-array:', path);
+        return prev;
+      }
       
       // Update the contentByLanguage cache
       setContentByLanguage(prevByLang => ({
@@ -709,6 +755,15 @@ export function ContentEditor() {
       return newMainContent;
     });
   };
+
+  // Show loading state while content is being initialized
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -1379,11 +1434,31 @@ export function ContentEditor() {
               <div><Label>Description</Label><Textarea value={content.homepage.sunsetSpecial?.description || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "description"], e.target.value)} rows={2} /></div>
               <div className="grid grid-cols-2 gap-4">
                 <div><Label>Departure Time</Label><Input value={content.homepage.sunsetSpecial?.departureTime || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "departureTime"], e.target.value)} placeholder="6:00 PM" /></div>
+<<<<<<< Updated upstream
                 <div><Label>Duration</Label><Input value={content.homepage.sunsetSpecial?.duration || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "duration"], e.target.value)} placeholder="2 Hours" /></div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div><Label>Limited Seats</Label><Input type="number" value={content.homepage.sunsetSpecial?.limitedSeats || 8} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "limitedSeats"], parseInt(e.target.value))} /></div>
                 <div><Label>Availability Hour (24h format)</Label><Input type="number" value={content.homepage.sunsetSpecial?.availabilityHour || 14} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "availabilityHour"], parseInt(e.target.value))} /></div>
+=======
+                <div><Label>Duration</Label><Input value={content.homepage.sunsetSpecial?.duration || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "duration"], e.target.value)} placeholder="1.5 Hours" /></div>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <div><Label>Price per Person (€)</Label><Input type="number" value={content.homepage.sunsetSpecial?.price || 25} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "price"], parseInt(e.target.value))} /></div>
+                <div><Label>Max Seats per Day</Label><Input type="number" value={content.homepage.sunsetSpecial?.maxSeats || 8} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "maxSeats"], parseInt(e.target.value))} /></div>
+                <div><Label>Limited Seats Display</Label><Input type="number" value={content.homepage.sunsetSpecial?.limitedSeats || 8} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "limitedSeats"], parseInt(e.target.value))} /></div>
+              </div>
+              <div className="flex items-center justify-between space-x-2">
+                <div className="space-y-0.5">
+                  <Label htmlFor="sunset-availability">Available for Booking</Label>
+                  <p className="text-xs text-muted-foreground">Control whether users can book this experience</p>
+                </div>
+                <Switch 
+                  id="sunset-availability"
+                  checked={content.homepage.sunsetSpecial?.isAvailableNow ?? true} 
+                  onCheckedChange={(checked) => updateContent(["homepage", "sunsetSpecial", "isAvailableNow"], checked)} 
+                />
+>>>>>>> Stashed changes
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div><Label>Book Button Text</Label><Input value={content.homepage.sunsetSpecial?.bookButtonText || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "bookButtonText"], e.target.value)} placeholder="Book This Experience" /></div>
@@ -1404,6 +1479,7 @@ export function ContentEditor() {
                   </p>
                 </div>
               )}
+<<<<<<< Updated upstream
               <Accordion type="single" collapsible className="w-full">
                 {(content.homepage.sunsetSpecial?.images || []).map((image: any, index: number) => (
                   <AccordionItem key={index} value={`sunset-img-${index}`}>
@@ -1419,6 +1495,63 @@ export function ContentEditor() {
                 ))}
               </Accordion>
               <Button variant="outline" className="mt-4" onClick={() => addArrayItem(["homepage", "sunsetSpecial", "images"], { url: "", alt: "Sunset image" })}><Plus className="mr-2 h-4 w-4" /> Add Image</Button>
+=======
+              
+              {/* Use MultiImageSelector for sunset special images */}
+              <MultiImageSelector
+                label="Carousel Images"
+                description="Select images for the sunset special carousel. The first image will be displayed first."
+                value={(content.homepage.sunsetSpecial?.images || []).map((img: any) => img.url)}
+                onChange={(urls) => {
+                  // Convert URL array back to image objects with URL and alt text
+                  const newImages = urls.map((url, index) => {
+                    // Try to find existing image to preserve alt text
+                    const existingImage = (content.homepage.sunsetSpecial?.images || []).find((img: any) => img.url === url);
+                    return {
+                      url,
+                      alt: existingImage?.alt || `Sunset special image ${index + 1}`
+                    };
+                  });
+                  updateContent(["homepage", "sunsetSpecial", "images"], newImages);
+                }}
+                maxImages={8}
+              />
+              
+              {/* Alt text editor for each selected image */}
+              {content.homepage.sunsetSpecial?.images && content.homepage.sunsetSpecial.images.length > 0 && (
+                <div className="mt-4 space-y-2">
+                  <Label className="text-sm font-medium">Image Alt Text (for accessibility)</Label>
+                  <Accordion type="single" collapsible className="w-full">
+                    {content.homepage.sunsetSpecial.images.map((image: any, index: number) => (
+                      <AccordionItem key={index} value={`sunset-alt-${index}`}>
+                        <AccordionTrigger className="text-sm">
+                          Image {index + 1}: {image.alt || 'No alt text'}
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 pt-2">
+                            <div className="rounded-lg overflow-hidden border border-border">
+                              <img 
+                                src={image.url} 
+                                alt={image.alt} 
+                                className="w-full h-32 object-cover"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-xs">Alt Text</Label>
+                              <Input 
+                                value={image.alt} 
+                                onChange={(e) => updateArrayItem(["homepage", "sunsetSpecial", "images"], index, "alt", e.target.value)}
+                                placeholder={`Sunset special image ${index + 1}`}
+                              />
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                </div>
+              )}
+>>>>>>> Stashed changes
             </div>
 
             <div className="mt-6">

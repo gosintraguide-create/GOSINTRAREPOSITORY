@@ -11,18 +11,36 @@ import { toast } from "sonner@2.0.3";
 import { useEditableContent } from "../lib/useEditableContent";
 
 interface SunsetSpecialCarouselProps {
-  onNavigate: (page: string) => void;
+  onNavigate: (page: string, params?: any) => void;
   language?: string;
 }
 
 export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpecialCarouselProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAvailable, setIsAvailable] = useState(false);
+<<<<<<< Updated upstream
   const [timeUntilAvailable, setTimeUntilAvailable] = useState("");
   
   // Use editable content
   const { content } = useEditableContent(language);
   const sunsetSpecial = content?.homepage?.sunsetSpecial;
+=======
+  
+  // Use editable content
+  const content = useEditableContent(language);
+  const sunsetSpecial = content?.homepage?.sunsetSpecial;
+  
+  // Debug logging
+  useEffect(() => {
+    console.log('[SunsetSpecialCarousel] Content loaded:', {
+      hasContent: !!content,
+      hasSunsetSpecial: !!sunsetSpecial,
+      enabled: sunsetSpecial?.enabled,
+      imageCount: sunsetSpecial?.images?.length || 0,
+      images: sunsetSpecial?.images,
+    });
+  }, [content, sunsetSpecial]);
+>>>>>>> Stashed changes
   
   // Booking ID verification state
   const [showBookingDialog, setShowBookingDialog] = useState(false);
@@ -39,10 +57,11 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
     return () => clearInterval(interval);
   }, [sunsetSpecial?.images?.length]);
 
-  // Check availability based on time
+  // Use manual availability toggle from content
   useEffect(() => {
     if (!sunsetSpecial) return;
     
+<<<<<<< Updated upstream
     const checkAvailability = () => {
       const now = new Date();
       const currentHour = now.getHours();
@@ -68,6 +87,12 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
     checkAvailability();
     const interval = setInterval(checkAvailability, 60000); // Check every minute
     return () => clearInterval(interval);
+=======
+    // Use the manual toggle instead of time-based logic
+    // Default to true for backwards compatibility with existing content
+    const available = sunsetSpecial.isAvailableNow ?? true;
+    setIsAvailable(available);
+>>>>>>> Stashed changes
   }, [sunsetSpecial]);
 
   const nextSlide = () => {
@@ -119,11 +144,10 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
           
           // Store the verified booking ID for the sunset special purchase flow
           sessionStorage.setItem("sunset-special-booking-id", bookingId.trim());
-          sessionStorage.setItem("sunset-special-active", "true");
           
           // Navigate to sunset special purchase page
           setTimeout(() => {
-            onNavigate("sunset-special-purchase");
+            onNavigate("sunset-special-purchase", { bookingId: bookingId.trim() });
           }, 500);
         } else {
           setVerificationError(sunsetSpecial?.dialog?.errorNotFound || "Booking ID not found. Please check and try again.");
@@ -249,7 +273,7 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
               {!isAvailable && (
                 <div className="flex items-center gap-2 rounded-lg bg-orange-50 px-3 py-2 border border-orange-200">
                   <Clock className="h-4 w-4 text-orange-600" />
-                  <span className="text-sm text-orange-700">{timeUntilAvailable}</span>
+                  <span className="text-sm text-orange-700">{sunsetSpecial?.comingSoonButtonText || "Coming Soon"}</span>
                 </div>
               )}
               

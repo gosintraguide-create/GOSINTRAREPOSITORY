@@ -91,8 +91,16 @@ export interface ComprehensiveContent {
       description: string;
       departureTime: string;
       duration: string;
+<<<<<<< Updated upstream
       limitedSeats: number;
       availabilityHour: number;
+=======
+      price: number; // Price per person in EUR
+      maxSeats: number; // Maximum seats available per day
+      limitedSeats: number;
+      availabilityHour: number; // Legacy - kept for backwards compatibility
+      isAvailableNow: boolean; // New manual toggle for availability
+>>>>>>> Stashed changes
       bookButtonText: string;
       comingSoonButtonText: string;
       availableNowText: string;
@@ -828,9 +836,18 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
       title: "Sunset Drive to Cabo da Roca",
       description: "Experience the breathtaking sunset at Europe's westernmost point with a professional guide.",
       departureTime: "6:00 PM",
+<<<<<<< Updated upstream
       duration: "2 Hours",
       limitedSeats: 8,
       availabilityHour: 14,
+=======
+      duration: "1.5 Hours",
+      price: 25, // Price per person in EUR
+      maxSeats: 8, // Maximum seats available per day
+      limitedSeats: 8,
+      availabilityHour: 14, // Legacy
+      isAvailableNow: true, // Manual availability toggle
+>>>>>>> Stashed changes
       bookButtonText: "Book This Experience",
       comingSoonButtonText: "Coming Soon",
       availableNowText: "Available Now",
@@ -2075,11 +2092,28 @@ export function loadComprehensiveContentForLanguage(languageCode: string = 'en')
 export function checkTranslationsExist(): { [lang: string]: boolean } {
   const status: { [lang: string]: boolean } = {};
   
-  for (const lang of SUPPORTED_LANGUAGES) {
-    const storageKey = lang === 'en' 
-      ? 'comprehensive-content' 
-      : `comprehensive-content-${lang}`;
-    status[lang] = localStorage.getItem(storageKey) !== null;
+  // Safety check for localStorage availability
+  if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+    // Return empty status if localStorage is not available
+    for (const lang of SUPPORTED_LANGUAGES) {
+      status[lang] = false;
+    }
+    return status;
+  }
+  
+  try {
+    for (const lang of SUPPORTED_LANGUAGES) {
+      const storageKey = lang === 'en' 
+        ? 'comprehensive-content' 
+        : `comprehensive-content-${lang}`;
+      status[lang] = localStorage.getItem(storageKey) !== null;
+    }
+  } catch (error) {
+    console.error('Error checking translation status:', error);
+    // Return empty status on error
+    for (const lang of SUPPORTED_LANGUAGES) {
+      status[lang] = false;
+    }
   }
   
   return status;
@@ -2094,17 +2128,22 @@ export function getTranslationStatus(): {
 } {
   const exists = checkTranslationsExist();
   
+  // Safety check for localStorage availability
+  if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+    return { exists };
+  }
+  
   // Try to get last translation date from English content
-  const saved = localStorage.getItem('comprehensive-content');
   let lastTranslated: string | undefined;
   
-  if (saved) {
-    try {
+  try {
+    const saved = localStorage.getItem('comprehensive-content');
+    if (saved) {
       const parsed = JSON.parse(saved);
       lastTranslated = parsed._lastTranslated;
-    } catch (error) {
-      // Ignore parsing errors
     }
+  } catch (error) {
+    // Ignore parsing errors
   }
   
   return { exists, lastTranslated };

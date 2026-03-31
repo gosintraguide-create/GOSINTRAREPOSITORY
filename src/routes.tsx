@@ -11,6 +11,10 @@ const PrivateToursPage = lazy(() => import("./components/PrivateToursPage").then
 const PrivateTourDetailPage = lazy(() => import("./components/PrivateTourDetailPage").then(m => ({ default: m.PrivateTourDetailPage })));
 const HopOnServiceDetailPage = lazy(() => import("./components/HopOnServiceDetailPage").then(m => ({ default: m.HopOnServiceDetailPage })));
 const BuyTicketPage = lazy(() => import("./components/BuyTicketPage").then(m => ({ default: m.BuyTicketPage })));
+<<<<<<< Updated upstream
+=======
+const SunsetSpecialPurchasePage = lazy(() => import("./components/SunsetSpecialPurchasePage").then(m => ({ default: m.SunsetSpecialPurchasePage })));
+>>>>>>> Stashed changes
 const LiveChatPage = lazy(() => import("./components/LiveChatPage").then(m => ({ default: m.LiveChatPage })));
 const AboutPage = lazy(() => import("./components/AboutPage").then(m => ({ default: m.AboutPage })));
 const BlogPage = lazy(() => import("./components/BlogPage").then(m => ({ default: m.BlogPage })));
@@ -18,6 +22,10 @@ const BlogArticlePage = lazy(() => import("./components/BlogArticlePage").then(m
 const RouteMapPage = lazy(() => import("./components/RouteMapPage").then(m => ({ default: m.RouteMapPage })));
 const AdminPage = lazy(() => import("./components/AdminPage").then(m => ({ default: m.AdminPage })));
 const DriverPortalPage = lazy(() => import("./components/DriverPortalPage").then(m => ({ default: m.DriverPortalPage })));
+<<<<<<< Updated upstream
+=======
+const QRScannerPage = lazy(() => import("./components/QRScannerPage").then(m => ({ default: m.QRScannerPage })));
+>>>>>>> Stashed changes
 const NotFoundPage = lazy(() => import("./components/NotFoundPage").then(m => ({ default: m.NotFoundPage })));
 
 // Slug generation helper
@@ -203,6 +211,24 @@ export const router = createBrowserRouter([
             title: "Buy Day Pass - Hop On Sintra",
             description: "Purchase your Sintra day pass for unlimited hop-on/hop-off access.",
             index: false,
+<<<<<<< Updated upstream
+=======
+          },
+        },
+      },
+      {
+        path: "sunset-special",
+        element: (
+          <ErrorBoundary>
+            <SunsetSpecialPurchasePage />
+          </ErrorBoundary>
+        ),
+        handle: {
+          meta: {
+            title: "Sunset Special - Hop On Sintra",
+            description: "Purchase your Sintra sunset special for unlimited hop-on/hop-off access.",
+            index: false,
+>>>>>>> Stashed changes
           },
         },
       },
@@ -231,6 +257,21 @@ export const router = createBrowserRouter([
         handle: {
           meta: {
             title: "Driver Portal",
+            index: false,
+            protected: true,
+          },
+        },
+      },
+      {
+        path: "qr-scanner",
+        element: (
+          <ErrorBoundary>
+            <QRScannerPage />
+          </ErrorBoundary>
+        ),
+        handle: {
+          meta: {
+            title: "QR Scanner",
             index: false,
             protected: true,
           },

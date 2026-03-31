@@ -27,10 +27,10 @@ const DEFAULT_SETTINGS: SunsetSpecialSettings = {
   title: "Sunset Drive to Cabo da Roca",
   description: "Experience the breathtaking sunset at Europe's westernmost point with a professional guide.",
   departureTime: "6:00 PM",
-  duration: "2 Hours",
+  duration: "1.5 Hours",
   limitedSeats: 8,
   availabilityHour: 14,
-  instructions: "Please arrive 10 minutes before departure time at the main pickup point. Bring warm clothing as it can be windy at the coast. This experience departs at 6:00 PM and includes transportation, a professional guide, and approximately 45 minutes at Cabo da Roca to enjoy the sunset.",
+  instructions: "Please arrive 10 minutes before departure time at the Historical Center. Bring warm clothing as it can be windy at the coast. This experience departs at 6:00 PM and includes transportation, a professional guide, and approximately 45 minutes at Cabo da Roca to enjoy the sunset.",
   images: [
     {
       url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80",
@@ -158,7 +158,7 @@ export function SunsetSpecialManager() {
               value={settings.duration}
               onChange={(e) => setSettings({ ...settings, duration: e.target.value })}
               className="mt-2"
-              placeholder="2 Hours"
+              placeholder="1.5 Hours"
             />
           </div>
 

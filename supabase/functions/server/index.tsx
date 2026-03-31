@@ -131,6 +131,108 @@ function generateBookingConfirmationHTML(data: any): string {
   `.trim();
 }
 
+// Sunset special confirmation email template
+function generateSunsetSpecialConfirmationHTML(data: any): string {
+  const {
+    customerName,
+    bookingId,
+    formattedDate,
+    departureTime,
+    participants,
+    price,
+  } = data;
+
+  const bookingIdShort = bookingId.split("_")[1] || bookingId;
+
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sunset Special Added - Hop On Sintra</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8f9fa; color: #2d3436;">
+  <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+    <div style="background: linear-gradient(135deg, #ea580c 0%, #ec4899 100%); padding: 40px 20px; text-align: center; border-bottom: 4px solid #fb923c;">
+      <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">🌅 Sunset Special Confirmed!</h1>
+      <p style="margin: 10px 0 0 0; color: #ffffff; opacity: 0.95; font-size: 16px;">Get ready for an unforgettable sunset experience</p>
+    </div>
+    <div style="padding: 40px 30px;">
+      <p style="font-size: 18px; margin-bottom: 10px; color: #2d3436;">Dear ${customerName},</p>
+      <p style="margin-bottom: 30px; color: #2d3436; line-height: 1.6;">Great news! We've successfully added the <strong>Sunset Special to Cabo da Roca</strong> to your booking. Prepare for a breathtaking journey to Europe's westernmost point as the sun sets over the Atlantic Ocean.</p>
+      
+      <div style="background: linear-gradient(135deg, #fff7ed 0%, #fce7f3 100%); border-left: 4px solid #fb923c; padding: 20px; margin: 25px 0; border-radius: 8px;">
+        <p style="margin: 0 0 10px 0; color: #ea580c; font-weight: 700; font-size: 16px;">🌄 Your Sunset Experience</p>
+        <p style="margin: 0; color: #2d3436; font-size: 14px; line-height: 1.6;">This exclusive add-on has been confirmed and added to your existing booking.</p>
+      </div>
+      
+      <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 25px 0;">
+        <h2 style="margin: 0 0 15px 0; font-size: 18px; color: #ea580c;">Sunset Special Details</h2>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Booking ID:</td>
+            <td style="padding: 8px 0; color: #2d3436; font-weight: 600; text-align: right; font-size: 14px;">${bookingIdShort}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Date:</td>
+            <td style="padding: 8px 0; color: #2d3436; font-weight: 600; text-align: right; font-size: 14px;">${formattedDate}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Departure Time:</td>
+            <td style="padding: 8px 0; color: #2d3436; font-weight: 600; text-align: right; font-size: 14px;">${departureTime}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Participants:</td>
+            <td style="padding: 8px 0; color: #2d3436; font-weight: 600; text-align: right; font-size: 14px;">${participants}</td>
+          </tr>
+          <tr style="border-top: 2px solid #fb923c;">
+            <td style="padding: 15px 0 0 0; color: #ea580c; font-weight: 700; font-size: 16px;">Total Paid:</td>
+            <td style="padding: 15px 0 0 0; color: #ea580c; font-weight: 700; text-align: right; font-size: 18px;">€${price.toFixed(2)}</td>
+          </tr>
+        </table>
+      </div>
+      
+      <div style="background-color: #f0f9ff; border: 1px solid #bae6fd; padding: 20px; border-radius: 8px; margin: 25px 0;">
+        <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #ea580c;">📍 Important Information</h3>
+        <ul style="margin: 0; padding-left: 20px; color: #2d3436; font-size: 14px; line-height: 1.8;">
+          <li>Please arrive <strong>10 minutes before</strong> the departure time</li>
+          <li>Meet at the <strong>Historical Center</strong> (same location as your day pass)</li>
+          <li>Bring <strong>warm clothing</strong> - it can be windy at the coast</li>
+          <li>Don't forget your <strong>camera</strong> for stunning sunset photos!</li>
+          <li>Duration: Approximately 1.5 hours</li>
+        </ul>
+      </div>
+      
+      <div style="background-color: #fef3c7; border: 1px solid #fbbf24; padding: 15px; border-radius: 8px; margin: 25px 0;">
+        <p style="margin: 0; color: #92400e; font-size: 14px; line-height: 1.6;">
+          <strong>💡 Pro Tip:</strong> The best sunset views are from the clifftops at Cabo da Roca. Our driver will take you to the perfect viewing spots and share the fascinating history of this legendary location.
+        </p>
+      </div>
+      
+      <div style="margin: 30px 0; padding: 20px; background-color: #f8fafc; border-radius: 8px; text-align: center;">
+        <p style="margin: 0 0 10px 0; color: #475569; font-size: 14px;">Questions about your sunset experience?</p>
+        <p style="margin: 0; color: #475569; font-size: 14px;">
+          Reply to this email or contact us at <strong style="color: #ea580c;">info@hoponsintra.com</strong>
+        </p>
+      </div>
+      
+      <div style="text-align: center; padding: 20px 0; border-top: 1px solid #e5e7eb;">
+        <p style="margin: 0 0 10px 0; color: #2d3436; font-size: 16px; font-weight: 600;">See you at sunset! 🌅</p>
+        <p style="margin: 0; color: #6b7280; font-size: 14px;">The Hop On Sintra Team</p>
+      </div>
+    </div>
+    
+    <div style="background-color: #f8fafc; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+      <p style="margin: 0 0 5px 0; color: #6b7280; font-size: 12px;">Hop On Sintra - Premium Transport Services</p>
+      <p style="margin: 0; color: #6b7280; font-size: 12px;">Sintra, Portugal</p>
+    </div>
+  </div>
+</body>
+</html>
+  `.trim();
+}
+
 // Database cleanup utilities
 async function cleanupDatabase() {
   console.log("🧹 Starting database cleanup...");
@@ -1652,14 +1754,36 @@ app.get(
         "❌ Error fetching comprehensive content:",
         error,
       );
+      
+      // Check if error is a database connectivity issue (HTML error page)
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const isDatabaseConnectivityError = errorMessage.includes('<!DOCTYPE html>') || 
+                                         errorMessage.includes('Bad gateway') ||
+                                         errorMessage.includes('502');
+      
+      if (isDatabaseConnectivityError) {
+        console.error(
+          "🔴 Database connectivity error detected (502 Bad Gateway). This is usually temporary.",
+        );
+        return c.json(
+          {
+            success: false,
+            error: "Database temporarily unavailable. Please try again in a moment.",
+            errorType: "DATABASE_CONNECTIVITY",
+          },
+          503, // Service Unavailable
+        );
+      }
+      
       console.error(
         "Error details:",
-        error instanceof Error ? error.message : String(error),
+        errorMessage.substring(0, 500), // Limit error message length to avoid huge HTML dumps
       );
       return c.json(
         {
           success: false,
           error: "Failed to fetch comprehensive content",
+          details: errorMessage.substring(0, 200),
         },
         500,
       );
@@ -2582,7 +2706,48 @@ app.get("/make-server-3bd0ade8/bookings/:bookingId/full", async (c) => {
 app.post("/make-server-3bd0ade8/bookings", async (c) => {
   try {
     const body = await c.req.json();
-    const { paymentIntentId, isTestBooking, skipEmail } = body;
+    const { paymentIntentId, isTestBooking, skipEmail, isSunsetSpecial, existingBookingId } = body;
+
+    // Handle sunset special addon to existing booking
+    if (isSunsetSpecial && existingBookingId) {
+      console.log(`🌅 Processing sunset special addon for booking: ${existingBookingId}`);
+      
+      // Verify payment
+      if (stripe && paymentIntentId) {
+        const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+        if (paymentIntent.status !== "succeeded") {
+          return c.json({ success: false, error: "Payment verification failed" }, 400);
+        }
+        console.log(`✅ Payment verified: €${paymentIntent.amount / 100}`);
+      }
+      
+      // Get existing booking
+      const existingBooking = await kv.get(`booking_${existingBookingId}`);
+      if (!existingBooking) {
+        return c.json({ success: false, error: "Booking not found" }, 404);
+      }
+      
+      // Update booking with sunset special
+      const updatedBooking = {
+        ...existingBooking,
+        sunsetSpecial: {
+          added: true,
+          price: body.totalPrice,
+          paymentIntentId: paymentIntentId,
+          addedAt: new Date().toISOString(),
+        },
+        totalPrice: (existingBooking.totalPrice || 0) + body.totalPrice,
+      };
+      
+      await kv.set(`booking_${existingBookingId}`, updatedBooking);
+      console.log(`✅ Sunset special added to booking ${existingBookingId}`);
+      
+      return c.json({
+        success: true,
+        booking: updatedBooking,
+        message: "Sunset special added successfully",
+      });
+    }
 
     // Verify payment if Stripe is configured (skip for test bookings)
     if (stripe && paymentIntentId && !isTestBooking) {
@@ -3046,12 +3211,42 @@ app.post("/make-server-3bd0ade8/verify-booking-login", async (c) => {
   }
 });
 
+// Check sunset special seat availability for a specific date
+app.get("/make-server-3bd0ade8/sunset-special/availability/:date", async (c) => {
+  try {
+    const date = c.req.param("date");
+    const maxSeatsParam = c.req.query("maxSeats");
+    const maxSeats = maxSeatsParam ? parseInt(maxSeatsParam) : 8;
+    
+    console.log(`🌅 Checking sunset special availability for ${date}, max seats: ${maxSeats}`);
+    
+    // Get current bookings for this date
+    const seatKey = `sunset-seats-${date}`;
+    const bookedSeats = (await kv.get(seatKey)) || 0;
+    const availableSeats = maxSeats - bookedSeats;
+    
+    console.log(`📊 Seats: ${bookedSeats} booked, ${availableSeats} available`);
+    
+    return c.json({
+      success: true,
+      date,
+      maxSeats,
+      bookedSeats,
+      availableSeats,
+      isAvailable: availableSeats > 0,
+    });
+  } catch (error) {
+    console.error("❌ Error checking availability:", error);
+    return c.json({ success: false, error: "Failed to check availability" }, 500);
+  }
+});
+
 // Add sunset special to existing booking
 app.post("/make-server-3bd0ade8/bookings/:bookingId/add-sunset-special", async (c) => {
   try {
     const bookingId = c.req.param("bookingId");
     const body = await c.req.json();
-    const { paymentIntentId, sunsetSpecialPrice, participants } = body;
+    const { paymentIntentId, sunsetSpecialPrice, participants, departureTime } = body;
 
     console.log(
       `🌅 Adding sunset special to booking ${bookingId}`,
@@ -3123,6 +3318,42 @@ app.post("/make-server-3bd0ade8/bookings/:bookingId/add-sunset-special", async (
       );
     }
 
+    // Check seat availability before adding
+    const bookingDate = booking.selectedDate || booking.visitDate;
+    if (!bookingDate) {
+      return c.json(
+        {
+          success: false,
+          error: "Booking date not found",
+        },
+        400,
+      );
+    }
+
+    // Extract date from booking date (YYYY-MM-DD format)
+    const dateOnly = bookingDate.split('T')[0];
+    const seatKey = `sunset-seats-${dateOnly}`;
+    const maxSeats = body.maxSeats || 8; // Get maxSeats from request or default to 8
+    
+    // Get current bookings and check availability
+    const bookedSeats = (await kv.get(seatKey)) || 0;
+    const availableSeats = maxSeats - bookedSeats;
+    
+    if (availableSeats < participants) {
+      console.log(`❌ Not enough seats available. Requested: ${participants}, Available: ${availableSeats}`);
+      return c.json(
+        {
+          success: false,
+          error: `Only ${availableSeats} seat(s) available for this date. You requested ${participants}.`,
+        },
+        400,
+      );
+    }
+
+    // Reserve seats by incrementing the counter
+    await kv.set(seatKey, bookedSeats + participants);
+    console.log(`✅ Reserved ${participants} seats. New total: ${bookedSeats + participants}/${maxSeats}`);
+
     // Update booking with sunset special
     booking.sunsetSpecial = {
       added: true,
@@ -3130,6 +3361,7 @@ app.post("/make-server-3bd0ade8/bookings/:bookingId/add-sunset-special", async (
       price: sunsetSpecialPrice,
       participants: participants,
       paymentIntentId: paymentIntentId,
+      date: dateOnly,
     };
 
     // Update total price
@@ -3142,8 +3374,56 @@ app.post("/make-server-3bd0ade8/bookings/:bookingId/add-sunset-special", async (
       `✅ Sunset special added to booking ${booking.id}`,
     );
 
-    // TODO: Send confirmation email about the sunset special add-on
-    // For now, we'll just return success
+    // Send confirmation email about the sunset special add-on
+    try {
+      const resendApiKey = Deno.env.get("RESEND_API_KEY");
+      
+      if (resendApiKey && booking.contactInfo?.email) {
+        const formattedDate = new Date(bookingDate).toLocaleDateString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+
+        const htmlContent = generateSunsetSpecialConfirmationHTML({
+          customerName: booking.contactInfo.name || "Valued Customer",
+          bookingId: booking.id,
+          formattedDate,
+          departureTime: departureTime || "6:00 PM",
+          participants: participants,
+          price: sunsetSpecialPrice,
+        });
+
+        const emailResponse = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${resendApiKey}`,
+          },
+          body: JSON.stringify({
+            from: "Hop On Sintra <bookings@hoponsintra.com>",
+            to: [booking.contactInfo.email],
+            reply_to: "info@hoponsintra.com",
+            subject: `🌅 Sunset Special Confirmed - ${formattedDate}`,
+            html: htmlContent,
+          }),
+        });
+
+        const emailResult = await emailResponse.json();
+
+        if (emailResponse.ok) {
+          console.log(`✅ Sunset special confirmation email sent to ${booking.contactInfo.email}`);
+        } else {
+          console.error("❌ Failed to send sunset special email:", emailResult);
+        }
+      } else {
+        console.log("⚠️  Email not sent - API key or email address not available");
+      }
+    } catch (emailError) {
+      console.error("❌ Error sending sunset special confirmation email:", emailError);
+      // Don't fail the request if email fails
+    }
 
     return c.json({
       success: true,

@@ -334,13 +334,20 @@ export function HomePage() {
         content={content}
       />
 
-      {/* Route Overview Section */}
-      <RouteOverview language={language} onNavigate={onNavigate} />
-
       {/* Today's Special: Sunset Drive Carousel */}
-      {sunsetSpecialEnabled && (
+      {sunsetSpecialEnabled && content?.homepage?.sunsetSpecial?.enabled && (
         <SunsetSpecialCarousel onNavigate={onNavigate} language={language} />
       )}
+
+      {/* Debug info - remove this after checking */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="mx-auto max-w-6xl px-4 py-4">
+          
+        </div>
+      )}
+
+      {/* Route Overview Section */}
+      <RouteOverview language={language} onNavigate={onNavigate} />
 
       {/* Quick Links Section */}
       <section className="bg-gradient-to-br from-primary via-primary/95 to-primary/90 py-16 sm:py-20 lg:py-24">
