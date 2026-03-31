@@ -493,22 +493,16 @@ export function ContentEditor() {
       
       for (let i = 0; i < path.length; i++) {
         current = current[path[i]];
-<<<<<<< Updated upstream
-=======
         if (!current) {
           console.warn('Path not found:', path.slice(0, i + 1));
           return prev;
         }
->>>>>>> Stashed changes
       }
       
       if (Array.isArray(current)) {
         current.splice(index, 1);
-<<<<<<< Updated upstream
-=======
       } else {
         console.warn('Attempted to splice non-array:', path);
->>>>>>> Stashed changes
       }
       return newMainContent;
     });
@@ -1353,9 +1347,17 @@ export function ContentEditor() {
               {["attractions", "travelGuide", "privateTours"].map((linkKey) => (
                 <div key={linkKey} className="border-t pt-4">
                   <h4 className="mb-3 font-medium capitalize">{linkKey.replace(/([A-Z])/g, ' $1').trim()}</h4>
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <div><Label>Title</Label><Input value={(content.homepage.quickLinks as any)?.[linkKey]?.title || ""} onChange={(e) => updateContent(["homepage", "quickLinks", linkKey, "title"], e.target.value)} /></div>
-                    <div><Label>Subtitle</Label><Input value={(content.homepage.quickLinks as any)?.[linkKey]?.subtitle || ""} onChange={(e) => updateContent(["homepage", "quickLinks", linkKey, "subtitle"], e.target.value)} /></div>
+                  <div className="space-y-4">
+                    <ImageSelector
+                      label="Card Image"
+                      description={`Image for ${linkKey.replace(/([A-Z])/g, ' $1').trim()} card`}
+                      value={(content.homepage.quickLinks as any)?.[linkKey]?.image || ""}
+                      onChange={(url) => updateContent(["homepage", "quickLinks", linkKey, "image"], url)}
+                    />
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div><Label>Title</Label><Input value={(content.homepage.quickLinks as any)?.[linkKey]?.title || ""} onChange={(e) => updateContent(["homepage", "quickLinks", linkKey, "title"], e.target.value)} /></div>
+                      <div><Label>Subtitle</Label><Input value={(content.homepage.quickLinks as any)?.[linkKey]?.subtitle || ""} onChange={(e) => updateContent(["homepage", "quickLinks", linkKey, "subtitle"], e.target.value)} /></div>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -1434,13 +1436,6 @@ export function ContentEditor() {
               <div><Label>Description</Label><Textarea value={content.homepage.sunsetSpecial?.description || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "description"], e.target.value)} rows={2} /></div>
               <div className="grid grid-cols-2 gap-4">
                 <div><Label>Departure Time</Label><Input value={content.homepage.sunsetSpecial?.departureTime || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "departureTime"], e.target.value)} placeholder="6:00 PM" /></div>
-<<<<<<< Updated upstream
-                <div><Label>Duration</Label><Input value={content.homepage.sunsetSpecial?.duration || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "duration"], e.target.value)} placeholder="2 Hours" /></div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div><Label>Limited Seats</Label><Input type="number" value={content.homepage.sunsetSpecial?.limitedSeats || 8} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "limitedSeats"], parseInt(e.target.value))} /></div>
-                <div><Label>Availability Hour (24h format)</Label><Input type="number" value={content.homepage.sunsetSpecial?.availabilityHour || 14} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "availabilityHour"], parseInt(e.target.value))} /></div>
-=======
                 <div><Label>Duration</Label><Input value={content.homepage.sunsetSpecial?.duration || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "duration"], e.target.value)} placeholder="1.5 Hours" /></div>
               </div>
               <div className="grid grid-cols-3 gap-4">
@@ -1458,7 +1453,6 @@ export function ContentEditor() {
                   checked={content.homepage.sunsetSpecial?.isAvailableNow ?? true} 
                   onCheckedChange={(checked) => updateContent(["homepage", "sunsetSpecial", "isAvailableNow"], checked)} 
                 />
->>>>>>> Stashed changes
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div><Label>Book Button Text</Label><Input value={content.homepage.sunsetSpecial?.bookButtonText || ""} onChange={(e) => updateContent(["homepage", "sunsetSpecial", "bookButtonText"], e.target.value)} placeholder="Book This Experience" /></div>
@@ -1479,23 +1473,6 @@ export function ContentEditor() {
                   </p>
                 </div>
               )}
-<<<<<<< Updated upstream
-              <Accordion type="single" collapsible className="w-full">
-                {(content.homepage.sunsetSpecial?.images || []).map((image: any, index: number) => (
-                  <AccordionItem key={index} value={`sunset-img-${index}`}>
-                    <AccordionTrigger>Image {index + 1}: {image.alt}</AccordionTrigger>
-                    <AccordionContent>
-                      <div className="space-y-4 pt-4">
-                        <div><Label>Image URL</Label><Input value={image.url} onChange={(e) => updateArrayItem(["homepage", "sunsetSpecial", "images"], index, "url", e.target.value)} /></div>
-                        <div><Label>Alt Text</Label><Input value={image.alt} onChange={(e) => updateArrayItem(["homepage", "sunsetSpecial", "images"], index, "alt", e.target.value)} /></div>
-                        <Button variant="destructive" size="sm" onClick={() => removeArrayItem(["homepage", "sunsetSpecial", "images"], index)}><Trash2 className="mr-2 h-4 w-4" /> Remove Image</Button>
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-              <Button variant="outline" className="mt-4" onClick={() => addArrayItem(["homepage", "sunsetSpecial", "images"], { url: "", alt: "Sunset image" })}><Plus className="mr-2 h-4 w-4" /> Add Image</Button>
-=======
               
               {/* Use MultiImageSelector for sunset special images */}
               <MultiImageSelector
@@ -1551,7 +1528,6 @@ export function ContentEditor() {
                   </Accordion>
                 </div>
               )}
->>>>>>> Stashed changes
             </div>
 
             <div className="mt-6">

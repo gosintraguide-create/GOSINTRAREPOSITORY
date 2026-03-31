@@ -1,28 +1,26 @@
 import { useState, useEffect } from "react";
 import {
-  Plus,
-  Edit,
-  Trash2,
-  Save,
-  X,
   ArrowUp,
   ArrowDown,
-  Eye,
-  EyeOff,
+  Edit,
+  Trash2,
+  Plus,
+  Save,
+  X,
   Sparkles,
-  Upload,
+  EyeOff,
 } from "lucide-react";
 import { Button } from "./ui/button";
-import { Card } from "./ui/card";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
-import { Switch } from "./ui/switch";
+import { Card } from "./ui/card";
 import { Badge } from "./ui/badge";
+import { Switch } from "./ui/switch";
 import { toast } from "sonner@2.0.3";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
 import { safeJsonFetch } from "../lib/apiErrorHandler";
-import { ImageUploadField } from "./ImageUploadField";
+import { ImageSelector } from "./ImageSelector";
 
 export interface PrivateTour {
   id: string;
@@ -282,7 +280,7 @@ export function PrivateTourManager() {
             {/* Hero Image */}
             <div>
               <Label>Hero Image</Label>
-              <ImageUploadField
+              <ImageSelector
                 value={editingTour.heroImage || ""}
                 onChange={(url) =>
                   setEditingTour({ ...editingTour, heroImage: url })

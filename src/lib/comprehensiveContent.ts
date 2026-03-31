@@ -91,16 +91,11 @@ export interface ComprehensiveContent {
       description: string;
       departureTime: string;
       duration: string;
-<<<<<<< Updated upstream
-      limitedSeats: number;
-      availabilityHour: number;
-=======
       price: number; // Price per person in EUR
       maxSeats: number; // Maximum seats available per day
       limitedSeats: number;
       availabilityHour: number; // Legacy - kept for backwards compatibility
       isAvailableNow: boolean; // New manual toggle for availability
->>>>>>> Stashed changes
       bookButtonText: string;
       comingSoonButtonText: string;
       availableNowText: string;
@@ -836,18 +831,12 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
       title: "Sunset Drive to Cabo da Roca",
       description: "Experience the breathtaking sunset at Europe's westernmost point with a professional guide.",
       departureTime: "6:00 PM",
-<<<<<<< Updated upstream
-      duration: "2 Hours",
-      limitedSeats: 8,
-      availabilityHour: 14,
-=======
       duration: "1.5 Hours",
       price: 25, // Price per person in EUR
       maxSeats: 8, // Maximum seats available per day
       limitedSeats: 8,
       availabilityHour: 14, // Legacy
       isAvailableNow: true, // Manual availability toggle
->>>>>>> Stashed changes
       bookButtonText: "Book This Experience",
       comingSoonButtonText: "Coming Soon",
       availableNowText: "Available Now",

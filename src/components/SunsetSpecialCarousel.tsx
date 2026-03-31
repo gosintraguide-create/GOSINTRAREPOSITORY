@@ -18,13 +18,6 @@ interface SunsetSpecialCarouselProps {
 export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpecialCarouselProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAvailable, setIsAvailable] = useState(false);
-<<<<<<< Updated upstream
-  const [timeUntilAvailable, setTimeUntilAvailable] = useState("");
-  
-  // Use editable content
-  const { content } = useEditableContent(language);
-  const sunsetSpecial = content?.homepage?.sunsetSpecial;
-=======
   
   // Use editable content
   const content = useEditableContent(language);
@@ -40,7 +33,6 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
       images: sunsetSpecial?.images,
     });
   }, [content, sunsetSpecial]);
->>>>>>> Stashed changes
   
   // Booking ID verification state
   const [showBookingDialog, setShowBookingDialog] = useState(false);
@@ -61,38 +53,10 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
   useEffect(() => {
     if (!sunsetSpecial) return;
     
-<<<<<<< Updated upstream
-    const checkAvailability = () => {
-      const now = new Date();
-      const currentHour = now.getHours();
-      
-      if (currentHour >= sunsetSpecial.availabilityHour) {
-        setIsAvailable(true);
-        setTimeUntilAvailable("");
-      } else {
-        setIsAvailable(false);
-        const hoursUntil = sunsetSpecial.availabilityHour - currentHour;
-        const minutesUntil = 60 - now.getMinutes();
-        
-        if (hoursUntil === 1 && minutesUntil < 60) {
-          setTimeUntilAvailable(`Available in ${minutesUntil} minutes`);
-        } else if (hoursUntil > 1) {
-          setTimeUntilAvailable(`${sunsetSpecial.availableAtText} ${sunsetSpecial.availabilityHour}:00`);
-        } else {
-          setTimeUntilAvailable(`Available soon`);
-        }
-      }
-    };
-
-    checkAvailability();
-    const interval = setInterval(checkAvailability, 60000); // Check every minute
-    return () => clearInterval(interval);
-=======
     // Use the manual toggle instead of time-based logic
     // Default to true for backwards compatibility with existing content
     const available = sunsetSpecial.isAvailableNow ?? true;
     setIsAvailable(available);
->>>>>>> Stashed changes
   }, [sunsetSpecial]);
 
   const nextSlide = () => {
