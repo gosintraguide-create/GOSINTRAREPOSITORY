@@ -169,7 +169,7 @@ export function RootLayout() {
     } else if (page === "driver-portal") {
       navigate("/driver");
     } else if (page === "qr-scanner") {
-      navigate("/qr-scanner");
+      navigate("/qr-scanner", { state: data });
     } else {
       navigate(`/${page}`);
     }

@@ -994,46 +994,31 @@ export function ContentEditor() {
       </Card>
 
       {/* Content Sections */}
-      <Tabs defaultValue="company" className="w-full">
+      <Tabs defaultValue="homepage" className="w-full">
         <TabsList className="flex w-full overflow-x-auto">
-          <TabsTrigger value="company" className="flex-shrink-0">
-            <Settings className="mr-1 h-4 w-4" />
-            Company
-          </TabsTrigger>
           <TabsTrigger value="homepage" className="flex-shrink-0">
             <Home className="mr-1 h-4 w-4" />
-            Home
-          </TabsTrigger>
-          <TabsTrigger value="howItWorks" className="flex-shrink-0">
-            <Info className="mr-1 h-4 w-4" />
-            How It Works
+            Home Page
           </TabsTrigger>
           <TabsTrigger value="attractions" className="flex-shrink-0">
             <MapPin className="mr-1 h-4 w-4" />
             Attractions
           </TabsTrigger>
-          <TabsTrigger value="buyTicket" className="flex-shrink-0">
-            <ShoppingCart className="mr-1 h-4 w-4" />
-            Buy Ticket
-          </TabsTrigger>
-          <TabsTrigger value="blog" className="flex-shrink-0">
+          <TabsTrigger value="travelGuide" className="flex-shrink-0">
             <FileText className="mr-1 h-4 w-4" />
-            Blog/Guide
+            Travel Guide
           </TabsTrigger>
-          <TabsTrigger value="other" className="flex-shrink-0">
-            <User className="mr-1 h-4 w-4" />
-            Other Pages
-          </TabsTrigger>
-          <TabsTrigger value="common" className="flex-shrink-0">
-            <Globe className="mr-1 h-4 w-4" />
-            Common
+          <TabsTrigger value="settings" className="flex-shrink-0">
+            <Settings className="mr-1 h-4 w-4" />
+            Settings
           </TabsTrigger>
         </TabsList>
 
-        {/* Company Info Tab */}
-        <TabsContent value="company" className="space-y-4">
+        {/* Company/Settings Info - hidden, moved to settings tab */}
+        <TabsContent value="home-hidden" className="space-y-4" style={{display: 'none'}}>
+          {/* Homepage Hero and Content */}
           <Card className="p-6">
-            <h3 className="mb-4 text-foreground">Company Information</h3>
+            <h3 className="mb-4 text-foreground">Hero Section</h3>
             <div className="space-y-4">
               <div>
                 <Label>Company Name</Label>
@@ -1557,8 +1542,8 @@ export function ContentEditor() {
           </Card>
         </TabsContent>
 
-        {/* How It Works Tab */}
-        <TabsContent value="howItWorks" className="space-y-4">
+        {/* How It Works - hidden, can be added to settings if needed */}
+        <TabsContent value="howItWorks-hidden" className="space-y-4" style={{display: 'none'}}>
           <Card className="p-6">
             <h3 className="mb-4 text-foreground">Hero Section</h3>
             <div className="space-y-4">
@@ -2145,8 +2130,8 @@ export function ContentEditor() {
           </Card>
         </TabsContent>
 
-        {/* Buy Ticket Tab */}
-        <TabsContent value="buyTicket" className="space-y-4">
+        {/* Buy Ticket - hidden, can be added to settings if needed */}
+        <TabsContent value="buyTicket-hidden" className="space-y-4" style={{display: 'none'}}>
           <Card className="p-6">
             <h3 className="mb-4 text-foreground">Hero Section</h3>
             <div className="space-y-4">
@@ -2312,8 +2297,8 @@ export function ContentEditor() {
           </Card>
         </TabsContent>
 
-        {/* Blog / Travel Guide Tab */}
-        <TabsContent value="blog" className="space-y-4">
+        {/* Travel Guide Tab */}
+        <TabsContent value="travelGuide" className="space-y-4">
           <Card className="p-6">
             <h3 className="mb-4 text-foreground">Blog / Travel Guide Page</h3>
             <p className="mb-4 text-sm text-muted-foreground">
@@ -2400,8 +2385,8 @@ export function ContentEditor() {
           </Card>
         </TabsContent>
 
-        {/* Other Pages Tab */}
-        <TabsContent value="other" className="space-y-4">
+        {/* Settings Tab - Company info, navigation, other pages, and common elements */}
+        <TabsContent value="settings" className="space-y-4">
           {/* ABOUT PAGE - reads from mainContent.about (flat WebsiteContent paths) */}
           <Card className="p-6">
             <h3 className="mb-4 text-foreground">About Page</h3>
@@ -2958,10 +2943,8 @@ export function ContentEditor() {
               <div><Label>Go Back Button</Label><Input value={mainContent.liveChat?.goBack || ""} onChange={(e) => updateMainContentField(["liveChat", "goBack"], e.target.value)} /></div>
             </div>
           </Card>
-        </TabsContent>
-
-        {/* Common Tab */}
-        <TabsContent value="common" className="space-y-4">
+        
+          {/* Common Elements - now part of settings tab */}
           <Card className="p-6">
             <h3 className="mb-4 text-foreground">Common Buttons</h3>
             <div className="grid gap-4 md:grid-cols-3">

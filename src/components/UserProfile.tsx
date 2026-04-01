@@ -141,12 +141,12 @@ export function UserProfile({ onNavigate, language }: UserProfileProps) {
               {t.userProfile.loginToProfile}
             </DropdownMenuItem>
             
-            <DropdownMenuItem onClick={() => handleProtectedNavigation("manage-booking")}>
+            <DropdownMenuItem onClick={() => setIsLoginOpen(true)}>
               <Ticket className="mr-2 h-4 w-4" />
               {t.userProfile.myBooking}
             </DropdownMenuItem>
             
-            <DropdownMenuItem onClick={() => handleProtectedNavigation("request-pickup")}>
+            <DropdownMenuItem onClick={() => onNavigate("route-map")}>
               <Car className="mr-2 h-4 w-4" />
               {t.userProfile.requestRide}
             </DropdownMenuItem>

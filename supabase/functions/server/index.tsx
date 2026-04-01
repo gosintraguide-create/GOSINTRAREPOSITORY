@@ -5801,6 +5801,125 @@ app.get(
   },
 );
 
+// Create driver sale (manual ticket sale)
+app.post(
+  "/make-server-3bd0ade8/driver-sales/create",
+  async (c) => {
+    try {
+      const { driverId, numberOfPeople, customerEmail, paymentMethod, amount } = await c.req.json();
+
+      console.log(`💰 Creating driver sale: ${numberOfPeople} tickets for ${customerEmail} by driver ${driverId}`);
+
+      // Validate inputs
+      if (!driverId || !numberOfPeople || !customerEmail || !amount) {
+        return c.json(
+          { success: false, error: "Missing required fields" },
+          400
+        );
+      }
+
+      // Generate booking ID
+      const timestamp = Date.now();
+      const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+      const bookingId = `GS_${random}_${timestamp}`;
+
+      // Create booking data
+      const booking = {
+        id: bookingId,
+        customerName: customerEmail.split('@')[0], // Use email prefix as name
+        customerEmail,
+        dayPassCount: numberOfPeople,
+        adultCount: numberOfPeople,
+        childCount: 0,
+        guidedTour: false,
+        totalPrice: amount,
+        paymentMethod: 'driver_' + paymentMethod, // 'driver_cash' or 'driver_card'
+        paymentStatus: 'completed',
+        bookingDate: new Date().toISOString(),
+        passengers: Array.from({ length: numberOfPeople }, (_, i) => ({
+          id: i,
+          name: `Passenger ${i + 1}`,
+          scanned: false,
+          scannedAt: null,
+          scannedBy: null
+        })),
+        emailSent: false,
+        driverSale: true,
+        driverId,
+        driverName: '', // Will be updated if we have driver info
+      };
+
+      // Save booking
+      await kv.set(bookingId, booking);
+
+      // Generate QR codes
+      const qrCodes: string[] = [];
+      for (let i = 0; i < booking.passengers.length; i++) {
+        const qrData = `${bookingId}|${i}`;
+        const qrCode = await QRCode.toDataURL(qrData, {
+          width: 300,
+          margin: 2,
+          color: {
+            dark: "#0A4D5C",
+            light: "#FFFFFF",
+          },
+        });
+        qrCodes.push(qrCode);
+      }
+
+      // Send confirmation email
+      const emailResult = await sendBookingEmail(booking, qrCodes);
+
+      if (emailResult.success) {
+        booking.emailSent = true;
+        booking.lastEmailSentAt = new Date().toISOString();
+        await kv.set(bookingId, booking);
+      } else {
+        console.error(`❌ Failed to send email: ${emailResult.error}`);
+        booking.emailError = emailResult.error;
+        await kv.set(bookingId, booking);
+      }
+
+      // Record sale in driver's activity
+      const saleId = `sale:${driverId}:${Date.now()}`;
+      const sale = {
+        id: saleId,
+        driverId,
+        bookingId,
+        quantity: numberOfPeople,
+        amount,
+        paymentMethod,
+        timestamp: new Date().toISOString(),
+        type: 'sale'
+      };
+      await kv.set(saleId, sale);
+
+      // Update driver metrics
+      const driver = await kv.get(`driver:${driverId}`);
+      if (driver) {
+        driver.totalTicketsSold = (driver.totalTicketsSold || 0) + numberOfPeople;
+        driver.totalRevenue = (driver.totalRevenue || 0) + amount;
+        await kv.set(`driver:${driverId}`, driver);
+      }
+
+      console.log(`✅ Driver sale created successfully: ${bookingId}`);
+
+      return c.json({
+        success: true,
+        bookingId,
+        emailSent: emailResult.success,
+        sale
+      });
+    } catch (error) {
+      console.error("❌ Error creating driver sale:", error);
+      return c.json(
+        { success: false, error: "Failed to create sale" },
+        500
+      );
+    }
+  }
+);
+
 // ==========================================
 // PICKUP REQUEST ROUTES
 // ==========================================
