@@ -28,6 +28,7 @@ export function Footer({
 }: FooterProps) {
   const [content, setContent] =
     useState<WebsiteContent>(DEFAULT_CONTENT);
+  const [showReservedMenu, setShowReservedMenu] = useState(false);
   const t = getUITranslation(language);
   const legacyContent = getTranslation(language);
 
@@ -154,18 +155,20 @@ export function Footer({
             </button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="text-muted-foreground hover:text-accent transition-colors text-sm py-1">
+                <button className="text-muted-foreground hover:text-accent transition-colors text-sm py-1 min-h-[44px] min-w-[44px] px-2">
                   {legacyContent.footer.reservedArea}
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" className="z-[100]">
                 <DropdownMenuItem
                   onClick={() => onNavigate?.("admin")}
+                  className="cursor-pointer min-h-[44px]"
                 >
                   {legacyContent.footer.adminPortal}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => onNavigate?.("driver-portal")}
+                  className="cursor-pointer min-h-[44px]"
                 >
                   {legacyContent.footer.driverPortal}
                 </DropdownMenuItem>
