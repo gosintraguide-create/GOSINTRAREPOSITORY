@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useOutletContext } from "react-router";
 import { MapPin, Users, Clock, Car, CheckCircle, AlertCircle } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
@@ -10,12 +11,18 @@ import { getSession } from "../lib/sessionManager";
 import { toast } from "sonner@2.0.3";
 import { getComponentTranslation } from "../lib/translations/component-translations";
 
+interface OutletContext {
+  language: string;
+  onNavigate: (page: string, data?: any) => void;
+}
+
 interface RequestPickupPageProps {
   onNavigate: (page: string) => void;
   language?: string;
 }
 
-export function RequestPickupPage({ onNavigate, language = "en" }: RequestPickupPageProps) {
+export function RequestPickupPage() {
+  const { language = "en", onNavigate } = useOutletContext<OutletContext>();
   const t = getComponentTranslation(language);
   const [step, setStep] = useState<"verify" | "request" | "searching" | "confirmed">("verify");
   const [bookingCode, setBookingCode] = useState<string>("");
@@ -718,3 +725,5 @@ export function RequestPickupPage({ onNavigate, language = "en" }: RequestPickup
     </div>
   );
 }
+
+export default RequestPickupPage;

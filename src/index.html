@@ -20,7 +20,9 @@
     <!-- Preconnect to external domains for better performance -->
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
     <link rel="preconnect" href="https://esm.sh" crossorigin />
+    <link rel="preconnect" href="https://dwiznaefeqnduglmcivr.supabase.co" crossorigin />
     <link rel="dns-prefetch" href="https://images.unsplash.com" />
+    <link rel="dns-prefetch" href="https://dwiznaefeqnduglmcivr.supabase.co" />
     <link rel="dns-prefetch" href="https://js.stripe.com" />
     <link rel="preconnect" href="https://js.stripe.com" crossorigin />
     
@@ -191,6 +193,9 @@
     
     <!-- Performance: Preload critical resources -->
     <link rel="preload" href="/manifest.json" as="fetch" crossorigin="anonymous" />
+    
+    <!-- Preload hero image to prevent flashing -->
+    <link rel="preload" href="https://dwiznaefeqnduglmcivr.supabase.co/storage/v1/object/sign/make-3bd0ade8-images/1762977905581_pena-palace-3.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmFjMWMyYy1lNjZlLTQwYWEtYjcwNS1kNTcwYzA5NGZmYzMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtYWtlLTNiZDBhZGU4LWltYWdlcy8xNzYyOTc3OTA1NTgxX3BlbmEtcGFsYWNlLTMuanBnIiwiaWF0IjoxNzYyOTc3OTA1LCJleHAiOjIwNzgzMzc5MDV9.yMxtg8g3UvVUzf-xdAwUmGyjRATPWQwdvRlpIa8D7eY" as="image" fetchpriority="high" />
     
     <!-- Resource hints for better performance -->
     <link rel="dns-prefetch" href="https://www.googletagmanager.com" />

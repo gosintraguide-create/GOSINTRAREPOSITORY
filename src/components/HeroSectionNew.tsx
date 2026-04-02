@@ -31,7 +31,10 @@ export function HeroSection({
   const heroSubtitle = editableContent?.homepage?.hero?.subtitle || legacyContent.homepage.hero.subtitle;
   const heroCtaButton = editableContent?.homepage?.hero?.ctaButton || legacyContent.homepage.hero.ctaButton;
   const heroBenefitPills = editableContent?.homepage?.hero?.benefitPills || legacyContent.homepage.hero.benefitPills || [];
-  const heroImage = editableContent?.homepage?.hero?.heroImage || "https://dwiznaefeqnduglmcivr.supabase.co/storage/v1/object/sign/make-3bd0ade8-images/1762977905581_pena-palace-3.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmFjMWMyYy1lNjZlLTQwYWEtYjcwNS1kNTcwYzA5NGZmYzMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtYWtlLTNiZDBhZGU4LWltYWdlcy8xNzYyOTc3OTA1NTgxX3BlbmEtcGFsYWNlLTMuanBnIiwiaWF0IjoxNzYyOTc3OTA1LCJleHAiOjIwNzgzMzc5MDV9.yMxtg8g3UvVUzf-xdAwUmGyjRATPWQwdvRlpIa8D7eY";
+  
+  // Use the Pena Palace image as the default hero image - no fallback to prevent flashing
+  const defaultHeroImage = "https://dwiznaefeqnduglmcivr.supabase.co/storage/v1/object/sign/make-3bd0ade8-images/1762977905581_pena-palace-3.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmFjMWMyYy1lNjZlLTQwYWEtYjcwNS1kNTcwYzA5NGZmYzMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtYWtlLTNiZDBhZGU4LWltYWdlcy8xNzYyOTc3OTA1NTgxX3BlbmEtcGFsYWNlLTMuanBnIiwiaWF0IjoxNzYyOTc3OTA1LCJleHAiOjIwNzgzMzc5MDV9.yMxtg8g3UvVUzf-xdAwUmGyjRATPWQwdvRlpIa8D7eY";
+  const heroImage = editableContent?.homepage?.hero?.heroImage || defaultHeroImage;
   
   return (
     <section className="relative overflow-hidden">

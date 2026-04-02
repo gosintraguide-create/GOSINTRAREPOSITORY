@@ -14,10 +14,12 @@ export function ImageWithFallback({
   ...props
 }: ImageWithFallbackProps) {
   const [imgSrc, setImgSrc] = useState(src);
-  const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
+    // Reset error state when src changes
+    setHasError(false);
+
     if (!src && unsplashQuery) {
       // Fetch from Unsplash API
       fetch(
@@ -25,26 +27,15 @@ export function ImageWithFallback({
       )
         .then((response) => {
           setImgSrc(response.url);
-          setIsLoading(false);
         })
         .catch(() => {
           setHasError(true);
-          setIsLoading(false);
         });
     } else {
+      // Use the src directly - no loading state to prevent flashing
       setImgSrc(src);
-      setIsLoading(false);
     }
   }, [src, unsplashQuery]);
-
-  if (isLoading) {
-    return (
-      <div
-        className={props.className}
-        style={{ backgroundColor: "#f0f0f0" }}
-      />
-    );
-  }
 
   if (hasError) {
     return (

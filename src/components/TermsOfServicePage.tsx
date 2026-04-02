@@ -1,14 +1,21 @@
-import { ArrowLeft } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
+import { ArrowLeft } from "lucide-react";
+import { useOutletContext } from "react-router";
 import { getTermsContent } from "../lib/translations/terms";
+
+interface OutletContext {
+  language: string;
+  onNavigate: (page: string, data?: any) => void;
+}
 
 interface TermsOfServicePageProps {
   onNavigate: (page: string) => void;
   language: string;
 }
 
-export function TermsOfServicePage({ onNavigate, language }: TermsOfServicePageProps) {
+export function TermsOfServicePage() {
+  const { language = "en", onNavigate } = useOutletContext<OutletContext>();
   const content = getTermsContent(language);
 
   return (
@@ -173,3 +180,5 @@ export function TermsOfServicePage({ onNavigate, language }: TermsOfServicePageP
     </div>
   );
 }
+
+export default TermsOfServicePage;

@@ -21,6 +21,10 @@ const AdminPage = lazy(() => import("./components/AdminPage").then(m => ({ defau
 const DriverPortalPage = lazy(() => import("./components/DriverPortalPage").then(m => ({ default: m.DriverPortalPage })));
 const QRScannerPage = lazy(() => import("./components/QRScannerPage").then(m => ({ default: m.QRScannerPage })));
 const NotFoundPage = lazy(() => import("./components/NotFoundPage").then(m => ({ default: m.NotFoundPage })));
+const ManageBookingPage = lazy(() => import("./components/ManageBookingPage"));
+const RequestPickupPage = lazy(() => import("./components/RequestPickupPage"));
+const PrivacyPolicyPage = lazy(() => import("./components/PrivacyPolicyPage"));
+const TermsOfServicePage = lazy(() => import("./components/TermsOfServicePage"));
 
 // Slug generation helper
 export function generateSlug(title: string): string {
@@ -219,6 +223,66 @@ export const router = createBrowserRouter([
           meta: {
             title: "Sunset Special - Hop On Sintra",
             description: "Purchase your Sintra sunset special for unlimited hop-on/hop-off access.",
+            index: false,
+          },
+        },
+      },
+      {
+        path: "manage-booking",
+        element: (
+          <ErrorBoundary>
+            <ManageBookingPage />
+          </ErrorBoundary>
+        ),
+        handle: {
+          meta: {
+            title: "Manage Your Booking - Hop On Sintra",
+            description: "View and manage your Sintra day pass booking.",
+            index: false,
+          },
+        },
+      },
+      {
+        path: "request-pickup",
+        element: (
+          <ErrorBoundary>
+            <RequestPickupPage />
+          </ErrorBoundary>
+        ),
+        handle: {
+          meta: {
+            title: "Request a Pickup - Hop On Sintra",
+            description: "Request a pickup for your Sintra day pass.",
+            index: false,
+          },
+        },
+      },
+      {
+        path: "privacy-policy",
+        element: (
+          <ErrorBoundary>
+            <PrivacyPolicyPage />
+          </ErrorBoundary>
+        ),
+        handle: {
+          meta: {
+            title: "Privacy Policy - Hop On Sintra",
+            description: "Read our privacy policy and learn how we protect your data.",
+            index: false,
+          },
+        },
+      },
+      {
+        path: "terms-of-service",
+        element: (
+          <ErrorBoundary>
+            <TermsOfServicePage />
+          </ErrorBoundary>
+        ),
+        handle: {
+          meta: {
+            title: "Terms of Service - Hop On Sintra",
+            description: "Read our terms of service and booking conditions.",
             index: false,
           },
         },
