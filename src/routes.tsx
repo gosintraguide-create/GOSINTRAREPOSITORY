@@ -21,10 +21,10 @@ const AdminPage = lazy(() => import("./components/AdminPage").then(m => ({ defau
 const DriverPortalPage = lazy(() => import("./components/DriverPortalPage").then(m => ({ default: m.DriverPortalPage })));
 const QRScannerPage = lazy(() => import("./components/QRScannerPage").then(m => ({ default: m.QRScannerPage })));
 const NotFoundPage = lazy(() => import("./components/NotFoundPage").then(m => ({ default: m.NotFoundPage })));
-const ManageBookingPage = lazy(() => import("./components/ManageBookingPage"));
-const RequestPickupPage = lazy(() => import("./components/RequestPickupPage"));
-const PrivacyPolicyPage = lazy(() => import("./components/PrivacyPolicyPage"));
-const TermsOfServicePage = lazy(() => import("./components/TermsOfServicePage"));
+const ManageBookingPage = lazy(() => import("./components/ManageBookingPage").then(m => ({ default: m.ManageBookingPage })));
+const RequestPickupPage = lazy(() => import("./components/RequestPickupPage").then(m => ({ default: m.RequestPickupPage })));
+const PrivacyPolicyPage = lazy(() => import("./components/PrivacyPolicyPage").then(m => ({ default: m.PrivacyPolicyPage })));
+const TermsOfServicePage = lazy(() => import("./components/TermsOfServicePage").then(m => ({ default: m.TermsOfServicePage })));
 
 // Slug generation helper
 export function generateSlug(title: string): string {

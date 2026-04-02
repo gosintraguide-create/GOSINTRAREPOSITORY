@@ -189,12 +189,13 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
                 <button
                   key={index}
                   onClick={() => setCurrentSlide(index)}
-                  className={`h-1.5 rounded-full transition-all ${
+                  className={`rounded-full transition-all border-0 p-0 before:content-none after:content-none min-h-[6px] ${
                     index === currentSlide
-                      ? "w-6 bg-white shadow-md"
-                      : "w-1.5 bg-white/60 hover:bg-white/80"
+                      ? "w-6 bg-white shadow-md h-1.5"
+                      : "w-1.5 bg-white/60 hover:bg-white/80 h-1.5"
                   }`}
                   aria-label={`Go to image ${index + 1}`}
+                  style={{ fontSize: 0, lineHeight: 0 }}
                 />
               ))}
             </div>

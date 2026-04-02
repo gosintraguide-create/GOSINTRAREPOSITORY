@@ -219,17 +219,18 @@ export function InfoCard({ onNavigate, language = "en", cardType, customImages, 
         </button>
 
         {/* Dots Indicator */}
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
           {images.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentImageIndex(index)}
-              className={`h-1.5 rounded-full transition-all ${
+              className={`rounded-full transition-all border-0 p-0 before:content-none after:content-none min-h-[6px] ${
                 index === currentImageIndex
-                  ? "bg-white w-5"
-                  : "bg-white/60 w-1.5 hover:bg-white/80"
+                  ? "bg-white w-5 h-1.5"
+                  : "bg-white/60 w-1.5 h-1.5 hover:bg-white/80"
               }`}
               aria-label={`Go to image ${index + 1}`}
+              style={{ fontSize: 0, lineHeight: 0 }}
             />
           ))}
         </div>
