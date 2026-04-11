@@ -4,8 +4,20 @@
   import tailwindcss from '@tailwindcss/vite';
   import path from 'path';
 
+function figmaAssetResolver() {
+  return {
+    name: 'figma-asset-resolver',
+    resolveId(id) {
+      if (id.startsWith('figma:asset/')) {
+        const filename = id.replace('figma:asset/', '')
+        return path.resolve(__dirname, 'src/assets', filename)
+      }
+    },
+  }
+}
+
   export default defineConfig({
-    plugins: [react(), tailwindcss()],
+    plugins: [react(), tailwindcss(), figmaAssetResolver()],
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
       alias: {
@@ -20,10 +32,6 @@
         'pdf-lib@1.17.1': 'pdf-lib',
         'lucide-react@0.487.0': 'lucide-react',
         'input-otp@1.4.2': 'input-otp',
-        'figma:asset/e199cf49993f01cc569ec13ba6e57ba6c35fc3e2.png': path.resolve(__dirname, './src/assets/e199cf49993f01cc569ec13ba6e57ba6c35fc3e2.png'),
-        'figma:asset/8fa5e0f9f1551c4c27ecf6c304e93b992f85fb68.png': path.resolve(__dirname, './src/assets/8fa5e0f9f1551c4c27ecf6c304e93b992f85fb68.png'),
-        'figma:asset/72471611660200b2275398b6c3d4ca944a3262f9.png': path.resolve(__dirname, './src/assets/72471611660200b2275398b6c3d4ca944a3262f9.png'),
-        'figma:asset/71ee40946db4b4bf36ff2a3323e15fbad96b7af0.png': path.resolve(__dirname, './src/assets/71ee40946db4b4bf36ff2a3323e15fbad96b7af0.png'),
         'embla-carousel-react@8.6.0': 'embla-carousel-react',
         'cmdk@1.1.1': 'cmdk',
         'class-variance-authority@0.7.1': 'class-variance-authority',

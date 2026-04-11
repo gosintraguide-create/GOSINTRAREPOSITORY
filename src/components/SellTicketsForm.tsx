@@ -1,12 +1,38 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Banknote, CreditCard, Plus, Minus, Loader2, CheckCircle, Clock, MapPin, Calendar as CalendarIcon } from 'lucide-react';
-import { projectId, publicAnonKey } from '../utils/supabase/info';
-import { toast } from 'sonner@2.0.3';
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import {
+  Banknote,
+  CreditCard,
+  Plus,
+  Minus,
+  Loader2,
+  CheckCircle,
+  Clock,
+  MapPin,
+  Calendar as CalendarIcon,
+  AlertCircle,
+} from "lucide-react";
+import {
+  projectId,
+  publicAnonKey,
+} from "../utils/supabase/info";
+import { toast } from "sonner@2.0.3";
 
 interface SellTicketsFormProps {
   driverId: string;
@@ -23,16 +49,27 @@ interface PricingSettings {
   guidedTourSurcharge: number;
 }
 
-export function SellTicketsForm({ driverId, onSaleComplete }: SellTicketsFormProps) {
+export function SellTicketsForm({
+  driverId,
+  onSaleComplete,
+}: SellTicketsFormProps) {
   const [numberOfPeople, setNumberOfPeople] = useState(1);
-  const [customerEmail, setCustomerEmail] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card'>('cash');
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
-  const [timeSlot, setTimeSlot] = useState('');
-  const [pickupLocation, setPickupLocation] = useState('sintra-train-station');
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<
+    "cash" | "card"
+  >("cash");
+  const [selectedDate, setSelectedDate] = useState(
+    new Date().toISOString().split("T")[0],
+  );
+  const [timeSlot, setTimeSlot] = useState("");
+  const [pickupLocation, setPickupLocation] = useState(
+    "sintra-train-station",
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [availability, setAvailability] = useState<AvailabilitySettings>({});
-  const [loadingAvailability, setLoadingAvailability] = useState(false);
+  const [availability, setAvailability] =
+    useState<AvailabilitySettings>({});
+  const [loadingAvailability, setLoadingAvailability] =
+    useState(false);
   const [pricing, setPricing] = useState<PricingSettings>({
     basePrice: 20,
     childPrice: 12,
@@ -43,25 +80,31 @@ export function SellTicketsForm({ driverId, onSaleComplete }: SellTicketsFormPro
   const totalAmount = numberOfPeople * TICKET_PRICE;
 
   const TIME_SLOTS = [
-    { value: '9:00', label: '9:00 AM', isGuided: false },
-    { value: '10:00', label: '10:00 AM', isGuided: true },
-    { value: '11:00', label: '11:00 AM', isGuided: false },
-    { value: '12:00', label: '12:00 PM', isGuided: false },
-    { value: '13:00', label: '1:00 PM', isGuided: false },
-    { value: '14:00', label: '2:00 PM', isGuided: true },
-    { value: '15:00', label: '3:00 PM', isGuided: false },
-    { value: '16:00', label: '4:00 PM', isGuided: false },
+    { value: "9:00", label: "9:00 AM", isGuided: false },
+    { value: "10:00", label: "10:00 AM", isGuided: true },
+    { value: "11:00", label: "11:00 AM", isGuided: false },
+    { value: "12:00", label: "12:00 PM", isGuided: false },
+    { value: "13:00", label: "1:00 PM", isGuided: false },
+    { value: "14:00", label: "2:00 PM", isGuided: true },
+    { value: "15:00", label: "3:00 PM", isGuided: false },
+    { value: "16:00", label: "4:00 PM", isGuided: false },
   ];
 
   const PICKUP_LOCATIONS = [
-    { value: 'sintra-train-station', label: 'Sintra Train Station' },
-    { value: 'sintra-town-center', label: 'Sintra Town Center' },
-    { value: 'pena-palace', label: 'Pena Palace' },
-    { value: 'quinta-regaleira', label: 'Quinta da Regaleira' },
-    { value: 'moorish-castle', label: 'Moorish Castle' },
-    { value: 'monserrate-palace', label: 'Monserrate Palace' },
-    { value: 'sintra-palace', label: 'Sintra National Palace' },
-    { value: 'other', label: 'Other Location' },
+    {
+      value: "sintra-train-station",
+      label: "Sintra Train Station",
+    },
+    {
+      value: "sintra-town-center",
+      label: "Sintra Town Center",
+    },
+    { value: "pena-palace", label: "Pena Palace" },
+    { value: "quinta-regaleira", label: "Quinta da Regaleira" },
+    { value: "moorish-castle", label: "Moorish Castle" },
+    { value: "monserrate-palace", label: "Monserrate Palace" },
+    { value: "sintra-palace", label: "Sintra National Palace" },
+    { value: "other", label: "Other Location" },
   ];
 
   // Load pricing from backend
@@ -71,12 +114,12 @@ export function SellTicketsForm({ driverId, onSaleComplete }: SellTicketsFormPro
         const response = await fetch(
           `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/pricing`,
           {
-            method: 'GET',
+            method: "GET",
             headers: {
-              'Authorization': `Bearer ${publicAnonKey}`,
-              'Content-Type': 'application/json',
+              Authorization: `Bearer ${publicAnonKey}`,
+              "Content-Type": "application/json",
             },
-          }
+          },
         );
 
         if (response.ok) {
@@ -85,12 +128,13 @@ export function SellTicketsForm({ driverId, onSaleComplete }: SellTicketsFormPro
             setPricing({
               basePrice: data.pricing.basePrice || 20,
               childPrice: data.pricing.childPrice || 12,
-              guidedTourSurcharge: data.pricing.guidedTourSurcharge || 5,
+              guidedTourSurcharge:
+                data.pricing.guidedTourSurcharge || 5,
             });
           }
         }
       } catch (error) {
-        console.error('Error loading pricing:', error);
+        console.error("Error loading pricing:", error);
       }
     }
 
@@ -101,18 +145,18 @@ export function SellTicketsForm({ driverId, onSaleComplete }: SellTicketsFormPro
   useEffect(() => {
     async function loadAvailability() {
       if (!selectedDate) return;
-      
+
       setLoadingAvailability(true);
       try {
         const response = await fetch(
           `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/availability/${selectedDate}`,
           {
-            method: 'GET',
+            method: "GET",
             headers: {
-              'Authorization': `Bearer ${publicAnonKey}`,
-              'Content-Type': 'application/json',
+              Authorization: `Bearer ${publicAnonKey}`,
+              "Content-Type": "application/json",
             },
-          }
+          },
         );
 
         if (response.ok) {
@@ -122,7 +166,7 @@ export function SellTicketsForm({ driverId, onSaleComplete }: SellTicketsFormPro
           }
         }
       } catch (error) {
-        console.error('Error loading availability:', error);
+        console.error("Error loading availability:", error);
       } finally {
         setLoadingAvailability(false);
       }
@@ -134,23 +178,23 @@ export function SellTicketsForm({ driverId, onSaleComplete }: SellTicketsFormPro
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!customerEmail || !customerEmail.includes('@')) {
-      toast.error('Please enter a valid email address');
+    if (!customerEmail || !customerEmail.includes("@")) {
+      toast.error("Please enter a valid email address");
       return;
     }
 
     if (numberOfPeople < 1) {
-      toast.error('Please select at least 1 person');
+      toast.error("Please select at least 1 person");
       return;
     }
 
     if (!timeSlot) {
-      toast.error('Please select a time slot');
+      toast.error("Please select a time slot");
       return;
     }
 
     if (!pickupLocation) {
-      toast.error('Please select a pickup location');
+      toast.error("Please select a pickup location");
       return;
     }
 
@@ -161,10 +205,10 @@ export function SellTicketsForm({ driverId, onSaleComplete }: SellTicketsFormPro
       const response = await fetch(
         `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/driver-sales/create`,
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${publicAnonKey}`
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${publicAnonKey}`,
           },
           body: JSON.stringify({
             driverId,
@@ -173,37 +217,61 @@ export function SellTicketsForm({ driverId, onSaleComplete }: SellTicketsFormPro
             paymentMethod,
             amount: totalAmount,
             timeSlot,
-            pickupLocation
-          })
-        }
+            pickupLocation,
+          }),
+        },
       );
 
       const data = await response.json();
 
       if (data.success) {
-        toast.success(`Sale created successfully! ${numberOfPeople} ticket${numberOfPeople > 1 ? 's' : ''} sold for €${totalAmount.toFixed(2)}`, {
-          description: `Confirmation email sent to ${customerEmail}`,
-          duration: 5000
-        });
+        toast.success(
+          `Sale created successfully! ${numberOfPeople} ticket${numberOfPeople > 1 ? "s" : ""} sold for €${totalAmount.toFixed(2)}`,
+          {
+            description: `Confirmation email sent to ${customerEmail}`,
+            duration: 5000,
+          },
+        );
+
+        // Reload availability to reflect the updated seat count
+        const availabilityResponse = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/availability/${selectedDate}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${publicAnonKey}`,
+              "Content-Type": "application/json",
+            },
+          },
+        );
+
+        if (availabilityResponse.ok) {
+          const availabilityData =
+            await availabilityResponse.json();
+          if (availabilityData.availability) {
+            setAvailability(availabilityData.availability);
+          }
+        }
 
         // Reset form
         setNumberOfPeople(1);
-        setCustomerEmail('');
-        setPaymentMethod('cash');
-        setTimeSlot('');
-        setPickupLocation('sintra-train-station');
+        setCustomerEmail("");
+        setPaymentMethod("cash");
+        setTimeSlot("");
+        setPickupLocation("sintra-train-station");
 
         // Notify parent to refresh metrics
         onSaleComplete();
       } else {
-        toast.error('Failed to create sale', {
-          description: data.error || 'Please try again'
+        toast.error("Failed to create sale", {
+          description: data.error || "Please try again",
         });
       }
     } catch (error) {
-      console.error('Error creating sale:', error);
-      toast.error('Error creating sale', {
-        description: 'Please check your connection and try again'
+      console.error("Error creating sale:", error);
+      toast.error("Error creating sale", {
+        description:
+          "Please check your connection and try again",
       });
     } finally {
       setIsSubmitting(false);
@@ -218,35 +286,49 @@ export function SellTicketsForm({ driverId, onSaleComplete }: SellTicketsFormPro
           Quick Ticket Sale
         </CardTitle>
         <CardDescription>
-          Sell day pass tickets and send confirmation emails to customers
+          Sell day pass tickets and send confirmation emails to
+          customers
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Number of People */}
           <div>
-            <Label htmlFor="numberOfPeople" className="text-base">Number of People</Label>
+            <Label
+              htmlFor="numberOfPeople"
+              className="text-base"
+            >
+              Number of People
+            </Label>
             <div className="flex items-center gap-4 mt-2">
               <Button
                 type="button"
                 variant="outline"
                 size="icon"
-                onClick={() => setNumberOfPeople(Math.max(1, numberOfPeople - 1))}
+                onClick={() =>
+                  setNumberOfPeople(
+                    Math.max(1, numberOfPeople - 1),
+                  )
+                }
                 disabled={numberOfPeople <= 1}
               >
                 <Minus className="h-4 w-4" />
               </Button>
               <div className="text-center min-w-[80px]">
-                <div className="text-3xl font-bold">{numberOfPeople}</div>
+                <div className="text-3xl font-bold">
+                  {numberOfPeople}
+                </div>
                 <div className="text-sm text-gray-500">
-                  {numberOfPeople === 1 ? 'person' : 'people'}
+                  {numberOfPeople === 1 ? "person" : "people"}
                 </div>
               </div>
               <Button
                 type="button"
                 variant="outline"
                 size="icon"
-                onClick={() => setNumberOfPeople(numberOfPeople + 1)}
+                onClick={() =>
+                  setNumberOfPeople(numberOfPeople + 1)
+                }
               >
                 <Plus className="h-4 w-4" />
               </Button>
@@ -255,7 +337,9 @@ export function SellTicketsForm({ driverId, onSaleComplete }: SellTicketsFormPro
 
           {/* Customer Email */}
           <div>
-            <Label htmlFor="customerEmail">Customer Email</Label>
+            <Label htmlFor="customerEmail">
+              Customer Email
+            </Label>
             <Input
               id="customerEmail"
               type="email"
@@ -276,17 +360,19 @@ export function SellTicketsForm({ driverId, onSaleComplete }: SellTicketsFormPro
             <div className="grid grid-cols-2 gap-4 mt-2">
               <button
                 type="button"
-                onClick={() => setPaymentMethod('cash')}
+                onClick={() => setPaymentMethod("cash")}
                 className={`p-4 rounded-lg border-2 transition-all ${
-                  paymentMethod === 'cash'
-                    ? 'border-[#0A4D5C] bg-[#0A4D5C]/5'
-                    : 'border-gray-200 hover:border-gray-300'
+                  paymentMethod === "cash"
+                    ? "border-[#0A4D5C] bg-[#0A4D5C]/5"
+                    : "border-gray-200 hover:border-gray-300"
                 }`}
               >
                 <div className="flex flex-col items-center gap-2">
-                  <Banknote className={`h-8 w-8 ${paymentMethod === 'cash' ? 'text-[#0A4D5C]' : 'text-gray-400'}`} />
+                  <Banknote
+                    className={`h-8 w-8 ${paymentMethod === "cash" ? "text-[#0A4D5C]" : "text-gray-400"}`}
+                  />
                   <span className="font-medium">Cash</span>
-                  {paymentMethod === 'cash' && (
+                  {paymentMethod === "cash" && (
                     <CheckCircle className="h-4 w-4 text-[#0A4D5C]" />
                   )}
                 </div>
@@ -294,17 +380,19 @@ export function SellTicketsForm({ driverId, onSaleComplete }: SellTicketsFormPro
 
               <button
                 type="button"
-                onClick={() => setPaymentMethod('card')}
+                onClick={() => setPaymentMethod("card")}
                 className={`p-4 rounded-lg border-2 transition-all ${
-                  paymentMethod === 'card'
-                    ? 'border-[#0A4D5C] bg-[#0A4D5C]/5'
-                    : 'border-gray-200 hover:border-gray-300'
+                  paymentMethod === "card"
+                    ? "border-[#0A4D5C] bg-[#0A4D5C]/5"
+                    : "border-gray-200 hover:border-gray-300"
                 }`}
               >
                 <div className="flex flex-col items-center gap-2">
-                  <CreditCard className={`h-8 w-8 ${paymentMethod === 'card' ? 'text-[#0A4D5C]' : 'text-gray-400'}`} />
+                  <CreditCard
+                    className={`h-8 w-8 ${paymentMethod === "card" ? "text-[#0A4D5C]" : "text-gray-400"}`}
+                  />
                   <span className="font-medium">Card</span>
-                  {paymentMethod === 'card' && (
+                  {paymentMethod === "card" && (
                     <CheckCircle className="h-4 w-4 text-[#0A4D5C]" />
                   )}
                 </div>
@@ -314,7 +402,10 @@ export function SellTicketsForm({ driverId, onSaleComplete }: SellTicketsFormPro
 
           {/* Date */}
           <div>
-            <Label htmlFor="selectedDate" className="text-base flex items-center gap-2">
+            <Label
+              htmlFor="selectedDate"
+              className="text-base flex items-center gap-2"
+            >
               <CalendarIcon className="h-4 w-4 text-[#0A4D5C]" />
               Date
             </Label>
@@ -334,12 +425,47 @@ export function SellTicketsForm({ driverId, onSaleComplete }: SellTicketsFormPro
               <Clock className="h-4 w-4 text-[#0A4D5C]" />
               Time Slot
             </Label>
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+
+            {/* Availability Summary */}
+            {!loadingAvailability && (
+              <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <div className="text-sm">
+                    <p className="font-medium text-blue-900">
+                      Selling {numberOfPeople} ticket
+                      {numberOfPeople > 1 ? "s" : ""}
+                    </p>
+                    <p className="text-blue-700 mt-1">
+                      Time slots show available seats. Select a
+                      time with enough capacity.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {TIME_SLOTS.map((slot) => {
                 const seats = availability[slot.value] ?? 50;
                 const isSoldOut = seats === 0;
-                const isLowAvailability = seats < 10 && seats > 0;
+                const hasEnoughSeats = seats >= numberOfPeople;
+                const isLowAvailability =
+                  seats < 10 && seats > 0;
                 const isSelected = timeSlot === slot.value;
+
+                // Determine availability color
+                let availabilityColor =
+                  "bg-green-100 text-green-700";
+                if (seats === 0) {
+                  availabilityColor = "bg-red-100 text-red-700";
+                } else if (seats < 10) {
+                  availabilityColor =
+                    "bg-orange-100 text-orange-700";
+                } else if (seats < 20) {
+                  availabilityColor =
+                    "bg-yellow-100 text-yellow-700";
+                }
 
                 return (
                   <div key={slot.value} className="relative">
@@ -349,48 +475,72 @@ export function SellTicketsForm({ driverId, onSaleComplete }: SellTicketsFormPro
                         INSIGHT
                       </div>
                     )}
-                    
+
                     <button
                       type="button"
                       onClick={() => {
-                        if (!isSoldOut) {
+                        if (hasEnoughSeats && !isSoldOut) {
                           setTimeSlot(slot.value);
+                        } else if (
+                          !hasEnoughSeats &&
+                          !isSoldOut
+                        ) {
+                          toast.error(
+                            `Only ${seats} seats available`,
+                            {
+                              description: `You need ${numberOfPeople} seats for this sale.`,
+                            },
+                          );
                         }
                       }}
-                      disabled={isSoldOut || loadingAvailability}
+                      disabled={
+                        !hasEnoughSeats || loadingAvailability
+                      }
                       className={`
-                        w-full rounded-lg transition-all
-                        ${slot.isGuided && !isSoldOut ? 'h-16 border-2 border-[#0A4D5C] flex flex-col items-center justify-center gap-1 py-2' : 'h-12 flex items-center justify-center'}
+                        w-full rounded-lg transition-all border-2 relative overflow-hidden
+                        ${slot.isGuided && !isSoldOut ? "pb-6" : "pb-8"}
                         ${
                           isSelected
-                            ? 'bg-[#D97843] text-white shadow-md'
-                            : isSoldOut
-                                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            ? "border-[#D97843] bg-[#D97843] text-white shadow-lg scale-105"
+                            : !hasEnoughSeats
+                              ? "border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed opacity-60"
+                              : "border-gray-300 bg-white hover:border-[#0A4D5C] hover:shadow-md"
                         }
                       `}
                     >
-                      <span className="font-semibold text-sm">{slot.label}</span>
-                      {slot.isGuided && !isSoldOut && (
-                        <span className="text-[10px] text-[#0A4D5C] font-semibold">
-                          +€{pricing.guidedTourSurcharge}
-                        </span>
+                      <div className="p-3">
+                        <div className="font-bold text-base mb-1">
+                          {slot.label}
+                        </div>
+                        {slot.isGuided && !isSoldOut && (
+                          <div className="text-xs opacity-90">
+                            +€{pricing.guidedTourSurcharge}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Availability Bar at Bottom */}
+                      <div
+                        className={`absolute bottom-0 left-0 right-0 ${availabilityColor} px-2 py-1 text-center`}
+                      >
+                        <div className="text-xs font-semibold">
+                          {isSoldOut
+                            ? "SOLD OUT"
+                            : !hasEnoughSeats
+                              ? `Only ${seats} left`
+                              : seats < 20
+                                ? `${seats} seats left`
+                                : `${seats} available`}
+                        </div>
+                      </div>
+
+                      {/* Not Enough Seats Indicator */}
+                      {!hasEnoughSeats && !isSoldOut && (
+                        <div className="absolute inset-0 bg-gray-900/10 flex items-center justify-center pointer-events-none">
+                          <AlertCircle className="h-6 w-6 text-gray-600" />
+                        </div>
                       )}
                     </button>
-
-                    {/* Low Availability Badge */}
-                    {!isSoldOut && isLowAvailability && !slot.isGuided && (
-                      <div className="absolute -top-1 -right-1 bg-[#D97843] text-white text-[10px] px-1.5 py-0.5 rounded-full font-semibold">
-                        {seats}
-                      </div>
-                    )}
-
-                    {/* Sold Out Badge */}
-                    {isSoldOut && (
-                      <div className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-semibold">
-                        FULL
-                      </div>
-                    )}
                   </div>
                 );
               })}
@@ -402,29 +552,53 @@ export function SellTicketsForm({ driverId, onSaleComplete }: SellTicketsFormPro
               </p>
             )}
             {timeSlot && !loadingAvailability && (
-              <p className="text-sm text-gray-500 mt-2">
-                {TIME_SLOTS.find(s => s.value === timeSlot)?.isGuided ? (
-                  <span className="font-medium text-[#0A4D5C]">✨ Includes guided commentary - storytelling tour of Sintra</span>
-                ) : (
-                  <span>When the customer will start using the pass</span>
-                )}
-              </p>
+              <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                <div className="flex items-start gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                  <div className="text-sm">
+                    {TIME_SLOTS.find(
+                      (s) => s.value === timeSlot,
+                    )?.isGuided ? (
+                      <p className="font-medium text-green-900">
+                        ✨ Includes guided commentary -
+                        storytelling tour of Sintra
+                      </p>
+                    ) : (
+                      <p className="text-green-700">
+                        When the customer will start using the
+                        pass
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
             )}
           </div>
 
           {/* Pickup Location */}
           <div>
-            <Label htmlFor="pickupLocation" className="text-base flex items-center gap-2">
+            <Label
+              htmlFor="pickupLocation"
+              className="text-base flex items-center gap-2"
+            >
               <MapPin className="h-4 w-4 text-[#0A4D5C]" />
               First Pickup Location
             </Label>
-            <Select value={pickupLocation} onValueChange={(value) => setPickupLocation(value)}>
+            <Select
+              value={pickupLocation}
+              onValueChange={(value) =>
+                setPickupLocation(value)
+              }
+            >
               <SelectTrigger className="w-full mt-2">
                 <SelectValue placeholder="Select pickup location" />
               </SelectTrigger>
               <SelectContent>
                 {PICKUP_LOCATIONS.map((location) => (
-                  <SelectItem key={location.value} value={location.value}>
+                  <SelectItem
+                    key={location.value}
+                    value={location.value}
+                  >
                     {location.label}
                   </SelectItem>
                 ))}
@@ -444,7 +618,8 @@ export function SellTicketsForm({ driverId, onSaleComplete }: SellTicketsFormPro
               </span>
             </div>
             <p className="text-sm text-gray-500 mt-1">
-              {numberOfPeople} × €{TICKET_PRICE.toFixed(2)} per person
+              {numberOfPeople} × €{TICKET_PRICE.toFixed(2)} per
+              person
             </p>
           </div>
 

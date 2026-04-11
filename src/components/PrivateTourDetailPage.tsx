@@ -4,6 +4,7 @@ import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Card } from "./ui/card";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { TourBookingDialog } from "./TourBookingDialog";
 import {
   ArrowLeft,
   Users,
@@ -45,6 +46,7 @@ export function PrivateTourDetailPage() {
   
   const [tour, setTour] = useState<PrivateTour | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showBookingDialog, setShowBookingDialog] = useState(false);
 
   useEffect(() => {
     loadTour();
@@ -201,17 +203,31 @@ export function PrivateTourDetailPage() {
                 <Button
                   size="lg"
                   className="w-full"
-                  variant={tour.buttonVariant}
-                  onClick={() => onNavigate("live-chat")}
+                  onClick={() => setShowBookingDialog(true)}
                 >
-                  {tour.buttonText}
-                  <ChevronRight className="ml-2 h-4 w-4" />
+                  <Calendar className="mr-2 h-4 w-4" />
+                  Book This Tour
                 </Button>
+                
+                
               </Card>
             </div>
           </div>
         </div>
       </section>
+      
+      {/* Booking Dialog */}
+      {tour && (
+        <TourBookingDialog
+          open={showBookingDialog}
+          onOpenChange={setShowBookingDialog}
+          tour={{
+            id: tour.id,
+            title: tour.title,
+            price: tour.price,
+          }}
+        />
+      )}
     </div>
   );
 }

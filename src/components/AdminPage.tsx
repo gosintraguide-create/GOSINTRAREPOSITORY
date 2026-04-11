@@ -90,6 +90,7 @@ import { SunsetSpecialManager } from "./SunsetSpecialManager";
 import { BookingLogs } from "./BookingLogs";
 import { PrivateTourManager } from "./PrivateTourManager";
 import { TourRequestsManagement } from "./TourRequestsManagement";
+import { TourCalendar } from "./TourCalendar";
 import {
   LineChart,
   Line,
@@ -2156,6 +2157,23 @@ export function AdminPage() {
                       variant="ghost"
                       className="w-full justify-start gap-3"
                       onClick={() => {
+                        setActiveTab("tour-calendar");
+                        setMoreMenuOpen(false);
+                      }}
+                    >
+                      <CalendarIcon className="h-5 w-5" />
+                      <div className="flex flex-col items-start">
+                        <span>Tour Calendar</span>
+                        <span className="text-xs text-muted-foreground">
+                          View tour bookings calendar
+                        </span>
+                      </div>
+                    </Button>
+
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-3"
+                      onClick={() => {
                         setActiveTab("seo");
                         setMoreMenuOpen(false);
                       }}
@@ -3634,6 +3652,11 @@ export function AdminPage() {
           {/* ====== TOUR REQUESTS TAB ====== */}
           <TabsContent value="tour-requests" className="space-y-6">
             <TourRequestsManagement />
+          </TabsContent>
+
+          {/* ====== TOUR CALENDAR TAB ====== */}
+          <TabsContent value="tour-calendar" className="space-y-6">
+            <TourCalendar />
           </TabsContent>
 
           {/* ====== SEO TAB ====== */}
