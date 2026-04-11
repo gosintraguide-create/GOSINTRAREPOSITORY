@@ -1642,14 +1642,20 @@ export function AdminPage() {
 
     // Revenue by date (last 30 days)
     const last30Days: { date: string; revenue: number }[] = [];
+    const seenDates = new Set<string>();
     for (let i = 29; i >= 0; i--) {
       const date = new Date();
       date.setDate(date.getDate() - i);
       const dateStr = date.toISOString().split("T")[0];
+      
+      // Skip if we've already added this date
+      if (seenDates.has(dateStr)) continue;
+      seenDates.add(dateStr);
+      
       const dayRevenue = bookings
         .filter((b) => b.selectedDate === dateStr)
         .reduce((sum, b) => sum + (b.totalPrice || 0), 0);
-      last30Days.push({ date: dateStr, revenue: dayRevenue });
+      last30Days.push({ id: dateStr, date: dateStr, revenue: dayRevenue });
     }
 
     // Revenue by month (last 12 months)
@@ -1657,14 +1663,18 @@ export function AdminPage() {
       month: string;
       revenue: number;
     }[] = [];
+    const seenMonths = new Set<string>();
     for (let i = 11; i >= 0; i--) {
       const date = new Date();
       date.setMonth(date.getMonth() - i);
       const monthStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+      if (seenMonths.has(monthStr)) continue;
+      seenMonths.add(monthStr);
       const monthRevenue = bookings
         .filter((b) => b.selectedDate?.startsWith(monthStr))
         .reduce((sum, b) => sum + (b.totalPrice || 0), 0);
       revenueByMonth.push({
+        id: monthStr,
         month: monthStr,
         revenue: monthRevenue,
       });
@@ -1678,9 +1688,9 @@ export function AdminPage() {
       (b) => b.isGuidedTour,
     ).length;
     const bookingsByTicketType = [
-      { type: "Standard", count: standardCount },
-      { type: "Guided", count: guidedCount },
-    ];
+      { id: "Standard", type: "Standard", count: standardCount },
+      { id: "Guided", type: "Guided", count: guidedCount },
+    ].filter(item => item.count > 0); // Only include types with bookings
 
     // Popular attractions
     const attractionCounts: { [key: string]: number } = {};
@@ -1691,7 +1701,7 @@ export function AdminPage() {
       });
     });
     const popularAttractions = Object.entries(attractionCounts)
-      .map(([name, count]) => ({ name, count }))
+      .map(([name, count]) => ({ id: name, name, count }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
@@ -2935,14 +2945,16 @@ export function AdminPage() {
                     width="100%"
                     height={250}
                   >
-                    <LineChart data={metrics.revenueByDate}>
+                    <LineChart data={metrics.revenueByDate} id="revenue-trend-chart">
                       <CartesianGrid
+                        key="grid-revenue-trend"
                         strokeDasharray="3 3"
                         stroke="#f0e9e3"
                       />
-                      <XAxis dataKey="date" stroke="#6b7280" />
-                      <YAxis stroke="#6b7280" />
+                      <XAxis key="xaxis-revenue-trend" dataKey="date" stroke="#6b7280" />
+                      <YAxis key="yaxis-revenue-trend" stroke="#6b7280" />
                       <Tooltip
+                        key="tooltip-revenue-trend"
                         contentStyle={{
                           backgroundColor: "#fff",
                           border: "1px solid #f0e9e3",
@@ -2952,6 +2964,7 @@ export function AdminPage() {
                         }
                       />
                       <Line
+                        key="revenue-line"
                         type="monotone"
                         dataKey="revenue"
                         stroke="#0A4D5C"
@@ -2985,8 +2998,9 @@ export function AdminPage() {
                     width="100%"
                     height={250}
                   >
-                    <RechartsPie>
+                    <RechartsPie id="ticket-type-chart">
                       <Pie
+                        key="pie-ticket-type"
                         data={metrics.bookingsByTicketType}
                         cx="50%"
                         cy="50%"
@@ -3001,7 +3015,7 @@ export function AdminPage() {
                         {metrics.bookingsByTicketType.map(
                           (entry, index) => (
                             <Cell
-                              key={`cell-${index}`}
+                              key={`cell-${entry.type}`}
                               fill={
                                 CHART_COLORS[
                                   index % CHART_COLORS.length
@@ -3012,6 +3026,7 @@ export function AdminPage() {
                         )}
                       </Pie>
                       <Tooltip
+                        key="tooltip-ticket-type"
                         formatter={(
                           value: number,
                           name: string,
@@ -3053,25 +3068,29 @@ export function AdminPage() {
                     <BarChart
                       data={metrics.popularAttractions}
                       layout="vertical"
+                      id="popular-attractions-chart"
                     >
                       <CartesianGrid
+                        key="grid-attractions"
                         strokeDasharray="3 3"
                         stroke="#f0e9e3"
                       />
-                      <XAxis type="number" stroke="#6b7280" />
+                      <XAxis key="xaxis-attractions" type="number" stroke="#6b7280" />
                       <YAxis
+                        key="yaxis-attractions"
                         dataKey="name"
                         type="category"
                         width={150}
                         stroke="#6b7280"
                       />
                       <Tooltip
+                        key="tooltip-attractions"
                         contentStyle={{
                           backgroundColor: "#fff",
                           border: "1px solid #f0e9e3",
                         }}
                       />
-                      <Bar dataKey="count" fill="#D97843" />
+                      <Bar key="attraction-count-bar" dataKey="count" fill="#D97843" />
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (
@@ -3161,14 +3180,16 @@ export function AdminPage() {
                   </p>
                 </div>
                 <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={metrics.revenueByMonth}>
+                  <BarChart data={metrics.revenueByMonth} id="monthly-revenue-chart">
                     <CartesianGrid
+                      key="grid-monthly-revenue"
                       strokeDasharray="3 3"
                       stroke="#f0e9e3"
                     />
-                    <XAxis dataKey="month" stroke="#6b7280" />
-                    <YAxis stroke="#6b7280" />
+                    <XAxis key="xaxis-monthly-revenue" dataKey="month" stroke="#6b7280" />
+                    <YAxis key="yaxis-monthly-revenue" stroke="#6b7280" />
                     <Tooltip
+                      key="tooltip-monthly-revenue"
                       contentStyle={{
                         backgroundColor: "#fff",
                         border: "1px solid #f0e9e3",
@@ -3177,7 +3198,7 @@ export function AdminPage() {
                         `€${(value || 0).toFixed(2)}`
                       }
                     />
-                    <Bar dataKey="revenue" fill="#0A4D5C" />
+                    <Bar key="monthly-revenue-bar" dataKey="revenue" fill="#0A4D5C" />
                   </BarChart>
                 </ResponsiveContainer>
               </Card>
