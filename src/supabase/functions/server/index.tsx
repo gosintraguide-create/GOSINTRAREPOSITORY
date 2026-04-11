@@ -7603,6 +7603,134 @@ app.post("/make-server-3bd0ade8/tour-bookings/:bookingId/cancel", async (c) => {
   }
 });
 
+// Create manual tour booking (no payment required)
+app.post("/make-server-3bd0ade8/tour-bookings/create-manual", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { tourId, tourDate, customerInfo, totalPrice, packageType } = body;
+    
+    if (!tourId || !tourDate || !customerInfo) {
+      return c.json({ success: false, error: "Missing required fields" }, 400);
+    }
+    
+    // Check availability (consider day-specific limits)
+    const dateStr = new Date(tourDate).toISOString().split('T')[0];
+    const dayLimit = await kv.get(`tour_day_limit_${tourId}_${dateStr}`);
+    const defaultLimit = await kv.get(`tour_limit_${tourId}`) || 5;
+    const limit = dayLimit || defaultLimit;
+    
+    const allBookings = await kv.getByPrefix(`tour_booking_`);
+    const existingBookings = allBookings.filter((b: any) => 
+      b.tourId === tourId && 
+      b.status !== 'cancelled' &&
+      b.tourDate.startsWith(dateStr)
+    );
+    
+    const totalBooked = existingBookings.reduce((sum: number, b: any) => 
+      sum + (b.customerInfo?.numberOfPeople || 1), 0
+    );
+    
+    const requestedPeople = customerInfo.numberOfPeople || 1;
+    
+    if (totalBooked + requestedPeople > limit) {
+      return c.json({ 
+        success: false, 
+        error: `Not enough availability. Only ${limit - totalBooked} spots left.` 
+      }, 400);
+    }
+    
+    // Get tour details
+    const tour = await kv.get(`private_tour_${tourId}`);
+    
+    // Create booking
+    const bookingId = `MANUAL_${Date.now()}_${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+    const booking = {
+      bookingId,
+      tourId,
+      tourName: tour?.name || 'Private Tour',
+      tourDate,
+      customerInfo: {
+        name: customerInfo.name,
+        email: customerInfo.email,
+        phone: customerInfo.phone || '',
+        numberOfPeople: customerInfo.numberOfPeople || 1,
+        specialRequests: customerInfo.specialRequests || '',
+      },
+      totalPrice: totalPrice || 0,
+      currency: 'EUR',
+      paymentIntentId: 'manual',
+      status: 'confirmed',
+      isManual: true,
+      packageType: packageType || '',
+      createdAt: new Date().toISOString(),
+    };
+    
+    await kv.set(`tour_booking_${bookingId}`, booking);
+    
+    console.log(`✅ Created manual tour booking: ${bookingId}${packageType ? ` with package: ${packageType}` : ''}`);
+    
+    return c.json({
+      success: true,
+      booking,
+    });
+  } catch (error) {
+    console.error("Error creating manual booking:", error);
+    return c.json({ success: false, error: "Failed to create manual booking" }, 500);
+  }
+});
+
+// Set day-specific limit for a tour
+app.post("/make-server-3bd0ade8/tour-day-limit", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { tourId, date, limit } = body;
+    
+    if (!tourId || !date) {
+      return c.json({ success: false, error: "Missing required fields" }, 400);
+    }
+    
+    const dateStr = date.split('T')[0]; // Normalize date
+    const key = `tour_day_limit_${tourId}_${dateStr}`;
+    
+    if (limit === 0) {
+      // Delete day-specific limit (use default)
+      await kv.del(key);
+    } else {
+      // Set day-specific limit
+      await kv.set(key, limit);
+    }
+    
+    console.log(`✅ Updated day limit for tour ${tourId} on ${dateStr}: ${limit || 'default'}`);
+    
+    return c.json({ success: true });
+  } catch (error) {
+    console.error("Error setting day limit:", error);
+    return c.json({ success: false, error: "Failed to set day limit" }, 500);
+  }
+});
+
+// Get day-specific limit for a tour
+app.get("/make-server-3bd0ade8/tour-day-limit/:tourId/:date", async (c) => {
+  try {
+    const tourId = c.req.param("tourId");
+    const date = c.req.param("date");
+    const dateStr = date.split('T')[0]; // Normalize date
+    
+    const dayLimit = await kv.get(`tour_day_limit_${tourId}_${dateStr}`);
+    const defaultLimit = await kv.get(`tour_limit_${tourId}`) || 5;
+    
+    return c.json({
+      success: true,
+      dayLimit: dayLimit || null,
+      defaultLimit,
+      effectiveLimit: dayLimit || defaultLimit,
+    });
+  } catch (error) {
+    console.error("Error fetching day limit:", error);
+    return c.json({ success: false, error: "Failed to fetch day limit" }, 500);
+  }
+});
+
 // Create payment intent for tour booking
 app.post("/make-server-3bd0ade8/tour-bookings/create-payment-intent", async (c) => {
   try {
