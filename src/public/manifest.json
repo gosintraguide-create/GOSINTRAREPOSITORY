@@ -1,0 +1,44 @@
+{
+  "name": "Hop On Sintra - Day Pass Booking",
+  "short_name": "Hop On Sintra",
+  "description": "Unlimited hop-on/hop-off day pass service in Sintra, Portugal. Explore UNESCO World Heritage sites with guaranteed seating in tuk-tuks and UMM jeeps.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fffbf7",
+  "theme_color": "#0A4D5C",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "categories": ["travel", "tourism", "transportation"],
+  "icons": [
+    {
+      "src": "/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Buy Day Pass",
+      "short_name": "Book",
+      "description": "Book your hop-on hop-off day pass",
+      "url": "/buy-ticket",
+      "icons": [{ "src": "/icon-72x72.png", "sizes": "72x72" }]
+    },
+    {
+      "name": "Attractions",
+      "short_name": "Attractions",
+      "description": "Explore Sintra attractions",
+      "url": "/attractions",
+      "icons": [{ "src": "/icon-72x72.png", "sizes": "72x72" }]
+    },
+    {
+      "name": "Route Map",
+      "short_name": "Map",
+      "description": "View routes and stops",
+      "url": "/route-map",
+      "icons": [{ "src": "/icon-72x72.png", "sizes": "72x72" }]
+    }
+  ],
+  "prefer_related_applications": false
+}

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loading Hop On Sintra...</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .container {
+      text-align: center;
+      max-width: 600px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 60px 40px;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    }
+    
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+      font-weight: 700;
+    }
+    
+    .spinner {
+      width: 80px;
+      height: 80px;
+      margin: 40px auto;
+      border: 8px solid rgba(255, 255, 255, 0.2);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .status {
+      font-size: 1.2em;
+      margin: 20px 0;
+      opacity: 0.9;
+    }
+    
+    .progress {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+      margin: 30px 0;
+      overflow: hidden;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background: white;
+      border-radius: 3px;
+      animation: progress 3s ease-in-out;
+    }
+    
+    @keyframes progress {
+      from { width: 0%; }
+      to { width: 100%; }
+    }
+    
+    .info {
+      margin-top: 30px;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      font-size: 0.9em;
+      line-height: 1.6;
+    }
+    
+    .success {
+      color: #4ade80;
+      font-weight: bold;
+    }
+    
+    .error {
+      color: #f87171;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚍 Hop On Sintra</h1>
+    <div class="spinner"></div>
+    <div class="status" id="status">Clearing cache and loading app...</div>
+    <div class="progress">
+      <div class="progress-bar"></div>
+    </div>
+    <div class="info" id="info">
+      This may take a few seconds.<br>
+      Please wait...
+    </div>
+  </div>
+
+  <script>
+    const status = document.getElementById('status');
+    const info = document.getElementById('info');
+    
+    async function emergencyLoad() {
+      try {
+        // Step 1: Clear all caches
+        status.textContent = 'Clearing service worker caches...';
+        if ('caches' in window) {
+          const cacheNames = await caches.keys();
+          console.log(`Deleting ${cacheNames.length} caches:`, cacheNames);
+          for (const cacheName of cacheNames) {
+            await caches.delete(cacheName);
+            console.log(`✓ Deleted cache: ${cacheName}`);
+          }
+        }
+        
+        await new Promise(r => setTimeout(r, 500));
+        
+        // Step 2: Unregister service workers
+        status.textContent = 'Unregistering service workers...';
+        if ('serviceWorker' in navigator) {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          console.log(`Unregistering ${registrations.length} service workers`);
+          for (const registration of registrations) {
+            await registration.unregister();
+            console.log('✓ Unregistered service worker');
+          }
+        }
+        
+        await new Promise(r => setTimeout(r, 500));
+        
+        // Step 3: Clear storage (except important data)
+        status.textContent = 'Clearing browser storage...';
+        const language = localStorage.getItem('language');
+        const adminSession = localStorage.getItem('admin-session');
+        const driverSession = localStorage.getItem('driver-session');
+        
+        localStorage.clear();
+        sessionStorage.clear();
+        
+        if (language) localStorage.setItem('language', language);
+        if (adminSession) localStorage.setItem('admin-session', adminSession);
+        if (driverSession) localStorage.setItem('driver-session', driverSession);
+        
+        await new Promise(r => setTimeout(r, 500));
+        
+        // Step 4: Clear IndexedDB
+        status.textContent = 'Clearing database...';
+        if ('indexedDB' in window && indexedDB.databases) {
+          const databases = await indexedDB.databases();
+          console.log(`Clearing ${databases.length} databases`);
+          for (const db of databases) {
+            if (db.name) {
+              indexedDB.deleteDatabase(db.name);
+              console.log(`✓ Deleted database: ${db.name}`);
+            }
+          }
+        }
+        
+        await new Promise(r => setTimeout(r, 500));
+        
+        // Success
+        status.innerHTML = '<span class="success">✅ Cache cleared successfully!</span>';
+        info.innerHTML = 'Redirecting to fresh start page...<br>This will complete the fix.';
+        
+        await new Promise(r => setTimeout(r, 800));
+        
+        // Redirect to fresh start page to complete the process
+        window.location.replace('/fresh-start.html');
+        
+      } catch (error) {
+        console.error('Emergency load error:', error);
+        status.innerHTML = '<span class="error">❌ Error occurred</span>';
+        info.innerHTML = 
+          'Please try one of these:<br>' +
+          '• Visit <a href="/fresh-start.html" style="color: white; font-weight: bold;">Fresh Start Page</a><br>' +
+          '• Press Ctrl+Shift+R (Windows) or Cmd+Shift+R (Mac)<br>' +
+          '• Close all tabs and open a new one<br>' +
+          '• Try a different browser';
+      }
+    }
+    
+    // Always run - don't check if already cleared
+    emergencyLoad();
+  </script>
+</body>
+</html>
