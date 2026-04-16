@@ -5842,9 +5842,9 @@ app.post(
   "/make-server-3bd0ade8/driver-sales/create",
   async (c) => {
     try {
-      const { driverId, numberOfPeople, customerEmail, paymentMethod, amount, timeSlot, pickupLocation } = await c.req.json();
+      const { driverId, numberOfPeople, customerEmail, paymentMethod, amount, timeSlot, pickupLocation, selectedDate } = await c.req.json();
 
-      console.log(`💰 Creating driver sale: ${numberOfPeople} tickets for ${customerEmail} by driver ${driverId}`);
+      console.log(`💰 Creating driver sale: ${numberOfPeople} tickets for ${customerEmail} by driver ${driverId} for date ${selectedDate || 'today'}`);
 
       // Validate inputs
       if (!driverId || !numberOfPeople || !customerEmail || !amount) {
@@ -5861,8 +5861,8 @@ app.post(
         );
       }
 
-      // Check seat availability
-      const date = new Date().toISOString().split('T')[0];
+      // Use the selected date if provided, otherwise use today's date
+      const date = selectedDate || new Date().toISOString().split('T')[0];
       const availabilityKey = `availability_${date}`;
       const availabilitySlots = (await kv.get(availabilityKey)) || {
         "9:00": 50,
@@ -5898,7 +5898,8 @@ app.post(
       const driverName = driver?.name || 'Driver';
 
       // Create booking data with all required fields for email
-      const selectedDate = new Date().toISOString();
+      // Use the date variable from above (already set to selectedDate or today)
+      const bookingDateTime = new Date(date).toISOString();
       const booking = {
         id: bookingId,
         // Customer info (both formats for compatibility)
@@ -5911,9 +5912,9 @@ app.post(
           email: customerEmail,
         },
         // Booking details
-        selectedDate, // Required for email template
-        passDate: selectedDate,
-        bookingDate: selectedDate,
+        selectedDate: bookingDateTime, // Required for email template
+        passDate: date, // Use the actual date (YYYY-MM-DD format)
+        bookingDate: bookingDateTime,
         dayPassCount: numberOfPeople,
         adultCount: numberOfPeople,
         childCount: 0,

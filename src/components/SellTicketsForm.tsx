@@ -312,6 +312,7 @@ export function SellTicketsForm({
             amount: totalAmount,
             timeSlot,
             pickupLocation,
+            selectedDate, // Include the selected date
           }),
         },
       );
