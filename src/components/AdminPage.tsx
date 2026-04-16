@@ -775,6 +775,41 @@ export function AdminPage() {
     };
   }, [isAuthenticated]);
 
+  // Load availability for selected date when it changes
+  useEffect(() => {
+    if (!selectedDate || !isAuthenticated) return;
+    
+    const loadDateAvailability = async () => {
+      try {
+        const response = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/availability/${selectedDate}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${publicAnonKey}`,
+              "Content-Type": "application/json",
+            },
+          },
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.availability) {
+            // Merge the loaded availability for this date with existing state
+            setAvailability(prev => ({
+              ...prev,
+              [selectedDate]: data.availability,
+            }));
+          }
+        }
+      } catch (error) {
+        console.error("Error loading availability for date:", error);
+      }
+    };
+
+    loadDateAvailability();
+  }, [selectedDate, isAuthenticated]);
+
   const loadAvailability = async () => {
     const result = await safeJsonFetch<any>(
       `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/availability`,
@@ -831,6 +866,41 @@ export function AdminPage() {
       toast.error(
         "Failed to save settings to database. Saved locally only.",
       );
+    }
+  };
+
+  const saveAvailability = async () => {
+    if (!selectedDate) {
+      toast.error("Please select a date first");
+      return;
+    }
+
+    try {
+      // Save availability for the selected date to the backend
+      const dateAvailability = availability[selectedDate] || {};
+      
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/availability/${selectedDate}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${publicAnonKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(dateAvailability),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to save availability to database");
+      }
+
+      toast.success(`Availability saved for ${new Date(selectedDate).toLocaleDateString()}!`, {
+        description: "Time slot availability has been updated",
+      });
+    } catch (error) {
+      console.error("Error saving availability:", error);
+      toast.error("Failed to save availability to database");
     }
   };
 
@@ -3561,16 +3631,21 @@ export function AdminPage() {
 
                 <div className="rounded-lg border border-border bg-white p-6">
                   <div className="mb-4 flex items-center justify-between">
-                    <h3 className="text-foreground">
-                      Time Slots for{" "}
-                      {new Date(
-                        selectedDate,
-                      ).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </h3>
+                    <div>
+                      <h3 className="text-foreground">
+                        Time Slots for{" "}
+                        {new Date(
+                          selectedDate,
+                        ).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </h3>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Set available seats for each time slot. Click "Save Availability" to apply changes.
+                      </p>
+                    </div>
                     <div className="flex gap-2">
                       <Button
                         size="sm"
@@ -3630,7 +3705,7 @@ export function AdminPage() {
 
                   <div className="mt-6">
                     <Button
-                      onClick={saveSettings}
+                      onClick={saveAvailability}
                       className="bg-primary hover:bg-primary/90"
                     >
                       <Save className="mr-2 h-4 w-4" />
