@@ -1,10 +1,9 @@
-import { useRouteError, useNavigate } from "react-router";
+import { useRouteError } from "react-router";
 import { AlertCircle, Home, RefreshCw } from "lucide-react";
 import { Button } from "./ui/button";
 
 export function RouterErrorFallback() {
   const error = useRouteError() as any;
-  const navigate = useNavigate();
 
   console.error("🚨 Router Error:", error);
 
