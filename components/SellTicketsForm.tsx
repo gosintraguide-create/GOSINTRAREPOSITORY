@@ -57,6 +57,8 @@ export function SellTicketsForm({
   onSaleComplete,
 }: SellTicketsFormProps) {
   const [numberOfPeople, setNumberOfPeople] = useState(1);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<
     "cash" | "card"
@@ -272,6 +274,11 @@ export function SellTicketsForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!firstName || !lastName) {
+      toast.error("Please enter customer's first and last name");
+      return;
+    }
+
     if (!customerEmail || !customerEmail.includes("@")) {
       toast.error("Please enter a valid email address");
       return;
@@ -307,11 +314,14 @@ export function SellTicketsForm({
           body: JSON.stringify({
             driverId,
             numberOfPeople,
+            firstName,
+            lastName,
             customerEmail,
             paymentMethod,
             amount: totalAmount,
             timeSlot,
             pickupLocation,
+            selectedDate, // Include the selected date
           }),
         },
       );
@@ -319,13 +329,31 @@ export function SellTicketsForm({
       const data = await response.json();
 
       if (data.success) {
+        // Show success message with login credentials
+        const loginInfo = data.customerInfo
+          ? `\n\nCustomer Login:\nEmail: ${data.customerInfo.email}\nPassword: ${data.customerInfo.temporaryPassword}\n\nThey can use these credentials to login and request rides.`
+          : '';
+        
         toast.success(
           `Sale created successfully! ${numberOfPeople} ticket${numberOfPeople > 1 ? "s" : ""} sold for €${totalAmount.toFixed(2)}`,
           {
-            description: `Confirmation email sent to ${customerEmail}`,
-            duration: 5000,
+            description: `Confirmation email sent to ${customerEmail}${loginInfo ? '\n\n📱 Customer can login to request rides!' : ''}`,
+            duration: 8000,
           },
         );
+        
+        // Also show login credentials in a separate toast for visibility
+        if (data.customerInfo) {
+          setTimeout(() => {
+            toast.info(
+              `Customer Login Credentials`,
+              {
+                description: `Email: ${data.customerInfo.email}\nPassword: ${data.customerInfo.temporaryPassword}\n\nShare these with ${firstName} ${lastName} so they can login to request rides.`,
+                duration: 15000,
+              },
+            );
+          }, 500);
+        }
 
         // Reload availability to reflect the updated seat count
         const availabilityResponse = await fetch(
@@ -350,6 +378,8 @@ export function SellTicketsForm({
 
         // Reset form
         setNumberOfPeople(1);
+        setFirstName("");
+        setLastName("");
         setCustomerEmail("");
         setPaymentMethod("cash");
         setTimeSlot("");
@@ -427,6 +457,38 @@ export function SellTicketsForm({
               >
                 <Plus className="h-4 w-4" />
               </Button>
+            </div>
+          </div>
+
+          {/* Customer Name */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="firstName">
+                First Name
+              </Label>
+              <Input
+                id="firstName"
+                type="text"
+                placeholder="John"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required
+                className="mt-2"
+              />
+            </div>
+            <div>
+              <Label htmlFor="lastName">
+                Last Name
+              </Label>
+              <Input
+                id="lastName"
+                type="text"
+                placeholder="Smith"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                required
+                className="mt-2"
+              />
             </div>
           </div>
 

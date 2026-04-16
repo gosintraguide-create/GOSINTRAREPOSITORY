@@ -5842,12 +5842,12 @@ app.post(
   "/make-server-3bd0ade8/driver-sales/create",
   async (c) => {
     try {
-      const { driverId, numberOfPeople, customerEmail, paymentMethod, amount, timeSlot, pickupLocation } = await c.req.json();
+      const { driverId, numberOfPeople, firstName, lastName, customerEmail, paymentMethod, amount, timeSlot, pickupLocation, selectedDate } = await c.req.json();
 
-      console.log(`💰 Creating driver sale: ${numberOfPeople} tickets for ${customerEmail} by driver ${driverId}`);
+      console.log(`💰 Creating driver sale: ${numberOfPeople} tickets for ${firstName} ${lastName} (${customerEmail}) by driver ${driverId} for date ${selectedDate || 'today'}`);
 
       // Validate inputs
-      if (!driverId || !numberOfPeople || !customerEmail || !amount) {
+      if (!driverId || !numberOfPeople || !customerEmail || !amount || !firstName || !lastName) {
         return c.json(
           { success: false, error: "Missing required fields" },
           400
@@ -5861,8 +5861,8 @@ app.post(
         );
       }
 
-      // Check seat availability
-      const date = new Date().toISOString().split('T')[0];
+      // Use the selected date if provided, otherwise use today's date
+      const date = selectedDate || new Date().toISOString().split('T')[0];
       const availabilityKey = `availability_${date}`;
       const availabilitySlots = (await kv.get(availabilityKey)) || {
         "9:00": 50,
@@ -5897,23 +5897,55 @@ app.post(
       const driver = await kv.get(`driver:${driverId}`);
       const driverName = driver?.name || 'Driver';
 
+      // Create or update customer profile
+      const customerFullName = `${firstName} ${lastName}`;
+      const customerId = `customer:${customerEmail}`;
+      let customer = await kv.get(customerId) || {};
+      
+      // Generate a temporary password for the customer (first 6 chars of email + last 4 chars of last name)
+      const tempPassword = (customerEmail.substring(0, 6) + lastName.substring(Math.max(0, lastName.length - 4))).toLowerCase();
+      
+      customer = {
+        ...customer,
+        id: customerId,
+        email: customerEmail,
+        firstName,
+        lastName,
+        fullName: customerFullName,
+        hasActiveBookings: true,
+        lastBookingDate: new Date().toISOString(),
+        totalBookings: (customer.totalBookings || 0) + 1,
+        createdViaDriverSale: true,
+        temporaryPassword: tempPassword, // Store for customer to login
+        passwordChangeRequired: false, // They can change it if they want
+        createdAt: customer.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      
+      await kv.set(customerId, customer);
+      console.log(`👤 Created/updated customer profile: ${customerFullName} (${customerEmail})`);
+
       // Create booking data with all required fields for email
-      const selectedDate = new Date().toISOString();
+      // Use the date variable from above (already set to selectedDate or today)
+      const bookingDateTime = new Date(date).toISOString();
       const booking = {
         id: bookingId,
         // Customer info (both formats for compatibility)
-        customerName: customerEmail.split('@')[0],
-        fullName: customerEmail.split('@')[0],
+        customerName: customerFullName,
+        fullName: customerFullName,
+        firstName,
+        lastName,
         email: customerEmail,
         customerEmail,
+        customerId, // Link to customer profile
         contactInfo: {
-          name: customerEmail.split('@')[0],
+          name: customerFullName,
           email: customerEmail,
         },
         // Booking details
-        selectedDate, // Required for email template
-        passDate: selectedDate,
-        bookingDate: selectedDate,
+        selectedDate: bookingDateTime, // Required for email template
+        passDate: date, // Use the actual date (YYYY-MM-DD format)
+        bookingDate: bookingDateTime,
         dayPassCount: numberOfPeople,
         adultCount: numberOfPeople,
         childCount: 0,
@@ -5928,8 +5960,8 @@ app.post(
         // Passengers with proper structure
         passengers: Array.from({ length: numberOfPeople }, (_, i) => ({
           id: i,
-          name: `Passenger ${i + 1}`,
-          fullName: `Passenger ${i + 1}`,
+          name: i === 0 ? customerFullName : `${firstName} ${i + 1}`, // First passenger uses actual name
+          fullName: i === 0 ? customerFullName : `${firstName} ${i + 1}`,
           type: 'Adult',
           scanned: false,
           scannedAt: null,
@@ -6002,12 +6034,19 @@ app.post(
       }
 
       console.log(`✅ Driver sale created successfully: ${bookingId}`);
+      console.log(`👤 Customer can now login with email: ${customerEmail} and password: ${tempPassword}`);
 
       return c.json({
         success: true,
         bookingId,
         emailSent: emailResult.success,
-        sale
+        sale,
+        customerInfo: {
+          email: customerEmail,
+          fullName: customerFullName,
+          temporaryPassword: tempPassword,
+          message: 'Customer can login to request rides and view bookings'
+        }
       });
     } catch (error) {
       console.error("❌ Error creating driver sale:", error);
