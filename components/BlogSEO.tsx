@@ -1,0 +1,183 @@
+import { useEffect } from "react";
+import { BlogArticle, getArticleTranslation } from "../lib/blogManager";
+
+interface BlogSEOProps {
+  article: BlogArticle;
+  categoryName: string;
+  language?: string;
+}
+
+export function BlogSEO({ article, categoryName, language = 'en' }: BlogSEOProps) {
+  useEffect(() => {
+    // Get the translated content
+    const translation = getArticleTranslation(article, language);
+    
+    // Update title
+    document.title = translation.seo?.title || `${translation.title} - Hop On Sintra Blog`;
+
+    // Update or create meta tags
+    const updateMetaTag = (name: string, content: string, property = false) => {
+      const attribute = property ? "property" : "name";
+      let element = document.querySelector(`meta[${attribute}="${name}"]`);
+      
+      if (!element) {
+        element = document.createElement("meta");
+        element.setAttribute(attribute, name);
+        document.head.appendChild(element);
+      }
+      
+      element.setAttribute("content", content);
+    };
+
+    // Standard meta tags
+    updateMetaTag("description", translation.seo?.description || translation.excerpt);
+    updateMetaTag("keywords", translation.seo?.keywords || article.tags.join(", "));
+    updateMetaTag("robots", "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1");
+    updateMetaTag("author", article.author);
+    
+    // Article specific tags
+    updateMetaTag("article:published_time", new Date(article.publishDate).toISOString(), true);
+    updateMetaTag("article:modified_time", new Date(article.lastModified).toISOString(), true);
+    updateMetaTag("article:author", article.author, true);
+    updateMetaTag("article:section", categoryName, true);
+    
+    // Add tags as article:tag
+    article.tags.forEach(tag => {
+      updateMetaTag(`article:tag`, tag, true);
+    });
+    
+    // Open Graph tags for articles
+    updateMetaTag("og:title", translation.seo?.title || translation.title, true);
+    updateMetaTag("og:description", translation.seo?.description || translation.excerpt, true);
+    updateMetaTag("og:type", "article", true);
+    updateMetaTag("og:url", `https://www.hoponsintra.com/blog/${article.slug}`, true);
+    updateMetaTag("og:site_name", "Hop On Sintra Travel Guide", true);
+    updateMetaTag("og:locale", "en_US", true);
+    
+    if (article.featuredImage) {
+      updateMetaTag("og:image", article.featuredImage, true);
+      updateMetaTag("og:image:secure_url", article.featuredImage, true);
+      updateMetaTag("og:image:width", "1200", true);
+      updateMetaTag("og:image:height", "630", true);
+      updateMetaTag("og:image:alt", translation.title, true);
+    }
+    
+    // Twitter Card tags
+    updateMetaTag("twitter:card", "summary_large_image");
+    updateMetaTag("twitter:title", translation.seo?.title || translation.title);
+    updateMetaTag("twitter:description", translation.seo?.description || translation.excerpt);
+    if (article.featuredImage) {
+      updateMetaTag("twitter:image", article.featuredImage);
+      updateMetaTag("twitter:image:alt", translation.title);
+    }
+    updateMetaTag("twitter:creator", "@hoponsintra");
+    updateMetaTag("twitter:site", "@hoponsintra");
+    
+    // Update canonical link
+    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
+    if (!canonical) {
+      canonical = document.createElement("link");
+      canonical.rel = "canonical";
+      document.head.appendChild(canonical);
+    }
+    canonical.href = `https://www.hoponsintra.com/blog/${article.slug}`;
+
+    // Add JSON-LD structured data for Article
+    let structuredData = document.querySelector('script[type="application/ld+json"]');
+    if (!structuredData) {
+      structuredData = document.createElement("script");
+      structuredData.setAttribute("type", "application/ld+json");
+      document.head.appendChild(structuredData);
+    }
+
+    // Create comprehensive Article schema
+    const articleSchema = {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": translation.title,
+      "description": translation.excerpt,
+      "image": article.featuredImage ? {
+        "@type": "ImageObject",
+        "url": article.featuredImage,
+        "width": 1200,
+        "height": 630
+      } : undefined,
+      "datePublished": new Date(article.publishDate).toISOString(),
+      "dateModified": new Date(article.lastModified).toISOString(),
+      "author": {
+        "@type": "Organization",
+        "name": article.author,
+        "url": "https://www.hoponsintra.com"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Hop On Sintra",
+        "url": "https://www.hoponsintra.com",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://www.hoponsintra.com/icon-72x72.png"
+        }
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": `https://www.hoponsintra.com/blog/${article.slug}`
+      },
+      "articleSection": categoryName,
+      "keywords": article.tags.join(", "),
+      "wordCount": translation.content.split(/\s+/).length,
+      "timeRequired": `PT${article.readTimeMinutes}M`,
+      "inLanguage": "en-US",
+      "about": {
+        "@type": "Place",
+        "name": "Sintra",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Sintra",
+          "addressCountry": "PT"
+        }
+      }
+    };
+
+    // Add BreadcrumbList schema
+    const breadcrumbSchema = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://www.hoponsintra.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Travel Guide",
+          "item": "https://www.hoponsintra.com/blog"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": categoryName,
+          "item": `https://www.hoponsintra.com/blog?category=${article.category}`
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": translation.title,
+          "item": `https://www.hoponsintra.com/blog/${article.slug}`
+        }
+      ]
+    };
+
+    // Combine schemas using @graph
+    const combinedSchema = {
+      "@context": "https://schema.org",
+      "@graph": [articleSchema, breadcrumbSchema]
+    };
+
+    structuredData.textContent = JSON.stringify(combinedSchema);
+  }, [article, categoryName, language]);
+
+  return null;
+}
