@@ -10,6 +10,7 @@ interface TicketCardProps {
   totalPrice?: number;
   passengerNumber?: number;
   totalPassengers?: number;
+  pickupLocation?: string;
 }
 
 export function TicketCard({
@@ -22,6 +23,7 @@ export function TicketCard({
   totalPrice,
   passengerNumber,
   totalPassengers,
+  pickupLocation,
 }: TicketCardProps) {
   // Format date nicely
   const formattedDate = new Date(date).toLocaleDateString("en-US", {
@@ -127,6 +129,18 @@ export function TicketCard({
                 <div className="text-foreground tracking-wide">20:00</div>
               </div>
             </div>
+
+            {/* Pickup Location */}
+            {pickupLocation && (
+              <div className="pt-2 border-t border-[#DDD0C0]">
+                <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
+                  Pickup Location
+                </div>
+                <div className="text-foreground uppercase tracking-wide">
+                  {pickupLocation.replace(/-/g, ' ')}
+                </div>
+              </div>
+            )}
 
             {/* Price */}
             {totalPrice && (

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useOutletContext } from "react-router";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -13,12 +14,18 @@ import { TicketCard } from "./TicketCard";
 import { getTranslation } from "../lib/translations";
 import { getSession } from "../lib/sessionManager";
 
+interface OutletContext {
+  language: string;
+  onNavigate: (page: string, data?: any) => void;
+}
+
 interface ManageBookingPageProps {
   onNavigate: (page: string) => void;
   language?: string;
 }
 
-export function ManageBookingPage({ onNavigate, language = "en" }: ManageBookingPageProps) {
+export function ManageBookingPage() {
+  const { language = "en", onNavigate } = useOutletContext<OutletContext>();
   const content = getTranslation(language);
   const [bookingId, setBookingId] = useState("");
   const [lastName, setLastName] = useState("");
@@ -457,6 +464,7 @@ export function ManageBookingPage({ onNavigate, language = "en" }: ManageBooking
                     qrCode={booking.qrCodes?.[index] || ""}
                     passengerNumber={index + 1}
                     totalPassengers={booking.passengers.length}
+                    pickupLocation={booking.pickupLocation}
                   />
                 ))}
               </div>
@@ -633,20 +641,7 @@ export function ManageBookingPage({ onNavigate, language = "en" }: ManageBooking
               </div>
 
               {/* Location */}
-              <div className="flex items-start gap-4 rounded-lg border border-border p-4 transition-colors hover:bg-secondary/50">
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
-                  <MapPin className="h-5 w-5 text-primary" />
-                </div>
-                <div className="flex-1">
-                  <h4 className="mb-1 text-foreground">Find Us</h4>
-                  <p className="text-sm text-foreground">
-                    {content.company.location}
-                  </p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Available at all major attractions
-                  </p>
-                </div>
-              </div>
+              
             </div>
 
             <div className="mt-6 flex justify-end">
@@ -663,3 +658,5 @@ export function ManageBookingPage({ onNavigate, language = "en" }: ManageBooking
     </div>
   );
 }
+
+export default ManageBookingPage;

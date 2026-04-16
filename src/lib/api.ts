@@ -40,6 +40,18 @@ async function apiCall<T>(
       // If not JSON, try to read as text for debugging
       const text = await response.text();
       
+      // Check for database connectivity issues (502/503 errors)
+      if (text.includes('502') || text.includes('Bad gateway') || 
+          text.includes('503') || text.includes('Service Unavailable')) {
+        if (!silent) {
+          console.warn('⚠️ Database temporarily unavailable. Will retry automatically.');
+        }
+        return {
+          success: false,
+          error: 'Database temporarily unavailable. Please try again in a moment.',
+        };
+      }
+      
       // Check for Supabase quota exceeded error
       if (text.includes('exceeded your Free Plan quota') || text.includes('quota in this billing')) {
         console.warn('⚠️ Supabase quota exceeded. Operating in offline mode with localStorage.');
@@ -57,6 +69,28 @@ async function apiCall<T>(
 
     if (!response.ok) {
       // More helpful error messages for common issues
+      if (response.status === 503) {
+        // Service Unavailable - database connectivity issue
+        if (!silent) {
+          console.warn(`⚠️ Service temporarily unavailable (${endpoint}). This is usually temporary.`);
+        }
+        return {
+          success: false,
+          error: 'Service temporarily unavailable. Please try again in a moment.',
+        };
+      }
+      
+      if (response.status === 502) {
+        // Bad Gateway - database connectivity issue
+        if (!silent) {
+          console.warn(`⚠️ Database gateway error (${endpoint}). This is usually temporary.`);
+        }
+        return {
+          success: false,
+          error: 'Database temporarily unavailable. Please try again in a moment.',
+        };
+      }
+      
       if (response.status === 404) {
         // Don't log 404 errors in silent mode (they have fallbacks)
         if (!silent) {

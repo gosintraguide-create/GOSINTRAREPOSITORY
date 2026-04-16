@@ -99,11 +99,15 @@ export default defineConfig({
       "react-dom",
       "lucide-react",
       "@stripe/stripe-js",
+      "@supabase/supabase-js",
     ],
   },
   server: {
     port: 5173,
     open: true,
+    headers: {
+      'Cache-Control': 'no-store',
+    },
   },
   preview: {
     port: 4173,

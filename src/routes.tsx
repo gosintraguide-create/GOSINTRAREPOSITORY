@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate } from "react-router";
 import { lazy } from "react";
 import { RootLayout } from "./components/RootLayout";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { RouterErrorFallback } from "./components/RouterErrorFallback";
 
 // Lazy load pages
 const HomePage = lazy(() => import("./components/HomePage").then(m => ({ default: m.HomePage })));
@@ -11,6 +12,7 @@ const PrivateToursPage = lazy(() => import("./components/PrivateToursPage").then
 const PrivateTourDetailPage = lazy(() => import("./components/PrivateTourDetailPage").then(m => ({ default: m.PrivateTourDetailPage })));
 const HopOnServiceDetailPage = lazy(() => import("./components/HopOnServiceDetailPage").then(m => ({ default: m.HopOnServiceDetailPage })));
 const BuyTicketPage = lazy(() => import("./components/BuyTicketPage").then(m => ({ default: m.BuyTicketPage })));
+const SunsetSpecialPurchasePage = lazy(() => import("./components/SunsetSpecialPurchasePage").then(m => ({ default: m.SunsetSpecialPurchasePage })));
 const LiveChatPage = lazy(() => import("./components/LiveChatPage").then(m => ({ default: m.LiveChatPage })));
 const AboutPage = lazy(() => import("./components/AboutPage").then(m => ({ default: m.AboutPage })));
 const BlogPage = lazy(() => import("./components/BlogPage").then(m => ({ default: m.BlogPage })));
@@ -18,7 +20,12 @@ const BlogArticlePage = lazy(() => import("./components/BlogArticlePage").then(m
 const RouteMapPage = lazy(() => import("./components/RouteMapPage").then(m => ({ default: m.RouteMapPage })));
 const AdminPage = lazy(() => import("./components/AdminPage").then(m => ({ default: m.AdminPage })));
 const DriverPortalPage = lazy(() => import("./components/DriverPortalPage").then(m => ({ default: m.DriverPortalPage })));
+const QRScannerPage = lazy(() => import("./components/QRScannerPage").then(m => ({ default: m.QRScannerPage })));
 const NotFoundPage = lazy(() => import("./components/NotFoundPage").then(m => ({ default: m.NotFoundPage })));
+const ManageBookingPage = lazy(() => import("./components/ManageBookingPage").then(m => ({ default: m.ManageBookingPage })));
+const RequestPickupPage = lazy(() => import("./components/RequestPickupPage").then(m => ({ default: m.RequestPickupPage })));
+const PrivacyPolicyPage = lazy(() => import("./components/PrivacyPolicyPage").then(m => ({ default: m.PrivacyPolicyPage })));
+const TermsOfServicePage = lazy(() => import("./components/TermsOfServicePage").then(m => ({ default: m.TermsOfServicePage })));
 
 // Slug generation helper
 export function generateSlug(title: string): string {
@@ -44,6 +51,7 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: <RootLayout />,
+    errorElement: <RouterErrorFallback />,
     children: [
       {
         index: true,
@@ -207,6 +215,81 @@ export const router = createBrowserRouter([
         },
       },
       {
+        path: "sunset-special",
+        element: (
+          <ErrorBoundary>
+            <SunsetSpecialPurchasePage />
+          </ErrorBoundary>
+        ),
+        handle: {
+          meta: {
+            title: "Sunset Special - Hop On Sintra",
+            description: "Purchase your Sintra sunset special for unlimited hop-on/hop-off access.",
+            index: false,
+          },
+        },
+      },
+      {
+        path: "manage-booking",
+        element: (
+          <ErrorBoundary>
+            <ManageBookingPage />
+          </ErrorBoundary>
+        ),
+        handle: {
+          meta: {
+            title: "Manage Your Booking - Hop On Sintra",
+            description: "View and manage your Sintra day pass booking.",
+            index: false,
+          },
+        },
+      },
+      {
+        path: "request-pickup",
+        element: (
+          <ErrorBoundary>
+            <RequestPickupPage />
+          </ErrorBoundary>
+        ),
+        handle: {
+          meta: {
+            title: "Request a Pickup - Hop On Sintra",
+            description: "Request a pickup for your Sintra day pass.",
+            index: false,
+          },
+        },
+      },
+      {
+        path: "privacy-policy",
+        element: (
+          <ErrorBoundary>
+            <PrivacyPolicyPage />
+          </ErrorBoundary>
+        ),
+        handle: {
+          meta: {
+            title: "Privacy Policy - Hop On Sintra",
+            description: "Read our privacy policy and learn how we protect your data.",
+            index: false,
+          },
+        },
+      },
+      {
+        path: "terms-of-service",
+        element: (
+          <ErrorBoundary>
+            <TermsOfServicePage />
+          </ErrorBoundary>
+        ),
+        handle: {
+          meta: {
+            title: "Terms of Service - Hop On Sintra",
+            description: "Read our terms of service and booking conditions.",
+            index: false,
+          },
+        },
+      },
+      {
         path: "admin",
         element: (
           <ErrorBoundary>
@@ -231,6 +314,21 @@ export const router = createBrowserRouter([
         handle: {
           meta: {
             title: "Driver Portal",
+            index: false,
+            protected: true,
+          },
+        },
+      },
+      {
+        path: "qr-scanner",
+        element: (
+          <ErrorBoundary>
+            <QRScannerPage />
+          </ErrorBoundary>
+        ),
+        handle: {
+          meta: {
+            title: "QR Scanner",
             index: false,
             protected: true,
           },

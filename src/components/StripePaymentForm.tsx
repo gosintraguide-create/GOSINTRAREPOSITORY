@@ -26,6 +26,7 @@ function CheckoutForm({ amount, onSuccess, onError, customerEmail }: Omit<Stripe
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const hasSubmittedRef = useRef(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,10 +35,28 @@ function CheckoutForm({ amount, onSuccess, onError, customerEmail }: Omit<Stripe
       return;
     }
 
+    // Prevent double submissions
+    if (hasSubmittedRef.current || isProcessing) {
+      console.log("⚠️ Payment submission already in progress, ignoring duplicate request");
+      return;
+    }
+
+    hasSubmittedRef.current = true;
     setIsProcessing(true);
     setErrorMessage(null);
 
     try {
+      // Validate the form before submitting
+      const { error: submitError } = await elements.submit();
+      if (submitError) {
+        console.error("Form validation error:", submitError);
+        setErrorMessage(submitError.message || "Please complete all required fields");
+        onError(submitError.message || "Please complete all required fields");
+        hasSubmittedRef.current = false;
+        setIsProcessing(false);
+        return;
+      }
+
       const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
@@ -54,19 +73,44 @@ function CheckoutForm({ amount, onSuccess, onError, customerEmail }: Omit<Stripe
 
       if (error) {
         console.error("Payment error:", error);
-        setErrorMessage(error.message || "Payment failed");
-        onError(error.message || "Payment failed");
+        
+        // Check if the error is because payment was already succeeded
+        if (error.type === 'invalid_request_error' && 
+            error.code === 'payment_intent_unexpected_state' &&
+            error.payment_intent?.status === 'succeeded') {
+          console.log("✅ Payment already succeeded, proceeding with success callback");
+          onSuccess(error.payment_intent.id);
+          return;
+        }
+        
+        // Provide user-friendly error messages
+        let userMessage = error.message || "Payment failed";
+        if (error.code === 'incomplete_cvc') {
+          userMessage = "Please enter your card's security code (CVC)";
+        } else if (error.code === 'incomplete_number') {
+          userMessage = "Please enter a complete card number";
+        } else if (error.code === 'incomplete_expiry') {
+          userMessage = "Please enter your card's expiration date";
+        }
+        
+        setErrorMessage(userMessage);
+        onError(userMessage);
+        hasSubmittedRef.current = false; // Allow retry on error
       } else if (paymentIntent && paymentIntent.status === "succeeded") {
+        console.log("✅ Payment succeeded:", paymentIntent.id);
         onSuccess(paymentIntent.id);
       } else {
+        console.warn("⚠️ Payment not completed, status:", paymentIntent?.status);
         setErrorMessage("Payment was not completed. Please try again.");
         onError("Payment was not completed");
+        hasSubmittedRef.current = false; // Allow retry
       }
     } catch (err) {
       console.error("Unexpected payment error:", err);
       const message = err instanceof Error ? err.message : "An unexpected error occurred";
       setErrorMessage(message);
       onError(message);
+      hasSubmittedRef.current = false; // Allow retry on error
     } finally {
       setIsProcessing(false);
     }
@@ -81,15 +125,14 @@ function CheckoutForm({ amount, onSuccess, onError, customerEmail }: Omit<Stripe
             layout: {
               type: "accordion",
               defaultCollapsed: false,
-              radios: false,
+              radios: "never",
               spacedAccordionItems: true
             },
             fields: {
               billingDetails: {
                 email: customerEmail ? 'never' : 'auto',
               }
-            },
-            paymentMethodOrder: ['apple_pay', 'google_pay', 'card']
+            }
           }}
         />
       </div>

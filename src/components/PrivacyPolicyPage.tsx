@@ -1,14 +1,21 @@
-import { ArrowLeft } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
+import { ArrowLeft } from "lucide-react";
+import { useOutletContext } from "react-router";
 import { getPrivacyContent } from "../lib/translations";
+
+interface OutletContext {
+  language: string;
+  onNavigate: (page: string, data?: any) => void;
+}
 
 interface PrivacyPolicyPageProps {
   onNavigate: (page: string) => void;
   language: string;
 }
 
-export function PrivacyPolicyPage({ onNavigate, language }: PrivacyPolicyPageProps) {
+export function PrivacyPolicyPage() {
+  const { language = "en", onNavigate } = useOutletContext<OutletContext>();
   const content = getPrivacyContent(language);
 
   return (
@@ -165,3 +172,5 @@ export function PrivacyPolicyPage({ onNavigate, language }: PrivacyPolicyPagePro
     </div>
   );
 }
+
+export default PrivacyPolicyPage;

@@ -1,11 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "../App.tsx";
-import { ErrorBoundary } from "../components/ErrorBoundary.tsx";
-import "../styles/globals.css";
-
-// Note: slick-carousel CSS is loaded via slick-custom.css instead
-// to avoid potential module resolution issues
+import App from "@/App";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import "@/styles/globals.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -14,32 +11,3 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     </ErrorBoundary>
   </React.StrictMode>,
 );
-
-// Register Service Worker for offline capabilities
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("/sw.js")
-      .then((registration) => {
-        console.log("Service Worker registered with scope:", registration.scope);
-
-        registration.onupdatefound = () => {
-          const installingWorker = registration.installing;
-          if (installingWorker) {
-            installingWorker.onstatechange = () => {
-              if (installingWorker.state === "installed") {
-                if (navigator.serviceWorker.controller) {
-                  console.log("New content is available; please refresh.");
-                } else {
-                  console.log("Content is cached for offline use.");
-                }
-              }
-            };
-          }
-        };
-      })
-      .catch((error) => {
-        console.error("Service Worker registration failed:", error);
-      });
-  });
-}

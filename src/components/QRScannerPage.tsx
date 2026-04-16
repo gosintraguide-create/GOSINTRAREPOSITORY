@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useOutletContext, useLocation } from "react-router";
 import { Button } from "./ui/button";
 import {
   Card,
@@ -42,6 +43,15 @@ import {
   publicAnonKey,
 } from "../utils/supabase/info";
 
+interface OutletContext {
+  language: string;
+  onNavigate: (page: string, data?: any) => void;
+}
+
+interface QRScannerPageProps {
+  returnTo?: string; // Optional prop to specify where to return
+}
+
 interface ScanResult {
   success: boolean;
   booking?: {
@@ -63,10 +73,6 @@ interface ScanResult {
   message: string;
 }
 
-interface QRScannerPageProps {
-  onNavigate: (page: string) => void;
-}
-
 // List of destinations in Sintra
 const DESTINATIONS = [
   "Palácio da Pena",
@@ -79,9 +85,14 @@ const DESTINATIONS = [
   "Other",
 ];
 
-export function QRScannerPage({
-  onNavigate,
-}: QRScannerPageProps) {
+export function QRScannerPage({ returnTo }: QRScannerPageProps) {
+  const { onNavigate } = useOutletContext<OutletContext>();
+  const location = useLocation();
+  
+  // Get returnTo from props or location state, default to "admin"
+  const backDestination = returnTo || (location.state as any)?.returnTo || "admin";
+  const backLabel = backDestination === "driver-portal" ? "Back to Driver Dashboard" : "Back to Admin";
+  
   const [scanning, setScanning] = useState(false);
   const [scanResult, setScanResult] =
     useState<ScanResult | null>(null);
@@ -432,11 +443,13 @@ export function QRScannerPage({
         <div className="mb-6 flex items-center justify-between">
           <Button
             variant="ghost"
-            onClick={() => onNavigate("admin")}
+            onClick={() =>
+              onNavigate(backDestination)
+            }
             className="gap-2"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Admin
+            {backLabel}
           </Button>
         </div>
 
@@ -785,3 +798,5 @@ export function QRScannerPage({
     </div>
   );
 }
+
+export default QRScannerPage;

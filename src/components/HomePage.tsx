@@ -1,3 +1,6 @@
+import image_71ee40946db4b4bf36ff2a3323e15fbad96b7af0 from 'figma:asset/71ee40946db4b4bf36ff2a3323e15fbad96b7af0.png'
+import image_8fa5e0f9f1551c4c27ecf6c304e93b992f85fb68 from 'figma:asset/8fa5e0f9f1551c4c27ecf6c304e93b992f85fb68.png'
+import image_72471611660200b2275398b6c3d4ca944a3262f9 from 'figma:asset/72471611660200b2275398b6c3d4ca944a3262f9.png'
 import { SunsetSpecialCarousel } from "./SunsetSpecialCarousel";
 import { RouteOverview } from "./RouteOverview";
 import { ProductCard } from "./ProductCard";
@@ -334,13 +337,20 @@ export function HomePage() {
         content={content}
       />
 
-      {/* Route Overview Section */}
-      <RouteOverview language={language} onNavigate={onNavigate} />
-
       {/* Today's Special: Sunset Drive Carousel */}
-      {sunsetSpecialEnabled && (
+      {sunsetSpecialEnabled && content?.homepage?.sunsetSpecial?.enabled && (
         <SunsetSpecialCarousel onNavigate={onNavigate} language={language} />
       )}
+
+      {/* Debug info - remove this after checking */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="mx-auto max-w-6xl px-4 py-4">
+          
+        </div>
+      )}
+
+      {/* Route Overview Section */}
+      <RouteOverview language={language} onNavigate={onNavigate} />
 
       {/* Quick Links Section */}
       <section className="bg-gradient-to-br from-primary via-primary/95 to-primary/90 py-16 sm:py-20 lg:py-24">
@@ -357,7 +367,7 @@ export function HomePage() {
             >
               <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl sm:h-20 sm:w-20">
                 <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=200&h=200&fit=crop"
+                  src={image_72471611660200b2275398b6c3d4ca944a3262f9}
                   alt="Attractions"
                   className="h-full w-full object-cover"
                 />
@@ -380,7 +390,7 @@ export function HomePage() {
             >
               <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl sm:h-20 sm:w-20">
                 <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=200&h=200&fit=crop"
+                  src={image_8fa5e0f9f1551c4c27ecf6c304e93b992f85fb68}
                   alt="Travel Guide"
                   className="h-full w-full object-cover"
                 />
@@ -403,7 +413,7 @@ export function HomePage() {
             >
               <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl sm:h-20 sm:w-20">
                 <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?w=200&h=200&fit=crop"
+                  src={image_71ee40946db4b4bf36ff2a3323e15fbad96b7af0}
                   alt="Private Tours"
                   className="h-full w-full object-cover"
                 />

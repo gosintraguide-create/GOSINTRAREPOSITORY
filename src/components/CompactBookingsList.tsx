@@ -21,6 +21,7 @@ import {
   RefreshCw,
   MailCheck,
   MailX,
+  MapPin,
 } from "lucide-react";
 import { toast } from "sonner@2.0.3";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
@@ -391,6 +392,16 @@ export function CompactBookingsList({ bookings, onRefresh }: CompactBookingsList
                             </div>
                           </div>
                         </div>
+
+                        {booking.firstPickupLocation && (
+                          <div>
+                            <p className="text-xs text-muted-foreground mb-1">First Pickup Location</p>
+                            <div className="flex items-center gap-2 text-sm">
+                              <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+                              <span className="text-foreground">{booking.firstPickupLocation}</span>
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       {/* Right Column: Stats & Extras */}

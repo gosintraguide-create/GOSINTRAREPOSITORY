@@ -131,6 +131,108 @@ function generateBookingConfirmationHTML(data: any): string {
   `.trim();
 }
 
+// Sunset special confirmation email template
+function generateSunsetSpecialConfirmationHTML(data: any): string {
+  const {
+    customerName,
+    bookingId,
+    formattedDate,
+    departureTime,
+    participants,
+    price,
+  } = data;
+
+  const bookingIdShort = bookingId.split("_")[1] || bookingId;
+
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sunset Special Added - Hop On Sintra</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8f9fa; color: #2d3436;">
+  <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+    <div style="background: linear-gradient(135deg, #ea580c 0%, #ec4899 100%); padding: 40px 20px; text-align: center; border-bottom: 4px solid #fb923c;">
+      <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">🌅 Sunset Special Confirmed!</h1>
+      <p style="margin: 10px 0 0 0; color: #ffffff; opacity: 0.95; font-size: 16px;">Get ready for an unforgettable sunset experience</p>
+    </div>
+    <div style="padding: 40px 30px;">
+      <p style="font-size: 18px; margin-bottom: 10px; color: #2d3436;">Dear ${customerName},</p>
+      <p style="margin-bottom: 30px; color: #2d3436; line-height: 1.6;">Great news! We've successfully added the <strong>Sunset Special to Cabo da Roca</strong> to your booking. Prepare for a breathtaking journey to Europe's westernmost point as the sun sets over the Atlantic Ocean.</p>
+      
+      <div style="background: linear-gradient(135deg, #fff7ed 0%, #fce7f3 100%); border-left: 4px solid #fb923c; padding: 20px; margin: 25px 0; border-radius: 8px;">
+        <p style="margin: 0 0 10px 0; color: #ea580c; font-weight: 700; font-size: 16px;">🌄 Your Sunset Experience</p>
+        <p style="margin: 0; color: #2d3436; font-size: 14px; line-height: 1.6;">This exclusive add-on has been confirmed and added to your existing booking.</p>
+      </div>
+      
+      <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 25px 0;">
+        <h2 style="margin: 0 0 15px 0; font-size: 18px; color: #ea580c;">Sunset Special Details</h2>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Booking ID:</td>
+            <td style="padding: 8px 0; color: #2d3436; font-weight: 600; text-align: right; font-size: 14px;">${bookingIdShort}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Date:</td>
+            <td style="padding: 8px 0; color: #2d3436; font-weight: 600; text-align: right; font-size: 14px;">${formattedDate}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Departure Time:</td>
+            <td style="padding: 8px 0; color: #2d3436; font-weight: 600; text-align: right; font-size: 14px;">${departureTime}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Participants:</td>
+            <td style="padding: 8px 0; color: #2d3436; font-weight: 600; text-align: right; font-size: 14px;">${participants}</td>
+          </tr>
+          <tr style="border-top: 2px solid #fb923c;">
+            <td style="padding: 15px 0 0 0; color: #ea580c; font-weight: 700; font-size: 16px;">Total Paid:</td>
+            <td style="padding: 15px 0 0 0; color: #ea580c; font-weight: 700; text-align: right; font-size: 18px;">€${price.toFixed(2)}</td>
+          </tr>
+        </table>
+      </div>
+      
+      <div style="background-color: #f0f9ff; border: 1px solid #bae6fd; padding: 20px; border-radius: 8px; margin: 25px 0;">
+        <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #ea580c;">📍 Important Information</h3>
+        <ul style="margin: 0; padding-left: 20px; color: #2d3436; font-size: 14px; line-height: 1.8;">
+          <li>Please arrive <strong>10 minutes before</strong> the departure time</li>
+          <li>Meet at the <strong>Historical Center</strong> (same location as your day pass)</li>
+          <li>Bring <strong>warm clothing</strong> - it can be windy at the coast</li>
+          <li>Don't forget your <strong>camera</strong> for stunning sunset photos!</li>
+          <li>Duration: Approximately 1.5 hours</li>
+        </ul>
+      </div>
+      
+      <div style="background-color: #fef3c7; border: 1px solid #fbbf24; padding: 15px; border-radius: 8px; margin: 25px 0;">
+        <p style="margin: 0; color: #92400e; font-size: 14px; line-height: 1.6;">
+          <strong>💡 Pro Tip:</strong> The best sunset views are from the clifftops at Cabo da Roca. Our driver will take you to the perfect viewing spots and share the fascinating history of this legendary location.
+        </p>
+      </div>
+      
+      <div style="margin: 30px 0; padding: 20px; background-color: #f8fafc; border-radius: 8px; text-align: center;">
+        <p style="margin: 0 0 10px 0; color: #475569; font-size: 14px;">Questions about your sunset experience?</p>
+        <p style="margin: 0; color: #475569; font-size: 14px;">
+          Reply to this email or contact us at <strong style="color: #ea580c;">info@hoponsintra.com</strong>
+        </p>
+      </div>
+      
+      <div style="text-align: center; padding: 20px 0; border-top: 1px solid #e5e7eb;">
+        <p style="margin: 0 0 10px 0; color: #2d3436; font-size: 16px; font-weight: 600;">See you at sunset! 🌅</p>
+        <p style="margin: 0; color: #6b7280; font-size: 14px;">The Hop On Sintra Team</p>
+      </div>
+    </div>
+    
+    <div style="background-color: #f8fafc; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+      <p style="margin: 0 0 5px 0; color: #6b7280; font-size: 12px;">Hop On Sintra - Premium Transport Services</p>
+      <p style="margin: 0; color: #6b7280; font-size: 12px;">Sintra, Portugal</p>
+    </div>
+  </div>
+</body>
+</html>
+  `.trim();
+}
+
 // Database cleanup utilities
 async function cleanupDatabase() {
   console.log("🧹 Starting database cleanup...");
@@ -195,7 +297,7 @@ async function cleanupOldAvailability() {
       if (date < thirtyDaysAgo) {
         await kv.del(key);
         removed++;
-        console.log(`🗑️  Removed old availability: ${key}`);
+        console.log(`🗑��  Removed old availability: ${key}`);
       }
     }
     console.log(`✅ Removed ${removed} old availability records`);
@@ -728,6 +830,42 @@ async function generateBookingPDF(
         size: 14,
         color: rgb(0.039, 0.302, 0.361),
       });
+
+      yPos -= 70;
+
+      // Start Time
+      page.drawText("START TIME", {
+        x: leftCol,
+        y: yPos,
+        size: 10,
+        color: rgb(0.42, 0.447, 0.533),
+      });
+      page.drawText(booking.timeSlot || "09:00", {
+        x: leftCol,
+        y: yPos - 20,
+        size: 14,
+        color: rgb(0.039, 0.302, 0.361),
+      });
+
+      // Pickup Location
+      if (booking.pickupLocation) {
+        page.drawText("PICKUP LOCATION", {
+          x: rightCol,
+          y: yPos,
+          size: 10,
+          color: rgb(0.42, 0.447, 0.533),
+        });
+        const locationText = booking.pickupLocation
+          .replace(/-/g, ' ')
+          .toUpperCase()
+          .substring(0, 20); // Limit length to fit
+        page.drawText(locationText, {
+          x: rightCol,
+          y: yPos - 20,
+          size: 14,
+          color: rgb(0.039, 0.302, 0.361),
+        });
+      }
 
       yPos -= 70;
 
@@ -1652,14 +1790,36 @@ app.get(
         "❌ Error fetching comprehensive content:",
         error,
       );
+      
+      // Check if error is a database connectivity issue (HTML error page)
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const isDatabaseConnectivityError = errorMessage.includes('<!DOCTYPE html>') || 
+                                         errorMessage.includes('Bad gateway') ||
+                                         errorMessage.includes('502');
+      
+      if (isDatabaseConnectivityError) {
+        console.error(
+          "🔴 Database connectivity error detected (502 Bad Gateway). This is usually temporary.",
+        );
+        return c.json(
+          {
+            success: false,
+            error: "Database temporarily unavailable. Please try again in a moment.",
+            errorType: "DATABASE_CONNECTIVITY",
+          },
+          503, // Service Unavailable
+        );
+      }
+      
       console.error(
         "Error details:",
-        error instanceof Error ? error.message : String(error),
+        errorMessage.substring(0, 500), // Limit error message length to avoid huge HTML dumps
       );
       return c.json(
         {
           success: false,
           error: "Failed to fetch comprehensive content",
+          details: errorMessage.substring(0, 200),
         },
         500,
       );
@@ -2582,7 +2742,48 @@ app.get("/make-server-3bd0ade8/bookings/:bookingId/full", async (c) => {
 app.post("/make-server-3bd0ade8/bookings", async (c) => {
   try {
     const body = await c.req.json();
-    const { paymentIntentId, isTestBooking, skipEmail } = body;
+    const { paymentIntentId, isTestBooking, skipEmail, isSunsetSpecial, existingBookingId } = body;
+
+    // Handle sunset special addon to existing booking
+    if (isSunsetSpecial && existingBookingId) {
+      console.log(`🌅 Processing sunset special addon for booking: ${existingBookingId}`);
+      
+      // Verify payment
+      if (stripe && paymentIntentId) {
+        const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+        if (paymentIntent.status !== "succeeded") {
+          return c.json({ success: false, error: "Payment verification failed" }, 400);
+        }
+        console.log(`✅ Payment verified: €${paymentIntent.amount / 100}`);
+      }
+      
+      // Get existing booking
+      const existingBooking = await kv.get(`booking_${existingBookingId}`);
+      if (!existingBooking) {
+        return c.json({ success: false, error: "Booking not found" }, 404);
+      }
+      
+      // Update booking with sunset special
+      const updatedBooking = {
+        ...existingBooking,
+        sunsetSpecial: {
+          added: true,
+          price: body.totalPrice,
+          paymentIntentId: paymentIntentId,
+          addedAt: new Date().toISOString(),
+        },
+        totalPrice: (existingBooking.totalPrice || 0) + body.totalPrice,
+      };
+      
+      await kv.set(`booking_${existingBookingId}`, updatedBooking);
+      console.log(`✅ Sunset special added to booking ${existingBookingId}`);
+      
+      return c.json({
+        success: true,
+        booking: updatedBooking,
+        message: "Sunset special added successfully",
+      });
+    }
 
     // Verify payment if Stripe is configured (skip for test bookings)
     if (stripe && paymentIntentId && !isTestBooking) {
@@ -3046,12 +3247,42 @@ app.post("/make-server-3bd0ade8/verify-booking-login", async (c) => {
   }
 });
 
+// Check sunset special seat availability for a specific date
+app.get("/make-server-3bd0ade8/sunset-special/availability/:date", async (c) => {
+  try {
+    const date = c.req.param("date");
+    const maxSeatsParam = c.req.query("maxSeats");
+    const maxSeats = maxSeatsParam ? parseInt(maxSeatsParam) : 8;
+    
+    console.log(`🌅 Checking sunset special availability for ${date}, max seats: ${maxSeats}`);
+    
+    // Get current bookings for this date
+    const seatKey = `sunset-seats-${date}`;
+    const bookedSeats = (await kv.get(seatKey)) || 0;
+    const availableSeats = maxSeats - bookedSeats;
+    
+    console.log(`📊 Seats: ${bookedSeats} booked, ${availableSeats} available`);
+    
+    return c.json({
+      success: true,
+      date,
+      maxSeats,
+      bookedSeats,
+      availableSeats,
+      isAvailable: availableSeats > 0,
+    });
+  } catch (error) {
+    console.error("❌ Error checking availability:", error);
+    return c.json({ success: false, error: "Failed to check availability" }, 500);
+  }
+});
+
 // Add sunset special to existing booking
 app.post("/make-server-3bd0ade8/bookings/:bookingId/add-sunset-special", async (c) => {
   try {
     const bookingId = c.req.param("bookingId");
     const body = await c.req.json();
-    const { paymentIntentId, sunsetSpecialPrice, participants } = body;
+    const { paymentIntentId, sunsetSpecialPrice, participants, departureTime } = body;
 
     console.log(
       `🌅 Adding sunset special to booking ${bookingId}`,
@@ -3123,6 +3354,42 @@ app.post("/make-server-3bd0ade8/bookings/:bookingId/add-sunset-special", async (
       );
     }
 
+    // Check seat availability before adding
+    const bookingDate = booking.selectedDate || booking.visitDate;
+    if (!bookingDate) {
+      return c.json(
+        {
+          success: false,
+          error: "Booking date not found",
+        },
+        400,
+      );
+    }
+
+    // Extract date from booking date (YYYY-MM-DD format)
+    const dateOnly = bookingDate.split('T')[0];
+    const seatKey = `sunset-seats-${dateOnly}`;
+    const maxSeats = body.maxSeats || 8; // Get maxSeats from request or default to 8
+    
+    // Get current bookings and check availability
+    const bookedSeats = (await kv.get(seatKey)) || 0;
+    const availableSeats = maxSeats - bookedSeats;
+    
+    if (availableSeats < participants) {
+      console.log(`❌ Not enough seats available. Requested: ${participants}, Available: ${availableSeats}`);
+      return c.json(
+        {
+          success: false,
+          error: `Only ${availableSeats} seat(s) available for this date. You requested ${participants}.`,
+        },
+        400,
+      );
+    }
+
+    // Reserve seats by incrementing the counter
+    await kv.set(seatKey, bookedSeats + participants);
+    console.log(`✅ Reserved ${participants} seats. New total: ${bookedSeats + participants}/${maxSeats}`);
+
     // Update booking with sunset special
     booking.sunsetSpecial = {
       added: true,
@@ -3130,6 +3397,7 @@ app.post("/make-server-3bd0ade8/bookings/:bookingId/add-sunset-special", async (
       price: sunsetSpecialPrice,
       participants: participants,
       paymentIntentId: paymentIntentId,
+      date: dateOnly,
     };
 
     // Update total price
@@ -3142,8 +3410,56 @@ app.post("/make-server-3bd0ade8/bookings/:bookingId/add-sunset-special", async (
       `✅ Sunset special added to booking ${booking.id}`,
     );
 
-    // TODO: Send confirmation email about the sunset special add-on
-    // For now, we'll just return success
+    // Send confirmation email about the sunset special add-on
+    try {
+      const resendApiKey = Deno.env.get("RESEND_API_KEY");
+      
+      if (resendApiKey && booking.contactInfo?.email) {
+        const formattedDate = new Date(bookingDate).toLocaleDateString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+
+        const htmlContent = generateSunsetSpecialConfirmationHTML({
+          customerName: booking.contactInfo.name || "Valued Customer",
+          bookingId: booking.id,
+          formattedDate,
+          departureTime: departureTime || "6:00 PM",
+          participants: participants,
+          price: sunsetSpecialPrice,
+        });
+
+        const emailResponse = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${resendApiKey}`,
+          },
+          body: JSON.stringify({
+            from: "Hop On Sintra <bookings@hoponsintra.com>",
+            to: [booking.contactInfo.email],
+            reply_to: "info@hoponsintra.com",
+            subject: `🌅 Sunset Special Confirmed - ${formattedDate}`,
+            html: htmlContent,
+          }),
+        });
+
+        const emailResult = await emailResponse.json();
+
+        if (emailResponse.ok) {
+          console.log(`✅ Sunset special confirmation email sent to ${booking.contactInfo.email}`);
+        } else {
+          console.error("❌ Failed to send sunset special email:", emailResult);
+        }
+      } else {
+        console.log("⚠️  Email not sent - API key or email address not available");
+      }
+    } catch (emailError) {
+      console.error("❌ Error sending sunset special confirmation email:", emailError);
+      // Don't fail the request if email fails
+    }
 
     return c.json({
       success: true,
@@ -5521,6 +5837,227 @@ app.get(
   },
 );
 
+// Create driver sale (manual ticket sale)
+app.post(
+  "/make-server-3bd0ade8/driver-sales/create",
+  async (c) => {
+    try {
+      const { driverId, numberOfPeople, firstName, lastName, customerEmail, paymentMethod, amount, timeSlot, pickupLocation, selectedDate } = await c.req.json();
+
+      console.log(`💰 Creating driver sale: ${numberOfPeople} tickets for ${firstName} ${lastName} (${customerEmail}) by driver ${driverId} for date ${selectedDate || 'today'}`);
+
+      // Validate inputs
+      if (!driverId || !numberOfPeople || !customerEmail || !amount || !firstName || !lastName) {
+        return c.json(
+          { success: false, error: "Missing required fields" },
+          400
+        );
+      }
+
+      if (!timeSlot) {
+        return c.json(
+          { success: false, error: "Time slot is required" },
+          400
+        );
+      }
+
+      // Use the selected date if provided, otherwise use today's date
+      const date = selectedDate || new Date().toISOString().split('T')[0];
+      const availabilityKey = `availability_${date}`;
+      const availabilitySlots = (await kv.get(availabilityKey)) || {
+        "9:00": 50,
+        "10:00": 50,
+        "11:00": 50,
+        "12:00": 50,
+        "13:00": 50,
+        "14:00": 50,
+        "15:00": 50,
+        "16:00": 50,
+      };
+
+      const availableSeats = availabilitySlots[timeSlot] ?? 50;
+      if (availableSeats < numberOfPeople) {
+        console.log(
+          `❌ Not enough seats: Requested ${numberOfPeople}, Available ${availableSeats}`
+        );
+        return c.json(
+          {
+            success: false,
+            error: `Not enough seats available. Only ${availableSeats} seats left for this time slot.`,
+          },
+          400
+        );
+      }
+
+      // Generate booking ID in the correct format (GS-XXXXXX)
+      const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+      const bookingId = `GS-${random.substring(0, 6)}`;
+
+      // Get driver info
+      const driver = await kv.get(`driver:${driverId}`);
+      const driverName = driver?.name || 'Driver';
+
+      // Create or update customer profile
+      const customerFullName = `${firstName} ${lastName}`;
+      const customerId = `customer:${customerEmail}`;
+      let customer = await kv.get(customerId) || {};
+      
+      // Generate a temporary password for the customer (first 6 chars of email + last 4 chars of last name)
+      const tempPassword = (customerEmail.substring(0, 6) + lastName.substring(Math.max(0, lastName.length - 4))).toLowerCase();
+      
+      customer = {
+        ...customer,
+        id: customerId,
+        email: customerEmail,
+        firstName,
+        lastName,
+        fullName: customerFullName,
+        hasActiveBookings: true,
+        lastBookingDate: new Date().toISOString(),
+        totalBookings: (customer.totalBookings || 0) + 1,
+        createdViaDriverSale: true,
+        temporaryPassword: tempPassword, // Store for customer to login
+        passwordChangeRequired: false, // They can change it if they want
+        createdAt: customer.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      
+      await kv.set(customerId, customer);
+      console.log(`👤 Created/updated customer profile: ${customerFullName} (${customerEmail})`);
+
+      // Create booking data with all required fields for email
+      // Use the date variable from above (already set to selectedDate or today)
+      const bookingDateTime = new Date(date).toISOString();
+      const booking = {
+        id: bookingId,
+        // Customer info (both formats for compatibility)
+        customerName: customerFullName,
+        fullName: customerFullName,
+        firstName,
+        lastName,
+        email: customerEmail,
+        customerEmail,
+        customerId, // Link to customer profile
+        contactInfo: {
+          name: customerFullName,
+          email: customerEmail,
+        },
+        // Booking details
+        selectedDate: bookingDateTime, // Required for email template
+        passDate: date, // Use the actual date (YYYY-MM-DD format)
+        bookingDate: bookingDateTime,
+        dayPassCount: numberOfPeople,
+        adultCount: numberOfPeople,
+        childCount: 0,
+        guidedTour: false,
+        selectedAttractions: [],
+        totalPrice: amount,
+        paymentMethod: 'driver_' + paymentMethod,
+        paymentStatus: 'completed',
+        // Time slot and pickup
+        timeSlot: timeSlot || '09:00',
+        pickupLocation: pickupLocation || 'sintra-train-station',
+        // Passengers with proper structure
+        passengers: Array.from({ length: numberOfPeople }, (_, i) => ({
+          id: i,
+          name: i === 0 ? customerFullName : `${firstName} ${i + 1}`, // First passenger uses actual name
+          fullName: i === 0 ? customerFullName : `${firstName} ${i + 1}`,
+          type: 'Adult',
+          scanned: false,
+          scannedAt: null,
+          scannedBy: null
+        })),
+        // Email and driver info
+        emailSent: false,
+        driverSale: true,
+        driverId,
+        driverName,
+      };
+
+      // Save booking
+      await kv.set(bookingId, booking);
+
+      // Generate QR codes
+      const qrCodes: string[] = [];
+      for (let i = 0; i < booking.passengers.length; i++) {
+        const qrData = `${bookingId}|${i}`;
+        const qrCode = await QRCode.toDataURL(qrData, {
+          width: 300,
+          margin: 2,
+          color: {
+            dark: "#0A4D5C",
+            light: "#FFFFFF",
+          },
+        });
+        qrCodes.push(qrCode);
+      }
+
+      // Send confirmation email
+      const emailResult = await sendBookingEmail(booking, qrCodes);
+
+      if (emailResult.success) {
+        booking.emailSent = true;
+        booking.lastEmailSentAt = new Date().toISOString();
+        await kv.set(bookingId, booking);
+      } else {
+        console.error(`❌ Failed to send email: ${emailResult.error}`);
+        booking.emailError = emailResult.error;
+        await kv.set(bookingId, booking);
+      }
+
+      // Update availability - decrement seats for the specific time slot
+      availabilitySlots[timeSlot] = availableSeats - numberOfPeople;
+      await kv.set(availabilityKey, availabilitySlots);
+      console.log(
+        `✅ Updated availability for ${date} at ${timeSlot}: ${availableSeats} -> ${availabilitySlots[timeSlot]}`
+      );
+
+      // Record sale in driver's activity
+      const saleId = `sale:${driverId}:${Date.now()}`;
+      const sale = {
+        id: saleId,
+        driverId,
+        bookingId,
+        quantity: numberOfPeople,
+        amount,
+        paymentMethod,
+        timestamp: new Date().toISOString(),
+        type: 'sale'
+      };
+      await kv.set(saleId, sale);
+
+      // Update driver metrics (driver already loaded above)
+      if (driver) {
+        driver.totalTicketsSold = (driver.totalTicketsSold || 0) + numberOfPeople;
+        driver.totalRevenue = (driver.totalRevenue || 0) + amount;
+        await kv.set(`driver:${driverId}`, driver);
+      }
+
+      console.log(`✅ Driver sale created successfully: ${bookingId}`);
+      console.log(`👤 Customer can now login with email: ${customerEmail} and password: ${tempPassword}`);
+
+      return c.json({
+        success: true,
+        bookingId,
+        emailSent: emailResult.success,
+        sale,
+        customerInfo: {
+          email: customerEmail,
+          fullName: customerFullName,
+          temporaryPassword: tempPassword,
+          message: 'Customer can login to request rides and view bookings'
+        }
+      });
+    } catch (error) {
+      console.error("❌ Error creating driver sale:", error);
+      return c.json(
+        { success: false, error: "Failed to create sale" },
+        500
+      );
+    }
+  }
+);
+
 // ==========================================
 // PICKUP REQUEST ROUTES
 // ==========================================
@@ -6915,6 +7452,399 @@ app.onError((err, c) => {
     },
     500
   );
+});
+
+// ==================== PRIVATE TOUR BOOKINGS ROUTES ====================
+
+// Get tour daily limit
+app.get("/make-server-3bd0ade8/tour-limits/:tourId", async (c) => {
+  try {
+    const tourId = c.req.param("tourId");
+    const limit = await kv.get(`tour_limit_${tourId}`);
+    
+    return c.json({
+      success: true,
+      limit: limit || 5, // Default to 5 bookings per day
+    });
+  } catch (error) {
+    console.error("Error fetching tour limit:", error);
+    return c.json({ success: false, error: "Failed to fetch tour limit" }, 500);
+  }
+});
+
+// Set tour daily limit
+app.post("/make-server-3bd0ade8/tour-limits/:tourId", async (c) => {
+  try {
+    const tourId = c.req.param("tourId");
+    const body = await c.req.json();
+    const { limit } = body;
+    
+    if (typeof limit !== 'number' || limit < 1) {
+      return c.json({ success: false, error: "Invalid limit value" }, 400);
+    }
+    
+    await kv.set(`tour_limit_${tourId}`, limit);
+    
+    return c.json({ success: true, limit });
+  } catch (error) {
+    console.error("Error setting tour limit:", error);
+    return c.json({ success: false, error: "Failed to set tour limit" }, 500);
+  }
+});
+
+// Get tour availability for a date range
+app.get("/make-server-3bd0ade8/tour-availability/:tourId", async (c) => {
+  try {
+    const tourId = c.req.param("tourId");
+    const startDate = c.req.query("startDate");
+    const endDate = c.req.query("endDate");
+    
+    if (!startDate || !endDate) {
+      return c.json({ success: false, error: "Start and end dates required" }, 400);
+    }
+    
+    // Get tour limit
+    const limit = await kv.get(`tour_limit_${tourId}`) || 5;
+    
+    // Get all bookings for this tour in date range
+    const allBookings = await kv.getByPrefix(`tour_booking_`);
+    const tourBookings = allBookings.filter((b: any) => 
+      b.tourId === tourId && 
+      b.status !== 'cancelled' &&
+      b.tourDate >= startDate && 
+      b.tourDate <= endDate
+    );
+    
+    // Count bookings per day
+    const bookingsByDate: Record<string, number> = {};
+    tourBookings.forEach((booking: any) => {
+      const date = booking.tourDate.split('T')[0];
+      bookingsByDate[date] = (bookingsByDate[date] || 0) + 1;
+    });
+    
+    // Calculate availability per day
+    const availability: Record<string, { available: number; booked: number; isFull: boolean }> = {};
+    const current = new Date(startDate);
+    const end = new Date(endDate);
+    
+    while (current <= end) {
+      const dateStr = current.toISOString().split('T')[0];
+      const booked = bookingsByDate[dateStr] || 0;
+      availability[dateStr] = {
+        booked,
+        available: Math.max(0, limit - booked),
+        isFull: booked >= limit,
+      };
+      current.setDate(current.getDate() + 1);
+    }
+    
+    return c.json({
+      success: true,
+      availability,
+      limit,
+    });
+  } catch (error) {
+    console.error("Error fetching tour availability:", error);
+    return c.json({ success: false, error: "Failed to fetch availability" }, 500);
+  }
+});
+
+// Get all tour bookings (for admin calendar)
+app.get("/make-server-3bd0ade8/tour-bookings", async (c) => {
+  try {
+    const startDate = c.req.query("startDate");
+    const endDate = c.req.query("endDate");
+    
+    let bookings = await kv.getByPrefix("tour_booking_");
+    
+    // Filter by date range if provided
+    if (startDate && endDate) {
+      bookings = bookings.filter((b: any) => 
+        b.tourDate >= startDate && b.tourDate <= endDate
+      );
+    }
+    
+    // Sort by tour date
+    bookings.sort((a: any, b: any) => 
+      new Date(a.tourDate).getTime() - new Date(b.tourDate).getTime()
+    );
+    
+    return c.json({
+      success: true,
+      bookings,
+    });
+  } catch (error) {
+    console.error("Error fetching tour bookings:", error);
+    return c.json({ success: false, error: "Failed to fetch bookings" }, 500);
+  }
+});
+
+// Create a tour booking with Stripe payment
+app.post("/make-server-3bd0ade8/tour-bookings/create", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { tourId, tourDate, customerInfo, paymentIntentId } = body;
+    
+    if (!tourId || !tourDate || !customerInfo || !paymentIntentId) {
+      return c.json({ success: false, error: "Missing required fields" }, 400);
+    }
+    
+    // Verify payment with Stripe
+    if (!stripe) {
+      return c.json({ success: false, error: "Stripe not configured" }, 500);
+    }
+    
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+    
+    if (paymentIntent.status !== 'succeeded') {
+      return c.json({ success: false, error: "Payment not completed" }, 400);
+    }
+    
+    // Check availability
+    const limit = await kv.get(`tour_limit_${tourId}`) || 5;
+    const allBookings = await kv.getByPrefix(`tour_booking_`);
+    const dateStr = new Date(tourDate).toISOString().split('T')[0];
+    const existingBookings = allBookings.filter((b: any) => 
+      b.tourId === tourId && 
+      b.status !== 'cancelled' &&
+      b.tourDate.startsWith(dateStr)
+    );
+    
+    if (existingBookings.length >= limit) {
+      return c.json({ success: false, error: "Tour is fully booked for this date" }, 400);
+    }
+    
+    // Get tour details
+    const tour = await kv.get(`private_tour_${tourId}`);
+    
+    // Create booking
+    const bookingId = `TOUR_${Date.now()}_${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+    const booking = {
+      bookingId,
+      tourId,
+      tourName: tour?.name || 'Private Tour',
+      tourDate,
+      customerInfo: {
+        name: customerInfo.name,
+        email: customerInfo.email,
+        phone: customerInfo.phone,
+        numberOfPeople: customerInfo.numberOfPeople || 1,
+        specialRequests: customerInfo.specialRequests || '',
+      },
+      totalPrice: paymentIntent.amount / 100, // Convert from cents
+      currency: paymentIntent.currency,
+      paymentIntentId,
+      status: 'confirmed',
+      createdAt: new Date().toISOString(),
+    };
+    
+    await kv.set(`tour_booking_${bookingId}`, booking);
+    
+    console.log(`✅ Created tour booking: ${bookingId}`);
+    
+    // TODO: Send confirmation email to customer
+    
+    return c.json({
+      success: true,
+      booking,
+    });
+  } catch (error) {
+    console.error("Error creating tour booking:", error);
+    return c.json({ success: false, error: "Failed to create booking" }, 500);
+  }
+});
+
+// Cancel a tour booking
+app.post("/make-server-3bd0ade8/tour-bookings/:bookingId/cancel", async (c) => {
+  try {
+    const bookingId = c.req.param("bookingId");
+    const booking = await kv.get(`tour_booking_${bookingId}`);
+    
+    if (!booking) {
+      return c.json({ success: false, error: "Booking not found" }, 404);
+    }
+    
+    // Update booking status
+    await kv.set(`tour_booking_${bookingId}`, {
+      ...booking,
+      status: 'cancelled',
+      cancelledAt: new Date().toISOString(),
+    });
+    
+    return c.json({ success: true });
+  } catch (error) {
+    console.error("Error cancelling booking:", error);
+    return c.json({ success: false, error: "Failed to cancel booking" }, 500);
+  }
+});
+
+// Create manual tour booking (no payment required)
+app.post("/make-server-3bd0ade8/tour-bookings/create-manual", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { tourId, tourDate, customerInfo, totalPrice, packageType } = body;
+    
+    if (!tourId || !tourDate || !customerInfo) {
+      return c.json({ success: false, error: "Missing required fields" }, 400);
+    }
+    
+    // Check availability (consider day-specific limits)
+    const dateStr = new Date(tourDate).toISOString().split('T')[0];
+    const dayLimit = await kv.get(`tour_day_limit_${tourId}_${dateStr}`);
+    const defaultLimit = await kv.get(`tour_limit_${tourId}`) || 5;
+    const limit = dayLimit || defaultLimit;
+    
+    const allBookings = await kv.getByPrefix(`tour_booking_`);
+    const existingBookings = allBookings.filter((b: any) => 
+      b.tourId === tourId && 
+      b.status !== 'cancelled' &&
+      b.tourDate.startsWith(dateStr)
+    );
+    
+    const totalBooked = existingBookings.reduce((sum: number, b: any) => 
+      sum + (b.customerInfo?.numberOfPeople || 1), 0
+    );
+    
+    const requestedPeople = customerInfo.numberOfPeople || 1;
+    
+    if (totalBooked + requestedPeople > limit) {
+      return c.json({ 
+        success: false, 
+        error: `Not enough availability. Only ${limit - totalBooked} spots left.` 
+      }, 400);
+    }
+    
+    // Get tour details
+    const tour = await kv.get(`private_tour_${tourId}`);
+    
+    // Create booking
+    const bookingId = `MANUAL_${Date.now()}_${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+    const booking = {
+      bookingId,
+      tourId,
+      tourName: tour?.name || 'Private Tour',
+      tourDate,
+      customerInfo: {
+        name: customerInfo.name,
+        email: customerInfo.email,
+        phone: customerInfo.phone || '',
+        numberOfPeople: customerInfo.numberOfPeople || 1,
+        specialRequests: customerInfo.specialRequests || '',
+      },
+      totalPrice: totalPrice || 0,
+      currency: 'EUR',
+      paymentIntentId: 'manual',
+      status: 'confirmed',
+      isManual: true,
+      packageType: packageType || '',
+      createdAt: new Date().toISOString(),
+    };
+    
+    await kv.set(`tour_booking_${bookingId}`, booking);
+    
+    console.log(`✅ Created manual tour booking: ${bookingId}${packageType ? ` with package: ${packageType}` : ''}`);
+    
+    return c.json({
+      success: true,
+      booking,
+    });
+  } catch (error) {
+    console.error("Error creating manual booking:", error);
+    return c.json({ success: false, error: "Failed to create manual booking" }, 500);
+  }
+});
+
+// Set day-specific limit for a tour
+app.post("/make-server-3bd0ade8/tour-day-limit", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { tourId, date, limit } = body;
+    
+    if (!tourId || !date) {
+      return c.json({ success: false, error: "Missing required fields" }, 400);
+    }
+    
+    const dateStr = date.split('T')[0]; // Normalize date
+    const key = `tour_day_limit_${tourId}_${dateStr}`;
+    
+    if (limit === 0) {
+      // Delete day-specific limit (use default)
+      await kv.del(key);
+    } else {
+      // Set day-specific limit
+      await kv.set(key, limit);
+    }
+    
+    console.log(`✅ Updated day limit for tour ${tourId} on ${dateStr}: ${limit || 'default'}`);
+    
+    return c.json({ success: true });
+  } catch (error) {
+    console.error("Error setting day limit:", error);
+    return c.json({ success: false, error: "Failed to set day limit" }, 500);
+  }
+});
+
+// Get day-specific limit for a tour
+app.get("/make-server-3bd0ade8/tour-day-limit/:tourId/:date", async (c) => {
+  try {
+    const tourId = c.req.param("tourId");
+    const date = c.req.param("date");
+    const dateStr = date.split('T')[0]; // Normalize date
+    
+    const dayLimit = await kv.get(`tour_day_limit_${tourId}_${dateStr}`);
+    const defaultLimit = await kv.get(`tour_limit_${tourId}`) || 5;
+    
+    return c.json({
+      success: true,
+      dayLimit: dayLimit || null,
+      defaultLimit,
+      effectiveLimit: dayLimit || defaultLimit,
+    });
+  } catch (error) {
+    console.error("Error fetching day limit:", error);
+    return c.json({ success: false, error: "Failed to fetch day limit" }, 500);
+  }
+});
+
+// Create payment intent for tour booking
+app.post("/make-server-3bd0ade8/tour-bookings/create-payment-intent", async (c) => {
+  try {
+    if (!stripe) {
+      return c.json({ success: false, error: "Stripe not configured" }, 500);
+    }
+    
+    const body = await c.req.json();
+    const { tourId, amount, currency = 'eur' } = body;
+    
+    if (!tourId || !amount) {
+      return c.json({ success: false, error: "Missing required fields" }, 400);
+    }
+    
+    // Get tour details
+    const tour = await kv.get(`private_tour_${tourId}`);
+    
+    if (!tour) {
+      return c.json({ success: false, error: "Tour not found" }, 404);
+    }
+    
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(amount * 100), // Convert to cents
+      currency,
+      metadata: {
+        tourId,
+        tourName: tour.name,
+      },
+    });
+    
+    return c.json({
+      success: true,
+      clientSecret: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id,
+    });
+  } catch (error) {
+    console.error("Error creating payment intent:", error);
+    return c.json({ success: false, error: "Failed to create payment intent" }, 500);
+  }
 });
 
 Deno.serve(app.fetch);

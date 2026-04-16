@@ -90,6 +90,7 @@ import { SunsetSpecialManager } from "./SunsetSpecialManager";
 import { BookingLogs } from "./BookingLogs";
 import { PrivateTourManager } from "./PrivateTourManager";
 import { TourRequestsManagement } from "./TourRequestsManagement";
+import { TourCalendar } from "./TourCalendar";
 import {
   LineChart,
   Line,
@@ -774,6 +775,41 @@ export function AdminPage() {
     };
   }, [isAuthenticated]);
 
+  // Load availability for selected date when it changes
+  useEffect(() => {
+    if (!selectedDate || !isAuthenticated) return;
+    
+    const loadDateAvailability = async () => {
+      try {
+        const response = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/availability/${selectedDate}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${publicAnonKey}`,
+              "Content-Type": "application/json",
+            },
+          },
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.availability) {
+            // Merge the loaded availability for this date with existing state
+            setAvailability(prev => ({
+              ...prev,
+              [selectedDate]: data.availability,
+            }));
+          }
+        }
+      } catch (error) {
+        console.error("Error loading availability for date:", error);
+      }
+    };
+
+    loadDateAvailability();
+  }, [selectedDate, isAuthenticated]);
+
   const loadAvailability = async () => {
     const result = await safeJsonFetch<any>(
       `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/availability`,
@@ -833,6 +869,41 @@ export function AdminPage() {
     }
   };
 
+  const saveAvailability = async () => {
+    if (!selectedDate) {
+      toast.error("Please select a date first");
+      return;
+    }
+
+    try {
+      // Save availability for the selected date to the backend
+      const dateAvailability = availability[selectedDate] || {};
+      
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/availability/${selectedDate}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${publicAnonKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(dateAvailability),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to save availability to database");
+      }
+
+      toast.success(`Availability saved for ${new Date(selectedDate).toLocaleDateString()}!`, {
+        description: "Time slot availability has been updated",
+      });
+    } catch (error) {
+      console.error("Error saving availability:", error);
+      toast.error("Failed to save availability to database");
+    }
+  };
+
   const toggleTicketPurchases = async (enabled: boolean) => {
     setTicketPurchasesEnabled(enabled);
 
@@ -866,46 +937,6 @@ export function AdminPage() {
       toast.error("Failed to save setting");
       // Revert on error
       setTicketPurchasesEnabled(!enabled);
-    }
-  };
-
-  const saveAvailability = async () => {
-    setSavingAvailability(true);
-    try {
-      localStorage.setItem(
-        "admin-availability",
-        JSON.stringify(availability),
-      );
-
-      const dates = Object.keys(availability);
-      for (const date of dates) {
-        const response = await fetch(
-          `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/availability/${date}`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${publicAnonKey}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(availability[date]),
-          },
-        );
-
-        const result = await response.json();
-        if (!result.success) {
-          console.error(
-            `Failed to save availability for ${date}:`,
-            result.error,
-          );
-        }
-      }
-
-      toast.success("Availability saved successfully!");
-    } catch (error) {
-      console.error("Error saving availability:", error);
-      toast.error("Failed to save availability");
-    } finally {
-      setSavingAvailability(false);
     }
   };
 
@@ -1641,14 +1672,20 @@ export function AdminPage() {
 
     // Revenue by date (last 30 days)
     const last30Days: { date: string; revenue: number }[] = [];
+    const seenDates = new Set<string>();
     for (let i = 29; i >= 0; i--) {
       const date = new Date();
       date.setDate(date.getDate() - i);
       const dateStr = date.toISOString().split("T")[0];
+      
+      // Skip if we've already added this date
+      if (seenDates.has(dateStr)) continue;
+      seenDates.add(dateStr);
+      
       const dayRevenue = bookings
         .filter((b) => b.selectedDate === dateStr)
         .reduce((sum, b) => sum + (b.totalPrice || 0), 0);
-      last30Days.push({ date: dateStr, revenue: dayRevenue });
+      last30Days.push({ id: dateStr, date: dateStr, revenue: dayRevenue });
     }
 
     // Revenue by month (last 12 months)
@@ -1656,14 +1693,18 @@ export function AdminPage() {
       month: string;
       revenue: number;
     }[] = [];
+    const seenMonths = new Set<string>();
     for (let i = 11; i >= 0; i--) {
       const date = new Date();
       date.setMonth(date.getMonth() - i);
       const monthStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+      if (seenMonths.has(monthStr)) continue;
+      seenMonths.add(monthStr);
       const monthRevenue = bookings
         .filter((b) => b.selectedDate?.startsWith(monthStr))
         .reduce((sum, b) => sum + (b.totalPrice || 0), 0);
       revenueByMonth.push({
+        id: monthStr,
         month: monthStr,
         revenue: monthRevenue,
       });
@@ -1677,9 +1718,9 @@ export function AdminPage() {
       (b) => b.isGuidedTour,
     ).length;
     const bookingsByTicketType = [
-      { type: "Standard", count: standardCount },
-      { type: "Guided", count: guidedCount },
-    ];
+      { id: "Standard", type: "Standard", count: standardCount },
+      { id: "Guided", type: "Guided", count: guidedCount },
+    ].filter(item => item.count > 0); // Only include types with bookings
 
     // Popular attractions
     const attractionCounts: { [key: string]: number } = {};
@@ -1690,7 +1731,7 @@ export function AdminPage() {
       });
     });
     const popularAttractions = Object.entries(attractionCounts)
-      .map(([name, count]) => ({ name, count }))
+      .map(([name, count]) => ({ id: name, name, count }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
@@ -2148,6 +2189,23 @@ export function AdminPage() {
                         <span>Tour Requests</span>
                         <span className="text-xs text-muted-foreground">
                           Manage booking inquiries
+                        </span>
+                      </div>
+                    </Button>
+
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-3"
+                      onClick={() => {
+                        setActiveTab("tour-calendar");
+                        setMoreMenuOpen(false);
+                      }}
+                    >
+                      <CalendarIcon className="h-5 w-5" />
+                      <div className="flex flex-col items-start">
+                        <span>Tour Calendar</span>
+                        <span className="text-xs text-muted-foreground">
+                          View tour bookings calendar
                         </span>
                       </div>
                     </Button>
@@ -2917,14 +2975,16 @@ export function AdminPage() {
                     width="100%"
                     height={250}
                   >
-                    <LineChart data={metrics.revenueByDate}>
+                    <LineChart data={metrics.revenueByDate} id="revenue-trend-chart">
                       <CartesianGrid
+                        key="grid-revenue-trend"
                         strokeDasharray="3 3"
                         stroke="#f0e9e3"
                       />
-                      <XAxis dataKey="date" stroke="#6b7280" />
-                      <YAxis stroke="#6b7280" />
+                      <XAxis key="xaxis-revenue-trend" dataKey="date" stroke="#6b7280" />
+                      <YAxis key="yaxis-revenue-trend" stroke="#6b7280" />
                       <Tooltip
+                        key="tooltip-revenue-trend"
                         contentStyle={{
                           backgroundColor: "#fff",
                           border: "1px solid #f0e9e3",
@@ -2934,6 +2994,7 @@ export function AdminPage() {
                         }
                       />
                       <Line
+                        key="revenue-line"
                         type="monotone"
                         dataKey="revenue"
                         stroke="#0A4D5C"
@@ -2967,8 +3028,9 @@ export function AdminPage() {
                     width="100%"
                     height={250}
                   >
-                    <RechartsPie>
+                    <RechartsPie id="ticket-type-chart">
                       <Pie
+                        key="pie-ticket-type"
                         data={metrics.bookingsByTicketType}
                         cx="50%"
                         cy="50%"
@@ -2983,7 +3045,7 @@ export function AdminPage() {
                         {metrics.bookingsByTicketType.map(
                           (entry, index) => (
                             <Cell
-                              key={`cell-${index}`}
+                              key={`cell-${entry.type}`}
                               fill={
                                 CHART_COLORS[
                                   index % CHART_COLORS.length
@@ -2994,6 +3056,7 @@ export function AdminPage() {
                         )}
                       </Pie>
                       <Tooltip
+                        key="tooltip-ticket-type"
                         formatter={(
                           value: number,
                           name: string,
@@ -3035,25 +3098,29 @@ export function AdminPage() {
                     <BarChart
                       data={metrics.popularAttractions}
                       layout="vertical"
+                      id="popular-attractions-chart"
                     >
                       <CartesianGrid
+                        key="grid-attractions"
                         strokeDasharray="3 3"
                         stroke="#f0e9e3"
                       />
-                      <XAxis type="number" stroke="#6b7280" />
+                      <XAxis key="xaxis-attractions" type="number" stroke="#6b7280" />
                       <YAxis
+                        key="yaxis-attractions"
                         dataKey="name"
                         type="category"
                         width={150}
                         stroke="#6b7280"
                       />
                       <Tooltip
+                        key="tooltip-attractions"
                         contentStyle={{
                           backgroundColor: "#fff",
                           border: "1px solid #f0e9e3",
                         }}
                       />
-                      <Bar dataKey="count" fill="#D97843" />
+                      <Bar key="attraction-count-bar" dataKey="count" fill="#D97843" />
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (
@@ -3143,14 +3210,16 @@ export function AdminPage() {
                   </p>
                 </div>
                 <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={metrics.revenueByMonth}>
+                  <BarChart data={metrics.revenueByMonth} id="monthly-revenue-chart">
                     <CartesianGrid
+                      key="grid-monthly-revenue"
                       strokeDasharray="3 3"
                       stroke="#f0e9e3"
                     />
-                    <XAxis dataKey="month" stroke="#6b7280" />
-                    <YAxis stroke="#6b7280" />
+                    <XAxis key="xaxis-monthly-revenue" dataKey="month" stroke="#6b7280" />
+                    <YAxis key="yaxis-monthly-revenue" stroke="#6b7280" />
                     <Tooltip
+                      key="tooltip-monthly-revenue"
                       contentStyle={{
                         backgroundColor: "#fff",
                         border: "1px solid #f0e9e3",
@@ -3159,7 +3228,7 @@ export function AdminPage() {
                         `€${(value || 0).toFixed(2)}`
                       }
                     />
-                    <Bar dataKey="revenue" fill="#0A4D5C" />
+                    <Bar key="monthly-revenue-bar" dataKey="revenue" fill="#0A4D5C" />
                   </BarChart>
                 </ResponsiveContainer>
               </Card>
@@ -3522,16 +3591,21 @@ export function AdminPage() {
 
                 <div className="rounded-lg border border-border bg-white p-6">
                   <div className="mb-4 flex items-center justify-between">
-                    <h3 className="text-foreground">
-                      Time Slots for{" "}
-                      {new Date(
-                        selectedDate,
-                      ).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </h3>
+                    <div>
+                      <h3 className="text-foreground">
+                        Time Slots for{" "}
+                        {new Date(
+                          selectedDate,
+                        ).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </h3>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Set available seats for each time slot. Click "Save Availability" to apply changes.
+                      </p>
+                    </div>
                     <div className="flex gap-2">
                       <Button
                         size="sm"
@@ -3591,7 +3665,7 @@ export function AdminPage() {
 
                   <div className="mt-6">
                     <Button
-                      onClick={saveSettings}
+                      onClick={saveAvailability}
                       className="bg-primary hover:bg-primary/90"
                     >
                       <Save className="mr-2 h-4 w-4" />
@@ -3634,6 +3708,11 @@ export function AdminPage() {
           {/* ====== TOUR REQUESTS TAB ====== */}
           <TabsContent value="tour-requests" className="space-y-6">
             <TourRequestsManagement />
+          </TabsContent>
+
+          {/* ====== TOUR CALENDAR TAB ====== */}
+          <TabsContent value="tour-calendar" className="space-y-6">
+            <TourCalendar />
           </TabsContent>
 
           {/* ====== SEO TAB ====== */}

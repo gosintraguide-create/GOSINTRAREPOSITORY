@@ -11,18 +11,28 @@ import { toast } from "sonner@2.0.3";
 import { useEditableContent } from "../lib/useEditableContent";
 
 interface SunsetSpecialCarouselProps {
-  onNavigate: (page: string) => void;
+  onNavigate: (page: string, params?: any) => void;
   language?: string;
 }
 
 export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpecialCarouselProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAvailable, setIsAvailable] = useState(false);
-  const [timeUntilAvailable, setTimeUntilAvailable] = useState("");
   
   // Use editable content
-  const { content } = useEditableContent(language);
+  const content = useEditableContent(language);
   const sunsetSpecial = content?.homepage?.sunsetSpecial;
+  
+  // Debug logging
+  useEffect(() => {
+    console.log('[SunsetSpecialCarousel] Content loaded:', {
+      hasContent: !!content,
+      hasSunsetSpecial: !!sunsetSpecial,
+      enabled: sunsetSpecial?.enabled,
+      imageCount: sunsetSpecial?.images?.length || 0,
+      images: sunsetSpecial?.images,
+    });
+  }, [content, sunsetSpecial]);
   
   // Booking ID verification state
   const [showBookingDialog, setShowBookingDialog] = useState(false);
@@ -39,35 +49,14 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
     return () => clearInterval(interval);
   }, [sunsetSpecial?.images?.length]);
 
-  // Check availability based on time
+  // Use manual availability toggle from content
   useEffect(() => {
     if (!sunsetSpecial) return;
     
-    const checkAvailability = () => {
-      const now = new Date();
-      const currentHour = now.getHours();
-      
-      if (currentHour >= sunsetSpecial.availabilityHour) {
-        setIsAvailable(true);
-        setTimeUntilAvailable("");
-      } else {
-        setIsAvailable(false);
-        const hoursUntil = sunsetSpecial.availabilityHour - currentHour;
-        const minutesUntil = 60 - now.getMinutes();
-        
-        if (hoursUntil === 1 && minutesUntil < 60) {
-          setTimeUntilAvailable(`Available in ${minutesUntil} minutes`);
-        } else if (hoursUntil > 1) {
-          setTimeUntilAvailable(`${sunsetSpecial.availableAtText} ${sunsetSpecial.availabilityHour}:00`);
-        } else {
-          setTimeUntilAvailable(`Available soon`);
-        }
-      }
-    };
-
-    checkAvailability();
-    const interval = setInterval(checkAvailability, 60000); // Check every minute
-    return () => clearInterval(interval);
+    // Use the manual toggle instead of time-based logic
+    // Default to true for backwards compatibility with existing content
+    const available = sunsetSpecial.isAvailableNow ?? true;
+    setIsAvailable(available);
   }, [sunsetSpecial]);
 
   const nextSlide = () => {
@@ -119,11 +108,10 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
           
           // Store the verified booking ID for the sunset special purchase flow
           sessionStorage.setItem("sunset-special-booking-id", bookingId.trim());
-          sessionStorage.setItem("sunset-special-active", "true");
           
           // Navigate to sunset special purchase page
           setTimeout(() => {
-            onNavigate("sunset-special-purchase");
+            onNavigate("sunset-special-purchase", { bookingId: bookingId.trim() });
           }, 500);
         } else {
           setVerificationError(sunsetSpecial?.dialog?.errorNotFound || "Booking ID not found. Please check and try again.");
@@ -201,12 +189,13 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
                 <button
                   key={index}
                   onClick={() => setCurrentSlide(index)}
-                  className={`h-1.5 rounded-full transition-all ${
+                  className={`rounded-full transition-all border-0 p-0 before:content-none after:content-none min-h-[6px] ${
                     index === currentSlide
-                      ? "w-6 bg-white shadow-md"
-                      : "w-1.5 bg-white/60 hover:bg-white/80"
+                      ? "w-6 bg-white shadow-md h-1.5"
+                      : "w-1.5 bg-white/60 hover:bg-white/80 h-1.5"
                   }`}
                   aria-label={`Go to image ${index + 1}`}
+                  style={{ fontSize: 0, lineHeight: 0 }}
                 />
               ))}
             </div>
@@ -249,7 +238,7 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
               {!isAvailable && (
                 <div className="flex items-center gap-2 rounded-lg bg-orange-50 px-3 py-2 border border-orange-200">
                   <Clock className="h-4 w-4 text-orange-600" />
-                  <span className="text-sm text-orange-700">{timeUntilAvailable}</span>
+                  <span className="text-sm text-orange-700">{sunsetSpecial?.comingSoonButtonText || "Coming Soon"}</span>
                 </div>
               )}
               
