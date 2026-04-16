@@ -464,6 +464,7 @@ export function ManageBookingPage() {
                     qrCode={booking.qrCodes?.[index] || ""}
                     passengerNumber={index + 1}
                     totalPassengers={booking.passengers.length}
+                    pickupLocation={booking.pickupLocation}
                   />
                 ))}
               </div>

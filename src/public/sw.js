@@ -1,7 +1,7 @@
 // Service Worker for Go Sintra PWA
-// Version 1.3.5 - Optimized caching strategy
+// Version 1.3.7 - Module resolution fix (2026-04-16)
 
-const CACHE_NAME = 'go-sintra-v9'; // Bumped cache version
+const CACHE_NAME = 'go-sintra-v11'; // Force complete cache invalidation
 const OFFLINE_URL = '/offline.html';
 
 // Core assets to cache for offline functionality

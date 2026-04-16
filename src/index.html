@@ -2,231 +2,68 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#0A4D5C" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0A4D5C" media="(prefers-color-scheme: dark)" />
-    <!-- Modern PWA meta tags -->
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Hop On Sintra" />
-    <meta name="format-detection" content="telephone=no" />
-    
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="/manifest.json" />
-    
-    <!-- Favicon - Will be dynamically loaded by DynamicFavicon component -->
-    
-    <!-- Preconnect to external domains for better performance -->
-    <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
-    <link rel="preconnect" href="https://esm.sh" crossorigin />
-    <link rel="preconnect" href="https://dwiznaefeqnduglmcivr.supabase.co" crossorigin />
-    <link rel="dns-prefetch" href="https://images.unsplash.com" />
-    <link rel="dns-prefetch" href="https://dwiznaefeqnduglmcivr.supabase.co" />
-    <link rel="dns-prefetch" href="https://js.stripe.com" />
-    <link rel="preconnect" href="https://js.stripe.com" crossorigin />
-    
-    <!-- Critical CSS - Inline for fastest render -->
-    <style>
-      /* Critical above-the-fold styles */
-      *,::before,::after{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}
-      html{line-height:1.5;-webkit-text-size-adjust:100%;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}
-      body{margin:0;line-height:inherit;background-color:#0A4D5C;color:#1e293b}
-      #root{min-height:100vh;display:flex;flex-direction:column}
-      /* Prevent layout shift during load */
-      .loading-skeleton{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:loading 1.5s ease-in-out infinite}
-      @keyframes loading{0%{background-position:200% 0}100%{background-position:-200% 0}}
-      /* Hide content until CSS loads to prevent FOUC */
-      .hydrating #root{opacity:0}
-    </style>
-    
-    <!-- Initial meta tags (will be updated by SEOHead component) -->
-    <title>Hop On Sintra - Unlimited Day Pass for Sintra Sightseeing | Hop-On/Hop-Off</title>
-    <meta name="description" content="Explore Sintra's UNESCO World Heritage palaces and attractions with guaranteed seating in tuk-tuks and UMM jeeps. Unlimited hop-on/hop-off day pass from €25. Buy your Sintra day pass online." />
-    <meta name="keywords" content="Sintra day pass, Sintra transportation, hop on hop off Sintra, Sintra sightseeing, Pena Palace transport, Sintra tuk tuk, Quinta da Regaleira, Moorish Castle, Sintra attractions, Portugal tours" />
-    <meta name="author" content="Hop On Sintra" />
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.hoponsintra.com/" />
-    <meta property="og:title" content="Hop On Sintra - Unlimited Day Pass for Sintra Sightseeing" />
-    <meta property="og:description" content="Explore Sintra's UNESCO World Heritage palaces and attractions with guaranteed seating in tuk-tuks and UMM jeeps. Unlimited hop-on/hop-off day pass from €25." />
-    <meta property="og:image" content="https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop&q=80" />
-    <meta property="og:image:secure_url" content="https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop&q=80" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Hop On Sintra - Unlimited Day Pass for Sintra Sightseeing" />
-    <meta property="og:locale" content="en_US" />
-    <meta property="og:site_name" content="Hop On Sintra" />
-    
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content="https://www.hoponsintra.com/" />
-    <meta name="twitter:title" content="Hop On Sintra - Unlimited Day Pass for Sintra Sightseeing" />
-    <meta name="twitter:description" content="Explore Sintra's UNESCO World Heritage palaces and attractions with guaranteed seating in tuk-tuks and UMM jeeps. Unlimited hop-on/hop-off day pass from €25." />
-    <meta name="twitter:image" content="https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop&q=80" />
-    <meta name="twitter:image:alt" content="Hop On Sintra - Unlimited Day Pass for Sintra Sightseeing" />
-    
-    <!-- Geo tags -->
-    <meta name="geo.region" content="PT-11" />
-    <meta name="geo.placename" content="Sintra" />
-    <meta name="geo.position" content="38.7967;-9.3842" />
-    <meta name="ICBM" content="38.7967, -9.3842" />
-    
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://www.hoponsintra.com/" />
-    
-    <!-- Structured Data - Enhanced for SEO -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "LocalBusiness",
-          "@id": "https://www.hoponsintra.com/#business",
-          "name": "Hop On Sintra",
-          "description": "Unlimited hop-on/hop-off day pass service in Sintra, Portugal with guaranteed seating in tuk-tuks and UMM jeeps. Visit Pena Palace, Quinta da Regaleira, Moorish Castle, and more.",
-          "url": "https://www.hoponsintra.com",
-          "image": "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop",
-          "telephone": "+351",
-          "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "Sintra Historic Center",
-            "addressLocality": "Sintra",
-            "addressRegion": "Lisboa",
-            "postalCode": "2710",
-            "addressCountry": "PT"
-          },
-          "geo": {
-            "@type": "GeoCoordinates",
-            "latitude": 38.7967,
-            "longitude": -9.3842
-          },
-          "openingHoursSpecification": {
-            "@type": "OpeningHoursSpecification",
-            "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
-            "opens": "09:00",
-            "closes": "19:00"
-          },
-          "priceRange": "€€",
-          "currenciesAccepted": "EUR",
-          "paymentAccepted": "Credit Card, Cash",
-          "aggregateRating": {
-            "@type": "AggregateRating",
-            "ratingValue": "4.8",
-            "reviewCount": "250",
-            "bestRating": "5"
-          },
-          "sameAs": []
-        },
-        {
-          "@type": "Product",
-          "@id": "https://www.hoponsintra.com/#daypass",
-          "name": "Sintra Unlimited Day Pass",
-          "description": "Unlimited hop-on/hop-off rides between all Sintra attractions for one full day. Guaranteed seating in tuk-tuks and UMM jeeps. Service runs 9am to 7pm daily.",
-          "brand": {
-            "@type": "Brand",
-            "name": "Hop On Sintra"
-          },
-          "offers": {
-            "@type": "Offer",
-            "url": "https://www.hoponsintra.com/buy-ticket",
-            "priceCurrency": "EUR",
-            "price": "25",
-            "availability": "https://schema.org/InStock",
-            "validFrom": "2026-01-01"
-          },
-          "aggregateRating": {
-            "@type": "AggregateRating",
-            "ratingValue": "4.8",
-            "reviewCount": "250",
-            "bestRating": "5"
-          }
-        },
-        {
-          "@type": "WebSite",
-          "@id": "https://www.hoponsintra.com/#website",
-          "url": "https://www.hoponsintra.com",
-          "name": "Hop On Sintra",
-          "description": "Unlimited hop-on/hop-off day pass service in Sintra, Portugal",
-          "inLanguage": ["en", "pt", "es", "fr", "de", "nl", "it"],
-          "potentialAction": {
-            "@type": "SearchAction",
-            "target": "https://www.hoponsintra.com/attractions?q={search_term_string}",
-            "query-input": "required name=search_term_string"
-          }
-        },
-        {
-          "@type": "FAQPage",
-          "@id": "https://www.hoponsintra.com/#faq",
-          "mainEntity": [
-            {
-              "@type": "Question",
-              "name": "What is a Hop On Sintra Day Pass?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "The Hop On Sintra Day Pass gives you unlimited hop-on/hop-off rides between all major Sintra attractions for one full day, from 9am to 7pm. Travel in small tuk-tuks and UMM jeeps with guaranteed seating."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "How much does a day pass cost?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Adult day passes start from €25. Child passes (ages 7-12) are available at a reduced rate. Children under 7 ride free."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "Which attractions can I visit with the day pass?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "The day pass covers transportation to Pena Palace, Quinta da Regaleira, Moorish Castle, Monserrate Palace, Sintra National Palace, and more. Attraction entrance tickets can be bundled with your pass."
-              }
-            }
-          ]
-        }
-      ]
-    }
-    </script>
-    
-    <!-- Performance: Preload critical resources -->
-    <link rel="preload" href="/manifest.json" as="fetch" crossorigin="anonymous" />
-    
-    <!-- Preload hero image to prevent flashing -->
-    <link rel="preload" href="https://dwiznaefeqnduglmcivr.supabase.co/storage/v1/object/sign/make-3bd0ade8-images/1762977905581_pena-palace-3.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmFjMWMyYy1lNjZlLTQwYWEtYjcwNS1kNTcwYzA5NGZmYzMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtYWtlLTNiZDBhZGU4LWltYWdlcy8xNzYyOTc3OTA1NTgxX3BlbmEtcGFsYWNlLTMuanBnIiwiaWF0IjoxNzYyOTc3OTA1LCJleHAiOjIwNzgzMzc5MDV9.yMxtg8g3UvVUzf-xdAwUmGyjRATPWQwdvRlpIa8D7eY" as="image" fetchpriority="high" />
-    
-    <!-- Resource hints for better performance -->
-    <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
-    <link rel="dns-prefetch" href="https://www.google-analytics.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    
-    <!-- Google tag (gtag.js) - Replace YOUR_GA_ID with your actual Google Analytics ID -->
-    <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=YOUR_GA_ID"></script> -->
-    <!-- <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'YOUR_GA_ID');
-    </script> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>Hop On Sintra</title>
   </head>
   <body>
-    <!-- Noscript fallback for SEO crawlers -->
-    <noscript>
-      <div style="padding: 2rem; text-align: center; font-family: system-ui, sans-serif;">
-        <h1>Hop On Sintra - Unlimited Day Pass for Sintra Sightseeing</h1>
-        <p>Explore Sintra's UNESCO World Heritage palaces and attractions with guaranteed seating in tuk-tuks and UMM jeeps. Unlimited hop-on/hop-off day pass from €25.</p>
-        <p>Please enable JavaScript to use this website.</p>
-        <nav>
-          <a href="/attractions">Attractions</a> |
-          <a href="/hop-on-service">Day Pass Details</a> |
-          <a href="/blog">Travel Guide</a> |
-          <a href="/about">About Us</a>
-        </nav>
-      </div>
-    </noscript>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // IMMEDIATE CHECK - Redirect to fresh start if not cleared
+      (function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const hasFreshParam = urlParams.get('fresh') === 'true' || urlParams.get('v') === '13';
+        const hasCleared = sessionStorage.getItem('fresh-start-completed') === 'true' || 
+                          sessionStorage.getItem('cache-cleared-v13-final') === 'true';
+        
+        // If we haven't cleared the cache yet and don't have the fresh parameter, redirect
+        if (!hasCleared && !hasFreshParam) {
+          console.log('🔄 First load detected - redirecting to fresh start page...');
+          window.location.replace('/fresh-start.html');
+          return;
+        }
+        
+        // Mark that we've been through the process
+        if (hasFreshParam && !hasCleared) {
+          sessionStorage.setItem('fresh-start-completed', 'true');
+          sessionStorage.setItem('cache-cleared-v13-final', 'true');
+        }
+        
+        console.log('✅ Cache cleared - loading app normally');
+      })();
+    </script>
+    <script type="module">
+      // Error handler for module loading failures
+      window.addEventListener('error', (event) => {
+        if (event.message && event.message.includes('Failed to fetch dynamically imported module')) {
+          console.error('❌ Module loading error detected:', event.message);
+          console.log('🔄 Redirecting to fresh start...');
+          event.preventDefault();
+          sessionStorage.removeItem('fresh-start-completed');
+          sessionStorage.removeItem('cache-cleared-v13-final');
+          setTimeout(() => {
+            window.location.replace('/fresh-start.html');
+          }, 100);
+        }
+      }, true);
+      
+      // Also catch unhandled promise rejections
+      window.addEventListener('unhandledrejection', (event) => {
+        if (event.reason && event.reason.message && 
+            event.reason.message.includes('Failed to fetch dynamically imported module')) {
+          console.error('❌ Promise rejection - module loading error:', event.reason);
+          console.log('🔄 Redirecting to fresh start...');
+          event.preventDefault();
+          sessionStorage.removeItem('fresh-start-completed');
+          sessionStorage.removeItem('cache-cleared-v13-final');
+          setTimeout(() => {
+            window.location.replace('/fresh-start.html');
+          }, 100);
+        }
+      });
+    </script>
+    <script type="module" src="/src/entry.tsx"></script>
   </body>
 </html>

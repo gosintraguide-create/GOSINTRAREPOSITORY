@@ -27,12 +27,15 @@ import {
   MapPin,
   Calendar as CalendarIcon,
   AlertCircle,
+  RefreshCw,
+  Radio,
 } from "lucide-react";
 import {
   projectId,
   publicAnonKey,
 } from "../utils/supabase/info";
 import { toast } from "sonner@2.0.3";
+import { createClient } from "../utils/supabase/client";
 
 interface SellTicketsFormProps {
   driverId: string;
@@ -75,6 +78,8 @@ export function SellTicketsForm({
     childPrice: 12,
     guidedTourSurcharge: 5,
   });
+  const [lastAvailabilityUpdate, setLastAvailabilityUpdate] = useState<Date | null>(null);
+  const [isRealtimeConnected, setIsRealtimeConnected] = useState(false);
 
   const TICKET_PRICE = pricing.basePrice;
   const totalAmount = numberOfPeople * TICKET_PRICE;
@@ -163,6 +168,7 @@ export function SellTicketsForm({
           const data = await response.json();
           if (data.availability) {
             setAvailability(data.availability);
+            setLastAvailabilityUpdate(new Date());
           }
         }
       } catch (error) {
@@ -174,6 +180,94 @@ export function SellTicketsForm({
 
     loadAvailability();
   }, [selectedDate]);
+
+  // Real-time availability sync using Supabase Realtime
+  useEffect(() => {
+    const supabase = createClient();
+    
+    console.log('🔴 Setting up real-time availability subscription for date:', selectedDate);
+
+    // Subscribe to changes in the kv_store table for the selected date's availability
+    const channel = supabase
+      .channel(`availability-${selectedDate}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'kv_store_3bd0ade8',
+          filter: `key=eq.availability_${selectedDate}`,
+        },
+        (payload) => {
+          console.log('🔴 Real-time availability update received:', payload);
+          
+          // Update availability from the database change
+          if (payload.new && payload.new.value) {
+            setAvailability(payload.new.value);
+            setLastAvailabilityUpdate(new Date());
+            
+            // Show a subtle toast notification
+            toast.success('Availability updated', {
+              description: 'Seat counts have been updated in real-time',
+              duration: 3000,
+            });
+          }
+        }
+      )
+      .subscribe((status) => {
+        console.log('🔴 Subscription status:', status);
+        if (status === 'SUBSCRIBED') {
+          console.log('✅ Real-time subscription active for availability');
+          setIsRealtimeConnected(true);
+        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          console.error('❌ Real-time subscription error:', status);
+          setIsRealtimeConnected(false);
+        }
+      });
+
+    // Cleanup subscription on unmount or date change
+    return () => {
+      console.log('🔴 Cleaning up real-time subscription');
+      supabase.removeChannel(channel);
+      setIsRealtimeConnected(false);
+    };
+  }, [selectedDate]);
+
+  // Manual refresh availability function
+  const refreshAvailability = async () => {
+    if (!selectedDate) return;
+
+    setLoadingAvailability(true);
+    try {
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/availability/${selectedDate}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${publicAnonKey}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.availability) {
+          setAvailability(data.availability);
+          setLastAvailabilityUpdate(new Date());
+          toast.success("Availability updated", {
+            description: "Latest seat availability loaded",
+            duration: 2000,
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error refreshing availability:", error);
+      toast.error("Failed to refresh availability");
+    } finally {
+      setLoadingAvailability(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -250,6 +344,7 @@ export function SellTicketsForm({
             await availabilityResponse.json();
           if (availabilityData.availability) {
             setAvailability(availabilityData.availability);
+            setLastAvailabilityUpdate(new Date());
           }
         }
 
@@ -421,10 +516,36 @@ export function SellTicketsForm({
 
           {/* Time Slot */}
           <div>
-            <Label className="text-base flex items-center gap-2 mb-3">
-              <Clock className="h-4 w-4 text-[#0A4D5C]" />
-              Time Slot
-            </Label>
+            <div className="flex items-center justify-between mb-3">
+              <Label className="text-base flex items-center gap-2">
+                <Clock className="h-4 w-4 text-[#0A4D5C]" />
+                Time Slot
+              </Label>
+              <div className="flex items-center gap-2">
+                {isRealtimeConnected && (
+                  <div className="flex items-center gap-1.5 text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full">
+                    <Radio className="h-3 w-3 animate-pulse" />
+                    <span className="hidden sm:inline">Live</span>
+                  </div>
+                )}
+                {lastAvailabilityUpdate && !loadingAvailability && (
+                  <span className="text-xs text-gray-500">
+                    Updated {lastAvailabilityUpdate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                )}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={refreshAvailability}
+                  disabled={loadingAvailability}
+                  className="h-8 gap-1"
+                >
+                  <RefreshCw className={`h-3.5 w-3.5 ${loadingAvailability ? 'animate-spin' : ''}`} />
+                  <span className="hidden sm:inline">Refresh</span>
+                </Button>
+              </div>
+            </div>
 
             {/* Availability Summary */}
             {!loadingAvailability && (

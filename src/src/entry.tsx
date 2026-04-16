@@ -4,6 +4,9 @@ import App from "@/App";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import "@/styles/globals.css";
 
+// Log to verify this new entry point is loading
+console.log("✅ Loading from NEW entry point: /src/entry.tsx");
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ErrorBoundary>

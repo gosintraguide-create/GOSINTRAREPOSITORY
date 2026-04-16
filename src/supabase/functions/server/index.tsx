@@ -833,6 +833,42 @@ async function generateBookingPDF(
 
       yPos -= 70;
 
+      // Start Time
+      page.drawText("START TIME", {
+        x: leftCol,
+        y: yPos,
+        size: 10,
+        color: rgb(0.42, 0.447, 0.533),
+      });
+      page.drawText(booking.timeSlot || "09:00", {
+        x: leftCol,
+        y: yPos - 20,
+        size: 14,
+        color: rgb(0.039, 0.302, 0.361),
+      });
+
+      // Pickup Location
+      if (booking.pickupLocation) {
+        page.drawText("PICKUP LOCATION", {
+          x: rightCol,
+          y: yPos,
+          size: 10,
+          color: rgb(0.42, 0.447, 0.533),
+        });
+        const locationText = booking.pickupLocation
+          .replace(/-/g, ' ')
+          .toUpperCase()
+          .substring(0, 20); // Limit length to fit
+        page.drawText(locationText, {
+          x: rightCol,
+          y: yPos - 20,
+          size: 14,
+          color: rgb(0.039, 0.302, 0.361),
+        });
+      }
+
+      yPos -= 70;
+
       // === INSIGHT TOUR PICKUP INFORMATION ===
       if (booking.guidedTour) {
         // Extract time from booking
