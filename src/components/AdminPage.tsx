@@ -940,46 +940,6 @@ export function AdminPage() {
     }
   };
 
-  const saveAvailability = async () => {
-    setSavingAvailability(true);
-    try {
-      localStorage.setItem(
-        "admin-availability",
-        JSON.stringify(availability),
-      );
-
-      const dates = Object.keys(availability);
-      for (const date of dates) {
-        const response = await fetch(
-          `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/availability/${date}`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${publicAnonKey}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(availability[date]),
-          },
-        );
-
-        const result = await response.json();
-        if (!result.success) {
-          console.error(
-            `Failed to save availability for ${date}:`,
-            result.error,
-          );
-        }
-      }
-
-      toast.success("Availability saved successfully!");
-    } catch (error) {
-      console.error("Error saving availability:", error);
-      toast.error("Failed to save availability");
-    } finally {
-      setSavingAvailability(false);
-    }
-  };
-
   const saveContentSettings = async () => {
     try {
       const result = await saveContentAsync(content);
