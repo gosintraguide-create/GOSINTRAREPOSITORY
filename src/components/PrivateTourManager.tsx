@@ -30,6 +30,17 @@ export interface PrivateTour {
   duration: string;
   price: string;
   priceSubtext?: string;
+  // New pricing system
+  pricingMode?: 'per-person' | 'group-tiers' | 'fixed' | 'quote-only';
+  perPersonPrice?: number; // For per-person mode
+  groupTiers?: Array<{ // For group-tiers mode
+    minPeople: number;
+    maxPeople: number;
+    price: number;
+  }>;
+  fixedPrice?: number; // For fixed mode
+  maxGroupSize?: number; // Maximum before requiring quote
+  allowQuoteRequest?: boolean; // Show "Request Quote" for large groups
   features: string[];
   badge?: string;
   badgeColor?: "primary" | "accent";
@@ -351,6 +362,196 @@ export function PrivateTourManager() {
                 }
                 placeholder="e.g., per group"
               />
+            </div>
+
+            {/* Pricing Mode Configuration */}
+            <div className="space-y-4 rounded-lg border border-primary/20 bg-primary/5 p-4">
+              <Label className="text-base font-semibold">Pricing Configuration</Label>
+              
+              {/* Pricing Mode Selector */}
+              <div>
+                <Label>Pricing Mode</Label>
+                <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                  <Button
+                    type="button"
+                    variant={editingTour.pricingMode === 'per-person' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setEditingTour({ ...editingTour, pricingMode: 'per-person' })}
+                  >
+                    Per Person
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={editingTour.pricingMode === 'group-tiers' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setEditingTour({ ...editingTour, pricingMode: 'group-tiers' })}
+                  >
+                    Group Tiers
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={editingTour.pricingMode === 'fixed' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setEditingTour({ ...editingTour, pricingMode: 'fixed' })}
+                  >
+                    Fixed Price
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={editingTour.pricingMode === 'quote-only' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setEditingTour({ ...editingTour, pricingMode: 'quote-only' })}
+                  >
+                    Quote Only
+                  </Button>
+                </div>
+              </div>
+
+              {/* Per Person Pricing */}
+              {editingTour.pricingMode === 'per-person' && (
+                <div className="space-y-3">
+                  <div>
+                    <Label>Price Per Person (€)</Label>
+                    <Input
+                      type="number"
+                      value={editingTour.perPersonPrice || ''}
+                      onChange={(e) =>
+                        setEditingTour({ ...editingTour, perPersonPrice: parseFloat(e.target.value) || 0 })
+                      }
+                      placeholder="50"
+                    />
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Each person will be charged this amount
+                    </p>
+                  </div>
+                  <div>
+                    <Label>Maximum Group Size (Optional)</Label>
+                    <Input
+                      type="number"
+                      value={editingTour.maxGroupSize || ''}
+                      onChange={(e) =>
+                        setEditingTour({ ...editingTour, maxGroupSize: parseInt(e.target.value) || undefined })
+                      }
+                      placeholder="Leave empty for no limit"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Group Tiers Pricing */}
+              {editingTour.pricingMode === 'group-tiers' && (
+                <div className="space-y-3">
+                  <Label>Pricing Tiers</Label>
+                  {(editingTour.groupTiers || []).map((tier, index) => (
+                    <div key={index} className="flex items-center gap-2 rounded border p-2">
+                      <div className="flex-1 space-y-2">
+                        <div className="grid grid-cols-3 gap-2">
+                          <div>
+                            <Label className="text-xs">Min People</Label>
+                            <Input
+                              type="number"
+                              value={tier.minPeople}
+                              onChange={(e) => {
+                                const newTiers = [...(editingTour.groupTiers || [])];
+                                newTiers[index].minPeople = parseInt(e.target.value) || 0;
+                                setEditingTour({ ...editingTour, groupTiers: newTiers });
+                              }}
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-xs">Max People</Label>
+                            <Input
+                              type="number"
+                              value={tier.maxPeople}
+                              onChange={(e) => {
+                                const newTiers = [...(editingTour.groupTiers || [])];
+                                newTiers[index].maxPeople = parseInt(e.target.value) || 0;
+                                setEditingTour({ ...editingTour, groupTiers: newTiers });
+                              }}
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-xs">Price (€)</Label>
+                            <Input
+                              type="number"
+                              value={tier.price}
+                              onChange={(e) => {
+                                const newTiers = [...(editingTour.groupTiers || [])];
+                                newTiers[index].price = parseFloat(e.target.value) || 0;
+                                setEditingTour({ ...editingTour, groupTiers: newTiers });
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          const newTiers = (editingTour.groupTiers || []).filter((_, i) => i !== index);
+                          setEditingTour({ ...editingTour, groupTiers: newTiers });
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const newTiers = [...(editingTour.groupTiers || []), { minPeople: 1, maxPeople: 4, price: 0 }];
+                      setEditingTour({ ...editingTour, groupTiers: newTiers });
+                    }}
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Tier
+                  </Button>
+                  <p className="text-xs text-muted-foreground">
+                    Example: 1-4 people = €150, 5-8 people = €250
+                  </p>
+                </div>
+              )}
+
+              {/* Fixed Pricing */}
+              {editingTour.pricingMode === 'fixed' && (
+                <div>
+                  <Label>Fixed Price (€)</Label>
+                  <Input
+                    type="number"
+                    value={editingTour.fixedPrice || ''}
+                    onChange={(e) =>
+                      setEditingTour({ ...editingTour, fixedPrice: parseFloat(e.target.value) || 0 })
+                    }
+                    placeholder="200"
+                  />
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Same price regardless of group size
+                  </p>
+                </div>
+              )}
+
+              {/* Quote Only Mode */}
+              {editingTour.pricingMode === 'quote-only' && (
+                <div className="rounded bg-accent/10 p-3 text-sm text-muted-foreground">
+                  Customers will only be able to request a personalized quote. No direct booking available.
+                </div>
+              )}
+
+              {/* Allow Quote Request for Large Groups */}
+              {editingTour.pricingMode !== 'quote-only' && (
+                <div className="flex items-center gap-2">
+                  <Switch
+                    checked={editingTour.allowQuoteRequest || false}
+                    onCheckedChange={(checked) =>
+                      setEditingTour({ ...editingTour, allowQuoteRequest: checked })
+                    }
+                  />
+                  <Label>Allow quote requests for groups larger than maximum</Label>
+                </div>
+              )}
             </div>
 
             {/* Badge */}

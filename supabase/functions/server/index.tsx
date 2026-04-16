@@ -5018,7 +5018,7 @@ app.get(
       if (!size || size === "undefined" || size === "null") {
         // Don't log error - this is likely a cached request being blocked
         console.log(
-          `🚫 Silently blocked invalid icon request: ${size} (likely from browser cache)`,
+          `��� Silently blocked invalid icon request: ${size} (likely from browser cache)`,
         );
         return c.text("Invalid icon size", 400);
       }
@@ -5943,7 +5943,7 @@ app.post(
           email: customerEmail,
         },
         // Booking details
-        selectedDate: bookingDateTime, // Required for email template
+        selectedDate: date, // FIXED: Use YYYY-MM-DD format to match other bookings for metrics
         passDate: date, // Use the actual date (YYYY-MM-DD format)
         bookingDate: bookingDateTime,
         dayPassCount: numberOfPeople,
@@ -7844,6 +7844,113 @@ app.post("/make-server-3bd0ade8/tour-bookings/create-payment-intent", async (c) 
   } catch (error) {
     console.error("Error creating payment intent:", error);
     return c.json({ success: false, error: "Failed to create payment intent" }, 500);
+  }
+});
+
+// Create tour quote request (for quote-only tours or large groups)
+app.post("/make-server-3bd0ade8/tour-quote-requests/create", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { tourId, tourTitle, tourDate, customerInfo } = body;
+    
+    if (!tourId || !tourTitle || !tourDate || !customerInfo) {
+      return c.json({ success: false, error: "Missing required fields" }, 400);
+    }
+    
+    // Create quote request ID
+    const quoteId = `QUOTE_${Date.now()}_${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+    
+    // Store quote request
+    const quoteRequest = {
+      quoteId,
+      tourId,
+      tourTitle,
+      tourDate,
+      customerInfo: {
+        name: customerInfo.name,
+        email: customerInfo.email,
+        phone: customerInfo.phone,
+        numberOfPeople: customerInfo.numberOfPeople || 1,
+        specialRequests: customerInfo.specialRequests || '',
+      },
+      status: 'pending', // pending, sent, accepted, declined
+      createdAt: new Date().toISOString(),
+    };
+    
+    await kv.set(`tour_quote_${quoteId}`, quoteRequest);
+    
+    console.log(`📋 Created tour quote request: ${quoteId} for ${customerInfo.name}`);
+    
+    // TODO: Send email notification to admin about new quote request
+    // TODO: Send confirmation email to customer
+    
+    return c.json({
+      success: true,
+      quoteRequest,
+    });
+  } catch (error) {
+    console.error("Error creating quote request:", error);
+    return c.json({ success: false, error: "Failed to create quote request" }, 500);
+  }
+});
+
+// Get all quote requests (for admin)
+app.get("/make-server-3bd0ade8/tour-quote-requests", async (c) => {
+  try {
+    const status = c.req.query("status"); // Optional filter by status
+    
+    let quoteRequests = await kv.getByPrefix("tour_quote_");
+    
+    // Filter by status if provided
+    if (status) {
+      quoteRequests = quoteRequests.filter((q: any) => q.status === status);
+    }
+    
+    // Sort by creation date (newest first)
+    quoteRequests.sort((a: any, b: any) => 
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+    
+    return c.json({
+      success: true,
+      quoteRequests,
+    });
+  } catch (error) {
+    console.error("Error fetching quote requests:", error);
+    return c.json({ success: false, error: "Failed to fetch quote requests" }, 500);
+  }
+});
+
+// Update quote request status
+app.post("/make-server-3bd0ade8/tour-quote-requests/:quoteId/status", async (c) => {
+  try {
+    const quoteId = c.req.param("quoteId");
+    const body = await c.req.json();
+    const { status, quoteAmount, notes } = body;
+    
+    const quoteRequest = await kv.get(`tour_quote_${quoteId}`);
+    
+    if (!quoteRequest) {
+      return c.json({ success: false, error: "Quote request not found" }, 404);
+    }
+    
+    // Update quote request
+    await kv.set(`tour_quote_${quoteId}`, {
+      ...quoteRequest,
+      status,
+      quoteAmount: quoteAmount || quoteRequest.quoteAmount,
+      notes: notes || quoteRequest.notes,
+      updatedAt: new Date().toISOString(),
+    });
+    
+    console.log(`✅ Updated quote request ${quoteId} to status: ${status}`);
+    
+    // TODO: Send email to customer with quote details if status is 'sent'
+    
+    return c.json({ success: true });
+  } catch (error) {
+    console.error("Error updating quote request:", error);
+    return c.json({ success: false, error: "Failed to update quote request" }, 500);
   }
 });
 

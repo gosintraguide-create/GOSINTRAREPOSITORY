@@ -1,31 +1,31 @@
 import { createBrowserRouter, Navigate } from "react-router";
 import { lazy } from "react";
-import { RootLayout } from "./components/RootLayout";
-import { ErrorBoundary } from "./components/ErrorBoundary";
-import { RouterErrorFallback } from "./components/RouterErrorFallback";
+import { RootLayout } from "@/components/RootLayout";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { RouterErrorFallback } from "@/components/RouterErrorFallback";
 
-// Lazy load pages
-const HomePage = lazy(() => import("./components/HomePage").then(m => ({ default: m.HomePage })));
-const AttractionsPage = lazy(() => import("./components/AttractionsPage").then(m => ({ default: m.AttractionsPage })));
-const AttractionDetailPage = lazy(() => import("./components/AttractionDetailPage").then(m => ({ default: m.AttractionDetailPage })));
-const PrivateToursPage = lazy(() => import("./components/PrivateToursPage").then(m => ({ default: m.PrivateToursPage })));
-const PrivateTourDetailPage = lazy(() => import("./components/PrivateTourDetailPage").then(m => ({ default: m.PrivateTourDetailPage })));
-const HopOnServiceDetailPage = lazy(() => import("./components/HopOnServiceDetailPage").then(m => ({ default: m.HopOnServiceDetailPage })));
-const BuyTicketPage = lazy(() => import("./components/BuyTicketPage").then(m => ({ default: m.BuyTicketPage })));
-const SunsetSpecialPurchasePage = lazy(() => import("./components/SunsetSpecialPurchasePage").then(m => ({ default: m.SunsetSpecialPurchasePage })));
-const LiveChatPage = lazy(() => import("./components/LiveChatPage").then(m => ({ default: m.LiveChatPage })));
-const AboutPage = lazy(() => import("./components/AboutPage").then(m => ({ default: m.AboutPage })));
-const BlogPage = lazy(() => import("./components/BlogPage").then(m => ({ default: m.BlogPage })));
-const BlogArticlePage = lazy(() => import("./components/BlogArticlePage").then(m => ({ default: m.BlogArticlePage })));
-const RouteMapPage = lazy(() => import("./components/RouteMapPage").then(m => ({ default: m.RouteMapPage })));
-const AdminPage = lazy(() => import("./components/AdminPage").then(m => ({ default: m.AdminPage })));
-const DriverPortalPage = lazy(() => import("./components/DriverPortalPage").then(m => ({ default: m.DriverPortalPage })));
-const QRScannerPage = lazy(() => import("./components/QRScannerPage").then(m => ({ default: m.QRScannerPage })));
-const NotFoundPage = lazy(() => import("./components/NotFoundPage").then(m => ({ default: m.NotFoundPage })));
-const ManageBookingPage = lazy(() => import("./components/ManageBookingPage").then(m => ({ default: m.ManageBookingPage })));
-const RequestPickupPage = lazy(() => import("./components/RequestPickupPage").then(m => ({ default: m.RequestPickupPage })));
-const PrivacyPolicyPage = lazy(() => import("./components/PrivacyPolicyPage").then(m => ({ default: m.PrivacyPolicyPage })));
-const TermsOfServicePage = lazy(() => import("./components/TermsOfServicePage").then(m => ({ default: m.TermsOfServicePage })));
+// Lazy load pages - using @/ alias for consistent module resolution
+const HomePage = lazy(() => import("@/components/HomePage").then(m => ({ default: m.HomePage })));
+const AttractionsPage = lazy(() => import("@/components/AttractionsPage").then(m => ({ default: m.AttractionsPage })));
+const AttractionDetailPage = lazy(() => import("@/components/AttractionDetailPage").then(m => ({ default: m.AttractionDetailPage })));
+const PrivateToursPage = lazy(() => import("@/components/PrivateToursPage").then(m => ({ default: m.PrivateToursPage })));
+const PrivateTourDetailPage = lazy(() => import("@/components/PrivateTourDetailPage").then(m => ({ default: m.PrivateTourDetailPage })));
+const HopOnServiceDetailPage = lazy(() => import("@/components/HopOnServiceDetailPage").then(m => ({ default: m.HopOnServiceDetailPage })));
+const BuyTicketPage = lazy(() => import("@/components/BuyTicketPage").then(m => ({ default: m.BuyTicketPage })));
+const SunsetSpecialPurchasePage = lazy(() => import("@/components/SunsetSpecialPurchasePage").then(m => ({ default: m.SunsetSpecialPurchasePage })));
+const LiveChatPage = lazy(() => import("@/components/LiveChatPage").then(m => ({ default: m.LiveChatPage })));
+const AboutPage = lazy(() => import("@/components/AboutPage").then(m => ({ default: m.AboutPage })));
+const BlogPage = lazy(() => import("@/components/BlogPage").then(m => ({ default: m.BlogPage })));
+const BlogArticlePage = lazy(() => import("@/components/BlogArticlePage").then(m => ({ default: m.BlogArticlePage })));
+const RouteMapPage = lazy(() => import("@/components/RouteMapPage").then(m => ({ default: m.RouteMapPage })));
+const AdminPage = lazy(() => import("@/components/AdminPage").then(m => ({ default: m.AdminPage })));
+const DriverPortalPage = lazy(() => import("@/components/DriverPortalPage").then(m => ({ default: m.DriverPortalPage })));
+const QRScannerPage = lazy(() => import("@/components/QRScannerPage").then(m => ({ default: m.QRScannerPage })));
+const NotFoundPage = lazy(() => import("@/components/NotFoundPage").then(m => ({ default: m.NotFoundPage })));
+const ManageBookingPage = lazy(() => import("@/components/ManageBookingPage").then(m => ({ default: m.ManageBookingPage })));
+const RequestPickupPage = lazy(() => import("@/components/RequestPickupPage").then(m => ({ default: m.RequestPickupPage })));
+const PrivacyPolicyPage = lazy(() => import("@/components/PrivacyPolicyPage").then(m => ({ default: m.PrivacyPolicyPage })));
+const TermsOfServicePage = lazy(() => import("@/components/TermsOfServicePage").then(m => ({ default: m.TermsOfServicePage })));
 
 // Slug generation helper
 export function generateSlug(title: string): string {

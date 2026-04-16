@@ -20,6 +20,16 @@ interface TourBookingDialogProps {
     id: string;
     title: string;
     price: string;
+    pricingMode?: 'per-person' | 'group-tiers' | 'fixed' | 'quote-only';
+    perPersonPrice?: number;
+    groupTiers?: Array<{
+      minPeople: number;
+      maxPeople: number;
+      price: number;
+    }>;
+    fixedPrice?: number;
+    maxGroupSize?: number;
+    allowQuoteRequest?: boolean;
   };
 }
 
@@ -50,7 +60,71 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
     return 0;
   };
 
-  const tourPrice = extractPrice(tour.price);
+  // Calculate price based on pricing mode
+  const calculateTourPrice = (): number => {
+    const { pricingMode, perPersonPrice, groupTiers, fixedPrice } = tour;
+    const numPeople = formData.numberOfPeople;
+
+    // If no pricing mode set, use legacy price extraction
+    if (!pricingMode) {
+      return extractPrice(tour.price);
+    }
+
+    switch (pricingMode) {
+      case 'per-person':
+        return (perPersonPrice || 0) * numPeople;
+      
+      case 'group-tiers':
+        if (groupTiers && groupTiers.length > 0) {
+          // Find the appropriate tier
+          const tier = groupTiers.find(
+            t => numPeople >= t.minPeople && numPeople <= t.maxPeople
+          );
+          return tier?.price || 0;
+        }
+        return 0;
+      
+      case 'fixed':
+        return fixedPrice || 0;
+      
+      case 'quote-only':
+        return 0; // No price for quote-only
+      
+      default:
+        return extractPrice(tour.price);
+    }
+  };
+
+  // Check if we should show quote request instead of booking
+  const shouldShowQuoteRequest = (): boolean => {
+    const { pricingMode, maxGroupSize, allowQuoteRequest } = tour;
+    const numPeople = formData.numberOfPeople;
+
+    // Always show quote request for quote-only mode
+    if (pricingMode === 'quote-only') {
+      return true;
+    }
+
+    // Show quote request if group exceeds max and quote requests are allowed
+    if (allowQuoteRequest && maxGroupSize && numPeople > maxGroupSize) {
+      return true;
+    }
+
+    // For group tiers, show quote if no tier matches
+    if (pricingMode === 'group-tiers' && tour.groupTiers) {
+      const hasTier = tour.groupTiers.some(
+        t => numPeople >= t.minPeople && numPeople <= t.maxPeople
+      );
+      if (!hasTier && allowQuoteRequest) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  const tourPrice = calculateTourPrice();
+  const isQuoteRequest = shouldShowQuoteRequest();
 
   // Check availability for selected month
   const checkAvailability = async (date: Date) => {
@@ -181,6 +255,43 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
     setError('');
     
     try {
+      // Handle quote request separately
+      if (isQuoteRequest) {
+        const quoteResponse = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/tour-quote-requests/create`,
+          {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${publicAnonKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              tourId: tour.id,
+              tourTitle: tour.title,
+              tourDate: selectedDate.toISOString(),
+              customerInfo: {
+                name: formData.name,
+                email: formData.email,
+                phone: formData.phone,
+                numberOfPeople: formData.numberOfPeople,
+                specialRequests: formData.specialRequests,
+              },
+            }),
+          }
+        );
+        
+        const quoteData = await quoteResponse.json();
+        
+        if (!quoteData.success) {
+          throw new Error(quoteData.error || 'Failed to submit quote request');
+        }
+        
+        toast.success('Quote request submitted! We\'ll contact you within 24 hours.');
+        onSuccess();
+        return;
+      }
+      
+      // Regular booking flow with payment
       // Create payment intent
       const paymentIntentResponse = await fetch(
         `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/tour-bookings/create-payment-intent`,
@@ -465,10 +576,21 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
           <span>Number of People</span>
           <span>{formData.numberOfPeople}</span>
         </div>
-        <div className="mt-3 flex justify-between border-t border-border pt-3 text-lg font-bold">
-          <span>Total</span>
-          <span>€{tourPrice.toFixed(2)}</span>
-        </div>
+        {!isQuoteRequest && (
+          <div className="mt-3 flex justify-between border-t border-border pt-3 text-lg font-bold">
+            <span>Total</span>
+            <span>€{tourPrice.toFixed(2)}</span>
+          </div>
+        )}
+        {isQuoteRequest && (
+          <Alert className="mt-3 bg-accent/10 border-accent">
+            <AlertDescription className="text-sm">
+              {tour.pricingMode === 'quote-only' 
+                ? 'Pricing is customized for this tour. We\'ll send you a personalized quote within 24 hours.'
+                : `For groups of ${formData.numberOfPeople} people, we\'ll provide a personalized quote within 24 hours.`}
+            </AlertDescription>
+          </Alert>
+        )}
       </div>
       
       <Button
@@ -479,18 +601,20 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
         {processing ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Setting up payment...
+            {isQuoteRequest ? 'Submitting request...' : 'Setting up payment...'}
           </>
         ) : (
           <>
             <CheckCircle className="mr-2 h-4 w-4" />
-            Continue to Payment
+            {isQuoteRequest ? 'Request Personalized Quote' : 'Continue to Payment'}
           </>
         )}
       </Button>
       
       <p className="text-xs text-center text-muted-foreground">
-        Secure payment powered by Stripe. You will receive a confirmation email after booking.
+        {isQuoteRequest 
+          ? 'We\'ll review your request and send you a custom quote via email within 24 hours.'
+          : 'Secure payment powered by Stripe. You will receive a confirmation email after booking.'}
       </p>
     </form>
   );
