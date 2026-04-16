@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /driver
+Disallow: /buy-ticket
+Disallow: /404
+Disallow: /manage-booking
+Disallow: /sunset-special
+
+Sitemap: https://www.hoponsintra.com/sitemap.xml

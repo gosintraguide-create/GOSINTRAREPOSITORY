@@ -1652,9 +1652,11 @@ export function AdminPage() {
 
     // Today's stats
     const today = new Date().toISOString().split("T")[0];
-    const todaysBookings = bookings.filter(
-      (b) => b.selectedDate === today,
-    );
+    const todaysBookings = bookings.filter((b) => {
+      // Handle both YYYY-MM-DD format and ISO timestamp format
+      const bookingDate = b.selectedDate?.split("T")[0] || b.passDate;
+      return bookingDate === today;
+    });
     let todayCheckedIn = 0;
     let todayTotalPassengers = 0;
     let todayRevenue = 0;
@@ -1683,7 +1685,10 @@ export function AdminPage() {
       seenDates.add(dateStr);
       
       const dayRevenue = bookings
-        .filter((b) => b.selectedDate === dateStr)
+        .filter((b) => {
+          const bookingDate = b.selectedDate?.split("T")[0] || b.passDate;
+          return bookingDate === dateStr;
+        })
         .reduce((sum, b) => sum + (b.totalPrice || 0), 0);
       last30Days.push({ id: dateStr, date: dateStr, revenue: dayRevenue });
     }
@@ -1701,7 +1706,10 @@ export function AdminPage() {
       if (seenMonths.has(monthStr)) continue;
       seenMonths.add(monthStr);
       const monthRevenue = bookings
-        .filter((b) => b.selectedDate?.startsWith(monthStr))
+        .filter((b) => {
+          const bookingDate = b.selectedDate?.split("T")[0] || b.passDate;
+          return bookingDate?.startsWith(monthStr);
+        })
         .reduce((sum, b) => sum + (b.totalPrice || 0), 0);
       revenueByMonth.push({
         id: monthStr,
@@ -1742,16 +1750,15 @@ export function AdminPage() {
       .toISOString()
       .split("T")[0];
     const upcomingBookings = bookings
-      .filter(
-        (b) =>
-          b.selectedDate >= today &&
-          b.selectedDate <= upcomingStr,
-      )
-      .sort(
-        (a, b) =>
-          new Date(a.selectedDate).getTime() -
-          new Date(b.selectedDate).getTime(),
-      )
+      .filter((b) => {
+        const bookingDate = b.selectedDate?.split("T")[0] || b.passDate;
+        return bookingDate >= today && bookingDate <= upcomingStr;
+      })
+      .sort((a, b) => {
+        const dateA = a.selectedDate?.split("T")[0] || a.passDate;
+        const dateB = b.selectedDate?.split("T")[0] || b.passDate;
+        return new Date(dateA).getTime() - new Date(dateB).getTime();
+      })
       .slice(0, 5);
 
     // Recent bookings
