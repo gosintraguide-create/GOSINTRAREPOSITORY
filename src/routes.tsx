@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate } from "react-router";
 import { lazy } from "react";
 import { RootLayout } from "./components/RootLayout";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { RouterErrorFallback } from "./components/RouterErrorFallback";
 
 // Lazy load pages
 const HomePage = lazy(() => import("./components/HomePage").then(m => ({ default: m.HomePage })));
@@ -50,6 +51,7 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: <RootLayout />,
+    errorElement: <RouterErrorFallback />,
     children: [
       {
         index: true,
