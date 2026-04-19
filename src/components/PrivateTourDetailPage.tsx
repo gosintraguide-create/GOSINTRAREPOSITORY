@@ -25,6 +25,17 @@ interface PrivateTour {
   duration: string;
   price: string;
   priceSubtext?: string;
+  pricingMode?: 'per-person' | 'group-tiers' | 'fixed' | 'quote-only';
+  perPersonPrice?: number;
+  minPeople?: number;
+  groupTiers?: Array<{
+    minPeople: number;
+    maxPeople: number;
+    price: number;
+  }>;
+  fixedPrice?: number;
+  maxGroupSize?: number;
+  allowQuoteRequest?: boolean;
   features: string[];
   badge?: string;
   badgeColor?: "primary" | "accent";
@@ -225,6 +236,13 @@ export function PrivateTourDetailPage() {
             id: tour.id,
             title: tour.title,
             price: tour.price,
+            pricingMode: tour.pricingMode,
+            perPersonPrice: tour.perPersonPrice,
+            minPeople: tour.minPeople,
+            groupTiers: tour.groupTiers,
+            fixedPrice: tour.fixedPrice,
+            maxGroupSize: tour.maxGroupSize,
+            allowQuoteRequest: tour.allowQuoteRequest,
           }}
         />
       )}

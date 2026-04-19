@@ -55,6 +55,17 @@ interface PrivateTour {
   duration: string;
   price: string;
   priceSubtext?: string;
+  pricingMode?: 'per-person' | 'group-tiers' | 'fixed' | 'quote-only';
+  perPersonPrice?: number;
+  minPeople?: number;
+  groupTiers?: Array<{
+    minPeople: number;
+    maxPeople: number;
+    price: number;
+  }>;
+  fixedPrice?: number;
+  maxGroupSize?: number;
+  allowQuoteRequest?: boolean;
   features: string[];
   badge?: string;
   badgeColor?: "primary" | "accent";

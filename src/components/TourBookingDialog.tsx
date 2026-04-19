@@ -22,6 +22,7 @@ interface TourBookingDialogProps {
     price: string;
     pricingMode?: 'per-person' | 'group-tiers' | 'fixed' | 'quote-only';
     perPersonPrice?: number;
+    minPeople?: number;
     groupTiers?: Array<{
       minPeople: number;
       maxPeople: number;
@@ -477,11 +478,16 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
         <Input
           id="numberOfPeople"
           type="number"
-          min="1"
+          min={tour.pricingMode === 'per-person' && tour.minPeople ? tour.minPeople : 1}
           max="20"
           value={formData.numberOfPeople}
           onChange={(e) => setFormData({ ...formData, numberOfPeople: parseInt(e.target.value) })}
         />
+        {tour.pricingMode === 'per-person' && tour.minPeople && (
+          <p className="mt-1 text-xs text-muted-foreground">
+            Minimum {tour.minPeople} {tour.minPeople === 1 ? 'person' : 'people'} required
+          </p>
+        )}
       </div>
       
       <div>

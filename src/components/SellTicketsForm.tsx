@@ -609,6 +609,23 @@ export function SellTicketsForm({
               </div>
             </div>
 
+            {/* Insight Tour Info Banner */}
+            <div className="mb-3 p-3 bg-gradient-to-r from-[#0A4D5C]/10 to-[#0A4D5C]/5 border border-[#0A4D5C]/20 rounded-lg">
+              <div className="flex items-start gap-2">
+                <div className="h-5 w-5 rounded-full bg-[#0A4D5C] flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-white text-xs font-bold">✨</span>
+                </div>
+                <div className="text-sm">
+                  <p className="font-semibold text-[#0A4D5C] mb-1">
+                    Insight Tour Times
+                  </p>
+                  <p className="text-gray-700">
+                    <strong>10:00 AM</strong> and <strong>2:00 PM</strong> include guided storytelling commentary (+€{pricing.guidedTourSurcharge}/person)
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {/* Availability Summary */}
             {!loadingAvailability && (
               <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">

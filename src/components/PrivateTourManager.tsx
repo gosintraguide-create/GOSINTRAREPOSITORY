@@ -33,6 +33,7 @@ export interface PrivateTour {
   // New pricing system
   pricingMode?: 'per-person' | 'group-tiers' | 'fixed' | 'quote-only';
   perPersonPrice?: number; // For per-person mode
+  minPeople?: number; // Minimum people for per-person mode
   groupTiers?: Array<{ // For group-tiers mode
     minPeople: number;
     maxPeople: number;
@@ -423,6 +424,17 @@ export function PrivateTourManager() {
                     <p className="mt-1 text-xs text-muted-foreground">
                       Each person will be charged this amount
                     </p>
+                  </div>
+                  <div>
+                    <Label>Minimum People (Optional)</Label>
+                    <Input
+                      type="number"
+                      value={editingTour.minPeople || ''}
+                      onChange={(e) =>
+                        setEditingTour({ ...editingTour, minPeople: parseInt(e.target.value) || undefined })
+                      }
+                      placeholder="Leave empty for no limit"
+                    />
                   </div>
                   <div>
                     <Label>Maximum Group Size (Optional)</Label>
