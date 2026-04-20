@@ -1,0 +1,146 @@
+// scripts/generate-sitemap.cjs
+const fs = require('fs');
+const path = require('path');
+
+const BASE_URL = 'https://www.hoponsintra.com';
+
+// 1. Define your Static Routes
+const staticRoutes = [
+  '',
+  '/attractions',
+  '/buy-ticket',
+  '/blog',
+  '/private-tours',
+  '/sunset-special',
+  '/route-map',
+  '/request-pickup',
+  '/about',
+  '/manage-booking',
+  '/privacy-policy',
+  '/terms-of-service',
+];
+
+// 2. Define your Attractions (from content)
+const attractions = [
+  'pena-palace',
+  'quinta-regaleira',
+  'moorish-castle',
+  'monserrate-palace',
+  'sintra-palace',
+  'convento-capuchos',
+  'cabo-da-roca',
+  'villa-sassetti',
+];
+
+// 3. Define Default Blog Articles
+const articles = [
+  'getting-to-sintra-from-lisbon',
+  'planning-perfect-day-sintra',
+  'sintra-on-budget'
+];
+
+const generateSitemap = () => {
+  // Get current date in YYYY-MM-DD format
+  const today = new Date().toISOString().split('T')[0];
+
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">`;
+
+  // Add Static Pages
+  staticRoutes.forEach(route => {
+    // Set priority based on page importance
+    let priority = '0.7';
+    let changefreq = 'weekly';
+    
+    if (route === '') {
+      priority = '1.0';
+      changefreq = 'daily';
+    } else if (route === '/buy-ticket') {
+      priority = '0.9';
+      changefreq = 'daily';
+    } else if (route === '/attractions' || route === '/blog' || route === '/private-tours') {
+      priority = '0.9';
+      changefreq = 'weekly';
+    } else if (route === '/sunset-special') {
+      priority = '0.8';
+      changefreq = 'weekly';
+    } else if (route === '/manage-booking') {
+      priority = '0.6';
+      changefreq = 'weekly';
+    } else if (route === '/privacy-policy' || route === '/terms-of-service') {
+      priority = '0.3';
+      changefreq = 'yearly';
+    } else if (route === '/about' || route === '/route-map') {
+      priority = '0.7';
+      changefreq = 'monthly';
+    }
+    
+    xml += `
+  <url>
+    <loc>${BASE_URL}${route}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>${changefreq}</changefreq>
+    <priority>${priority}</priority>
+  </url>`;
+  });
+
+  // Add Attractions
+  attractions.forEach(slug => {
+    xml += `
+  <url>
+    <loc>${BASE_URL}/${slug}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>`;
+  });
+
+  // Add Blog Articles
+  articles.forEach(slug => {
+    xml += `
+  <url>
+    <loc>${BASE_URL}/blog/${slug}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>`;
+  });
+
+  xml += `
+</urlset>`;
+
+  return xml;
+};
+
+// Write to public/sitemap.xml
+const publicDir = path.resolve(__dirname, '../public');
+const sitemapPath = path.join(publicDir, 'sitemap.xml');
+
+console.log('📁 Public directory path:', publicDir);
+console.log('📄 Sitemap file path:', sitemapPath);
+
+// Ensure public dir exists
+if (!fs.existsSync(publicDir)){
+    console.log('⚠️  Public directory does not exist, creating it...');
+    fs.mkdirSync(publicDir, { recursive: true });
+}
+
+try {
+  const sitemapContent = generateSitemap();
+  fs.writeFileSync(sitemapPath, sitemapContent);
+  
+  // Verify the file was written
+  if (fs.existsSync(sitemapPath)) {
+    const stats = fs.statSync(sitemapPath);
+    console.log(`✅ Sitemap generated successfully!`);
+    console.log(`   Location: ${sitemapPath}`);
+    console.log(`   Size: ${stats.size} bytes`);
+    console.log(`   URLs: 23 pages included`);
+  } else {
+    console.error('❌ File was not created!');
+    process.exit(1);
+  }
+} catch (error) {
+  console.error('❌ Error generating sitemap:', error);
+  process.exit(1);
+}

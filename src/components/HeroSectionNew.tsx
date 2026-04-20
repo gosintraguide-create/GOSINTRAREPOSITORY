@@ -67,7 +67,9 @@ export function HeroSection({
 
                   {/* Key Benefits */}
                   <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-6">
-                    {heroBenefitPills.map(
+                    {heroBenefitPills
+                      .filter(benefit => !benefit.text.toLowerCase().includes('10') && !benefit.text.toLowerCase().includes('15'))
+                      .map(
                       (benefit, index) => {
                         const IconComponent =
                           benefit.icon === "Users"
@@ -103,6 +105,16 @@ export function HeroSection({
                       onClick={() => onNavigate("buy-ticket")}
                     >
                       {heroCtaButton}
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Button>
+                    
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="h-12 sm:h-14 w-full max-w-xs sm:max-w-sm border-2 border-white/90 bg-white/10 backdrop-blur-sm px-8 sm:px-10 text-base sm:text-lg text-white shadow-2xl hover:scale-105 hover:bg-white/20"
+                      onClick={() => onNavigate("private-tours")}
+                    >
+                      Check our Private Tours
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                   </div>

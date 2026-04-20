@@ -833,19 +833,49 @@ export function ContentEditor() {
         </div>
         <Tabs value={currentLanguage} onValueChange={setCurrentLanguage}>
           <TabsList className="grid w-full grid-cols-7">
-            {SUPPORTED_LANGUAGES.map(lang => (
-              <TabsTrigger 
-                key={lang.code} 
-                value={lang.code}
-                className="text-xs"
-              >
-                <span className="mr-1">{lang.flag}</span>
-                {lang.code.toUpperCase()}
-                {translationStatus.exists[lang.code] && (
-                  <span className="ml-1 text-green-500">✓</span>
-                )}
-              </TabsTrigger>
-            ))}
+            {SUPPORTED_LANGUAGES.map(lang => {
+              const isEnabled = content.adminSettings?.enabledLanguages?.includes(lang.code) ?? true;
+              const isEnglish = lang.code === 'en';
+              
+              return (
+                <div key={lang.code} className="relative">
+                  <TabsTrigger 
+                    value={lang.code}
+                    className="text-xs w-full relative"
+                    disabled={!isEnabled && !isEnglish}
+                  >
+                    <span className="mr-1">{lang.flag}</span>
+                    {lang.code.toUpperCase()}
+                    {translationStatus.exists[lang.code] && (
+                      <span className="ml-1 text-green-500">✓</span>
+                    )}
+                  </TabsTrigger>
+                  {/* Toggle button in top-right corner */}
+                  {!isEnglish && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const currentEnabledLanguages = content.adminSettings?.enabledLanguages || ['en', 'pt', 'es', 'fr', 'de', 'nl', 'it'];
+                        const newEnabledLanguages = isEnabled
+                          ? currentEnabledLanguages.filter(code => code !== lang.code)
+                          : [...currentEnabledLanguages, lang.code];
+                        
+                        updateContent(["adminSettings", "enabledLanguages"], newEnabledLanguages);
+                      }}
+                      className="absolute -top-1 -right-1 z-10 h-4 w-4 rounded-full border border-border bg-background flex items-center justify-center hover:bg-secondary transition-colors"
+                      title={isEnabled ? `Disable ${lang.name}` : `Enable ${lang.name}`}
+                    >
+                      {isEnabled ? (
+                        <ToggleRight className="h-3 w-3 text-green-600" />
+                      ) : (
+                        <ToggleLeft className="h-3 w-3 text-gray-400" />
+                      )}
+                    </button>
+                  )}
+                </div>
+              );
+            })}
           </TabsList>
         </Tabs>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -853,6 +883,10 @@ export function ContentEditor() {
             ? 'Editing the base English content. Changes can be auto-translated to other languages.' 
             : `Editing ${SUPPORTED_LANGUAGES.find(l => l.code === currentLanguage)?.name} translation. Changes will only affect this language.`
           }
+        </p>
+        <p className="mt-2 text-xs text-muted-foreground flex items-center gap-1">
+          <ToggleRight className="h-3 w-3" />
+          Click the toggle buttons on language tabs to enable/disable them on your public site
         </p>
       </Card>
 

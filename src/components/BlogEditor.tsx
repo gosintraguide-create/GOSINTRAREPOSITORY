@@ -22,6 +22,7 @@ import {
   projectId,
   publicAnonKey,
 } from "../utils/supabase/info";
+import { loadComprehensiveContentForLanguage } from "../lib/comprehensiveContent";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Badge } from "./ui/badge";
@@ -90,6 +91,7 @@ export function BlogEditor() {
   const [tagSearchQuery, setTagSearchQuery] = useState("");
   const contentTextareaRef = useRef<HTMLTextAreaElement>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [enabledLanguages, setEnabledLanguages] = useState<string[]>(['en', 'pt', 'es', 'fr', 'de', 'nl', 'it']);
 
   useEffect(() => {
     const loadData = async () => {
@@ -108,6 +110,10 @@ export function BlogEditor() {
         setArticles(loadedArticles);
         setCategories(loadedCategories);
         setAvailableTags(loadBlogTags());
+        
+        // Load enabled languages from content settings
+        const contentSettings = loadComprehensiveContentForLanguage('en');
+        setEnabledLanguages(contentSettings.adminSettings?.enabledLanguages || ['en', 'pt', 'es', 'fr', 'de', 'nl', 'it']);
       } catch (error) {
         console.error(
           "Error loading blog data from server:",
@@ -117,6 +123,10 @@ export function BlogEditor() {
         setArticles(loadArticles());
         setCategories(loadCategories());
         setAvailableTags(loadBlogTags());
+        
+        // Load enabled languages from content settings
+        const contentSettings = loadComprehensiveContentForLanguage('en');
+        setEnabledLanguages(contentSettings.adminSettings?.enabledLanguages || ['en', 'pt', 'es', 'fr', 'de', 'nl', 'it']);
       } finally {
         setIsLoading(false);
       }
@@ -456,7 +466,7 @@ export function BlogEditor() {
                       )}
                       {/* Show language indicators */}
                       <div className="flex gap-1">
-                        {SUPPORTED_LANGUAGES.map(
+                        {SUPPORTED_LANGUAGES.filter(lang => enabledLanguages.includes(lang.code)).map(
                           (lang) =>
                             article.translations[lang.code] && (
                               <Badge
@@ -549,8 +559,8 @@ export function BlogEditor() {
                       value={currentLanguage}
                       onValueChange={setCurrentLanguage}
                     >
-                      <TabsList className="grid w-full grid-cols-7">
-                        {SUPPORTED_LANGUAGES.map((lang) => (
+                      <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${enabledLanguages.length}, minmax(0, 1fr))` }}>
+                        {SUPPORTED_LANGUAGES.filter(lang => enabledLanguages.includes(lang.code)).map((lang) => (
                           <TabsTrigger
                             key={lang.code}
                             value={lang.code}
