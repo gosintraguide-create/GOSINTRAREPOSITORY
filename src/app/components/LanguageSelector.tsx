@@ -1,0 +1,75 @@
+import { Globe } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { FlagGB, FlagPT, FlagES, FlagFR, FlagDE, FlagNL, FlagIT } from "./FlagIcons";
+import { useEditableContent } from "../lib/useEditableContent";
+
+interface Language {
+  code: string;
+  name: string;
+  nativeName: string;
+  FlagComponent: React.ComponentType<{ className?: string }>;
+}
+
+const languages: Language[] = [
+  { code: "en", name: "English", nativeName: "English", FlagComponent: FlagGB },
+  { code: "pt", name: "Portuguese", nativeName: "Português", FlagComponent: FlagPT },
+  { code: "es", name: "Spanish", nativeName: "Español", FlagComponent: FlagES },
+  { code: "fr", name: "French", nativeName: "Français", FlagComponent: FlagFR },
+  { code: "de", name: "German", nativeName: "Deutsch", FlagComponent: FlagDE },
+  { code: "nl", name: "Dutch", nativeName: "Nederlands", FlagComponent: FlagNL },
+  { code: "it", name: "Italian", nativeName: "Italiano", FlagComponent: FlagIT },
+];
+
+interface LanguageSelectorProps {
+  currentLanguage: string;
+  onLanguageChange: (language: string) => void;
+}
+
+export function LanguageSelector({ currentLanguage, onLanguageChange }: LanguageSelectorProps) {
+  // Get enabled languages from content settings
+  const content = useEditableContent(currentLanguage);
+  const enabledLanguages = content?.adminSettings?.enabledLanguages || ['en', 'pt', 'es', 'fr', 'de', 'nl', 'it'];
+  
+  // Filter languages to only show enabled ones
+  const availableLanguages = languages.filter(lang => enabledLanguages.includes(lang.code));
+  
+  // Ensure at least English is available
+  const finalLanguages = availableLanguages.length > 0 ? availableLanguages : [languages[0]];
+  
+  const selectedLanguage = finalLanguages.find((lang) => lang.code === currentLanguage) || finalLanguages[0];
+  const SelectedFlag = selectedLanguage.FlagComponent;
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="flex h-9 items-center gap-2 rounded-lg border border-border bg-background px-3 text-foreground transition-colors hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+        <SelectedFlag className="w-5 h-4 rounded-sm border border-border/50" />
+        <span className="text-sm">{selectedLanguage.code.toUpperCase()}</span>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-48">
+        {finalLanguages.map((language) => {
+          const FlagComponent = language.FlagComponent;
+          return (
+            <DropdownMenuItem
+              key={language.code}
+              onClick={() => onLanguageChange(language.code)}
+              className={`flex cursor-pointer items-center gap-3 ${
+                currentLanguage === language.code ? "bg-primary/10 text-primary" : ""
+              }`}
+            >
+              <FlagComponent className="w-6 h-4 rounded-sm border border-border/50" />
+              <span className="text-foreground">{language.nativeName}</span>
+              {currentLanguage === language.code && (
+                <span className="ml-auto text-primary">✓</span>
+              )}
+            </DropdownMenuItem>
+          );
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backend Status Test - Hop On Sintra</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0A4D5C 0%, #D97843 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #0A4D5C;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .status-box {
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .status-box.checking {
+            background: #E3F2FD;
+            border: 2px solid #2196F3;
+            color: #1565C0;
+            display: block;
+        }
+        
+        .status-box.success {
+            background: #E8F5E9;
+            border: 2px solid #4CAF50;
+            color: #2E7D32;
+            display: block;
+        }
+        
+        .status-box.error {
+            background: #FFEBEE;
+            border: 2px solid #F44336;
+            color: #C62828;
+            display: block;
+        }
+        
+        .status-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .status-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .status-message {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        
+        .details {
+            background: rgba(0, 0, 0, 0.05);
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            margin-top: 10px;
+            word-break: break-all;
+        }
+        
+        button {
+            background: #0A4D5C;
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #083d4a;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .info-box {
+            background: #FFF3E0;
+            border: 2px solid #FF9800;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .info-box strong {
+            color: #E65100;
+        }
+        
+        .links {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .links a {
+            color: #0A4D5C;
+            text-decoration: none;
+            display: inline-block;
+            margin-right: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Backend Status Test</h1>
+        <p class="subtitle">Test if the Supabase Edge Function is deployed and accessible</p>
+        
+        <div class="info-box">
+            <strong>Why this test?</strong><br>
+            If bookings aren't working or emails aren't sending, it's usually because the backend service is not deployed. This test checks if it's accessible.
+        </div>
+        
+        <div id="status" class="status-box">
+            <div class="status-icon">⏳</div>
+            <div class="status-title">Checking backend...</div>
+            <div class="status-message">Please wait while we test the connection.</div>
+        </div>
+        
+        <button id="testBtn" onclick="testBackend()">
+            Run Backend Test
+        </button>
+        
+        <div class="links">
+            <a href="/diagnostics" target="_blank">📊 Full Diagnostics</a>
+            <a href="https://supabase.com/dashboard/project/dwiznaefeqnduglmcivr/functions" target="_blank">⚙️ Supabase Dashboard</a>
+            <a href="/" target="_blank">🏠 Home</a>
+        </div>
+    </div>
+    
+    <script>
+        const projectId = "dwiznaefeqnduglmcivr";
+        const anonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR3aXpuYWVmZXFuZHVnbG1jaXZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxNzc5NzYsImV4cCI6MjA3NTc1Mzk3Nn0.cTO16eeGusYnwjVwVVt1i4M8gQZ_MtDxyv9wYFHBVLo";
+        
+        async function testBackend() {
+            const statusBox = document.getElementById('status');
+            const testBtn = document.getElementById('testBtn');
+            
+            // Reset and show checking status
+            statusBox.className = 'status-box checking';
+            statusBox.innerHTML = `
+                <div class="status-icon">⏳</div>
+                <div class="status-title">Testing Backend...</div>
+                <div class="status-message">Connecting to Supabase Edge Function...</div>
+            `;
+            testBtn.disabled = true;
+            testBtn.innerHTML = '<span class="spinner"></span> Testing...';
+            
+            console.log("🔍 Starting backend test...");
+            console.log("📍 Project ID:", projectId);
+            console.log("🔗 Testing endpoint:", `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/health`);
+            
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                
+                const response = await fetch(
+                    `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/health`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${anonKey}`,
+                        },
+                        signal: controller.signal
+                    }
+                );
+                
+                clearTimeout(timeoutId);
+                
+                console.log("📥 Response:", response.status, response.statusText);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log("✅ Success! Data:", data);
+                    
+                    statusBox.className = 'status-box success';
+                    statusBox.innerHTML = `
+                        <div class="status-icon">✅</div>
+                        <div class="status-title">Backend is Online!</div>
+                        <div class="status-message">
+                            The Supabase Edge Function is deployed and responding correctly.
+                            <br><br>
+                            <strong>This means:</strong>
+                            <ul style="margin-left: 20px; margin-top: 10px;">
+                                <li>✅ Bookings should work</li>
+                                <li>✅ Payments should process</li>
+                                <li>✅ Emails should send</li>
+                                <li>✅ QR codes should generate</li>
+                            </ul>
+                        </div>
+                        <div class="details">
+                            Status: ${data.status}<br>
+                            Timestamp: ${data.timestamp}<br>
+                            Response Time: ${Math.round(performance.now())}ms
+                        </div>
+                    `;
+                } else {
+                    console.error("❌ Error response:", response.status);
+                    
+                    let errorMessage = "The backend returned an error.";
+                    let troubleshooting = "";
+                    
+                    if (response.status === 404) {
+                        errorMessage = "Backend Not Found (404)";
+                        troubleshooting = `
+                            <strong>This means the Edge Function is NOT deployed.</strong><br><br>
+                            <strong>How to fix:</strong><br>
+                            1. Go to <a href="https://supabase.com/dashboard/project/${projectId}/functions" target="_blank">Supabase Dashboard</a><br>
+                            2. Check if 'make-server-3bd0ade8' function exists<br>
+                            3. Deploy it if it's not deployed<br>
+                            4. Re-run this test
+                        `;
+                    } else if (response.status === 401) {
+                        errorMessage = "Authentication Failed (401)";
+                        troubleshooting = "Check API keys in Supabase settings.";
+                    } else if (response.status === 500) {
+                        errorMessage = "Server Error (500)";
+                        troubleshooting = "Check Edge Function logs in Supabase Dashboard for error details.";
+                    }
+                    
+                    statusBox.className = 'status-box error';
+                    statusBox.innerHTML = `
+                        <div class="status-icon">❌</div>
+                        <div class="status-title">${errorMessage}</div>
+                        <div class="status-message">
+                            ${troubleshooting}
+                        </div>
+                        <div class="details">
+                            HTTP Status: ${response.status} ${response.statusText}<br>
+                            Endpoint: /make-server-3bd0ade8/health
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error("❌ Test failed:", error);
+                
+                let errorType = "Unknown Error";
+                let errorMessage = error.message;
+                let troubleshooting = "";
+                
+                if (error.name === 'AbortError') {
+                    errorType = "Connection Timeout";
+                    errorMessage = "The backend didn't respond within 10 seconds.";
+                    troubleshooting = "The Edge Function may be starting up, or it's not deployed.";
+                } else if (error.message.includes('Failed to fetch')) {
+                    errorType = "Cannot Reach Backend";
+                    errorMessage = "Unable to connect to the backend service.";
+                    troubleshooting = `
+                        <strong>Possible causes:</strong><br>
+                        • Edge Function is not deployed<br>
+                        • Network/firewall blocking the request<br>
+                        • Supabase project is paused<br>
+                        • CORS configuration issue<br><br>
+                        <strong>Check:</strong> <a href="https://supabase.com/dashboard/project/${projectId}/functions" target="_blank">Supabase Dashboard</a>
+                    `;
+                }
+                
+                statusBox.className = 'status-box error';
+                statusBox.innerHTML = `
+                    <div class="status-icon">❌</div>
+                    <div class="status-title">${errorType}</div>
+                    <div class="status-message">
+                        ${errorMessage}<br><br>
+                        ${troubleshooting}
+                    </div>
+                    <div class="details">
+                        Error: ${error.message}<br>
+                        Type: ${error.constructor.name}
+                    </div>
+                `;
+            } finally {
+                testBtn.disabled = false;
+                testBtn.innerHTML = 'Run Test Again';
+            }
+        }
+    </script>
+</body>
+</html>

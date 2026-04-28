@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>Hop On Sintra</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      // IMMEDIATE CHECK - Redirect to fresh start if not cleared
+      (function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const hasFreshParam = urlParams.get('fresh') === 'true' || urlParams.get('v') === '13';
+        const hasCleared = sessionStorage.getItem('fresh-start-completed') === 'true' || 
+                          sessionStorage.getItem('cache-cleared-v13-final') === 'true';
+        
+        // If we haven't cleared the cache yet and don't have the fresh parameter, redirect
+        if (!hasCleared && !hasFreshParam) {
+          console.log('🔄 First load detected - redirecting to fresh start page...');
+          window.location.replace('/fresh-start.html');
+          return;
+        }
+        
+        // Mark that we've been through the process
+        if (hasFreshParam && !hasCleared) {
+          sessionStorage.setItem('fresh-start-completed', 'true');
+          sessionStorage.setItem('cache-cleared-v13-final', 'true');
+        }
+        
+        console.log('✅ Cache cleared - loading app normally');
+      })();
+    </script>
+    <script type="module">
+      // Error handler for module loading failures
+      window.addEventListener('error', (event) => {
+        if (event.message && event.message.includes('Failed to fetch dynamically imported module')) {
+          console.error('❌ Module loading error detected:', event.message);
+          console.log('🔄 Redirecting to fresh start...');
+          event.preventDefault();
+          sessionStorage.removeItem('fresh-start-completed');
+          sessionStorage.removeItem('cache-cleared-v13-final');
+          setTimeout(() => {
+            window.location.replace('/fresh-start.html');
+          }, 100);
+        }
+      }, true);
+      
+      // Also catch unhandled promise rejections
+      window.addEventListener('unhandledrejection', (event) => {
+        if (event.reason && event.reason.message && 
+            event.reason.message.includes('Failed to fetch dynamically imported module')) {
+          console.error('❌ Promise rejection - module loading error:', event.reason);
+          console.log('🔄 Redirecting to fresh start...');
+          event.preventDefault();
+          sessionStorage.removeItem('fresh-start-completed');
+          sessionStorage.removeItem('cache-cleared-v13-final');
+          setTimeout(() => {
+            window.location.replace('/fresh-start.html');
+          }, 100);
+        }
+      });
+    </script>
+    <script type="module" src="/src/entry.tsx"></script>
+  </body>
+</html>

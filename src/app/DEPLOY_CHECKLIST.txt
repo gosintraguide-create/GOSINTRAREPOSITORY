@@ -1,0 +1,182 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                  🚀 VERCEL DEPLOYMENT CHECKLIST                              ║
+║                      Hop On Sintra - SPA Routing Fix                          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📋 PRE-DEPLOYMENT
+────────────────────────────────────────────────────────────────────────────────
+[ ] vercel.json updated with new rewrite rules
+[ ] vite.config.ts has drop_console: false (temporary)
+[ ] App.tsx has debug console logs
+[ ] All files saved
+[ ] No TypeScript errors (run: npm run type-check)
+
+🔄 GIT COMMIT & PUSH
+────────────────────────────────────────────────────────────────────────────────
+Run these commands:
+
+    git add vercel.json vite.config.ts App.tsx
+    git commit -m "Fix Vercel SPA routing with proper exclusions"
+    git push
+
+[ ] Git push successful
+[ ] Check GitHub to confirm files updated
+
+🌐 VERCEL DASHBOARD
+────────────────────────────────────────────────────────────────────────────────
+1. Go to: https://vercel.com/dashboard
+2. Select your project
+3. Go to "Deployments" tab
+4. Click "..." (three dots) on latest deployment
+5. Click "Redeploy"
+6. ⚠️  UNCHECK "Use existing Build Cache"  ⚠️
+7. Click "Redeploy"
+
+[ ] Redeploy started
+[ ] Watching deployment logs
+[ ] Build completed successfully
+[ ] Deployment ready
+
+⚙️ VERIFY VERCEL SETTINGS
+────────────────────────────────────────────────────────────────────────────────
+Settings → General → Build & Development Settings:
+
+Framework Preset:     [ ] Vite (or Other)
+Build Command:        [ ] npm run build
+Output Directory:     [ ] dist
+Install Command:      [ ] npm install (default)
+
+[ ] All settings correct
+
+🧪 TEST DEPLOYMENT
+────────────────────────────────────────────────────────────────────────────────
+Open browser with DevTools Console (F12)
+
+Test these URLs directly (copy/paste into browser):
+
+[ ] https://your-domain.vercel.app/
+[ ] https://your-domain.vercel.app/attractions
+[ ] https://your-domain.vercel.app/buy-ticket
+[ ] https://your-domain.vercel.app/about
+[ ] https://your-domain.vercel.app/contact
+[ ] https://your-domain.vercel.app/faq
+[ ] https://your-domain.vercel.app/route-map
+[ ] https://your-domain.vercel.app/pena-palace
+[ ] https://your-domain.vercel.app/quinta-regaleira
+
+📊 CONSOLE LOGS CHECK
+────────────────────────────────────────────────────────────────────────────────
+When visiting /attractions, you should see in console:
+
+    [App] Initial URL load: { pathname: "/attractions", ... }
+    [App] Parsed URL: { page: "attractions", ... }
+    [App] Setting page to: attractions
+
+[ ] Console logs appear correctly
+[ ] No errors in console
+[ ] Page renders correctly
+
+🔍 NETWORK TAB CHECK
+────────────────────────────────────────────────────────────────────────────────
+Open DevTools → Network tab
+Visit: /attractions directly
+
+Look for:
+[ ] Request to /attractions → Returns 200 OK (not 404)
+[ ] Response is index.html (not error page)
+[ ] Assets load from /assets/ folder
+[ ] All JS/CSS files load successfully
+
+✅ FUNCTIONALITY TEST
+────────────────────────────────────────────────────────────────────────────────
+[ ] Direct URL access works
+[ ] Navigation between pages works
+[ ] Browser back button works
+[ ] Browser forward button works
+[ ] Page refresh works (doesn't 404)
+[ ] Language selector works
+[ ] Mobile responsive layout works
+[ ] Service worker registers
+[ ] Images load correctly
+[ ] Booking flow works
+
+🎯 SPECIFIC FEATURES
+────────────────────────────────────────────────────────────────────────────────
+[ ] Buy ticket page loads
+[ ] Stripe payment form appears
+[ ] Attraction detail pages work
+[ ] Admin panel accessible (/admin - password: Sintra2025)
+[ ] WhatsApp chat button works
+[ ] Route map displays
+[ ] Blog pages work
+
+📱 MOBILE TEST
+────────────────────────────────────────────────────────────────────────────────
+[ ] Test on actual mobile device
+[ ] Responsive design works
+[ ] Touch navigation works
+[ ] PWA install prompt appears
+[ ] All pages accessible
+
+⚡ PERFORMANCE CHECK
+────────────────────────────────────────────────────────────────────────────────
+Run Lighthouse audit (Chrome DevTools → Lighthouse):
+
+[ ] Performance score > 85
+[ ] Accessibility score > 90
+[ ] Best Practices score > 90
+[ ] SEO score > 90
+
+🐛 IF ISSUES OCCUR
+────────────────────────────────────────────────────────────────────────────────
+1. Check deployment logs for errors
+2. Visit /vercel-test.html to diagnose routing
+3. Check Network tab for 404s
+4. Read VERCEL_TROUBLESHOOTING.md
+5. Try hard refresh: Ctrl+Shift+R (Windows) or Cmd+Shift+R (Mac)
+6. Try incognito/private window
+7. Clear browser cache
+8. Redeploy again without cache
+
+🎉 SUCCESS CRITERIA
+────────────────────────────────────────────────────────────────────────────────
+✅ All routes accessible via direct URL
+✅ No 404 errors
+✅ Console logs show correct page detection
+✅ Navigation works smoothly
+✅ All features functional
+✅ Mobile responsive
+✅ No console errors
+
+🧹 CLEANUP (After Success)
+────────────────────────────────────────────────────────────────────────────────
+Once everything works, clean up debug code:
+
+1. Edit vite.config.ts:
+   Change: drop_console: false
+   To:     drop_console: true
+
+2. (Optional) Remove debug logs from App.tsx
+
+3. Commit and push:
+   git add vite.config.ts
+   git commit -m "Re-enable console dropping for production"
+   git push
+
+[ ] Cleanup completed
+[ ] Final deployment successful
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                              🎊 DEPLOYMENT COMPLETE!                         ║
+║                                                                              ║
+║  Your Hop On Sintra website should now work perfectly on Vercel with all    ║
+║  routes accessible via direct URLs. Enjoy your fully functional site! 🚀     ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+Need help? Check these files:
+• DEPLOY_NOW.md - Quick deployment guide
+• VERCEL_FIX_SUMMARY.md - Complete fix explanation
+• VERCEL_TROUBLESHOOTING.md - Detailed debugging guide
+
+Created: November 24, 2025
+Status: Ready to Deploy ✅

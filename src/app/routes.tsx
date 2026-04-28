@@ -1,0 +1,353 @@
+import { createBrowserRouter, Navigate } from "react-router";
+import { lazy } from "react";
+import { RootLayout } from "@/components/RootLayout";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { RouterErrorFallback } from "@/components/RouterErrorFallback";
+
+// Lazy load pages - using @/ alias for consistent module resolution
+const HomePage = lazy(() => import("@/components/HomePage").then(m => ({ default: m.HomePage })));
+const AttractionsPage = lazy(() => import("@/components/AttractionsPage").then(m => ({ default: m.AttractionsPage })));
+const AttractionDetailPage = lazy(() => import("@/components/AttractionDetailPage").then(m => ({ default: m.AttractionDetailPage })));
+const PrivateToursPage = lazy(() => import("@/components/PrivateToursPage").then(m => ({ default: m.PrivateToursPage })));
+const PrivateTourDetailPage = lazy(() => import("@/components/PrivateTourDetailPage").then(m => ({ default: m.PrivateTourDetailPage })));
+const HopOnServiceDetailPage = lazy(() => import("@/components/HopOnServiceDetailPage").then(m => ({ default: m.HopOnServiceDetailPage })));
+const BuyTicketPage = lazy(() => import("@/components/BuyTicketPage").then(m => ({ default: m.BuyTicketPage })));
+const SunsetSpecialPurchasePage = lazy(() => import("@/components/SunsetSpecialPurchasePage").then(m => ({ default: m.SunsetSpecialPurchasePage })));
+const LiveChatPage = lazy(() => import("@/components/LiveChatPage").then(m => ({ default: m.LiveChatPage })));
+const AboutPage = lazy(() => import("@/components/AboutPage").then(m => ({ default: m.AboutPage })));
+const BlogPage = lazy(() => import("@/components/BlogPage").then(m => ({ default: m.BlogPage })));
+const BlogArticlePage = lazy(() => import("@/components/BlogArticlePage").then(m => ({ default: m.BlogArticlePage })));
+const RouteMapPage = lazy(() => import("@/components/RouteMapPage").then(m => ({ default: m.RouteMapPage })));
+const AdminPage = lazy(() => import("@/components/AdminPage").then(m => ({ default: m.AdminPage })));
+const DriverPortalPage = lazy(() => import("@/components/DriverPortalPage").then(m => ({ default: m.DriverPortalPage })));
+const QRScannerPage = lazy(() => import("@/components/QRScannerPage").then(m => ({ default: m.QRScannerPage })));
+const NotFoundPage = lazy(() => import("@/components/NotFoundPage").then(m => ({ default: m.NotFoundPage })));
+const ManageBookingPage = lazy(() => import("@/components/ManageBookingPage").then(m => ({ default: m.ManageBookingPage })));
+const RequestPickupPage = lazy(() => import("@/components/RequestPickupPage").then(m => ({ default: m.RequestPickupPage })));
+const PrivacyPolicyPage = lazy(() => import("@/components/PrivacyPolicyPage").then(m => ({ default: m.PrivacyPolicyPage })));
+const TermsOfServicePage = lazy(() => import("@/components/TermsOfServicePage").then(m => ({ default: m.TermsOfServicePage })));
+
+// Slug generation helper
+export function generateSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+// Attraction slug mapping (based on common attraction names)
+export const attractionSlugs: Record<string, string> = {
+  "pena-palace": "pena-palace",
+  "quinta-da-regaleira": "quinta-da-regaleira",
+  "moorish-castle": "moorish-castle",
+  "monserrate-palace": "monserrate-palace",
+  "sintra-national-palace": "sintra-national-palace",
+  "cabo-da-roca": "cabo-da-roca",
+  "park-and-palace-of-pena": "pena-palace",
+  "parque-e-palacio-da-pena": "pena-palace",
+};
+
+export const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootLayout />,
+    errorElement: <RouterErrorFallback />,
+    children: [
+      {
+        index: true,
+        element: <HomePage />,
+        handle: {
+          meta: {
+            title: "Hop On Sintra - Unlimited Day Pass for Sintra Sightseeing",
+            description:
+              "Explore Sintra's palaces and attractions at your own pace with unlimited hop-on/hop-off rides. Buy your day pass online for guaranteed seating in tuk-tuks and UMM jeeps.",
+            keywords:
+              "Sintra day pass, Sintra transportation, hop on hop off Sintra, Sintra sightseeing, Pena Palace transport, Sintra tuk tuk",
+            index: true,
+          },
+        },
+      },
+      {
+        path: "hop-on-service",
+        element: <HopOnServiceDetailPage />,
+        handle: {
+          meta: {
+            title: "Hop On Day Pass - Unlimited Sintra Transportation Service",
+            description:
+              "Discover how our unlimited day pass works. Hop on and off as many times as you want with guaranteed seating in tuk-tuks and UMM jeeps from 9am to 7pm daily.",
+            keywords:
+              "Hop On Sintra service, Sintra day pass details, unlimited rides Sintra, hop on hop off service, Sintra transportation pass",
+            index: true,
+          },
+        },
+      },
+      {
+        path: "attractions",
+        element: (
+          <ErrorBoundary>
+            <AttractionsPage />
+          </ErrorBoundary>
+        ),
+        handle: {
+          meta: {
+            title: "Sintra Attractions - Top Palaces & Historic Sites",
+            description:
+              "Discover Sintra's UNESCO World Heritage attractions including Pena Palace, Quinta da Regaleira, Moorish Castle, and more. Buy combined tickets with your day pass.",
+            keywords:
+              "Sintra attractions, Pena Palace, Quinta da Regaleira, Moorish Castle, Monserrate Palace, Sintra palaces, UNESCO Sintra",
+            index: true,
+          },
+        },
+      },
+      {
+        path: "attractions/:slug",
+        element: (
+          <ErrorBoundary>
+            <AttractionDetailPage />
+          </ErrorBoundary>
+        ),
+        handle: {
+          meta: {
+            index: true,
+          },
+        },
+      },
+      {
+        path: "private-tours",
+        element: <PrivateToursPage />,
+        handle: {
+          meta: {
+            title: "Private Tours of Sintra - Personalized Guided Experiences",
+            description:
+              "Experience Sintra your way with a private tour. Expert local guides, custom itineraries, and flexible schedules. Perfect for families, couples, and groups.",
+            keywords:
+              "Sintra private tours, private Sintra guide, custom Sintra tour, personalized Sintra experience, private guide Sintra",
+            index: true,
+          },
+        },
+      },
+      {
+        path: "private-tours/:slug",
+        element: <PrivateTourDetailPage />,
+        handle: {
+          meta: {
+            index: true,
+          },
+        },
+      },
+      {
+        path: "blog",
+        element: <BlogPage />,
+        handle: {
+          meta: {
+            title: "Sintra Travel Blog - Tips, Guides & Hidden Gems",
+            description:
+              "Discover insider tips, travel guides, and hidden gems of Sintra. Expert advice on visiting palaces, best photography spots, and local recommendations.",
+            keywords:
+              "Sintra blog, Sintra travel tips, Sintra guide, visit Sintra, Sintra photography, Sintra hidden gems",
+            index: true,
+          },
+        },
+      },
+      {
+        path: "blog/:slug",
+        element: <BlogArticlePage />,
+        handle: {
+          meta: {
+            index: true,
+          },
+        },
+      },
+      {
+        path: "about",
+        element: <AboutPage />,
+        handle: {
+          meta: {
+            title: "About Hop On Sintra - Your Sintra Day Pass Service",
+            description:
+              "Learn about Hop On Sintra's unlimited day pass service. Guaranteed seating, professional drivers, and flexible hop-on/hop-off access to all of Sintra's attractions.",
+            keywords:
+              "about Hop On Sintra, Sintra transport service, Sintra day pass info, about us",
+            index: true,
+          },
+        },
+      },
+      {
+        path: "live-chat",
+        element: <LiveChatPage />,
+        handle: {
+          meta: {
+            title: "Contact Us - Hop On Sintra Customer Support",
+            description:
+              "Get instant help with your Sintra day pass. Chat with our team via WhatsApp for booking assistance, questions, and travel advice.",
+            keywords: "Sintra contact, Hop On Sintra support, Sintra help, WhatsApp contact",
+            index: true,
+          },
+        },
+      },
+      {
+        path: "route-map",
+        element: <RouteMapPage />,
+        handle: {
+          meta: {
+            title: "Route Map - Hop On Sintra Stops & Attractions",
+            description:
+              "View all Hop On Sintra pickup points and attraction stops. Plan your route and see how to get to Pena Palace, Quinta da Regaleira, and more.",
+            keywords:
+              "Sintra route map, Sintra stops, hop on hop off map, Sintra pickup points, Sintra transport map",
+            index: true,
+          },
+        },
+      },
+      {
+        path: "buy-ticket",
+        element: (
+          <ErrorBoundary>
+            <BuyTicketPage />
+          </ErrorBoundary>
+        ),
+        handle: {
+          meta: {
+            title: "Buy Day Pass - Hop On Sintra",
+            description: "Purchase your Sintra day pass for unlimited hop-on/hop-off access.",
+            index: false,
+          },
+        },
+      },
+      {
+        path: "sunset-special",
+        element: (
+          <ErrorBoundary>
+            <SunsetSpecialPurchasePage />
+          </ErrorBoundary>
+        ),
+        handle: {
+          meta: {
+            title: "Sunset Special - Hop On Sintra",
+            description: "Purchase your Sintra sunset special for unlimited hop-on/hop-off access.",
+            index: false,
+          },
+        },
+      },
+      {
+        path: "manage-booking",
+        element: (
+          <ErrorBoundary>
+            <ManageBookingPage />
+          </ErrorBoundary>
+        ),
+        handle: {
+          meta: {
+            title: "Manage Your Booking - Hop On Sintra",
+            description: "View and manage your Sintra day pass booking.",
+            index: false,
+          },
+        },
+      },
+      {
+        path: "request-pickup",
+        element: (
+          <ErrorBoundary>
+            <RequestPickupPage />
+          </ErrorBoundary>
+        ),
+        handle: {
+          meta: {
+            title: "Request a Pickup - Hop On Sintra",
+            description: "Request a pickup for your Sintra day pass.",
+            index: false,
+          },
+        },
+      },
+      {
+        path: "privacy-policy",
+        element: (
+          <ErrorBoundary>
+            <PrivacyPolicyPage />
+          </ErrorBoundary>
+        ),
+        handle: {
+          meta: {
+            title: "Privacy Policy - Hop On Sintra",
+            description: "Read our privacy policy and learn how we protect your data.",
+            index: false,
+          },
+        },
+      },
+      {
+        path: "terms-of-service",
+        element: (
+          <ErrorBoundary>
+            <TermsOfServicePage />
+          </ErrorBoundary>
+        ),
+        handle: {
+          meta: {
+            title: "Terms of Service - Hop On Sintra",
+            description: "Read our terms of service and booking conditions.",
+            index: false,
+          },
+        },
+      },
+      {
+        path: "admin",
+        element: (
+          <ErrorBoundary>
+            <AdminPage />
+          </ErrorBoundary>
+        ),
+        handle: {
+          meta: {
+            title: "Admin Portal",
+            index: false,
+            protected: true,
+          },
+        },
+      },
+      {
+        path: "driver",
+        element: (
+          <ErrorBoundary>
+            <DriverPortalPage />
+          </ErrorBoundary>
+        ),
+        handle: {
+          meta: {
+            title: "Driver Portal",
+            index: false,
+            protected: true,
+          },
+        },
+      },
+      {
+        path: "qr-scanner",
+        element: (
+          <ErrorBoundary>
+            <QRScannerPage />
+          </ErrorBoundary>
+        ),
+        handle: {
+          meta: {
+            title: "QR Scanner",
+            index: false,
+            protected: true,
+          },
+        },
+      },
+      {
+        path: "404",
+        element: <NotFoundPage />,
+        handle: {
+          meta: {
+            title: "Page Not Found - Hop On Sintra",
+            index: false,
+          },
+        },
+      },
+      {
+        path: "*",
+        element: <Navigate to="/404" replace />,
+      },
+    ],
+  },
+]);

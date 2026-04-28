@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cache Clear - Hop On Sintra</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 { color: #0A4D5C; margin-top: 0; }
+    button {
+      background: #0A4D5C;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px 10px 10px 0;
+    }
+    button:hover { background: #083d4a; }
+    .success { color: #059669; font-weight: 600; }
+    .error { color: #dc2626; font-weight: 600; }
+    .log {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 6px;
+      margin-top: 20px;
+      font-family: monospace;
+      font-size: 12px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .log-item { margin: 5px 0; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🔧 Clear Cache & Fix Errors</h1>
+    <p>If you're seeing "Unexpected token '<'" errors, use this tool to clear all cached data.</p>
+    
+    <button onclick="clearEverything()">Clear All Cache</button>
+    <button onclick="clearAndReload()">Clear & Reload</button>
+    <button onclick="goHome()">Go to Homepage</button>
+    
+    <div id="status"></div>
+    <div id="log" class="log" style="display:none;"></div>
+  </div>
+
+  <script>
+    const status = document.getElementById('status');
+    const logDiv = document.getElementById('log');
+    const logs = [];
+
+    function addLog(message) {
+      const timestamp = new Date().toLocaleTimeString();
+      logs.push(`[${timestamp}] ${message}`);
+      logDiv.style.display = 'block';
+      logDiv.innerHTML = logs.map(l => `<div class="log-item">${l}</div>`).join('');
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
+
+    async function clearEverything() {
+      status.innerHTML = '<p>Clearing cache...</p>';
+      addLog('Starting cache clear process');
+      
+      let cleared = 0;
+      
+      // Clear all caches
+      if ('caches' in window) {
+        try {
+          const names = await caches.keys();
+          addLog(`Found ${names.length} cache(s)`);
+          for (const name of names) {
+            await caches.delete(name);
+            addLog(`Deleted cache: ${name}`);
+            cleared++;
+          }
+        } catch (e) {
+          addLog(`Error clearing caches: ${e.message}`);
+        }
+      }
+      
+      // Unregister service workers
+      if ('serviceWorker' in navigator) {
+        try {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          addLog(`Found ${registrations.length} service worker(s)`);
+          for (const reg of registrations) {
+            await reg.unregister();
+            addLog('Unregistered service worker');
+            cleared++;
+          }
+        } catch (e) {
+          addLog(`Error unregistering workers: ${e.message}`);
+        }
+      }
+      
+      // Clear storage
+      try {
+        localStorage.clear();
+        sessionStorage.clear();
+        addLog('Cleared localStorage and sessionStorage');
+        cleared++;
+      } catch (e) {
+        addLog(`Error clearing storage: ${e.message}`);
+      }
+      
+      if (cleared > 0) {
+        status.innerHTML = `<p class="success">✅ Successfully cleared ${cleared} items!</p>`;
+        addLog(`Total items cleared: ${cleared}`);
+      } else {
+        status.innerHTML = '<p class="error">❌ Nothing to clear or errors occurred</p>';
+      }
+    }
+
+    async function clearAndReload() {
+      await clearEverything();
+      status.innerHTML = '<p class="success">✅ Cache cleared! Reloading in 2 seconds...</p>';
+      addLog('Reloading page...');
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 2000);
+    }
+
+    function goHome() {
+      window.location.href = '/';
+    }
+
+    // Auto-clear if coming from error
+    if (window.location.search.includes('auto-clear')) {
+      addLog('Auto-clear triggered from URL parameter');
+      clearAndReload();
+    }
+  </script>
+</body>
+</html>

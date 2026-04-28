@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Starting Hop On Sintra...</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+</head>
+<body>
+  <script>
+    // IMMEDIATE REDIRECT - No checks, just go
+    (function() {
+      // Clear markers to force fresh start
+      try {
+        sessionStorage.removeItem('fresh-start-completed');
+        sessionStorage.removeItem('cache-cleared-v13-final');
+        sessionStorage.removeItem('cache-cleared-v12-fixed');
+        sessionStorage.removeItem('emergency-cleared');
+      } catch (e) {
+        console.error('Storage clear error:', e);
+      }
+      
+      // Redirect immediately
+      window.location.replace('/fresh-start.html');
+    })();
+  </script>
+  <div style="
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    font-family: sans-serif;
+    color: #667eea;
+  ">
+    <h1>🚍</h1>
+    <p>Starting...</p>
+  </div>
+</body>
+</html>

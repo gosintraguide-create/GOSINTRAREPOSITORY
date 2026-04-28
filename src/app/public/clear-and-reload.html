@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clearing Cache - Hop On Sintra</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+</head>
+<body>
+  <script>
+    // Nuclear option - clear EVERYTHING and reload
+    (async function() {
+      console.log('🚀 NUCLEAR CACHE CLEAR INITIATED');
+      
+      try {
+        // 1. Clear all caches
+        if ('caches' in window) {
+          const keys = await caches.keys();
+          console.log('Clearing caches:', keys);
+          await Promise.all(keys.map(k => caches.delete(k)));
+        }
+        
+        // 2. Unregister all service workers
+        if ('serviceWorker' in navigator) {
+          const regs = await navigator.serviceWorker.getRegistrations();
+          console.log('Unregistering service workers:', regs.length);
+          await Promise.all(regs.map(r => r.unregister()));
+        }
+        
+        // 3. Clear all storage
+        localStorage.clear();
+        sessionStorage.clear();
+        
+        // 4. Clear IndexedDB
+        if ('indexedDB' in window && indexedDB.databases) {
+          const dbs = await indexedDB.databases();
+          for (const db of dbs) {
+            if (db.name) indexedDB.deleteDatabase(db.name);
+          }
+        }
+        
+        console.log('✅ Everything cleared');
+        
+        // 5. Redirect with timestamp
+        const timestamp = Date.now();
+        window.location.replace('/?cleared=true&t=' + timestamp);
+        
+      } catch (error) {
+        console.error('Clear error:', error);
+        // Try to load anyway
+        window.location.replace('/');
+      }
+    })();
+  </script>
+  <div style="
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    font-family: sans-serif;
+    color: #667eea;
+  ">
+    <h1>Clearing Cache...</h1>
+    <p>Please wait...</p>
+  </div>
+</body>
+</html>
