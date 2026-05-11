@@ -5,6 +5,7 @@ import { ProductCard } from "./ProductCard";
 import { InfoCard } from "./InfoCard";
 import type { WebsiteContent } from "../lib/contentManager";
 import { useEditableContent } from "../lib/useEditableContent";
+import { getTranslation } from "../lib/translations/loader";
 
 interface HeroSectionProps {
   onNavigate: (page: string) => void;
@@ -23,14 +24,13 @@ export function HeroSection({
   legacyContent,
   content,
 }: HeroSectionProps) {
-  // Content is already passed in with the correct language, no need to call useEditableContent again
   const editableContent = content || legacyContent;
-  
-  // Safely access hero content with fallbacks
-  const heroTitle = editableContent?.homepage?.hero?.title || legacyContent.homepage.hero.title;
-  const heroSubtitle = editableContent?.homepage?.hero?.subtitle || legacyContent.homepage.hero.subtitle;
-  const heroCtaButton = editableContent?.homepage?.hero?.ctaButton || legacyContent.homepage.hero.ctaButton;
-  const heroBenefitPills = editableContent?.homepage?.hero?.benefitPills || legacyContent.homepage.hero.benefitPills || [];
+  const t = getTranslation(language).homepage.hero;
+
+  const heroTitle = t.title;
+  const heroSubtitle = t.subtitle;
+  const heroCtaButton = t.ctaButton;
+  const heroBenefitPills = t.benefitPills || [];
   
   // Use the Pena Palace image as the default hero image - no fallback to prevent flashing
   const defaultHeroImage = "https://dwiznaefeqnduglmcivr.supabase.co/storage/v1/object/sign/make-3bd0ade8-images/1762977905581_pena-palace-3.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmFjMWMyYy1lNjZlLTQwYWEtYjcwNS1kNTcwYzA5NGZmYzMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtYWtlLTNiZDBhZGU4LWltYWdlcy8xNzYyOTc3OTA1NTgxX3BlbmEtcGFsYWNlLTMuanBnIiwiaWF0IjoxNzYyOTc3OTA1LCJleHAiOjIwNzgzMzc5MDV9.yMxtg8g3UvVUzf-xdAwUmGyjRATPWQwdvRlpIa8D7eY";

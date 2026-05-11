@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from "./ui/alert";
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { toast } from 'sonner';
 import { useEditableContent } from "../lib/useEditableContent";
+import { getTranslation } from "../lib/translations/loader";
 
 interface SunsetSpecialCarouselProps {
   onNavigate: (page: string, params?: any) => void;
@@ -19,9 +20,10 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAvailable, setIsAvailable] = useState(false);
   
-  // Use editable content
+  // Use editable content (admin-configured data: images, title, description, timing)
   const content = useEditableContent(language);
   const sunsetSpecial = content?.homepage?.sunsetSpecial;
+  const ts = getTranslation(language).homepage;
   
   // Debug logging
   useEffect(() => {
@@ -79,7 +81,7 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
 
   const verifyBookingId = async () => {
     if (!bookingId.trim()) {
-      setVerificationError(sunsetSpecial?.dialog?.errorGeneric || "Please enter your booking ID");
+      setVerificationError(ts.sunsetSpecialErrorEnterBookingId);
       return;
     }
 
@@ -103,7 +105,7 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
         const data = await response.json();
         if (data.booking) {
           // Valid booking found!
-          toast.success("Booking verified! Redirecting...");
+          toast.success(ts.sunsetSpecialBookingVerified);
           setShowBookingDialog(false);
           
           // Store the verified booking ID for the sunset special purchase flow
@@ -114,14 +116,14 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
             onNavigate("sunset-special-purchase", { bookingId: bookingId.trim() });
           }, 500);
         } else {
-          setVerificationError(sunsetSpecial?.dialog?.errorNotFound || "Booking ID not found. Please check and try again.");
+          setVerificationError(ts.sunsetSpecialErrorNotFound);
         }
       } else {
-        setVerificationError(sunsetSpecial?.dialog?.errorNotFound || "Booking ID not found. Please check and try again.");
+        setVerificationError(ts.sunsetSpecialErrorNotFound);
       }
     } catch (error) {
       console.error("Error verifying booking ID:", error);
-      setVerificationError(sunsetSpecial?.dialog?.errorGeneric || "Unable to verify booking ID. Please try again.");
+      setVerificationError(ts.sunsetSpecialErrorUnableToVerify);
     } finally {
       setIsVerifying(false);
     }
@@ -147,7 +149,7 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
             {/* Special Badge */}
             <div className="absolute left-3 top-3 z-20 flex items-center gap-1.5 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 px-3 py-1.5 shadow-md">
               <Sparkles className="h-3.5 w-3.5 text-white" />
-              <span className="text-xs text-white">Today's Special</span>
+              <span className="text-xs text-white">{ts.sunsetSpecialBadge}</span>
             </div>
 
             {/* Images */}
@@ -227,7 +229,7 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
                 </div>
                 <div className="flex items-center gap-1.5 rounded-lg border border-orange-200 bg-orange-50 px-2.5 py-1.5">
                   <Users className="h-3.5 w-3.5 text-orange-600" />
-                  <span className="text-xs text-orange-700">Only {sunsetSpecial?.limitedSeats} Seats</span>
+                  <span className="text-xs text-orange-700">{ts.sunsetSpecialSeatsOnly} {sunsetSpecial?.limitedSeats} {ts.sunsetSpecialSeats}</span>
                 </div>
               </div>
             </div>
@@ -238,14 +240,14 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
               {!isAvailable && (
                 <div className="flex items-center gap-2 rounded-lg bg-orange-50 px-3 py-2 border border-orange-200">
                   <Clock className="h-4 w-4 text-orange-600" />
-                  <span className="text-sm text-orange-700">{sunsetSpecial?.comingSoonButtonText || "Coming Soon"}</span>
+                  <span className="text-sm text-orange-700">{ts.sunsetSpecialComingSoon}</span>
                 </div>
               )}
               
               {isAvailable && (
                 <div className="flex items-center gap-2 text-sm text-green-700">
                   <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                  <span>{sunsetSpecial?.availableNowText || "Available Now"}</span>
+                  <span>{ts.sunsetSpecialAvailableNow}</span>
                 </div>
               )}
 
@@ -259,7 +261,7 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
                     : "bg-gray-400 cursor-not-allowed"
                 } px-6 py-2.5 text-white shadow-md transition-all hover:shadow-lg disabled:hover:shadow-md`}
               >
-                {isAvailable ? (sunsetSpecial?.bookButtonText || "Book This Experience") : (sunsetSpecial?.comingSoonButtonText || "Coming Soon")}
+                {isAvailable ? ts.sunsetSpecialBookButton : ts.sunsetSpecialComingSoon}
               </Button>
             </div>
           </div>
@@ -272,19 +274,19 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Sunset className="h-5 w-5 text-orange-500" />
-              {sunsetSpecial?.dialog?.title || "Verify Your Booking"}
+              {ts.sunsetSpecialVerifyTitle}
             </DialogTitle>
             <DialogDescription>
-              {sunsetSpecial?.dialog?.description || "This exclusive sunset experience is available only to existing Hop On Sintra customers. Please enter your booking ID to continue."}
+              {ts.sunsetSpecialVerifyDescription}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="booking-id">{sunsetSpecial?.dialog?.bookingIdLabel || "Booking ID"}</Label>
+              <Label htmlFor="booking-id">{ts.sunsetSpecialBookingIdLabel}</Label>
               <Input
                 id="booking-id"
-                placeholder={sunsetSpecial?.dialog?.bookingIdPlaceholder || "e.g., GS-ABC123"}
+                placeholder={ts.sunsetSpecialBookingIdPlaceholder}
                 value={bookingId}
                 onChange={(e) => {
                   setBookingId(e.target.value);
@@ -295,7 +297,7 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
                 className="font-mono"
               />
               <p className="text-xs text-muted-foreground">
-                {sunsetSpecial?.dialog?.bookingIdHelp || "You can find your booking ID in your confirmation email"}
+                {ts.sunsetSpecialBookingIdHint}
               </p>
             </div>
 
@@ -312,7 +314,7 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
                 disabled={isVerifying}
                 className="flex-1"
               >
-                {sunsetSpecial?.dialog?.cancelButton || "Cancel"}
+                {ts.sunsetSpecialCancel}
               </Button>
               <Button
                 onClick={verifyBookingId}
@@ -322,12 +324,12 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
                 {isVerifying ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {sunsetSpecial?.dialog?.verifyingText || "Verifying..."}
+                    {ts.sunsetSpecialVerifying}
                   </>
                 ) : (
                   <>
                     <CheckCircle className="mr-2 h-4 w-4" />
-                    {sunsetSpecial?.dialog?.verifyButton || "Verify & Continue"}
+                    {ts.sunsetSpecialVerifyButton}
                   </>
                 )}
               </Button>
@@ -335,7 +337,7 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
 
             <div className="rounded-lg bg-blue-50 border border-blue-200 p-3 space-y-2">
               <p className="text-xs text-blue-900">
-                <strong>{sunsetSpecial?.dialog?.noBookingTitle || "Don't have a booking yet?"}</strong> {sunsetSpecial?.dialog?.noBookingDescription || "You need to book a Hop On Sintra day pass first to access this exclusive experience."}
+                <strong>{ts.sunsetSpecialNoBookingYet}</strong> {ts.sunsetSpecialNoBookingText}
               </p>
               <Button
                 variant="outline"
@@ -346,7 +348,7 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
                 }}
                 className="w-full text-xs bg-white hover:bg-blue-50 border-blue-300"
               >
-                {sunsetSpecial?.dialog?.getPassButton || "Get a Day Pass"}
+                {ts.sunsetSpecialGetDayPass}
               </Button>
             </div>
           </div>

@@ -245,10 +245,10 @@ export function AttractionsPage() {
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="mb-6 text-center">
             <h1 className="mb-3 text-primary font-extrabold text-[23px]">
-              {content.attractions.hero?.title || "Discover Sintra's Treasures"}
+              {t.attractionsPageTitle}
             </h1>
             <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-              {content.attractions.hero?.subtitle || "Explore UNESCO World Heritage Sites with Your Day Pass"}
+              {t.attractionsPageSubtitle}
             </p>
           </div>
 
@@ -256,7 +256,7 @@ export function AttractionsPage() {
             <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
             <Input
               type="text"
-              placeholder={t.searchAttractions}
+              placeholder={t.searchAttractions || "Search attractions..."}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="h-12 rounded-xl bg-secondary/30 pl-12 pr-4"
@@ -376,7 +376,7 @@ export function AttractionsPage() {
                     </p>
 
                     <div className="flex items-center gap-2 text-primary">
-                      <span>{t.explorMore || "Explore"}</span>
+                      <span>{t.exploreMore || "Explore"}</span>
                       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-2" />
                     </div>
                   </div>
@@ -479,17 +479,17 @@ export function AttractionsPage() {
           </div>
 
           <h2 className="mb-4 text-white">
-            {content.hopOnService?.callToAction?.title || "Ready to Explore Sintra?"}
+            {t.attractionsCtaTitle}
           </h2>
           <p className="mb-8 text-xl text-white/90">
-            {content.attractions.hero?.description || "Your Hop On Sintra day pass gives you access to all these magnificent attractions. Hop on and off as you please, spending as much time as you'd like at each location."}
+            {t.attractionsCtaDescription}
           </p>
           <Button
             size="lg"
             className="bg-white text-accent shadow-xl hover:bg-white/90"
             onClick={() => onNavigate("buy-ticket")}
           >
-            {content.hopOnService?.callToAction?.buttonText || "Book Your Day Pass"}
+            {t.attractionsCtaButton}
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </div>
