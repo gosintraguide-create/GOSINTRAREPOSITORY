@@ -3,6 +3,7 @@ import { useOutletContext } from "react-router";
 import { Users, Car, Award, Camera, Heart, Shield, Target } from "lucide-react";
 import {
   loadContentWithLanguage,
+  syncContentFromDatabaseWithLanguage,
   type WebsiteContent,
   DEFAULT_CONTENT,
 } from "../lib/contentManager";
@@ -20,7 +21,12 @@ export function AboutPage() {
   const [content, setContent] = useState<WebsiteContent>(DEFAULT_CONTENT);
 
   useEffect(() => {
+    // Immediately show from localStorage/defaults for fast render
     setContent(loadContentWithLanguage(language));
+    // Then fetch fresh data from database
+    syncContentFromDatabaseWithLanguage(language)
+      .then((dbContent) => setContent(dbContent))
+      .catch(() => {/* keep localStorage/default content */});
   }, [language]);
 
   const perks = [

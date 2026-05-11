@@ -206,7 +206,8 @@ export function BuyTicketPage() {
     pickupLocation: "sintra-train-station" as string,
   });
 
-  // Load feature flag from localStorage
+  // Load feature flag from localStorage (set by admin via FeatureFlagManager)
+  // Falls back to DEFAULT_CONTENT.featureFlags when no localStorage entry exists
   useEffect(() => {
     const checkFlags = () => {
       try {
@@ -216,6 +217,16 @@ export function BuyTicketPage() {
           setMonumentTicketsEnabled(
             parsed.monumentTicketsEnabled === true,
           );
+        } else {
+          // No admin override saved — use the content featureFlags from DB/defaults
+          const savedContent = localStorage.getItem("website-content");
+          if (savedContent) {
+            const parsed = JSON.parse(savedContent);
+            setMonumentTicketsEnabled(
+              parsed.featureFlags?.enableAttractionTickets === true,
+            );
+          }
+          // else: keep state at its initial false default
         }
       } catch (e) {
         console.error("Failed to parse feature flags:", e);

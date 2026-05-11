@@ -2,6 +2,7 @@ import { Mail, MapPin, Clock, Phone } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   loadContent,
+  syncContentFromDatabase,
   type WebsiteContent,
   DEFAULT_CONTENT,
 } from "../lib/contentManager";
@@ -33,7 +34,12 @@ export function Footer({
   const legacyContent = getTranslation(language);
 
   useEffect(() => {
+    // Immediately show from localStorage/defaults for fast render
     setContent(loadContent());
+    // Then fetch fresh data from database
+    syncContentFromDatabase()
+      .then((dbContent) => setContent(dbContent))
+      .catch(() => {/* keep localStorage/default content */});
   }, []);
 
   return (

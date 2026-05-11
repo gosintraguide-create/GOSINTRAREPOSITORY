@@ -9,6 +9,7 @@ import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router";
 import {
   loadContentWithLanguage,
+  syncContentFromDatabaseWithLanguage,
   type WebsiteContent,
   DEFAULT_CONTENT,
 } from "../lib/contentManager";
@@ -64,6 +65,7 @@ export function HomePage() {
           const parsed = JSON.parse(flags);
           setSunsetSpecialEnabled(parsed.sunsetSpecialEnabled !== false);
         }
+        // else: no admin override saved — sunsetSpecialEnabled stays true (its initial state)
       } catch (e) {
         console.error("Failed to parse feature flags:", e);
       }
@@ -163,7 +165,12 @@ export function HomePage() {
 
     loadPricingFromDB();
 
-    // Update legacy content when language changes
+    // Sync content from database (not just localStorage)
+    syncContentFromDatabaseWithLanguage(language)
+      .then((dbContent) => setLegacyContent(dbContent))
+      .catch(() => {/* keep localStorage/default content */});
+
+    // Update legacy content when language changes (immediate, from cache)
     setLegacyContent(loadContentWithLanguage(language));
   }, [language]);
 

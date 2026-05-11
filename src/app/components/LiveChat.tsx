@@ -3,7 +3,7 @@ import { MessageCircle, X, Send, Car, ArrowLeft } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Card } from "./ui/card";
-import { loadContent, type WebsiteContent, DEFAULT_CONTENT } from "../lib/contentManager";
+import { loadContent, syncContentFromDatabase, type WebsiteContent, DEFAULT_CONTENT } from "../lib/contentManager";
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { createClient } from '../utils/supabase/client';
 import { toast } from "sonner@2.0.3";
@@ -40,9 +40,16 @@ export function LiveChat({ onNavigate, language = "en" }: LiveChatProps) {
   useEffect(() => {
     console.log('LiveChat component mounted');
     console.log('Supabase project ID:', projectId);
-    console.log('WhatsApp number:', loadContent().company.whatsappNumber);
     
-    setContent(loadContent());
+    // Immediately show from localStorage/defaults for fast render
+    const localContent = loadContent();
+    setContent(localContent);
+    console.log('WhatsApp number:', localContent.company.whatsappNumber);
+    
+    // Then fetch fresh data from database
+    syncContentFromDatabase()
+      .then((dbContent) => setContent(dbContent))
+      .catch(() => {/* keep localStorage/default content */});
     
     // Check for logged-in user session
     const session = getSession();
