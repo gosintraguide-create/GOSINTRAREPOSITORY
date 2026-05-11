@@ -1,4 +1,4 @@
-import { useOutletContext, useNavigate } from "react-router";
+import { useOutletContext, useNavigate, useSearchParams } from "react-router";
 import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
@@ -9,9 +9,7 @@ import {
   Search,
   Clock,
   Calendar,
-  User,
   Tag,
-  Sparkles,
   ArrowRight,
   Filter,
   X,
@@ -49,11 +47,14 @@ interface OutletContext {
 
 export function BlogPage() {
   const { language = "en", onNavigate } = useOutletContext<OutletContext>();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const content = loadContentWithLanguage(language);
   const [articles, setArticles] = useState<BlogArticle[]>([]);
   const [categories, setCategories] = useState<BlogCategory[]>([]);
   const [filteredArticles, setFilteredArticles] = useState<BlogArticle[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedTag, setSelectedTag] = useState<string>(searchParams.get("tag") || "");
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
@@ -128,6 +129,10 @@ export function BlogPage() {
       filtered = filtered.filter(article => article.category === selectedCategory);
     }
 
+    if (selectedTag) {
+      filtered = filtered.filter(article => article.tags.includes(selectedTag));
+    }
+
     if (searchQuery.trim()) {
       const lowerQuery = searchQuery.toLowerCase();
       filtered = filtered.filter(article => {
@@ -147,7 +152,7 @@ export function BlogPage() {
     );
 
     setFilteredArticles(filtered);
-  }, [selectedCategory, searchQuery, articles]);
+  }, [selectedCategory, selectedTag, searchQuery, articles]);
 
   const handleArticleClick = (article: BlogArticle) => {
     onNavigate("blog-article", { slug: article.slug });
@@ -227,45 +232,42 @@ export function BlogPage() {
         </div>
       </section>
 
-      {/* Categories Filter */}
-      <section className="border-b border-border bg-white py-6">
+      {/* Categories + Tag Filter */}
+      <section className="border-b border-border bg-white py-4">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap items-center gap-4">
+          <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2">
               <Filter className="h-4 w-4 text-muted-foreground" />
-              <span className="text-muted-foreground">
-                {content.blog.filterBy}
-              </span>
+              <span className="text-sm text-muted-foreground">{content.blog.filterBy}</span>
             </div>
             <div className="flex flex-wrap gap-2">
               <Button
-                variant={
-                  selectedCategory === "all"
-                    ? "default"
-                    : "outline"
-                }
+                variant={selectedCategory === "all" && !selectedTag ? "default" : "outline"}
                 size="sm"
-                onClick={() => setSelectedCategory("all")}
+                onClick={() => { setSelectedCategory("all"); setSelectedTag(""); }}
               >
                 {content.blog.allArticles}
               </Button>
               {categories.map((category) => (
                 <Button
                   key={category.id}
-                  variant={
-                    selectedCategory === category.slug
-                      ? "default"
-                      : "outline"
-                  }
+                  variant={selectedCategory === category.slug ? "default" : "outline"}
                   size="sm"
-                  onClick={() =>
-                    setSelectedCategory(category.slug)
-                  }
+                  onClick={() => { setSelectedCategory(category.slug); setSelectedTag(""); }}
                 >
                   {getCategoryName(category.slug)}
                 </Button>
               ))}
             </div>
+            {selectedTag && (
+              <div className="flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-sm text-primary">
+                <Tag className="h-3.5 w-3.5" />
+                {selectedTag}
+                <button onClick={() => setSelectedTag("")} className="ml-1 hover:text-destructive">
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -296,92 +298,128 @@ export function BlogPage() {
             </div>
           ) : (
             <>
-              <div className="mb-8 text-center">
-                <Badge>
+              <div className="mb-6 text-center">
+                <Badge variant="outline">
                   {filteredArticles.length}{" "}
-                  {filteredArticles.length === 1
-                    ? content.blog.article
-                    : content.blog.articles}{" "}
+                  {filteredArticles.length === 1 ? content.blog.article : content.blog.articles}{" "}
                   {content.blog.articlesFound}
                 </Badge>
               </div>
 
-              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                {filteredArticles.map((article) => (
-                  <div key={article.id}>
-                    <Card
-                      className="group h-full cursor-pointer overflow-hidden transition-all hover:shadow-xl"
-                      onClick={() =>
-                        handleArticleClick(article)
-                      }
-                    >
-                      {(article.thumbnailImage ||
-                        article.featuredImage) && (
-                        <div className="relative aspect-video overflow-hidden">
-                          <ImageWithFallback
-                            src={
-                              article.thumbnailImage ||
-                              article.featuredImage ||
-                              ""
-                            }
-                            alt={getArticleTranslation(article, language).title}
-                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-
-                          <Badge className="absolute left-4 top-4 bg-primary text-white">
-                            {getCategoryName(article.category)}
-                          </Badge>
+              {/* Featured article — full-width hero for the first result */}
+              {filteredArticles.length > 0 && (() => {
+                const featured = filteredArticles[0];
+                const featT = getArticleTranslation(featured, language);
+                return (
+                  <div
+                    className="group mb-10 cursor-pointer overflow-hidden rounded-2xl border border-border bg-white shadow-sm transition-all hover:shadow-xl"
+                    onClick={() => handleArticleClick(featured)}
+                  >
+                    <div className="flex flex-col lg:flex-row">
+                      {(featured.thumbnailImage || featured.featuredImage) && (
+                        <div className="relative overflow-hidden lg:w-1/2">
+                          <div className="aspect-video lg:aspect-auto lg:h-full">
+                            <ImageWithFallback
+                              src={featured.thumbnailImage || featured.featuredImage || ""}
+                              alt={featT.title}
+                              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent lg:bg-gradient-to-r" />
+                          </div>
                         </div>
                       )}
-
-                      <div className="flex h-full flex-col p-6">
-                        <div className="mb-3 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <Calendar className="h-4 w-4" />
-                            {formatDate(article.publishDate)}
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-4 w-4" />
-                            {article.readTimeMinutes}{" "}
-                            {content.blog.minRead}
-                          </div>
+                      <div className="flex flex-col justify-center p-6 sm:p-8 lg:w-1/2">
+                        <div className="mb-3 flex items-center gap-2">
+                          <Badge className="bg-primary text-white">{getCategoryName(featured.category)}</Badge>
+                          <Badge variant="outline" className="text-xs">Featured</Badge>
                         </div>
-
-                        <h3 className="mb-3 text-foreground group-hover:text-primary">
-                          {getArticleTranslation(article, language).title}
-                        </h3>
-
-                        <p className="mb-4 flex-1 line-clamp-3 text-muted-foreground">
-                          {getArticleTranslation(article, language).excerpt}
-                        </p>
-
-                        {article.tags.length > 0 && (
+                        <h2 className="mb-3 text-xl font-bold leading-snug text-foreground group-hover:text-primary sm:text-2xl">
+                          {featT.title}
+                        </h2>
+                        <p className="mb-4 line-clamp-3 text-muted-foreground">{featT.excerpt}</p>
+                        <div className="mb-4 flex flex-wrap gap-3 text-sm text-muted-foreground">
+                          <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{formatDate(featured.publishDate)}</span>
+                          <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{featured.readTimeMinutes} {content.blog.minRead}</span>
+                        </div>
+                        {featured.tags.length > 0 && (
                           <div className="mb-4 flex flex-wrap gap-2">
-                            {article.tags
-                              .slice(0, 3)
-                              .map((tag) => (
-                                <Badge
-                                  key={tag}
-                                  variant="outline"
-                                  className="gap-1"
-                                >
-                                  <Tag className="h-3 w-3" />
-                                  {tag}
-                                </Badge>
-                              ))}
+                            {featured.tags.slice(0, 4).map((tag) => (
+                              <button
+                                key={tag}
+                                onClick={(e) => { e.stopPropagation(); setSelectedTag(tag); setSelectedCategory("all"); }}
+                                className="flex items-center gap-1 rounded-full border border-border px-2.5 py-0.5 text-xs text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+                              >
+                                <Tag className="h-3 w-3" />{tag}
+                              </button>
+                            ))}
                           </div>
                         )}
-
-                        <div className="flex items-center gap-2 text-primary">
-                          <span>{content.blog.readGuide}</span>
+                        <div className="flex items-center gap-2 font-medium text-primary">
+                          {content.blog.readGuide}
                           <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-2" />
                         </div>
                       </div>
-                    </Card>
+                    </div>
                   </div>
-                ))}
-              </div>
+                );
+              })()}
+
+              {/* Remaining articles grid */}
+              {filteredArticles.length > 1 && (
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  {filteredArticles.slice(1).map((article) => {
+                    const t = getArticleTranslation(article, language);
+                    return (
+                      <Card
+                        key={article.id}
+                        className="group h-full cursor-pointer overflow-hidden transition-all hover:shadow-xl"
+                        onClick={() => handleArticleClick(article)}
+                      >
+                        {(article.thumbnailImage || article.featuredImage) && (
+                          <div className="relative aspect-video overflow-hidden">
+                            <ImageWithFallback
+                              src={article.thumbnailImage || article.featuredImage || ""}
+                              alt={t.title}
+                              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                            <Badge className="absolute left-3 top-3 bg-primary text-white text-xs">
+                              {getCategoryName(article.category)}
+                            </Badge>
+                          </div>
+                        )}
+                        <div className="flex h-full flex-col p-5">
+                          <div className="mb-2 flex flex-wrap gap-3 text-xs text-muted-foreground">
+                            <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{formatDate(article.publishDate)}</span>
+                            <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{article.readTimeMinutes} {content.blog.minRead}</span>
+                          </div>
+                          <h3 className="mb-2 text-base font-semibold leading-snug text-foreground group-hover:text-primary">
+                            {t.title}
+                          </h3>
+                          <p className="mb-3 flex-1 line-clamp-2 text-sm text-muted-foreground">{t.excerpt}</p>
+                          {article.tags.length > 0 && (
+                            <div className="mb-3 flex flex-wrap gap-1.5">
+                              {article.tags.slice(0, 3).map((tag) => (
+                                <button
+                                  key={tag}
+                                  onClick={(e) => { e.stopPropagation(); setSelectedTag(tag); setSelectedCategory("all"); }}
+                                  className="flex items-center gap-1 rounded-full border border-border px-2 py-0.5 text-xs text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+                                >
+                                  <Tag className="h-2.5 w-2.5" />{tag}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                          <div className="flex items-center gap-1.5 text-sm font-medium text-primary">
+                            {content.blog.readGuide}
+                            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                          </div>
+                        </div>
+                      </Card>
+                    );
+                  })}
+                </div>
+              )}
             </>
           )}
         </div>

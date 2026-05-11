@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { toast } from 'sonner';
 import {
   loadArticles,
@@ -15,9 +15,9 @@ import {
   DEFAULT_ARTICLES,
 } from "../lib/blogManager";
 import { InternalLinkHelper } from "./InternalLinkHelper";
+import { RichMarkdownEditor } from "./RichMarkdownEditor";
 import { loadBlogTags } from "../lib/blogTags";
 import { ImageSelector } from "./ImageSelector";
-import { Alert, AlertDescription } from "./ui/alert";
 import {
   projectId,
   publicAnonKey,
@@ -89,7 +89,6 @@ export function BlogEditor() {
     [],
   );
   const [tagSearchQuery, setTagSearchQuery] = useState("");
-  const contentTextareaRef = useRef<HTMLTextAreaElement>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [enabledLanguages, setEnabledLanguages] = useState<string[]>(['en', 'pt', 'es', 'fr', 'de', 'nl', 'it']);
 
@@ -376,26 +375,11 @@ export function BlogEditor() {
   };
 
   const handleInsertLink = (markdown: string) => {
-    if (!editingArticle || !contentTextareaRef.current) return;
-
-    const textarea = contentTextareaRef.current;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
+    if (!editingArticle) return;
     const currentTranslation = getCurrentTranslation();
-    const text = currentTranslation.content;
-    const before = text.substring(0, start);
-    const after = text.substring(end);
-
-    const newContent = before + markdown + after;
-    updateCurrentTranslation({ content: newContent });
-
-    // Set cursor position after inserted link
-    setTimeout(() => {
-      textarea.focus();
-      const newPosition = start + markdown.length;
-      textarea.setSelectionRange(newPosition, newPosition);
-    }, 0);
-
+    const content = currentTranslation.content;
+    const gap = content.endsWith("\n") ? "" : "\n";
+    updateCurrentTranslation({ content: content + gap + markdown });
     toast.success("Link inserted!");
   };
 
@@ -527,7 +511,7 @@ export function BlogEditor() {
 
       {/* Edit Dialog */}
       <Dialog open={isEditing} onOpenChange={setIsEditing}>
-        <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
+        <DialogContent className="max-h-[90vh] max-w-6xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {editingArticle?.id.startsWith("article-")
@@ -648,69 +632,19 @@ export function BlogEditor() {
                         <Label>
                           Article Content *{" "}
                           {currentLanguage !== "en" &&
-                            "(Optional for non-English)"}{" "}
-                          (Markdown supported)
+                            "(Optional for non-English)"}
                         </Label>
                         <InternalLinkHelper
                           onInsertLink={handleInsertLink}
                         />
                       </div>
-
-                      <Alert className="mb-3 border-primary/30 bg-primary/5">
-                        <AlertDescription className="text-sm">
-                          💡 <strong>Tip:</strong> Use the
-                          "Insert Internal Link" button to
-                          easily link to other blog articles,
-                          attractions, or pages. Click it to
-                          browse all available content!
-                        </AlertDescription>
-                      </Alert>
-
-                      <Alert className="mb-3 border-accent/30 bg-accent/5">
-                        <AlertDescription className="text-sm">
-                          <div className="space-y-1">
-                            <div>
-                              🖼️ <strong>Images:</strong> Add
-                              images using Markdown syntax:
-                            </div>
-                            <code className="block px-2 py-1 bg-background rounded">
-                              ![Alt text](image-url)
-                            </code>
-                            <div className="mt-2">
-                              For captions, add italic text on
-                              the next line:
-                            </div>
-                            <code className="block px-2 py-1 bg-background rounded">
-                              *Your caption here*
-                            </code>
-                            <div className="mt-2">Example:</div>
-                            <code className="block px-2 py-1 bg-background rounded text-xs">
-                              ![Pena
-                              Palace](https://images.unsplash.com/photo-...)
-                              {"\n"}*The colorful Pena Palace on
-                              a sunny day*
-                            </code>
-                          </div>
-                        </AlertDescription>
-                      </Alert>
-
-                      <Textarea
-                        ref={contentTextareaRef}
+                      <RichMarkdownEditor
                         value={currentTranslation.content}
-                        onChange={(e) =>
-                          updateCurrentTranslation({
-                            content: e.target.value,
-                          })
+                        onChange={(val) =>
+                          updateCurrentTranslation({ content: val })
                         }
-                        placeholder="Write your article content here using Markdown formatting...&#10;&#10;# Your Article Title&#10;&#10;Start writing your content here. Use the 'Insert Internal Link' button above to easily add links to other articles and attractions.&#10;&#10;## Section Heading&#10;&#10;Write more content...&#10;&#10;![Image description](https://images.unsplash.com/photo-...)&#10;*Image caption in italics*"
-                        rows={15}
-                        className="font-mono"
+                        minHeight={400}
                       />
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        Supports Markdown: # Heading, ##
-                        Subheading, **bold**, *italic*,
-                        [link](url), etc.
-                      </p>
                     </div>
 
                     {/* SEO for current language */}
