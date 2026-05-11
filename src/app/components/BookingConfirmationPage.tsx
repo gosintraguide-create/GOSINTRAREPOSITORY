@@ -9,7 +9,6 @@ import { toast } from 'sonner';
 import { TicketCard } from "./TicketCard";
 import { getTranslation } from "../lib/translations";
 import { getSession } from "../lib/sessionManager";
-import { getComponentTranslation } from "../lib/translations/component-translations";
 
 interface BookingConfirmationPageProps {
   onNavigate: (page: string) => void;
@@ -21,7 +20,7 @@ export function BookingConfirmationPage({ onNavigate, booking, language = "en" }
   const [emailSent, setEmailSent] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const t = getComponentTranslation(language);
+  const t = getTranslation(language).components;
 
   useEffect(() => {
     // Scroll to top

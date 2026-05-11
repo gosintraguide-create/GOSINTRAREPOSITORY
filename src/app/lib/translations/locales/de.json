@@ -1,0 +1,1251 @@
+{
+  "company": {
+    "name": "Hop On Sintra",
+    "email": "info@hoponsintra.com",
+    "phone": "+351 932 967 279",
+    "location": "Sintra, Portugal",
+    "operatingHours": "9:00 - 19:00 Täglich",
+    "whatsappNumber": "+351932967279"
+  },
+  "homepage": {
+    "hero": {
+      "title": "Entdecken Sie Sintra auf Ihre Weise",
+      "subtitle": "Hop-on/Hop-off Tagespass mit garantierten Sitzen und professionellen Fahrer-Guides. Unbegrenzte Fahrten in kleinen Tuk Tuks und Vintage-Jeeps. Neue Abfahrt alle 30 Minuten.",
+      "ctaButton": "Buchen Sie Ihren Tagespass",
+      "benefitPills": [
+        { "icon": "Users", "text": "Kleine Gruppen (2-6)" },
+        { "icon": "Shield", "text": "Lokale Guides" },
+        { "icon": "MapPin", "text": "Alle Sehenswürdigkeiten" }
+      ]
+    },
+    "quickLinks": {
+      "title": "Mehr Erkunden",
+      "subtitle": "Entdecken Sie Sehenswürdigkeiten, Tipps und personalisierte Touren",
+      "attractions": { "title": "Sehenswürdigkeiten Erkunden", "subtitle": "UNESCO-Stätten & Paläste" },
+      "travelGuide": { "title": "Reiseführer", "subtitle": "Tipps & lokale Geheimnisse" },
+      "privateTours": { "title": "Bevorzugen Sie eine Privattour?", "subtitle": "Exklusives personalisiertes Erlebnis" }
+    },
+    "heroTitle": "Entdecken Sie Sintra auf Ihre Weise",
+    "heroSubtitle": "Hop-on/Hop-off Tagespass mit garantierten Sitzen und professionellen Fahrer-Guides. Unbegrenzte Fahrten in kleinen Tuk Tuks und Vintage-Jeeps. Neue Abfahrt alle 30 Minuten.",
+    "heroCallToAction": "Buchen Sie Ihren Tagespass",
+    "benefitPills": [
+      { "icon": "Users", "text": "Kleine Gruppen (2-6)" },
+      { "icon": "Shield", "text": "Lokale Guides" },
+      { "icon": "MapPin", "text": "Alle Sehenswürdigkeiten" }
+    ],
+    "sectionOneTitle": "Warum Hop On Sintra Wählen?",
+    "sectionOneDescription": "Vermeiden Sie überfüllte Touristenbusse und erleben Sie Sintra, wie es entdeckt werden soll—mit professionellen lokalen Guides",
+    "hopOnHopOffDayPass": "Hop-On/Hop-Off-Tagespass",
+    "unlimitedAdventureTitle": "Ihr Unbegrenztes Sintra-Abenteuer",
+    "serviceDescription": "Hop On Sintra ist ein flexibler Hop-on/Hop-off-Tagespass-Service mit kleinen, intimen Fahrzeugen wie Tuk Tuks und Vintage-UMM-Jeeps. Mit Service alle 30 Minuten von 9 bis 19 Uhr erhalten Sie garantierte Sitzplätze und unbegrenzte Fahrten zu allen wichtigen Sehenswürdigkeiten.",
+    "serviceDescription2": "Im Gegensatz zu überfüllten Touristenbussen geben Ihnen unsere kleinen Gruppen (2-6 Passagiere) mit professionellen lokalen Guides die Freiheit, Sintra in Ihrem eigenen Tempo zu erkunden und gleichzeitig personalisierte Aufmerksamkeit zu genießen.",
+    "unlimitedRidesTitle": "Unbegrenzte Fahrten Den Ganzen Tag",
+    "unlimitedRidesSubtitle": "Ein Pass, alle Sehenswürdigkeiten",
+    "frequentServiceTitle": "Alle 30 Minuten",
+    "frequentServiceSubtitle": "Warten Sie nie lange",
+    "smallGroupsTitle": "Kleine Intime Gruppen",
+    "smallGroupsSubtitle": "Maximum 2-6 Passagiere",
+    "professionalGuidesTitle": "Professionelle Guides",
+    "professionalGuidesSubtitle": "Lokale Experten",
+    "requestPickupTitle": "Abholung Auf Abruf Anfordern",
+    "requestPickupSubtitle": "Rufen Sie jederzeit ein Fahrzeug",
+    "realTimeTrackingTitle": "Echtzeit-Fahrzeugverfolgung",
+    "realTimeTrackingSubtitle": "Sehen Sie Ihre Fahrt ankommen",
+    "priceFrom": "Ab",
+    "pricePerPerson": "pro Person",
+    "sunsetSpecialBadge": "Heutiges Special",
+    "sunsetSpecialSeatsOnly": "Nur",
+    "sunsetSpecialSeats": "Plätze",
+    "sunsetSpecialAvailableNow": "Jetzt Verfügbar",
+    "sunsetSpecialComingSoon": "Demnächst",
+    "sunsetSpecialBookButton": "Diese Erfahrung Buchen",
+    "sunsetSpecialAvailableIn": "Verfügbar in",
+    "sunsetSpecialAvailableAt": "Verfügbar um",
+    "sunsetSpecialMinutes": "Minuten",
+    "sunsetSpecialAvailableSoon": "Bald verfügbar",
+    "sunsetSpecialVerifyTitle": "Ihre Buchung Überprüfen",
+    "sunsetSpecialVerifyDescription": "Dieses exklusive Sonnenuntergangserlebnis ist nur für bestehende Hop On Sintra Kunden verfügbar. Bitte geben Sie Ihre Buchungs-ID ein, um fortzufahren.",
+    "sunsetSpecialBookingIdLabel": "Buchungs-ID",
+    "sunsetSpecialBookingIdPlaceholder": "z.B. GS-ABC123",
+    "sunsetSpecialBookingIdHint": "Sie finden Ihre Buchungs-ID in Ihrer Bestätigungs-E-Mail",
+    "sunsetSpecialVerifying": "Überprüfung...",
+    "sunsetSpecialVerifyButton": "Überprüfen und Fortfahren",
+    "sunsetSpecialCancel": "Abbrechen",
+    "sunsetSpecialNoBookingYet": "Noch keine Buchung?",
+    "sunsetSpecialNoBookingText": "Sie müssen zuerst einen Hop On Sintra Tagespass buchen, um auf dieses exklusive Erlebnis zuzugreifen.",
+    "sunsetSpecialGetDayPass": "Tagespass Erhalten",
+    "sunsetSpecialErrorEnterBookingId": "Bitte geben Sie Ihre Buchungs-ID ein",
+    "sunsetSpecialErrorNotFound": "Buchungs-ID nicht gefunden. Bitte überprüfen und erneut versuchen.",
+    "sunsetSpecialErrorUnableToVerify": "Buchungs-ID kann nicht überprüft werden. Bitte erneut versuchen.",
+    "sunsetSpecialBookingVerified": "Buchung überprüft! Weiterleitung...",
+    "finalCtaTitle": "Bereit für den Besten Tag Aller Zeiten?",
+    "finalCtaSubtitle": "Buchen Sie jetzt Ihren Tagespass—das Abenteuer wartet! 🚗✨",
+    "finalCtaButton": "Holen Sie Sich Jetzt Ihren Tagespass",
+    "finalCtaSubtext": "⚡ Sofortige Bestätigung • 📱 Mobil-freundlich • 💳 Sichere Zahlung"
+  },
+  "routes": {
+    "title": "Unsere Zwei Rundstrecken",
+    "subtitle": "Verbindet alle Hauptattraktionen • Kein Fahrzeugwechsel erforderlich",
+    "route1": "Route 1",
+    "route2": "Route 2",
+    "bothRoutes": "Beide Routen",
+    "loopsBack": "kehrt zurück",
+    "onePassBothRoutes": "Ein Pass, Beide Routen",
+    "onePassDescription": "Ihr Tagespass gibt Ihnen unbegrenzten Zugang zu beiden Routen. Unsere Fahrzeuge besuchen alle Haltestellen während der Betriebszeiten (9 bis 19 Uhr), und Sie müssen nie das Fahrzeug wechseln - bleiben Sie an Bord, da sich die Routen am Bahnhof und im Historischen Zentrum Nord verbinden.",
+    "viewMapButton": "View Interactive Map",
+    "stops": {
+      "trainStation": "Bahnhof",
+      "historicalCenterNorth": "Historisches Zentrum Nord",
+      "historicalCenterSouth": "Historisches Zentrum Süd",
+      "moorishCastle": "Maurisches Schloss",
+      "penaPalace": "Pena-Palast",
+      "quintaRegaleira": "Quinta da Regaleira",
+      "seteais": "Seteais",
+      "monserratePalace": "Monserrate-Palast"
+    }
+  },
+  "header": {
+    "hopOnService": "Hop On Hop Off",
+    "privateTours": "Private Touren",
+    "travelGuide": "Reiseführer"
+  },
+  "footer": {
+    "quickLinks": "Schnelllinks",
+    "attractions": "Sehenswürdigkeiten",
+    "travelGuide": "Reiseführer",
+    "buyDayPass": "Tagespass Kaufen",
+    "privacyPolicy": "Datenschutz",
+    "terms": "Bedingungen",
+    "reservedArea": "Reservierter Bereich",
+    "adminPortal": "Admin-Portal",
+    "driverPortal": "Fahrer-Portal",
+    "allRightsReserved": "Alle Rechte vorbehalten. Mit ❤️ für Reisende gemacht."
+  },
+  "manageBooking": {
+    "pageTitle": "Ihre Buchung Verwalten",
+    "pageSubtitle": "Geben Sie Ihre Buchungsdetails ein, um Ihren Tagespass anzuzeigen",
+    "bookingIdLabel": "Buchungs-ID",
+    "bookingIdPlaceholder": "z.B. HOS-ABC123",
+    "lastNameLabel": "Nachname",
+    "lastNamePlaceholder": "Wie bei der Buchung",
+    "findBookingButton": "Meine Buchung Finden",
+    "whereToFindBookingId": "Wo finde ich Ihre Buchungs-ID?",
+    "inConfirmationEmail": "In Ihrer Bestätigungs-E-Mail",
+    "subjectLine": "Betreff: Ihr Hop On Sintra Tagespass",
+    "lookFor": "Suchen Sie nach: \"Buchungs-ID: HOS-XXXXXX\"",
+    "needHelp": "Brauchen Sie Hilfe?",
+    "contactSupport": "Kontaktieren Sie uns über WhatsApp",
+    "yourBooking": "Ihre Buchung",
+    "bookingId": "Buchungs-ID:",
+    "validToday": "Ihr Pass ist HEUTE gültig!",
+    "enjoyYourDay": "Genießen Sie Ihren Tag beim Erkunden von Sintra",
+    "startsIn": "Beginnt in",
+    "days": "Tagen",
+    "validOn": "Gültig am",
+    "expired": "Dieser Pass ist abgelaufen",
+    "passDate": "Pass-Datum",
+    "pickupTime": "Abholzeit",
+    "operatingHours": "Betriebszeiten",
+    "operatingHoursValue": "9:00 - 19:00 Uhr",
+    "contactDetails": "Kontaktdaten",
+    "bookingDetails": "Buchungsdetails",
+    "passengers": "Passagiere",
+    "guidedCommentary": "Geführter Kommentar",
+    "attractionTickets": "Eintrittskarten",
+    "totalPaid": "Gesamt Bezahlt",
+    "importantInformation": "Wichtige Informationen",
+    "serviceHours": "Servicezeiten",
+    "serviceHoursDescription": "Fahrzeuge verkehren alle 30 Minuten von 9 bis 19 Uhr. Ihr Tagespass ist für unbegrenzte Fahrten den ganzen Tag gültig.",
+    "digitalTickets": "Digitale Tickets",
+    "digitalTicketsDescription": "Zeigen Sie Ihren QR-Code, um in jedes Fahrzeug einzusteigen. Alle Passagiere müssen ihren eigenen QR-Code bereithalten.",
+    "guaranteedSeating": "Garantierte Sitzplätze",
+    "guaranteedSeatingDescription": "Ihr Sitzplatz ist vorgebucht. Kein Stehen, keine Überfüllung, nur komfortabler Transport in kleinen Gruppen.",
+    "hopOnOff": "Hop On/Off",
+    "hopOnOffDescription": "Steigen Sie an jeder Haltestelle ein, erkunden Sie in Ihrem eigenen Tempo und steigen Sie wieder ein, wenn Sie bereit sind. Totale Flexibilität!",
+    "downloadTickets": "Alle Tickets Herunterladen",
+    "downloadQRCodes": "QR-Codes Herunterladen",
+    "bookingNotFound": "Buchung Nicht Gefunden",
+    "bookingNotFoundDescription": "Wir konnten keine Buchung mit diesen Details finden. Bitte überprüfen Sie Ihre Buchungs-ID und Ihren Nachnamen.",
+    "checkDetails": "Bitte überprüfen Sie:",
+    "tryAgain": "Erneut Versuchen",
+    "backToSearch": "Zurück zur Suche"
+  },
+  "about": {
+    "title": "Über Hop On Sintra",
+    "subtitle": "Ihr Premium-Hop-on/Hop-off-Tagespass-Service durch Sintras magische Landschaften mit professionellen lokalen Guides",
+    "story": [
+      "Hop On Sintra was born from a simple observation: visitors to this UNESCO World Heritage site deserved better than crowded buses and rigid schedules.",
+      "We created a flexible, premium day pass service that combines the intimacy of small vehicles driven by professional local guides with the freedom of hop-on/hop-off convenience.",
+      "Today, thousands of visitors choose Hop On Sintra for guaranteed seating, professional driver-guides, regular departures every 30 minutes, and an authentic, intimate way to explore this magical destination."
+    ],
+    "mission": "Our mission is to provide the most convenient, comfortable, and authentic way to explore Sintra's palaces, castles, and gardens with professional local guides.",
+    "values": [
+      {
+        "title": "Guaranteed Comfort",
+        "description": "Every passenger has a guaranteed seat in a small, intimate vehicle driven by a professional local guide. No standing, no overcrowding."
+      },
+      {
+        "title": "Total Flexibility",
+        "description": "Hop off at any attraction, spend as long as you want, then hop back on. Your day, your pace."
+      },
+      {
+        "title": "Professional Local Guides",
+        "description": "All our vehicles are driven by professional local guides who know Sintra inside and out, offering insights you won't find in guidebooks."
+      }
+    ]
+  },
+  "attractions": {
+    "pena-palace": {
+      "name": "Pena-Palast",
+      "description": "Das Kronjuwel von Sintra, dieser romantische Palast thront auf einem Hügel mit atemberaubenden Aussichten. Im 19. Jahrhundert erbaut, zeigt er lebendige Farben und eklektische Architektur.",
+      "longDescription": "Auf den Ruinen eines alten Klosters erbaut, wurde der Pena-Palast von König Ferdinand II. in Auftrag gegeben und repräsentiert den Höhepunkt der romantischen Architektur in Portugal. Der Palast kombiniert gotische, maurische, Renaissance- und manuelinische Stile in einer verspielten Darstellung von Farbe und Kreativität. Der umliegende Park präsentiert exotische Bäume und Pflanzen aus der ganzen Welt, gewundene Wege und atemberaubende Aussichtspunkte.",
+      "highlights": [
+        "Panoramablick auf Sintra und den Atlantischen Ozean",
+        "Verzierte Innenräume mit original Möbeln aus dem 19. Jahrhundert",
+        "Exotische botanische Gärten mit über 500 Baumarten",
+        "UNESCO-Weltkulturerbe",
+        "Instagram-würdige bunte Fassade"
+      ],
+      "hours": "9:30 - 19:00 (Letzter Einlass um 18:00)",
+      "duration": "2-3 Stunden empfohlen",
+      "tips": [
+        "Kommen Sie früh, um Menschenmassen zu vermeiden, besonders im Sommer",
+        "Tragen Sie bequeme Schuhe - viel Laufen und Hügel",
+        "Verpassen Sie nicht die Palastterrasse für die besten Aussichten",
+        "Besuchen Sie den Park vor oder nach der Palasttour"
+      ],
+      "price": 14,
+      "parkOnlyPrice": 8
+    },
+    "quinta-regaleira": {
+      "name": "Quinta da Regaleira",
+      "description": "Ein mystisches Anwesen mit rätselhaften Gärten, unterirdischen Tunneln und dem berühmten Initiationsbrunnen. Diese UNESCO-Welterbestätte ist ein Meisterwerk symbolischer und philosophischer Architektur.",
+      "longDescription": "Geschaffen vom italienischen Architekten Luigi Manini für den Millionär António Augusto Carvalho Monteiro, ist Quinta da Regaleira voller alchemistischer und freimaurerischer Symbolik. Das Anwesen präsentiert aufwändige Gärten, geheimnisvolle Grotten, bezaubernde Seen und den ikonischen Initiationsbrunnen - eine 27 Meter lange Wendeltreppe, die in die Erde hinabführt und für zeremonielle Zwecke genutzt wurde.",
+      "highlights": [
+        "Der berühmte Initiationsbrunnen mit Wendeltreppe",
+        "Geheimnisvolles unterirdisches Tunnelsystem",
+        "Gotisch-manuelinischer Palast mit komplizierten Details",
+        "Verzauberte Gärten mit versteckten Symbolen",
+        "Kapelle der Heiligen Dreifaltigkeit"
+      ],
+      "hours": "9:30 - 18:00 (Letzter Einlass um 17:00)",
+      "duration": "2-3 Stunden empfohlen",
+      "tips": [
+        "Bringen Sie eine Taschenlampe zum Erkunden der Tunnel mit",
+        "Tragen Sie robuste Schuhe - die Wege können rutschig sein",
+        "Nehmen Sie sich Zeit, alle versteckten Ecken zu erkunden",
+        "Der Initiationsbrunnen ist ein Muss-Fotopunkt"
+      ],
+      "price": 12
+    },
+    "moorish-castle": {
+      "name": "Maurenburg",
+      "description": "Alte Festungsmauern schlängeln sich entlang Bergkämmen und bieten spektakuläre Panoramablicke. Von den Mauren im 8.-9. Jahrhundert erbaut, ist diese Burg ein Zeugnis mittelalterlicher Militärarchitektur.",
+      "longDescription": "Die Maurenburg wurde während der muslimischen Besetzung der Iberischen Halbinsel erbaut, strategisch positioniert, um die Stadt Sintra und umliegende Handelsrouten zu schützen. Nach der christlichen Eroberung verfiel die Burg, wurde aber später im 19. Jahrhundert restauriert. Heute können Besucher entlang der alten Mauern gehen und einige der spektakulärsten Aussichten der Region genießen.",
+      "highlights": [
+        "360-Grad-Blick von den Burgmauern",
+        "Altes mittelalterliches Befestigungssystem",
+        "Archäologische Stätte mit maurischen Artefakten",
+        "Malerische Wanderwege durch den Wald",
+        "Atemberaubende Fotomöglichkeiten an jeder Ecke"
+      ],
+      "hours": "9:30 - 18:00 (Letzter Einlass um 17:00)",
+      "duration": "1,5-2 Stunden empfohlen",
+      "tips": [
+        "Ausgezeichnetes Training - viele Treppen und Steigungen",
+        "Am besten morgens für klarere Aussichten besuchen",
+        "Kombinieren Sie mit dem Pena-Palast für einen vollen Tag",
+        "Bringen Sie Wasser und Sonnenschutz mit"
+      ],
+      "price": 10
+    },
+    "monserrate-palace": {
+      "name": "Monserrate-Palast",
+      "description": "Ein exotischer Palast, der gotische, indische und maurische Einflüsse vereint, eingebettet in einen der schönsten botanischen Gärten Portugals mit seltenen und exotischen Pflanzenarten aus der ganzen Welt.",
+      "longDescription": "Der Monserrate-Palast wurde 1858 für Sir Francis Cook, einen englischen Textilmagnaten und Kunstsammler, erbaut. Der Palast zeigt eine außergewöhnliche Verschmelzung architektonischer Stile, während seine Gärten zu den besten Beispielen der Landschaftsgärtnerei in Portugal zählen. Das Anwesen präsentiert Pflanzen von fünf Kontinenten und schafft Mikroklimata, die Arten aus Mexiko, Australien, Japan und darüber hinaus unterstützen.",
+      "highlights": [
+        "Atemberaubende Mischung architektonischer Stile",
+        "Botanische Gärten von Weltklasse",
+        "Verziertes Interieur mit kompliziertem Stuck",
+        "Friedliche Atmosphäre, weniger überfüllt",
+        "Schöne Seen und Wasserfälle"
+      ],
+      "hours": "9:30 - 18:00 (Letzter Einlass um 17:00)",
+      "duration": "2-2,5 Stunden empfohlen",
+      "tips": [
+        "Oft weniger überfüllt als andere Paläste",
+        "Hetzen Sie nicht - die Gärten verdienen Zeit",
+        "Perfekt für Fotografie-Enthusiasten",
+        "Bringen Sie ein Picknick mit, um es in den Gärten zu genießen"
+      ],
+      "price": 10
+    },
+    "sintra-palace": {
+      "name": "Nationalpalast von Sintra",
+      "description": "Im Herzen von Sintras historischem Zentrum gelegen, ist dies der am besten erhaltene mittelalterliche Königspalast Portugals, berühmt für seine markanten Zwillingsschornsteine und prächtige Fliesenarbeit.",
+      "longDescription": "Der Nationalpalast von Sintra war seit dem frühen 15. Jahrhundert eine königliche Residenz und wurde bis 1910 kontinuierlich von der portugiesischen Königsfamilie bewohnt. Der Palast zeigt verschiedene architektonische Stile, die sich über die Jahrhunderte angesammelt haben, vom Mittelalter bis zur Renaissance. Sein Inneres präsentiert einige der besten Beispiele mudéjarischer Fliesenarbeit in Portugal, zusammen mit bemalten Decken, die Armillarsphären, Elstern und Schwäne darstellen.",
+      "highlights": [
+        "Ikonische konische Zwillingsschornsteine",
+        "Prächtige Azulejo-Fliesensammlung",
+        "Historische Sala dos Brasões (Wappensaal)",
+        "Königliche Küchen mit massiven Kaminen",
+        "Zentrale Lage im Dorf Sintra"
+      ],
+      "hours": "9:30 - 18:00 (Letzter Einlass um 17:30)",
+      "duration": "1,5-2 Stunden empfohlen",
+      "tips": [
+        "Beginnen oder beenden Sie Ihren Tag hier - es liegt im Dorfzentrum",
+        "Audioguide für vollständigen historischen Kontext empfohlen",
+        "Ideal für einen Regentag - hauptsächlich drinnen",
+        "Kombinieren Sie mit der Erkundung von Sintras Cafés und Geschäften"
+      ],
+      "price": 10
+    }
+  },
+  "seo": {
+    "home": {
+      "title": "Hop On Sintra - Premium Tagespass Hop-On/Hop-Off | Professionelle Lokale Guides",
+      "description": "Erkunden Sie Sintras UNESCO-Welterbestätten mit garantierten Sitzplätzen in kleinen Fahrzeugen, die von professionellen lokalen Guides gefahren werden. Unbegrenzte Fahrten alle 30 Minuten. Buchen Sie jetzt Ihren flexiblen Tagespass online.",
+      "keywords": "Tagespass Sintra, hop on hop off Sintra, Transport Sintra, Kleingruppentours Sintra, Pena-Palast-Touren, geführte Touren Sintra, professionelle Guides Sintra"
+    },
+    "attractions": {
+      "title": "Sintra Sehenswürdigkeiten - Paläste und Burgen | Tagespass Hop On Sintra",
+      "description": "Entdecken Sie den Pena-Palast, Quinta da Regaleira, die Maurenburg und mehr mit professionellen lokalen Guides. Unser Tagespass beinhaltet unbegrenzten Transport zu allen wichtigen Sintra-Sehenswürdigkeiten.",
+      "keywords": "Sintra Sehenswürdigkeiten, Pena-Palast, Quinta da Regaleira, Maurenburg, Monserrate-Palast, Nationalpalast von Sintra"
+    },
+    "howItWorks": {
+      "title": "So Funktioniert's - Hop-On/Hop-Off-Service Hop On Sintra",
+      "description": "Erfahren Sie, wie unser flexibler Tagespass funktioniert. Online buchen, QR-Codes erhalten und während der Betriebszeiten mit professionellen lokalen Guides in jedes Fahrzeug einsteigen. Einfach und bequem.",
+      "keywords": "wie man Sintra besucht, Sintra Transportführer, wie hop on hop off funktioniert, Sintra Tagespass-Führer"
+    },
+    "buyTicket": {
+      "title": "Buchen Sie Ihren Tagespass - Hop On Sintra | Sofortige Bestätigung",
+      "description": "Buchen Sie Ihren Sintra-Tagespass online. Wählen Sie Ihr Datum, erhalten Sie sofortige QR-Codes für jeden Passagier und genießen Sie unbegrenzte Fahrten mit professionellen Guides bis 19:00 Uhr. Fügen Sie auch Sehenswürdigkeiten-Tickets hinzu.",
+      "keywords": "Tagespass Sintra buchen, Sintra Tickets kaufen, Tagespass Sintra online, Sehenswürdigkeiten-Tickets Sintra"
+    },
+    "about": {
+      "title": "Über Hop On Sintra - Premium Tagespass-Service mit Professionellen Guides",
+      "description": "Hop On Sintra bietet Premium-Tagespass-Service hop-on/hop-off mit garantierten Sitzplätzen in kleinen Fahrzeugen, die von professionellen lokalen Guides gefahren werden. Regelmäßige Abfahrten alle 30 Minuten durch ganz Sintra.",
+      "keywords": "über Hop On Sintra, Tagespass-Unternehmen Sintra, Premium-Touren Sintra, Kleingruppe Sintra, professionelle Guides"
+    },
+    "blog": {
+      "title": "Sintra Reiseführer - Expertentipps, Guides und Reiserouten",
+      "description": "Umfassende Reiseführer für den Besuch von Sintra, Portugal. Expertentipps zu Transport, Attraktionen, Reiseplanung und wie Sie Ihr Sintra-Abenteuer optimal nutzen.",
+      "keywords": "Sintra Reiseführer, Sintra Blog, Sintra besuchen, Sintra Tipps, Pena Palast Guide, Sintra Reiseroute, wie Sintra besuchen, Sintra Portugal"
+    }
+  },
+  "blog": {
+    "pageTitle": "Ihr Ultimativer Sintra-Reiseführer",
+    "pageSubtitle": "Expertentipps, Insidergeheimnisse und alles, was Sie für ein magisches Sintra-Abenteuer brauchen",
+    "searchPlaceholder": "Suchen Sie nach Führern, Tipps und Reiserouten...",
+    "filterBy": "Filtern nach:",
+    "allArticles": "Alle Artikel",
+    "noArticlesFound": "Keine Artikel gefunden",
+    "tryDifferentSearch": "Versuchen Sie einen anderen Suchbegriff",
+    "noArticlesInCategory": "Keine Artikel in dieser Kategorie verfügbar",
+    "articlesFound": "Artikel Gefunden",
+    "article": "Artikel",
+    "articles": "Artikel",
+    "readGuide": "Führer Lesen",
+    "minRead": "Min. Lesezeit",
+    "browseTopics": "Themen Durchsuchen",
+    "exploreByCategory": "Nach Kategorie Erkunden",
+    "exploreCategoryDescription": "Finden Sie genau, wonach Sie suchen—nach Thema organisiert!",
+    "guide": "führer",
+    "guides": "führer",
+    "ctaTitle": "Bereit, Ihr Abenteuer zu Beginnen?",
+    "ctaSubtitle": "Jetzt, da Sie mit lokalem Wissen bewaffnet sind, buchen Sie Ihren flexiblen Tagespass mit professionellen Fahrer-Guides! 🎉",
+    "ctaButton": "Buchen Sie Ihren Tagespass",
+    "backToBlog": "Zurück zum Blog",
+    "articleNotFound": "Artikel nicht gefunden",
+    "articleNotFoundDesc": "Dieser Artikel wurde möglicherweise verschoben oder entfernt.",
+    "loadingArticle": "Artikel wird geladen...",
+    "share": "Teilen",
+    "copyLink": "Link kopieren",
+    "copied": "Kopiert!",
+    "updated": "Aktualisiert",
+    "relatedArticles": "Verwandte Artikel",
+    "relatedGuides": "Verwandte Reiseführer",
+    "moreArticles": "Weitere Artikel",
+    "tagged": "Tags:",
+    "previousArticle": "Vorheriger",
+    "nextArticle": "Nächster",
+    "breadcrumbHome": "Startseite",
+    "breadcrumbTravelGuide": "Reiseführer",
+    "byAuthor": "Von",
+    "shareViaFacebook": "Facebook",
+    "shareViaTwitter": "Twitter",
+    "shareViaEmail": "E-Mail",
+    "moreFromTravelGuide": "Mehr aus dem Reiseführer",
+    "viewAllArticles": "Alle Artikel Ansehen",
+    "tableOfContents": "Inhaltsverzeichnis",
+    "readyToExperience": "Bereit, Sintra zu Erleben?",
+    "bookFlexibleDayPass": "Buchen Sie Ihren flexiblen Tagespass und beginnen Sie, Sintras prächtige Paläste und Gärten zu erkunden",
+    "bookDayPassNow": "Buchen Sie Ihren Tagespass Jetzt",
+    "categories": {
+      "planning": "Besuchsplanung",
+      "getting-there": "Anreise",
+      "attractions": "Sehenswürdigkeiten",
+      "tips": "Reisetipps",
+      "history": "Geschichte und Kultur"
+    },
+    "categoryDescriptions": {
+      "planning": "Alles, was Sie wissen müssen, um den perfekten Sintra-Tag zu planen",
+      "getting-there": "Transportführer und Tipps zur Anreise nach Sintra",
+      "attractions": "Detaillierte Führer zu Sintras Palästen, Burgen und Gärten",
+      "tips": "Insider-Tipps und lokale Ratschläge zur Erkundung von Sintra",
+      "history": "Erfahren Sie mehr über Sintras reiche Geschichte und kulturelles Erbe"
+    }
+  },
+  "buyTicket": {
+    "hero": {
+      "title": "Buchen Sie Ihren Tagespass"
+    },
+    "steps": {
+      "step1Description": "Wählen Sie Ihr Datum und bevorzugte Startzeit",
+      "step2Description": "Sehenswürdigkeiten-Tickets hinzufügen (optional)",
+      "step3Description": "Geben Sie Ihre Informationen ein",
+      "step4Description": "Schließen Sie Ihre Buchung ab"
+    },
+    "dateSelection": {
+      "planYourVisit": "Planen Sie Ihren Besuch",
+      "planYourVisitDescription": "Ihr Tagespass gibt Ihnen unbegrenzten Hop-on/Hop-off-Zugang von Ihrer Startzeit bis 19:00 Uhr.\n\nStartzeiten helfen uns, die Kapazität zu verwalten.",
+      "selectDate": "Datum Auswählen",
+      "pickDate": "Wählen Sie ein Datum",
+      "preferredStartTime": "Bevorzugte Startzeit",
+      "selectTime": "Zeit auswählen",
+      "checkingAvailability": "Verfügbarkeit prüfen...",
+      "numberOfGuests": "Anzahl der Passagiere",
+      "numberOfPasses": "Anzahl der Pässe",
+      "passLabel": "pass",
+      "passesLabel": "pässe",
+      "guest": "passagier",
+      "guests": "passagiere",
+      "tourType": "Servicetyp",
+      "standardTour": "Standard-Service",
+      "standardTourDescription": "Hop-on/Hop-off-Transport mit freundlichen, sachkundigen professionellen Fahrer-Guides.",
+      "guidedTour": "Mit Geführtem Kommentar",
+      "guidedTourDescription": "Verbesserter Service mit detaillierten historischen und kulturellen Kommentaren von professionellen Guides während Ihrer gesamten Reise.",
+      "guidedCommentaryIncluded": "Geführter Kommentar Inbegriffen",
+      "guidedCommentaryDescription": "Expertenkommentar über Sintras Geschichte, Architektur und verborgene Schätze an jeder Haltestelle von unseren professionellen lokalen Guides.",
+      "continueButton": "Weiter",
+      "passValidFullDay": "Pass für einen ganzen Tag gültig",
+      "soldOut": "Ausverkauft",
+      "limited": "Begrenzt",
+      "available": "Verfügbar",
+      "soldOutForTime": "Für diese Zeit ausverkauft",
+      "limitedAvailability": "Begrenzte Verfügbarkeit",
+      "goodAvailability": "Gute Verfügbarkeit",
+      "preferredPickupSpot": "Bevorzugter Abholort",
+      "pickupPlaceholder": "Wo möchten Sie starten?",
+      "pickupHelpText": "Dies hilft uns, Fahrzeuge zu koordinieren, aber Sie können überall einsteigen",
+      "vehicleDispatchSmall": "Perfekt! Wir schicken ein geeignetes Fahrzeug für Ihre Gruppe von",
+      "vehicleDispatchLarge": "Große Gruppe! Sie benötigen",
+      "vehicles": "fahrzeuge",
+      "coordinatedToArrive": "koordiniert, um zusammen anzukommen.",
+      "dayPassPriceSummary": "Tagespass",
+      "dayPassWithGuided": "(beinhaltet geführten Kommentar)",
+      "forGuests": "für"
+    },
+    "step2": {
+      "title": "Sehenswürdigkeiten-Tickets Hinzufügen?",
+      "description": "Überspringen Sie die Warteschlangen! Fügen Sie Eintrittskarten für beliebte Sehenswürdigkeiten hinzu.",
+      "descriptionMultiple": "Preise angezeigt für",
+      "notAvailableMessage": "Sehenswürdigkeiten-Tickets sind noch nicht für den Online-Kauf verfügbar. Sie können Tickets am Eingang jeder Sehenswürdigkeit kaufen.",
+      "comingSoonBadge": "Online-Buchung Demnächst",
+      "comingSoonMessage": "Wir arbeiten daran, die Möglichkeit zum Online-Kauf von Sehenswürdigkeiten-Tickets hinzuzufügen. Vorerst können Tickets am Eingang jeder Sehenswürdigkeit gekauft werden.",
+      "comingSoonTip": "💡 Ihr Hop On Sintra Tagespass bietet Ihnen unbegrenzten Transport zu allen Sehenswürdigkeiten. Tickets sind beim Ankommen zum Kauf verfügbar!",
+      "eachLabel": "jeweils",
+      "tipTitle": "Tipp:",
+      "tipMessage": "Sie erhalten digitale Tickets per E-Mail zusammen mit Ihrem",
+      "backButton": "Zurück",
+      "continueButton": "Weiter"
+    },
+    "step3": {
+      "title": "Ihre Informationen",
+      "fullName": "Vollständiger Name",
+      "fullNamePlaceholder": "Max Mustermann",
+      "email": "E-Mail-Adresse",
+      "emailPlaceholder": "max@beispiel.de",
+      "confirmEmail": "E-Mail Bestätigen",
+      "confirmEmailPlaceholder": "max@beispiel.de",
+      "qrCodeMessage": "Ihr QR-Code wird hierher gesendet",
+      "emailsDontMatch": "E-Mails stimmen nicht überein",
+      "backButton": "Zurück",
+      "continueButton": "Weiter"
+    },
+    "step4": {
+      "orderSummary": "Bestellübersicht",
+      "paymentDetails": "Zahlungsdetails",
+      "startingAt": "beginnend um",
+      "dayPassWithQuantity": "Tagespass",
+      "plusGuided": "+ Geführt",
+      "attractionTickets": "Sehenswürdigkeiten-Tickets",
+      "total": "Gesamt",
+      "benefit1": "Unbegrenztes Hop-on/Hop-off bis 19:00 Uhr",
+      "benefit2": "Garantierter Sitzplatz in kleinen Fahrzeugen",
+      "benefit3": "Flexibel - jederzeit während der Betriebszeiten nutzbar",
+      "benefit4Single": "QR-Code per E-Mail gesendet",
+      "benefit4Multiple": "QR-Codes per E-Mail gesendet",
+      "benefit5": "Professioneller lokaler Guide inbegriffen",
+      "paymentInitFailed": "Zahlungsinitialisierung fehlgeschlagen",
+      "preparingPayment": "Sichere Zahlung wird vorbereitet...",
+      "retry": "Wiederholen",
+      "goBack": "Zurück",
+      "backButton": "Zurück"
+    },
+    "pickupLocations": {
+      "sintraTrainStation": "Bahnhof Sintra",
+      "sintraTownCenter": "Stadtzentrum Sintra",
+      "penaPalace": "Pena-Palast",
+      "quintaRegaleira": "Quinta da Regaleira",
+      "moorishCastle": "Maurenburg",
+      "monserratePalace": "Monserrate-Palast",
+      "sintraPalace": "Nationalpalast von Sintra",
+      "other": "Später Entscheiden"
+    },
+    "timeSlots": {
+      "guidedTourLabel": "Insight Tour",
+      "guidedTourDescription": "Einige Startzeiten beinhalten unsere Insight Tour, eine längere, detailliertere Fahrt, bei der Ihr Fahrer die Geschichten und die Geschichte hinter Sintras Monumenten teilt. Suchen Sie nach Zeitfenstern, die mit dem Insight Tour-Abzeichen unten markiert sind.",
+      "viewRouteMaps": "Routenkarten anzeigen"
+    },
+    "routeMap": {
+      "bothRoutesLabel": "Beide Routen",
+      "pickupLabel": "Abholung",
+      "frequencyLabel": "Alle 30 Min. • 9 - 19 Uhr",
+      "infoHeader": "Zwei Rundrouten • Klicken Sie auf eine Haltestelle zum Auswählen",
+      "yourPickupLocation": "Ihr Abholort",
+      "route1Label": "Route 1",
+      "route2Label": "Route 2",
+      "locations": {
+        "sintraTrainStation": {
+          "name": "Bahnhof Sintra",
+          "description": "Verbindungspunkt für beide Routen",
+          "info": "Im Herzen von Sintra gelegen, nur wenige Schritte vom historischen Zentrum entfernt. Unsere Fahrzeuge holen direkt vor dem Haupteingang des Bahnhofs ab. Verbindungspunkt für beide Routen.",
+          "highlights": ["Einfacher Zugang von Lissabon", "Beide Routen halten hier", "Häufige Abfahrten"]
+        },
+        "historicalCenterNorth": {
+          "name": "Historisches Zentrum Nord",
+          "description": "Historisches Zentrum mit Cafés und Geschäften",
+          "info": "Abholung im charmanten historischen Zentrum, umgeben von lokalen Restaurants, Konditoreien und Boutiquen. Verbindungspunkt für beide Routen.",
+          "highlights": ["Historische Atmosphäre", "Beide Routen halten hier", "Gastronomie in der Nähe"]
+        },
+        "historicalCenterSouth": {
+          "name": "Historisches Zentrum Süd",
+          "description": "Stadtzentrum in der Nähe des Nationalpalastes",
+          "info": "Haltestelle im historischen Zentrum in der Nähe des ikonischen Nationalpalastes mit seinen markanten Zwillingskaminen.",
+          "highlights": ["Königliches Erbe", "Zentrale Lage", "Ikonische Architektur"]
+        },
+        "moorishCastle": {
+          "name": "Maurenburg",
+          "description": "Alte Festung mit mittelalterlichen Mauern",
+          "info": "Besuchen Sie diese maurische Befestigung aus dem 10. Jahrhundert auf dem Hügel, die spektakuläre Aussichten über die Region bietet.",
+          "highlights": ["Historische Bedeutung", "Panoramablicke", "Authentische mittelalterliche Ruinen"]
+        },
+        "penaPalace": {
+          "name": "Pena-Palast",
+          "description": "Ikonisches Schloss auf dem Hügel mit Panoramablick",
+          "info": "Besuchen Sie das berühmteste Wahrzeichen von Sintra. Unser Abholpunkt befindet sich bequem am Eingang des Palastes.",
+          "highlights": ["Atemberaubende Aussichten", "Meistbesuchte Attraktion", "Tolle Fotomöglichkeiten"]
+        },
+        "quintaRegaleira": {
+          "name": "Quinta da Regaleira",
+          "description": "Mystisches Anwesen mit Initiationsbrunnen und Höhlen",
+          "info": "Besuchen Sie dieses bezaubernde Anwesen mit mysteriösen Gärten, unterirdischen Tunneln und dem berühmten Initiationsbrunnen. Abholung am Haupteingang.",
+          "highlights": ["Mysteriöse Architektur", "Schöne Gärten", "Einzigartiges Erlebnis"]
+        },
+        "seteais": {
+          "name": "Seteais",
+          "description": "Historischer Palast und Aussichtspunkt",
+          "info": "Halt an diesem prächtigen neoklassizistischen Palast mit atemberaubenden Aussichten. Jetzt ein Luxushotel, das Äußere und die Gärten sind für Besucher geöffnet.",
+          "highlights": ["Beeindruckende Architektur", "Panorama-Aussichtspunkt", "Historische Bedeutung"]
+        },
+        "monserratePalace": {
+          "name": "Monserrate-Palast",
+          "description": "Romantischer Palast mit exotischen Gärten",
+          "info": "Abholung an diesem atemberaubenden Palast aus dem 19. Jahrhundert, umgeben von botanischen Gärten mit Pflanzen aus der ganzen Welt. Ein verstecktes Juwel von Sintra.",
+          "highlights": ["Exotische botanische Gärten", "Romantische Architektur", "Friedliche Atmosphäre"]
+        }
+      }
+    },
+    "passengersSelection": {
+      "yourInformation": "Ihre Informationen",
+      "fullName": "Vollständiger Name",
+      "fullNamePlaceholder": "Geben Sie Ihren vollständigen Namen ein",
+      "email": "E-Mail-Adresse",
+      "emailPlaceholder": "ihre.email@beispiel.de",
+      "phoneNumber": "Telefonnummer (Optional)",
+      "phoneNumberPlaceholder": "+351 xxx xxx xxx",
+      "specialRequests": "Besondere Wünsche (Optional)",
+      "specialRequestsPlaceholder": "Besondere Anforderungen oder Wünsche?",
+      "backButton": "Zurück",
+      "continueButton": "Zur Zahlung Weiter"
+    },
+    "payment": {
+      "reviewAndPay": "Überprüfen und Bezahlen",
+      "orderSummary": "Bestellübersicht",
+      "dayPass": "Tagespass",
+      "dayPasses": "Tagespässe",
+      "passes": "pässe",
+      "tourType": "Servicetyp",
+      "guidedTour": "Geführter Kommentar",
+      "attractionTickets": "Sehenswürdigkeiten-Tickets",
+      "subtotal": "Zwischensumme",
+      "total": "Gesamt",
+      "cardPaymentDetails": "Kartenzahlungsdetails",
+      "backButton": "Zurück",
+      "payNow": "Jetzt Bezahlen",
+      "processingPayment": "Zahlung wird verarbeitet..."
+    },
+    "messages": {
+      "bookingConfirmedEmail": "Buchung bestätigt! Überprüfen Sie Ihre E-Mail für QR-Codes.",
+      "bookingConfirmed": "Buchung bestätigt! QR-Codes sind bereit.",
+      "bookingFailed": "Buchung konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut."
+    }
+  },
+  "privateTours": {
+    "comingSoon": {
+      "badge": "Demnächst",
+      "title": "Private Touren in Sintra",
+      "subtitle": "Wir bereiten etwas Besonderes für diejenigen vor, die ein exklusives, personalisiertes Sintra-Erlebnis suchen.",
+      "stayTunedText": "Bleiben Sie dran für unseren Premium-Service für private Touren mit:",
+      "feature1": "Engagierte Experten lokale Reiseleiter",
+      "feature2": "Individuelle Reiserouten nach Ihren Interessen",
+      "feature3": "Flexible Zeitpläne und exklusive Erlebnisse",
+      "notifyButton": "Benachrichtigung bei Start Erhalten",
+      "exploreDayPassButton": "Unseren Tagespass Entdecken",
+      "footerText": "In der Zwischenzeit probieren Sie unseren Hop-on/Hop-off-Tagespass, um Sintra in Ihrem eigenen Tempo zu erkunden"
+    },
+    "whyWait": {
+      "title": "Möchten Sie Sintra Heute Erkunden?",
+      "subtitle": "Unser Hop-on/Hop-off-Tagespass ist bereits verfügbar und perfekt für unabhängige Reisende!",
+      "card1Title": "Professionelle Reiseleiter",
+      "card1Description": "Alle unsere Fahrzeuge werden von Experten lokalen Reiseleitern gefahren",
+      "card2Title": "Flexibler Zeitplan",
+      "card2Description": "Steigen Sie in Ihrem eigenen Tempo ein und aus, täglich von 9 bis 19 Uhr",
+      "card3Title": "Hervorragendes Preis-Leistungs-Verhältnis",
+      "card3Description": "Unbegrenzte Fahrten für einen ganzen Tag zu einem erschwinglichen Preis",
+      "bookDayPassButton": "Buchen Sie Jetzt Ihren Tagespass"
+    },
+    "hero": {
+      "badge": "Premium-Erlebnis",
+      "title": "Private Touren in Sintra",
+      "subtitle": "Erleben Sie die Magie von Sintra in Ihrem eigenen Tempo mit einem engagierten professionellen Reiseleiter und einem privaten Fahrzeug. Perfekt für Familien, Paare und alle, die ein personalisiertes Abenteuer suchen.",
+      "pill1": "Bis zu 8 Gäste",
+      "pill2": "Flexible Dauer",
+      "pill3": "Individuelle Reiseroute",
+      "requestQuoteButton": "Angebot Anfordern",
+      "viewPackagesButton": "Pakete Ansehen"
+    },
+    "packages": {
+      "title": "Private Tour-Pakete",
+      "subtitle": "Wählen Sie das Paket, das am besten zu Ihren Bedürfnissen passt, oder lassen Sie uns eine individuelle Reiseroute nur für Sie erstellen.",
+      "halfDay": {
+        "title": "Halbtags-Highlights",
+        "description": "Perfekte Einführung in die Wunder von Sintra",
+        "price": "€200",
+        "priceSubtext": "für bis zu 4 Personen",
+        "duration": "4 Stunden • +€50 pro zusätzliche Person",
+        "feature1": "2-3 Hauptattraktionen",
+        "feature2": "Professioneller Reiseleiter",
+        "feature3": "Privatfahrzeug",
+        "feature4": "Abholung und Rückgabe am Hotel",
+        "feature5": "Flaschenwasser inklusive",
+        "bookButton": "Diese Tour Buchen"
+      },
+      "fullDay": {
+        "badge": "Am Beliebtesten",
+        "title": "Ganztags-Erlebnis",
+        "description": "Umfassende Tour der Schätze von Sintra",
+        "price": "€350",
+        "priceSubtext": "für bis zu 4 Personen",
+        "duration": "8 Stunden • +€75 pro zusätzliche Person",
+        "feature1": "4-5 Hauptattraktionen",
+        "feature2": "Experte lokaler Reiseleiter",
+        "feature3": "Premium-Fahrzeug",
+        "feature4": "Abholung und Rückgabe am Hotel",
+        "feature5": "Mittagsempfehlungen",
+        "feature6": "Foto-Stopps an versteckten Aussichtspunkten",
+        "bookButton": "Diese Tour Buchen"
+      },
+      "custom": {
+        "title": "Individuelles Erlebnis",
+        "description": "Vollständig auf Ihre Vorlieben zugeschnitten",
+        "price": "Individuell",
+        "duration": "Flexible Dauer • Ihre Wahl",
+        "feature1": "Personalisierte Reiseroute",
+        "feature2": "Dauer Ihrer Wahl",
+        "feature3": "Spezialisierte Themen verfügbar",
+        "feature4": "Mehrtägige Touren möglich",
+        "feature5": "Besondere Anlässe willkommen",
+        "contactButton": "Kontaktieren Sie Uns"
+      },
+      "disclaimer": "* Eintrittspreise für Attraktionen nicht inbegriffen • Alle Preise in EUR • Gruppenrabatte ab 8+ Personen verfügbar"
+    },
+    "whyChoose": {
+      "title": "Warum Eine Private Tour Wählen?",
+      "subtitle": "Während unser Hop-on/Hop-off-Service perfekt für unabhängige Entdecker ist, bietet eine private Tour ein unvergleichliches personalisiertes Erlebnis.",
+      "benefit1Title": "Ihr Eigener Zeitplan",
+      "benefit1Description": "Verbringen Sie so viel Zeit wie Sie möchten bei jeder Attraktion",
+      "benefit2Title": "Experte Lokaler Reiseleiter",
+      "benefit2Description": "Insider-Wissen und persönliche Empfehlungen",
+      "benefit3Title": "Individuelle Reiseroute",
+      "benefit3Description": "Besuchen Sie die Orte, die Sie am meisten interessieren"
+    },
+    "whatsIncluded": {
+      "title": "Was Ist In Jeder Tour Enthalten",
+      "item1Title": "Experten-Reiseleiter",
+      "item1Description": "Lizenzierter Fachmann mit fundiertem lokalem Wissen",
+      "item2Title": "Privatfahrzeug",
+      "item2Description": "Sauber, klimatisiert und komfortabel",
+      "item3Title": "Hotel-Abholung",
+      "item3Description": "Bequeme Abholung überall in Sintra",
+      "item4Title": "Versicherung",
+      "item4Description": "Vollständig versicherte Fahrzeuge und professionelle Fahrer"
+    },
+    "sampleItineraries": {
+      "title": "Beispiel-Reiserouten",
+      "subtitle": "Lassen Sie sich von unseren beliebtesten Routen inspirieren (vollständig anpassbar)",
+      "halfDay": {
+        "title": "Halbtags: Königliche Paläste",
+        "duration": "4 Stunden • Perfekt für Erstbesucher",
+        "badge": "Beliebt",
+        "stop1Title": "Pena-Palast (90 min)",
+        "stop1Description": "Sintras ikonischstes Wahrzeichen",
+        "stop2Title": "Historisches Zentrum von Sintra (45 min)",
+        "stop2Description": "Charmante Straßen und lokale Gebäck",
+        "stop3Title": "Quinta da Regaleira (60 min)",
+        "stop3Description": "Mystische Gärten und Initiationsbrunnen"
+      },
+      "fullDay": {
+        "title": "Ganztags: Vollständiges Sintra",
+        "duration": "8 Stunden • Das ultimative Sintra-Erlebnis",
+        "badge": "Empfohlen",
+        "stop1Title": "Pena-Palast & Park (2 Stunden)",
+        "stop1Description": "UNESCO-Weltkulturerbe",
+        "stop2Title": "Maurische Burg (45 min)",
+        "stop2Description": "Atemberaubende Panoramablicke",
+        "stop3Title": "Mittagspause in Sintra (90 min)",
+        "stop3Description": "Empfehlungen für authentische portugiesische Küche",
+        "stop4Title": "Quinta da Regaleira (90 min)",
+        "stop4Description": "Erkunden Sie mystische Gärten und Tunnel",
+        "stop5Title": "Cabo da Roca (30 min)",
+        "stop5Description": "Der westlichste Punkt Europas"
+      }
+    },
+    "faq": {
+      "title": "Häufig Gestellte Fragen",
+      "subtitle": "Alles, was Sie über unsere privaten Touren wissen müssen",
+      "question1": "Was ist im Tourpreis enthalten?",
+      "answer1": "Alle Touren beinhalten einen professionellen Reiseleiter, ein Privatfahrzeug, Abholung und Rückgabe am Hotel, Flaschenwasser und Versicherung. Eintrittspreise für Attraktionen sind nicht inbegriffen.",
+      "question2": "Können wir die Reiseroute anpassen?",
+      "answer2": "Auf jeden Fall! Wir können eine individuelle Reiseroute basierend auf Ihren Interessen erstellen, sei es Paläste, Gärten, Fotografie oder lokale Kultur.",
+      "question3": "Welche Sprachen sprechen die Reiseleiter?",
+      "answer3": "Alle unsere Reiseleiter sind mehrsprachig und sprechen Englisch, Portugiesisch, Spanisch und Französisch. Weitere Sprachen auf Anfrage verfügbar.",
+      "question4": "Was passiert bei Regen?",
+      "answer4": "Touren finden bei jedem Wetter statt! Wir passen die Reiseroute an, um uns bei Bedarf auf Innenattraktionen zu konzentrieren, und wir stellen Regenschirme zur Verfügung.",
+      "question5": "Wie weit im Voraus sollte ich buchen?",
+      "answer5": "Wir empfehlen, mindestens 48 Stunden im Voraus zu buchen, besonders während der Hochsaison (Mai-Oktober). Wir werden jedoch unser Bestes tun, um Last-Minute-Anfragen zu erfüllen."
+    },
+    "finalCta": {
+      "title": "Bereit für Ihr Privates Sintra-Abenteuer?",
+      "subtitle": "Kontaktieren Sie uns heute, um Ihre perfekte personalisierte Tour zu erstellen",
+      "requestQuoteButton": "Angebot Anfordern",
+      "chatButton": "Chatten Sie mit Uns"
+    }
+  },
+  "routeMap": {
+    "badge": "Interactive Map",
+    "title": "Route Stops & Locations",
+    "subtitle": "View all our stops on Google Maps. Plan your journey and see exactly where we pick up and drop off throughout Sintra.",
+    "mapTitle": "Hop On Sintra Route Map",
+    "infoTitle": "How to Use the Map",
+    "infoDescription": "This interactive map shows all our pickup and drop-off locations throughout Sintra. You can zoom, pan, and click on markers to see details about each stop.",
+    "tip1": "Click on any marker to see the stop name and nearby attractions",
+    "tip2": "Use the directions feature to get walking routes between stops",
+    "tip3": "All stops are serviced throughout operating hours (9 AM to 7 PM)",
+    "ctaButton": "Book Your Day Pass Now",
+    "ctaSubtext": "Unlimited rides to all these stops for one full day"
+  },
+  "ui": {
+    "home": "Startseite",
+    "howItWorks": "So Funktioniert's",
+    "attractions": "Sehenswürdigkeiten",
+    "manageBooking": "Meine Buchung",
+    "buyTicket": "Pass Kaufen",
+    "about": "Über & Kontakt",
+    "contact": "Kontakt",
+    "bookNow": "Jetzt Buchen",
+    "learnMore": "Mehr Erfahren",
+    "close": "Schließen",
+    "submit": "Absenden",
+    "cancel": "Abbrechen",
+    "download": "Herunterladen",
+    "print": "Drucken",
+    "selectDate": "Datum Auswählen",
+    "selectPassengers": "Passagiere Auswählen",
+    "addPassenger": "Passagier Hinzufügen",
+    "passengerName": "Passagiername",
+    "passengerType": "Passagiertyp",
+    "adult": "Erwachsener",
+    "child": "Kind (4-12)",
+    "infant": "Kleinkind (0-3)",
+    "total": "Gesamt",
+    "confirmBooking": "Buchung Bestätigen",
+    "bookingConfirmed": "Buchung Bestätigt!",
+    "requestPickup": "Abholung Anfordern",
+    "currentLocation": "Aktueller Standort",
+    "trackVehicle": "Fahrzeug Verfolgen",
+    "estimatedArrival": "Geschätzte Ankunft",
+    "chatWithUs": "Chatten Sie mit uns",
+    "needHelp": "Brauchen Sie Hilfe?",
+    "whatsappUs": "WhatsApp",
+    "operatingHours": "Betriebszeiten",
+    "perPerson": "pro Person",
+    "fullDay": "ganzer Tag",
+    "passengers": "Passagiere",
+    "bookingId": "Buchungs-ID",
+    "date": "Datum",
+    "quickLinks": "Schnelllinks",
+    "contactInfo": "Kontaktinformationen",
+    "followUs": "Folgen Sie uns",
+    "ticketPrice": "Ticketpreis",
+    "openingHours": "Öffnungszeiten",
+    "recommendedDuration": "Empfohlene Dauer",
+    "highlights": "Highlights",
+    "tips": "Tipps",
+    "buyAttractionTicket": "Sehenswürdigkeiten-Ticket Kaufen",
+    "easyAs1234": "Einfach wie 1-2-3-4",
+    "howItWorksTitle": "So Funktioniert's",
+    "howItWorksSubtitle": "Drei einfache Schritte zum besten Tag Ihrer Reise! 🎉",
+    "step1Title": "In Sekunden Buchen!",
+    "step1Description": "Wählen Sie Ihr Datum, fügen Sie optionale Attraktionen hinzu und fertig—Sie sind startklar! Ihr digitaler Pass kommt sofort per E-Mail. Kein Drucken, kein Ärger, nur pures Abenteuer.",
+    "step1Badge": "⚡ Dauert weniger als 3 Minuten",
+    "step2Title": "Erhalten Sie Ihren Magischen QR-Code",
+    "step2Description": "Ihr Smartphone wird zu Ihrem Ticket nach Sintra! Speichern Sie Ihren QR-Code und Sie können an jeder unserer Haltestellen einsteigen. So einfach ist das.",
+    "step2Badge": "📱 Funktioniert auch offline!",
+    "step3Title": "Einsteigen und Erkunden!",
+    "step3Description": "Sehen Sie einen Tuk Tuk an der Haltestelle? Zeigen Sie Ihren Code Ihrem professionellen Fahrer-Guide und steigen Sie ein! Mit Fahrten alle 10-15 Minuten von 9 bis 20 Uhr warten Sie nie lange. Erkunden Sie in Ihrem eigenen Tempo—unsere Guides begleiten Sie den ganzen Tag.",
+    "step3Badge": "🎉 Unbegrenzte Fahrten mit professionellen Guides",
+    "step4Title": "Kein Fahrzeug an der Haltestelle?",
+    "step4Description": "Wenn Sie kein wartendes Fahrzeug sehen, wenn Sie an einer Haltestelle ankommen, können Sie eine Abholung anfordern! Das lässt uns wissen, dass Sie warten und hilft uns, schneller zu Ihnen zu kommen. Ihre Anfrage hilft uns, unseren Service zu optimieren und die Wartezeiten für alle zu reduzieren.",
+    "step4Badge": "🔔 Jederzeit Abholung anfordern",
+    "installAppTitle": "📱 Go Sintra App Installieren",
+    "installAppDescription": "Fügen Sie zu Ihrem Startbildschirm hinzu! Funktioniert offline, lädt schneller und erleichtert Abholungsanfragen. Dauert nur 2 Sekunden!",
+    "installAppFaster": "Schneller",
+    "installAppOffline": "Offline",
+    "installAppSmoother": "Flüssiger",
+    "installAppButton": "Jetzt Installieren (2 Sek)",
+    "installAppButtonShort": "App Installieren",
+    "installAppLater": "Später",
+    "installAppMaybeLater": "Vielleicht Später",
+    "iosInstructions": "iOS-Anleitung:",
+    "iosStep1": "1. Tippen Sie auf die Teilen-Schaltfläche in Safari",
+    "iosStep2": "2. Tippen Sie auf \"Zum Home-Bildschirm\"",
+    "iosStep3": "3. Tippen Sie auf \"Hinzufügen\" - Fertig! 🎉",
+    "viewInstructions": "Anleitung Anzeigen",
+    "chromeIosWarning": "⚠️ Chrome auf iOS unterstützt keine Installation von Web-Apps",
+    "chromeIosMessage": "Bitte öffnen Sie diese Seite in Safari, um die App auf Ihrem Startbildschirm zu installieren.",
+    "whyYouLoveIt": "Warum Sie Es Lieben Werden",
+    "startingAt": "Ab",
+    "attractionsPageTitle": "Sintras UNESCO-Attraktionen",
+    "attractionsPageSubtitle": "Welterbe-Paläste, Burgen und Gärten",
+    "searchTravelGuidesPlaceholder": "Reiseführer durchsuchen... (z.B. 'Planung', 'Pena-Palast', 'Tipps')",
+    "travelGuideRecommendations": "Reiseführer-Empfehlungen",
+    "noArticlesFoundTryDifferent": "Keine Artikel gefunden. Versuchen Sie andere Suchbegriffe!",
+    "planningYourVisit": "Planen Sie Ihren Besuch?",
+    "browseTravelGuidesDescription": "Durchstöbern Sie unsere Reiseführer mit Tipps, Reiserouten und Expertenrat",
+    "readTravelGuides": "Reiseführer Lesen",
+    "homepage": {
+      "quickLinks": {
+        "sectionTitle": "Planen Sie Ihren Besuch",
+        "sectionSubtitle": "Alles, was Sie für den perfekten Tag in Sintra brauchen",
+        "attractions": {
+          "title": "UNESCO-Attraktionen",
+          "subtitle": "Entdecken Sie Paläste & Burgen"
+        },
+        "travelGuide": {
+          "title": "Reiseführer",
+          "subtitle": "Expertentipps & Routen"
+        },
+        "privateTours": {
+          "title": "Private Touren",
+          "subtitle": "Personalisierte Erlebnisse"
+        }
+      }
+    }
+  },
+  "cookie": {
+    "title": "Wir Schätzen Ihre Privatsphäre",
+    "description": "Wir verwenden Cookies, um Ihr Browsing-Erlebnis zu verbessern, Inhalte zu personalisieren und unseren Traffic zu analysieren. Lesen Sie unsere",
+    "privacyLink": "Datenschutzerklärung",
+    "acceptAll": "Alle Akzeptieren",
+    "rejectAll": "Alle Ablehnen",
+    "customize": "Anpassen",
+    "settingsTitle": "Cookie-Einstellungen",
+    "settingsDescription": "Wählen Sie aus, welche Cookies Sie akzeptieren möchten. Sie können Ihre Präferenzen jederzeit ändern.",
+    "savePreferences": "Einstellungen Speichern",
+    "categories": {
+      "necessary": {
+        "title": "Notwendige Cookies",
+        "description": "Wesentlich für das ordnungsgemäße Funktionieren der Website. Diese Cookies ermöglichen Kernfunktionen wie Sicherheit, Netzwerkverwaltung und Zugänglichkeit. Sie können diese Cookies nicht ablehnen."
+      },
+      "functional": {
+        "title": "Funktionale Cookies",
+        "description": "Helfen uns, Ihre Präferenzen und Einstellungen wie die Sprachauswahl zu speichern, um Ihnen ein personalisierteres Erlebnis zu bieten."
+      },
+      "analytics": {
+        "title": "Analyse-Cookies",
+        "description": "Helfen uns zu verstehen, wie Besucher mit unserer Website interagieren, indem sie Informationen anonym sammeln und melden. Dies hilft uns, unseren Service zu verbessern."
+      },
+      "marketing": {
+        "title": "Marketing-Cookies",
+        "description": "Werden verwendet, um Besucher über Websites hinweg zu verfolgen, um relevante Werbung anzuzeigen und sie zu ermutigen, mit unserem Service zu interagieren."
+      }
+    }
+  },
+  "components": {
+    "liveChat": {
+      "liveSupport": "Live-Support",
+      "hereToHelp": "Wir sind hier, um zu helfen!",
+      "chatOnWhatsApp": "Auf WhatsApp chatten",
+      "orStartWebChat": "oder Web-Chat starten",
+      "startWebChat": "Web-Chat Starten",
+      "starting": "Wird gestartet...",
+      "conversationSaved": "Ihr Gespräch ist gespeichert.",
+      "welcomeMessage": "Hallo! 👋 Willkommen bei Hop On Sintra. Wie können wir Ihnen helfen?",
+      "enterName": "Geben Sie Ihren Namen ein",
+      "enterEmail": "Geben Sie Ihre E-Mail ein",
+      "enterMessage": "Geben Sie Ihre Nachricht ein...",
+      "sendMessage": "Senden",
+      "goBack": "Zurück"
+    },
+    "userProfile": {
+      "myAccount": "Mein Konto",
+      "quickAccess": "Schnellzugriff",
+      "loginToProfile": "Zum Profil Anmelden",
+      "myBooking": "Meine Buchung",
+      "requestRide": "Fahrt Anfordern",
+      "accessYourBooking": "Auf Ihre Buchung Zugreifen",
+      "loginDescription": "Melden Sie sich mit Ihrer Buchungs-ID und Ihrem Nachnamen an, um während Ihres Besuchs auf Ihr temporäres Profil zuzugreifen.",
+      "bookingId": "Buchungs-ID",
+      "bookingIdPlaceholder": "z.B., AB-1234",
+      "lastName": "Nachname",
+      "lastNamePlaceholder": "z.B., Silva",
+      "login": "Anmelden",
+      "loggingIn": "Anmeldung...",
+      "welcomeBack": "Willkommen zurück",
+      "loggedOut": "Sie wurden abgemeldet",
+      "pleaseEnterBoth": "Bitte geben Sie Buchungs-ID und Nachname ein",
+      "invalidCredentials": "Ungültige Buchungsangaben",
+      "loginFailed": "Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "logout": "Abmelden",
+      "yourPasses": "Ihre Pässe",
+      "validFor": "Gültig für"
+    },
+    "requestPickupPage": {
+      "verifyBooking": "Überprüfen Sie Ihre Buchung",
+      "verifyBookingDescription": "Geben Sie Ihren Buchungscode ein, um eine Abholung anzufordern. Dieser Service ist nur für Kunden mit aktiven Tagespässen verfügbar.",
+      "requestPickup": "Abholung Anfordern",
+      "requestPickupDescription": "Teilen Sie uns Ihre Gruppengröße und Ihren Standort mit, und wir schicken das perfekte Fahrzeug für Sie.",
+      "enterName": "Geben Sie Ihren Namen ein",
+      "groupSize": "Gruppengröße",
+      "pickupLocation": "Abholort",
+      "requestingSent": "Wird angefordert...",
+      "pickupRequested": "Abholung Angefordert!",
+      "pickupRequestedMessage": "Wir haben Ihre Anfrage erhalten und werden in Kürze ein Fahrzeug schicken.",
+      "errorRequestingPickup": "Fehler beim Anfordern der Abholung"
+    },
+    "bookingConfirmation": {
+      "bookingConfirmed": "Buchung Bestätigt!",
+      "checkEmail": "Überprüfen Sie Ihre E-Mail für die Bestätigung und QR-Codes.",
+      "bookingId": "Buchungs-ID",
+      "saveForManaging": "Bewahren Sie dies auf, um Ihre Buchung zu verwalten",
+      "emailSentTo": "Bestätigungs-E-Mail gesendet an",
+      "ticketsSentToEmail": "Ihr Ticket-PDF und die Buchungsdetails wurden an Ihre E-Mail gesendet.",
+      "bookingSummary": "Buchungszusammenfassung",
+      "booking": "Buchung",
+      "date": "Datum",
+      "passengers": "Passagiere",
+      "person": "Person",
+      "people": "Personen",
+      "totalPaid": "Gesamtbetrag",
+      "yourDayPassTickets": "Ihre Tagespass-Tickets",
+      "downloadPDF": "PDF Herunterladen",
+      "downloading": "Wird heruntergeladen...",
+      "printAll": "Alles Drucken",
+      "pdfTicketsAttached": "PDF-Tickets Angehängt",
+      "pdfTicketsAttachedDesc": "Wir haben ein PDF mit allen Ihren Tickets an Ihre E-Mail gesendet. Sie können es auch hier herunterladen oder Ihre Tickets unten speichern.",
+      "ticketsReady": "Ihre Tickets Sind Bereit!",
+      "ticketsReadyDesc": "Zeigen Sie diese Tickets beim Einsteigen dem Fahrer. Jeder Passagier benötigt sein eigenes Ticket mit QR-Code.",
+      "howToUseYourPass": "So Verwenden Sie Ihren Pass",
+      "showQRCode": "QR-Code Anzeigen",
+      "showQRCodeDesc": "Zeigen Sie Ihren QR-Code dem Fahrer beim Einsteigen in ein Fahrzeug",
+      "unlimitedRides": "Unbegrenzte Fahrten",
+      "unlimitedRidesDesc": "Nutzen Sie Ihren Pass für unbegrenzte Hop-on/Hop-off-Fahrten bis 20:00 Uhr",
+      "regularService": "Regelmäßiger Service",
+      "regularServiceDesc": "Neue Fahrzeuge fahren alle 30 Minuten von allen Hauptattraktionen ab",
+      "flexibleSchedule": "Flexibler Zeitplan",
+      "flexibleScheduleDesc": "Verbringen Sie so viel Zeit wie Sie möchten an jeder Attraktion",
+      "thankYou": "Vielen Dank, dass Sie Hop On Sintra Gewählt Haben!",
+      "adventureBegins": "Wir freuen uns, Ihnen die Magie von Sintra zu zeigen. Ihr Abenteuer beginnt am",
+      "confirmationSentTo": "Ihre Buchungsbestätigung und Tickets wurden gesendet an",
+      "backToHome": "Zurück zur Startseite",
+      "manageBooking": "Buchung Verwalten",
+      "viewAttractions": "Attraktionen Ansehen",
+      "tip": "Tipp",
+      "tipUseBookingId": "Verwenden Sie Ihre Buchungs-ID {bookingId}, um Ihre Reservierung zu verwalten",
+      "viewRouteMap": "interaktive Routenkarte",
+      "questionsOrChanges": "Fragen oder Änderungen erforderlich?",
+      "contactViaEmail": "Kontaktieren Sie uns per",
+      "or": "oder",
+      "unlockFullAccess": "Vollzugriff Freischalten",
+      "loginNow": "Melden Sie sich jetzt an, um während Ihres Besuchs auf Premium-Funktionen zuzugreifen:",
+      "requestPickup": "Abholung anfordern",
+      "requestPickupDesc": "von jeder Attraktion in Sintra",
+      "liveChatSupport": "Live-Chat-Support",
+      "liveChatSupportDesc": "mit gespeichertem Gesprächsverlauf",
+      "viewTickets": "Ihre Tickets ansehen",
+      "viewTicketsDesc": "und Buchungsdetails jederzeit",
+      "loginInstantly": "Verwenden Sie Ihre {bold}Buchungs-ID{/bold} und {bold}Nachname{/bold}, um sich sofort anzumelden.",
+      "loginNowButton": "Jetzt Anmelden",
+      "youreLoggedIn": "Sie Sind Angemeldet!",
+      "fullAccessEnabled": "Sie haben vollen Zugriff auf alle Funktionen, einschließlich Abholanfragen und Live-Chat-Support. Ihre Tickets und Buchungsdetails sind in Ihrem Profil gespeichert.",
+      "requestPickupFrom": "Abholung Anfordern",
+      "downloadTickets": "Tickets Herunterladen",
+      "downloadingTickets": "Wird heruntergeladen...",
+      "noBookingFound": "Keine Buchung gefunden. Bitte tätigen Sie zuerst eine Buchung.",
+      "bookNow": "Jetzt Buchen",
+      "insightTourPickup": "Insight Tour - Wichtige Abholinformationen",
+      "departsAt": "Ihre geführte Tour startet um",
+      "meetingPoint": "Treffpunkt",
+      "arriveEarly": "Bitte kommen Sie 10 Minuten früher",
+      "lookForVehicle": "um eine pünktliche Abfahrt zu gewährleisten. Suchen Sie nach unserem Fahrzeug mit dem Hop On Sintra-Branding und zeigen Sie Ihr Ticket dem Fahrer.",
+      "pdfDownloadSuccess": "PDF erfolgreich heruntergeladen!",
+      "pdfDownloadError": "PDF-Download fehlgeschlagen"
+    },
+    "buyTicketPage": {
+      "stepDescriptions": {
+        "step1": "Wählen Sie Ihr bevorzugtes Datum und Ihre Startzeit",
+        "step2": "Wählen Sie den Abholort und die Anzahl der Gäste"
+      },
+      "progressLabels": {
+        "dateTime": "Datum & Uhrzeit",
+        "pickupSpot": "Abholort",
+        "attractions": "Attraktionen",
+        "yourDetails": "Ihre Daten",
+        "confirmation": "Bestätigung"
+      },
+      "toasts": {
+        "paymentInitFailed": "Fehler bei der Zahlungsinitialisierung. Bitte versuchen Sie es erneut.",
+        "bookingConfirmedCheckEmail": "Buchung bestätigt! Überprüfen Sie Ihre E-Mail für QR-Codes.",
+        "bookingConfirmedQRReady": "Buchung bestätigt! QR-Codes sind bereit.",
+        "emailVerificationWarning": "⚠️ Das E-Mail-System erfordert eine Domain-Verifizierung. QR-Codes sind auf dieser Seite verfügbar.",
+        "emailNoAddress": "⚠️ Keine E-Mail-Adresse angegeben. Speichern Sie Ihre QR-Codes von dieser Seite.",
+        "emailErrorWithDetails": "⚠️ E-Mail konnte nicht gesendet werden",
+        "emailCouldntBeSent": "E-Mail konnte nicht gesendet werden. Speichern Sie Ihre QR-Codes von dieser Seite.",
+        "serverConnectionIssue": "Server-Verbindungsproblem. Ihre Zahlung wurde verarbeitet. Bitte kontaktieren Sie den Support mit Ihrer Zahlungsbestätigung.",
+        "paymentFailed": "Zahlung fehlgeschlagen. Bitte versuchen Sie es erneut."
+      },
+      "paymentError": {
+        "title": "Zahlungsinitialisierung fehlgeschlagen",
+        "message": "Zahlung konnte nicht initialisiert werden",
+        "retry": "Erneut versuchen",
+        "goBack": "Zurück"
+      },
+      "bookingErrors": {
+        "failedMultipleAttempts": "Buchungserstellung nach mehreren Versuchen fehlgeschlagen",
+        "failedToCreate": "Buchungserstellung fehlgeschlagen",
+        "failedToComplete": "Buchungsabschluss fehlgeschlagen. Bitte versuchen Sie es erneut."
+      },
+      "insightTourInfo": {
+        "title": "Insight Tour",
+        "description": "Ausgewählte Zeitfenster umfassen unsere Insight Tour, eine längere und detailliertere Fahrt, bei der der Fahrer die Geschichten und Geschichte hinter Sintras Monumenten teilt. Suchen Sie nach Zeitfenstern, die mit dem charakteristischen Insight Tour-Badge unten markiert sind.",
+        "badge": "Insight Tour"
+      },
+      "soldOut": {
+        "title": "Vorübergehend Nicht Verfügbar",
+        "description": "Alle Termine sind derzeit ausgebucht. Bitte schauen Sie später wieder vorbei oder kontaktieren Sie uns für Verfügbarkeit.",
+        "badge": "Ausverkauft"
+      },
+      "step1": {
+        "selectDate": "Datum Auswählen",
+        "departureTime": "Abfahrtszeit",
+        "seatsLeft": "übrig",
+        "note": "Hinweis:"
+      },
+      "step2": {
+        "title": "Abholung & Gruppengröße",
+        "description": "Wählen Sie Ihren Abholort und die Anzahl der Gäste",
+        "total": "Gesamt"
+      },
+      "step3": {
+        "title": "Attraktionstickets Hinzufügen?",
+        "skipTicketLines": "Überspringen Sie die Warteschlangen!",
+        "pricesShownFor": "Preise angezeigt für",
+        "guests": "Gäste.",
+        "notAvailable": "Attraktionstickets sind noch nicht online verfügbar. Sie können Tickets am Eingang jeder Attraktion kaufen.",
+        "each": "jeweils",
+        "tipTitle": "Tipp:",
+        "tipDescription": "Sie erhalten digitale Tickets per E-Mail zusammen mit",
+        "dayPassQRCode": "Ihrem Tagespass-QR-Code",
+        "dayPassQRCodes": "Ihren Tagespass-QR-Codes",
+        "comingSoon": {
+          "badge": "Online-Buchung Bald Verfügbar",
+          "description": "Wir arbeiten daran, die Möglichkeit zum Online-Kauf von Attraktionstickets hinzuzufügen. Vorerst können Tickets am Eingang jeder Attraktion gekauft werden.",
+          "tip": "💡 Ihr Hop On Sintra Tagespass bietet Ihnen unbegrenzten Transport zu allen Attraktionen. Tickets sind beim Eintreffen erhältlich!"
+        }
+      },
+      "step4": {
+        "title": "Ihre Informationen",
+        "fullName": "Vollständiger Name",
+        "emailAddress": "E-Mail-Adresse",
+        "confirmEmail": "E-Mail Bestätigen",
+        "qrCodeSentHere": "Ihr QR-Code wird hierhin gesendet",
+        "emailsDontMatch": "E-Mails stimmen nicht überein"
+      },
+      "step5": {
+        "orderSummary": "Bestellübersicht",
+        "startingAt": "beginnend um",
+        "guest": "Gast",
+        "guests": "Gäste",
+        "dayPass": "Tagespass",
+        "guided": "Geführt",
+        "attractionTickets": "Attraktionstickets",
+        "includesGuidedCommentary": "beinhaltet geführte Kommentare",
+        "paymentDetails": "Zahlungsdetails",
+        "preparingPayment": "Sichere Zahlung wird vorbereitet...",
+        "benefits": {
+          "unlimited": "Unbegrenztes Hop-on/Hop-off bis 20:00 Uhr",
+          "guaranteedSeating": "Garantierte Sitzplätze in kleinen Fahrzeugen",
+          "flexible": "Flexibel - jederzeit während der Betriebszeiten nutzbar",
+          "qrCode": "QR-Code",
+          "qrCodes": "QR-Codes",
+          "sentViaEmail": "per E-Mail gesendet",
+          "guidedCommentary": "Geführte Kommentare inklusive"
+        }
+      },
+      "common": {
+        "back": "Zurück",
+        "continue": "Weiter",
+        "total": "Gesamt"
+      }
+    },
+    "aboutPage": {
+      "sendMessage": "Nachricht Senden",
+      "sending": "Wird gesendet...",
+      "messageSent": "Vielen Dank für Ihre Nachricht! Wir werden uns bald bei Ihnen melden.",
+      "messageError": "Nachricht konnte nicht gesendet werden. Bitte verwenden Sie WhatsApp oder senden Sie uns eine E-Mail an info@hoponsintra.com",
+      "fullName": "Vollständiger Name",
+      "emailAddress": "E-Mail-Adresse"
+    },
+    "toast": {
+      "newVersionAvailable": "Neue Version verfügbar! Aktualisieren Sie, um zu aktualisieren.",
+      "contentUpdated": "Inhalt aktualisiert!",
+      "loginSuccess": "🎉 Sie sind jetzt angemeldet!",
+      "loginError": "Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "settingsSaved": "Einstellungen erfolgreich in der Datenbank gespeichert!",
+      "settingsSaveFailed": "Fehler beim Speichern der Einstellungen in der Datenbank. Nur lokal gespeichert.",
+      "availabilitySaved": "Verfügbarkeit erfolgreich gespeichert!",
+      "availabilitySaveFailed": "Fehler beim Speichern der Verfügbarkeit",
+      "contentSaved": "Inhalt erfolgreich in der Datenbank gespeichert!",
+      "contentSaveFailed": "Fehler beim Speichern des Inhalts. Bitte versuchen Sie es erneut."
+    }
+  },
+  "productComponents": {
+    "perPass": "pro Pass",
+    "quantity": "Menge",
+    "each": "jeder",
+    "back": "Zurück",
+    "next": "Weiter",
+    "adult": "Erwachsener",
+    "productCard": {
+      "daypass": {
+        "title": "Ganztagespass",
+        "description": "Unbegrenzte Fahrten zu allen Sintra-Attraktionen",
+        "features": [
+          "Unbegrenzte Hop-on-Hop-off-Fahrten",
+          "Garantierte Sitzplätze - kein Warten",
+          "Professionelle Fahrer-Guides",
+          "Service 9-19 Uhr täglich",
+          "Kleine Gruppen (max. 8 Personen)",
+          "Echtzeit-Fahrzeugverfolgung"
+        ],
+        "bookNow": "Buchen Sie Ihren Pass"
+      },
+      "insightTour": {
+        "title": "Insight Tour",
+        "description": "Tiefer Einblick in Sintras Geschichte und Kultur",
+        "features": [
+          "Experten-Ortsführer",
+          "Detaillierte historische Erzählungen",
+          "Schnelleinlass zu Monumenten",
+          "Kleine intime Gruppen",
+          "Versteckte Juwelen und lokale Geschichten",
+          "Ganztägige Erfahrung"
+        ],
+        "bookNow": "Insight Tour Buchen"
+      },
+      "monuments": {
+        "title": "Monument-Tickets",
+        "description": "Überspringen Sie die Warteschlange bei Sintras Top-Attraktionen",
+        "features": [
+          "Eintritt zum Pena-Palast",
+          "Quinta da Regaleira",
+          "Zugang zur Maurenburg",
+          "Monserrate-Palast",
+          "Prioritätseinlass",
+          "Gültig für einen Tag"
+        ],
+        "bookNow": "Tickets Kaufen"
+      }
+    },
+    "bookingCard": {
+      "title": "Buchen Sie Ihren Pass",
+      "selectDate": "Datum Auswählen",
+      "quantity": "Menge",
+      "total": "Gesamt",
+      "bookNow": "Jetzt Buchen"
+    },
+    "manualBooking": {
+      "title": "Manuelle Buchung Erstellen",
+      "subtitle": "Für Walk-ins und Verkäufe vor Ort",
+      "step1Title": "Kundendetails",
+      "step1Description": "Grundlegende Informationen",
+      "customerName": "Kundenname",
+      "customerNamePlaceholder": "Vollständiger Name",
+      "customerEmail": "Kunden-E-Mail",
+      "customerEmailPlaceholder": "email@beispiel.com",
+      "nextDetails": "Weiter: Pässe",
+      "step2Title": "Pässe Auswählen",
+      "step2Description": "Tippen zum Anpassen",
+      "selectPasses": "Pässe Auswählen",
+      "tapToAdjust": "Tippen zum Anpassen",
+      "nextAddons": "Weiter: Extras",
+      "step3Title": "Extras",
+      "step3Description": "Optionale Extras",
+      "guidedTour": "Geführte Kommentare",
+      "guidedTourDescription": "Verbessertes Erlebnis mit detaillierten Erzählungen",
+      "attractions": "Attraktionstickets",
+      "selectAttractions": "Wählen Sie, welche Attraktionen einbezogen werden sollen",
+      "step4Title": "Zahlung",
+      "step4Description": "Wie wird der Kunde bezahlen?",
+      "paymentMethod": "Zahlungsmethode",
+      "cash": "Bargeld",
+      "card": "Karte",
+      "createBooking": "Buchung Erstellen",
+      "bookingCreated": "Buchung Erstellt!",
+      "shareIdWithCustomer": "Teilen Sie diese ID mit dem Kunden",
+      "customer": "Kunde",
+      "totalPaid": "Gesamt Bezahlt",
+      "payment": "Zahlung",
+      "ticketsSentTo": "Tickets gesendet an",
+      "passengersCheckedIn": "Passagiere automatisch eingecheckt",
+      "createAnother": "Weitere Buchung Erstellen",
+      "backToAdmin": "Zurück zum Admin",
+      "errorCreatingBooking": "Fehler beim Erstellen der Buchung",
+      "pleaseTryAgain": "Bitte versuchen Sie es erneut",
+      "goBack": "Zurück"
+    }
+  }
+}

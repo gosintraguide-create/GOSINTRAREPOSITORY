@@ -4,7 +4,7 @@ import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
-import { getComponentTranslation } from "../lib/translations/components";
+import { getTranslation } from "../lib/translations";
 
 interface BookingCardProps {
   onNavigate: (page: string) => void;
@@ -15,7 +15,7 @@ interface BookingCardProps {
 export function BookingCard({ onNavigate, basePrice, language = "en" }: BookingCardProps) {
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [quantity, setQuantity] = useState(2);
-  const t = getComponentTranslation(language);
+  const t = getTranslation(language).productComponents;
 
   // Set default date to today
   useEffect(() => {

@@ -8,7 +8,7 @@ import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { createClient } from '../utils/supabase/client';
 import { toast } from 'sonner';
 import { getSession } from "../lib/sessionManager";
-import { getComponentTranslation } from "../lib/translations/component-translations";
+import { getTranslation } from "../lib/translations";
 
 interface LiveChatProps {
   onNavigate: (page: string) => void;
@@ -35,7 +35,7 @@ export function LiveChat({ onNavigate, language = "en" }: LiveChatProps) {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatWindowRef = useRef<HTMLDivElement>(null);
-  const t = getComponentTranslation(language);
+  const t = getTranslation(language).components;
 
   useEffect(() => {
     console.log('LiveChat component mounted');

@@ -21,7 +21,7 @@ import { Label } from "./ui/label";
 import { getSession, clearSession, verifyAndLogin, type UserSession } from "../lib/sessionManager";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
 import { toast } from 'sonner';
-import { getComponentTranslation } from "../lib/translations/component-translations";
+import { getTranslation } from "../lib/translations";
 
 interface UserProfileProps {
   onNavigate: (page: string) => void;
@@ -30,7 +30,7 @@ interface UserProfileProps {
 
 export function UserProfile({ onNavigate, language }: UserProfileProps) {
   const [session, setSession] = useState<UserSession | null>(null);
-  const t = getComponentTranslation(language);
+  const t = getTranslation(language).components;
 
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [bookingId, setBookingId] = useState("");

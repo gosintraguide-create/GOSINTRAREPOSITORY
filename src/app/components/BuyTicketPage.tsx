@@ -7,7 +7,6 @@ import {
   publicAnonKey,
 } from "../utils/supabase/info";
 import { getTranslation } from "../lib/translations";
-import { getComponentTranslation } from "../lib/translations/component-translations";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";
@@ -123,7 +122,7 @@ export function BuyTicketPage() {
   const { language = "en", onNavigate } = useOutletContext<OutletContext>();
   const location = useLocation();
   const t = getTranslation(language);
-  const ct = getComponentTranslation(language);
+  const ct = getTranslation(language).components;
   
   // Handle booking complete callback
   const onBookingComplete = (booking: any) => {

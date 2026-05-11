@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { getSession } from "../lib/sessionManager";
 import { toast } from 'sonner';
-import { getComponentTranslation } from "../lib/translations/component-translations";
+import { getTranslation } from "../lib/translations";
 
 interface OutletContext {
   language: string;
@@ -23,7 +23,7 @@ interface RequestPickupPageProps {
 
 export function RequestPickupPage() {
   const { language = "en", onNavigate } = useOutletContext<OutletContext>();
-  const t = getComponentTranslation(language);
+  const t = getTranslation(language).components;
   const [step, setStep] = useState<"verify" | "request" | "searching" | "confirmed">("verify");
   const [bookingCode, setBookingCode] = useState<string>("");
   const [verificationError, setVerificationError] = useState<string>("");

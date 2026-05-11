@@ -8,7 +8,7 @@ import {
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
-import { getComponentTranslation } from "../lib/translations/components";
+import { getTranslation } from "../lib/translations";
 
 interface ProductCardProps {
   onNavigate: (page: string) => void;
@@ -37,7 +37,7 @@ export function ProductCard({
   const [touchEnd, setTouchEnd] = useState(0);
 
   const isPriceLoaded = basePrice > 0;
-  const t = getComponentTranslation(language);
+  const t = getTranslation(language).productComponents;
 
   // Use only custom images from the Content Editor - no hardcoded defaults
   const images = customImages || [];

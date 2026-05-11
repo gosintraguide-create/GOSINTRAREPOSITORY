@@ -9,7 +9,7 @@ import { Badge } from "./ui/badge";
 import { CheckCircle, Loader2, ArrowLeft, User, Users, Ticket, CreditCard, Banknote, Plus, Minus, ArrowRight, Baby } from "lucide-react";
 import { format } from "date-fns";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
-import { getComponentTranslation } from "../lib/translations/components";
+import { getTranslation } from "../lib/translations";
 
 interface ManualBookingPageProps {
   onNavigate: (page: string) => void;

@@ -4,7 +4,7 @@ import {
   getContent as getContentFromAPI,
   saveContent as saveContentToAPI,
 } from "./api";
-import { getTranslation } from "./translations";
+import { getTranslation } from "./translations/loader";
 
 export interface WebsiteContent {
   company: {
@@ -1477,7 +1477,7 @@ export function loadContentWithLanguage(
   languageCode: string = "en",
 ): WebsiteContent {
   // Get translation for the language
-  const translation = getTranslation(languageCode);
+  const translation = getTranslation(languageCode) as unknown as WebsiteContent;
 
   // Check if there's custom content saved by admin
   const saved = localStorage.getItem("website-content");
@@ -1593,7 +1593,7 @@ export async function syncContentFromDatabaseWithLanguage(
 ): Promise<WebsiteContent> {
   try {
     const content = await getContentFromAPI();
-    const translation = getTranslation(languageCode);
+    const translation = getTranslation(languageCode) as unknown as WebsiteContent;
 
     if (content && content.initialized) {
       // 🔥 BRAND UPDATE: Check if database has old branding
