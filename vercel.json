@@ -58,5 +58,6 @@
         }
       ]
     }
-  ]
+  ],
+  "outputDirectory": "dist"
 }
