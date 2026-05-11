@@ -352,10 +352,18 @@ export const nl: WebsiteContent = {
     ctaButton: "Boek Je Dagpas",
     backToBlog: "Terug Naar Blog",
     articleNotFound: "Artikel niet gevonden",
+    articleNotFoundDesc: "Dit artikel is mogelijk verplaatst of verwijderd.",
+    loadingArticle: "Artikel laden...",
     share: "Delen",
+    copyLink: "Link kopiëren",
+    copied: "Gekopieerd!",
     updated: "Bijgewerkt",
     relatedArticles: "Gerelateerde Artikelen",
+    relatedGuides: "Gerelateerde gidsen",
     moreArticles: "Meer Artikelen",
+    tagged: "Tags:",
+    previousArticle: "Vorige",
+    nextArticle: "Volgende",
     
     // Blog Article Page specific
     breadcrumbHome: "Home",

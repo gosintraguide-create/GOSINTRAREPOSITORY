@@ -372,10 +372,18 @@ export const pt: WebsiteContent = {
     ctaButton: "Reserve o Seu Passe Diário",
     backToBlog: "Voltar ao Blog",
     articleNotFound: "Artigo não encontrado",
+    articleNotFoundDesc: "Este artigo pode ter sido movido ou removido.",
+    loadingArticle: "A carregar artigo...",
     share: "Partilhar",
+    copyLink: "Copiar link",
+    copied: "Copiado!",
     updated: "Atualizado",
     relatedArticles: "Artigos Relacionados",
+    relatedGuides: "Guias relacionados",
     moreArticles: "Mais Artigos",
+    tagged: "Etiquetas:",
+    previousArticle: "Anterior",
+    nextArticle: "Próximo",
     
     // Blog Article Page specific
     breadcrumbHome: "Início",

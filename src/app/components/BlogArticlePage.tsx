@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router";
+import { useParams, useNavigate, useOutletContext } from "react-router";
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import {
@@ -29,7 +29,13 @@ import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { ReadingProgress } from "./ReadingProgress";
 import { TableOfContents } from "./TableOfContents";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
+import { getTranslation } from "../lib/translations";
 import { toast } from "sonner";
+
+interface OutletContext {
+  language?: string;
+  onNavigate?: (page: string, data?: unknown) => void;
+}
 
 function renderMarkdown(content: string): string {
   const html = marked(content) as string;
@@ -40,8 +46,10 @@ function renderMarkdown(content: string): string {
 }
 
 export function BlogArticlePage() {
-  const { slug, lang = "en" } = useParams<{ slug: string; lang?: string }>();
+  const { slug } = useParams<{ slug: string }>();
+  const { language: lang = "en" } = useOutletContext<OutletContext>();
   const navigate = useNavigate();
+  const t = getTranslation(lang);
   const [article, setArticle] = useState<BlogArticle | null>(null);
   const [allArticles, setAllArticles] = useState<BlogArticle[]>([]);
   const [categories, setCategories] = useState<BlogCategory[]>([]);
@@ -131,7 +139,7 @@ export function BlogArticlePage() {
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <p className="text-muted-foreground">Loading article...</p>
+          <p className="text-muted-foreground">{t.blog.loadingArticle}</p>
         </div>
       </div>
     );
@@ -141,11 +149,11 @@ export function BlogArticlePage() {
   if (!article || !translation) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 px-4">
-        <h1 className="text-2xl font-bold">Article not found</h1>
-        <p className="text-muted-foreground">This article may have been moved or removed.</p>
+        <h1 className="text-2xl font-bold">{t.blog.articleNotFound}</h1>
+        <p className="text-muted-foreground">{t.blog.articleNotFoundDesc}</p>
         <Button onClick={() => navigate("/blog")}>
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Blog
+          {t.blog.backToBlog}
         </Button>
       </div>
     );
@@ -180,7 +188,7 @@ export function BlogArticlePage() {
         <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
           <Button variant="ghost" size="sm" onClick={() => navigate("/blog")} className="gap-2">
             <ArrowLeft className="h-4 w-4" />
-            Back to Blog
+            {t.blog.backToBlog}
           </Button>
         </div>
       </div>
@@ -232,7 +240,7 @@ export function BlogArticlePage() {
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Clock className="h-4 w-4" />
-                    {article.readTimeMinutes} min read
+                    {article.readTimeMinutes} {t.blog.minRead}
                   </div>
                 </div>
                 {/* Share buttons */}
@@ -243,7 +251,7 @@ export function BlogArticlePage() {
                     title="Copy link"
                   >
                     {copied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
-                    {copied ? "Copied!" : "Copy link"}
+                    {copied ? t.blog.copied : t.blog.copyLink}
                   </button>
                   <button
                     onClick={handleWhatsAppShare}
@@ -251,7 +259,7 @@ export function BlogArticlePage() {
                     title="Share on WhatsApp"
                   >
                     <Share2 className="h-4 w-4" />
-                    Share
+                    {t.blog.share}
                   </button>
                 </div>
               </div>
@@ -272,7 +280,7 @@ export function BlogArticlePage() {
               {/* Tags */}
               {article.tags && article.tags.length > 0 && (
                 <div className="mt-10 border-t border-border pt-6">
-                  <p className="mb-3 text-sm font-medium text-muted-foreground">Tagged:</p>
+                  <p className="mb-3 text-sm font-medium text-muted-foreground">{t.blog.tagged}</p>
                   <div className="flex flex-wrap gap-2">
                     {article.tags.map((tag) => (
                       <button
@@ -298,7 +306,7 @@ export function BlogArticlePage() {
                     >
                       <ChevronLeft className="mt-0.5 h-5 w-5 flex-shrink-0 text-muted-foreground group-hover:text-primary" />
                       <div className="min-w-0">
-                        <p className="mb-1 text-xs text-muted-foreground">Previous</p>
+                        <p className="mb-1 text-xs text-muted-foreground">{t.blog.previousArticle}</p>
                         <p className="truncate text-sm font-medium text-foreground group-hover:text-primary">
                           {getArticleTranslation(prevArticle, lang).title}
                         </p>
@@ -313,7 +321,7 @@ export function BlogArticlePage() {
                     >
                       <ChevronRight className="mt-0.5 h-5 w-5 flex-shrink-0 text-muted-foreground group-hover:text-primary" />
                       <div className="min-w-0">
-                        <p className="mb-1 text-xs text-muted-foreground">Next</p>
+                        <p className="mb-1 text-xs text-muted-foreground">{t.blog.nextArticle}</p>
                         <p className="truncate text-sm font-medium text-foreground group-hover:text-primary">
                           {getArticleTranslation(nextArticle, lang).title}
                         </p>
@@ -333,7 +341,7 @@ export function BlogArticlePage() {
                 {/* Related articles */}
                 {relatedArticles.length > 0 && (
                   <div>
-                    <h2 className="mb-4 text-base font-semibold text-foreground">Related guides</h2>
+                    <h2 className="mb-4 text-base font-semibold text-foreground">{t.blog.relatedGuides}</h2>
                     <div className="space-y-3">
                       {relatedArticles.map((rel) => {
                         const relT = getArticleTranslation(rel, lang);
@@ -356,7 +364,7 @@ export function BlogArticlePage() {
                               </p>
                               <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                 <Clock className="h-3 w-3" />
-                                {rel.readTimeMinutes} min
+                                {rel.readTimeMinutes} {t.blog.minRead}
                                 <span className="text-border">•</span>
                                 {relCatName}
                               </div>

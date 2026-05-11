@@ -352,10 +352,18 @@ export const it: WebsiteContent = {
     ctaButton: "Prenota il Tuo Pass Giornaliero",
     backToBlog: "Torna al Blog",
     articleNotFound: "Articolo non trovato",
+    articleNotFoundDesc: "Questo articolo potrebbe essere stato spostato o rimosso.",
+    loadingArticle: "Caricamento articolo...",
     share: "Condividi",
+    copyLink: "Copia link",
+    copied: "Copiato!",
     updated: "Aggiornato",
     relatedArticles: "Articoli Correlati",
+    relatedGuides: "Guide correlate",
     moreArticles: "Altri Articoli",
+    tagged: "Tag:",
+    previousArticle: "Precedente",
+    nextArticle: "Successivo",
     
     // Blog Article Page specific
     breadcrumbHome: "Home",

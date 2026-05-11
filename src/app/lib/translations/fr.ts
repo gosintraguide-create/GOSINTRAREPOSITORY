@@ -352,10 +352,18 @@ export const fr: WebsiteContent = {
     ctaButton: "Réservez Votre Pass Journée",
     backToBlog: "Retour au Blog",
     articleNotFound: "Article non trouvé",
+    articleNotFoundDesc: "Cet article a peut-être été déplacé ou supprimé.",
+    loadingArticle: "Chargement de l'article...",
     share: "Partager",
+    copyLink: "Copier le lien",
+    copied: "Copié !",
     updated: "Mis à jour",
     relatedArticles: "Articles Connexes",
+    relatedGuides: "Guides connexes",
     moreArticles: "Plus d'Articles",
+    tagged: "Tags :",
+    previousArticle: "Précédent",
+    nextArticle: "Suivant",
     
     // Blog Article Page specific
     breadcrumbHome: "Accueil",

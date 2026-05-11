@@ -352,10 +352,18 @@ export const de: WebsiteContent = {
     ctaButton: "Buchen Sie Ihren Tagespass",
     backToBlog: "Zurück zum Blog",
     articleNotFound: "Artikel nicht gefunden",
+    articleNotFoundDesc: "Dieser Artikel wurde möglicherweise verschoben oder entfernt.",
+    loadingArticle: "Artikel wird geladen...",
     share: "Teilen",
+    copyLink: "Link kopieren",
+    copied: "Kopiert!",
     updated: "Aktualisiert",
     relatedArticles: "Verwandte Artikel",
+    relatedGuides: "Verwandte Reiseführer",
     moreArticles: "Weitere Artikel",
+    tagged: "Tags:",
+    previousArticle: "Vorheriger",
+    nextArticle: "Nächster",
     
     // Blog Article Page specific
     breadcrumbHome: "Startseite",

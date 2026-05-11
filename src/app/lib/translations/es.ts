@@ -352,10 +352,18 @@ export const es: WebsiteContent = {
     ctaButton: "Reserva Tu Pase de Día",
     backToBlog: "Volver al Blog",
     articleNotFound: "Artículo no encontrado",
+    articleNotFoundDesc: "Es posible que este artículo haya sido movido o eliminado.",
+    loadingArticle: "Cargando artículo...",
     share: "Compartir",
+    copyLink: "Copiar enlace",
+    copied: "¡Copiado!",
     updated: "Actualizado",
     relatedArticles: "Artículos Relacionados",
+    relatedGuides: "Guías relacionadas",
     moreArticles: "Más Artículos",
+    tagged: "Etiquetas:",
+    previousArticle: "Anterior",
+    nextArticle: "Siguiente",
     
     // Blog Article Page specific
     breadcrumbHome: "Inicio",

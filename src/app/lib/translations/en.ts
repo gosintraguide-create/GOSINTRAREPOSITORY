@@ -372,11 +372,19 @@ export const en: WebsiteContent = {
     ctaButton: "Book Your Day Pass",
     backToBlog: "Back to Blog",
     articleNotFound: "Article not found",
+    articleNotFoundDesc: "This article may have been moved or removed.",
+    loadingArticle: "Loading article...",
     share: "Share",
+    copyLink: "Copy link",
+    copied: "Copied!",
     updated: "Updated",
     relatedArticles: "Related Articles",
+    relatedGuides: "Related guides",
     moreArticles: "More Articles",
-    
+    tagged: "Tagged:",
+    previousArticle: "Previous",
+    nextArticle: "Next",
+
     // Blog Article Page specific
     breadcrumbHome: "Home",
     breadcrumbTravelGuide: "Travel Guide",
