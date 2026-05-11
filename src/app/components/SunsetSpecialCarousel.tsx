@@ -209,12 +209,12 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
               <div className="mb-3 flex items-center gap-2">
                 <Sunset className="h-5 w-5 text-orange-500" />
                 <h3 className="text-xl sm:text-2xl text-gray-900">
-                  {sunsetSpecial?.title}
+                  {ts.sunsetSpecialTitle}
                 </h3>
               </div>
-              
+
               <p className="mb-4 text-sm text-gray-600 sm:text-base">
-                {sunsetSpecial?.description}
+                {ts.sunsetSpecialDescription}
               </p>
 
               {/* Activity Details */}
