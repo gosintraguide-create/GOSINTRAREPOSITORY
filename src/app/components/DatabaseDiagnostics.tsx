@@ -3,7 +3,7 @@ import { Database, AlertCircle, CheckCircle2, RefreshCw, Trash2, Info } from "lu
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Alert, AlertDescription } from "./ui/alert";
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 
 export function DatabaseDiagnostics() {

@@ -17,7 +17,7 @@ import { Textarea } from "./ui/textarea";
 import { Card } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Switch } from "./ui/switch";
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 import { projectId, publicAnonKey } from "../utils/supabase/info";
 import { safeJsonFetch } from "../lib/apiErrorHandler";
 import { ImageSelector } from "./ImageSelector";

@@ -6,7 +6,7 @@ import { Card } from "./ui/card";
 import { loadContent, syncContentFromDatabase, type WebsiteContent, DEFAULT_CONTENT } from "../lib/contentManager";
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { createClient } from '../utils/supabase/client';
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 import { getSession } from "../lib/sessionManager";
 import { getComponentTranslation } from "../lib/translations/component-translations";
 

@@ -26,7 +26,7 @@ import {
   CalendarDays,
   Database,
 } from "lucide-react";
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 import { ClearCacheButton } from "./ClearCacheButton";
 import { DatabaseDiagnostics } from "./DatabaseDiagnostics";
 import { EdgeFunctionHealthCheck } from "./EdgeFunctionHealthCheck";

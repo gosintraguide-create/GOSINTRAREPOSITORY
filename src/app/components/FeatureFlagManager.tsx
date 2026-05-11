@@ -5,7 +5,7 @@ import { Switch } from "./ui/switch";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
 import { Alert, AlertDescription } from "./ui/alert";
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 
 interface FeatureFlags {
   privateToursEnabled: boolean;

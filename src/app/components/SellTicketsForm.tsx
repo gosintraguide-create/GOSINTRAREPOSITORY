@@ -34,7 +34,7 @@ import {
   projectId,
   publicAnonKey,
 } from "../utils/supabase/info";
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 import { createClient } from "../utils/supabase/client";
 
 interface SellTicketsFormProps {

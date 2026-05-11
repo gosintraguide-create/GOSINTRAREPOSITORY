@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Alert, AlertDescription } from "./ui/alert";
 import { Badge } from "./ui/badge";
 import { Switch } from "./ui/switch";
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 import {
   loadComprehensiveContent,
   loadComprehensiveContentForLanguage,

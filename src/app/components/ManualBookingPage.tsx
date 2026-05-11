@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { createBooking } from "../lib/api";
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";

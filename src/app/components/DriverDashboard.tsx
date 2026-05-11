@@ -26,7 +26,7 @@ import {
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { createClient } from '../utils/supabase/client';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { SellTicketsForm } from './SellTicketsForm';
 import { useWakeLock } from '../hooks/useWakeLock';
 import { useBackgroundSync } from '../hooks/useBackgroundSync';

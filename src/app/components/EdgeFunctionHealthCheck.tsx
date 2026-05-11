@@ -3,7 +3,7 @@ import { Activity, AlertCircle, CheckCircle2, ExternalLink, Copy, Check } from "
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Alert, AlertDescription } from "./ui/alert";
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 
 export function EdgeFunctionHealthCheck() {

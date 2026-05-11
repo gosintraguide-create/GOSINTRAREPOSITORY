@@ -28,7 +28,7 @@ import { Textarea } from "./ui/textarea";
 import { featureFlags } from "../lib/featureFlags";
 import { getTranslation, getUITranslation } from "../lib/translations";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 import {
   Dialog,
   DialogContent,

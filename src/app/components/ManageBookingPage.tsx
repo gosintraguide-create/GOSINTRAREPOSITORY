@@ -9,7 +9,7 @@ import { Badge } from "./ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
 import { Calendar, Download, MapPin, Users, Clock, CheckCircle2, QrCode, Car, Mail, Phone, User, ArrowLeft, MessageSquare } from "lucide-react";
 import { projectId, publicAnonKey } from '../utils/supabase/info';
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 import { TicketCard } from "./TicketCard";
 import { getTranslation } from "../lib/translations";
 import { getSession } from "../lib/sessionManager";

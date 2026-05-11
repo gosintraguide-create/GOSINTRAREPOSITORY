@@ -4,7 +4,7 @@ import { Card } from "./ui/card";
 import { QrCode, Ticket, Home, Users, Clock, CheckCircle2, MapPin, Car, AlertCircle, RefreshCw } from "lucide-react";
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { createClient } from '../utils/supabase/client';
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 import { safeJsonFetch } from '../lib/apiErrorHandler';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Badge } from "./ui/badge";

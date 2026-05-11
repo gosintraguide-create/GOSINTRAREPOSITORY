@@ -1,5 +1,5 @@
 import { Button } from "./ui/button";
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 import { Trash2, RefreshCw } from "lucide-react";
 import { useState } from "react";
 

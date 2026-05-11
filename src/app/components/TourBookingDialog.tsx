@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from './ui/alert';
 import { Calendar as CalendarIcon, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { StripePaymentForm } from './StripePaymentForm';
 
 interface TourBookingDialogProps {

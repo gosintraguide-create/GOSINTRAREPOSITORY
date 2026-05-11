@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useOutletContext, useLocation } from "react-router";
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 import { createBooking, createPaymentIntent } from "../lib/api";
 import {
   projectId,
