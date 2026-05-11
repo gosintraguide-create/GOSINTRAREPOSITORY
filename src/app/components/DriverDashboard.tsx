@@ -4,12 +4,12 @@ import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { 
-  LogOut, 
-  TrendingUp, 
-  Ticket, 
-  QrCode, 
-  DollarSign, 
+import {
+  LogOut,
+  TrendingUp,
+  Ticket,
+  QrCode,
+  DollarSign,
   Calendar,
   Activity,
   Navigation,
@@ -21,7 +21,10 @@ import {
   CreditCard,
   Banknote,
   Power,
-  PowerOff
+  PowerOff,
+  RefreshCw,
+  ChevronDown,
+  Clock
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
@@ -72,6 +75,9 @@ export function DriverDashboard({ driver, token, onLogout }: DriverDashboardProp
   const [acceptedRequests, setAcceptedRequests] = useState<any[]>([]);
   const [chartKey, setChartKey] = useState(0);
   const [activeAction, setActiveAction] = useState<string | null>(null);
+  const [lastSynced, setLastSynced] = useState<Date | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const [showSellForm, setShowSellForm] = useState(false);
 
   // Handle wake lock to keep screen on
   useEffect(() => {
@@ -102,19 +108,25 @@ export function DriverDashboard({ driver, token, onLogout }: DriverDashboardProp
   };
 
   // Background sync to refresh data every 30 seconds
-  useBackgroundSync(() => {
-    // Refresh availability data in background
-    loadPendingRequests();
-    loadAcceptedRequests();
-  }, 30000); // 30 seconds
+  useBackgroundSync(async () => {
+    await Promise.all([loadPendingRequests(), loadAcceptedRequests()]);
+    setLastSynced(new Date());
+  }, 30000);
 
   useEffect(() => {
     loadMetrics();
     loadActivity();
-    loadPendingRequests();
-    loadAcceptedRequests();
-    // Note: Requests refresh via realtime subscriptions in pickup request components
+    Promise.all([loadPendingRequests(), loadAcceptedRequests()]).then(() => {
+      setLastSynced(new Date());
+    });
   }, [driver.id]);
+
+  const handleManualRefresh = async () => {
+    setRefreshing(true);
+    await Promise.all([loadPendingRequests(), loadAcceptedRequests()]);
+    setLastSynced(new Date());
+    setRefreshing(false);
+  };
 
   const loadMetrics = async () => {
     try {
@@ -166,7 +178,6 @@ export function DriverDashboard({ driver, token, onLogout }: DriverDashboardProp
             uniqueId: `metric-${index}-${item.date.replace(/-/g, '')}`
           }));
         
-        console.log('Loaded metrics:', uniqueMetrics.length, 'unique dates');
         setMetrics(uniqueMetrics);
       }
     } catch (error) {
@@ -452,17 +463,39 @@ export function DriverDashboard({ driver, token, onLogout }: DriverDashboardProp
               </Card>
             )}
 
-            {pendingRequests.length > 0 && (
-              <Card className="border-yellow-500 border-2 bg-yellow-50">
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-2 mb-3">
-                    <AlertCircle className="h-5 w-5 text-yellow-600" />
-                    <h3 className="font-semibold text-yellow-900">
-                      {pendingRequests.length} Pending Pickup Request{pendingRequests.length > 1 ? 's' : ''}
+            {/* Pickup requests panel — always visible for sync status */}
+            <Card className={pendingRequests.length > 0 ? "border-yellow-500 border-2 bg-yellow-50" : "border-border"}>
+              <CardContent className="pt-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <AlertCircle className={`h-5 w-5 ${pendingRequests.length > 0 ? 'text-yellow-600' : 'text-gray-400'}`} />
+                    <h3 className={`font-semibold ${pendingRequests.length > 0 ? 'text-yellow-900' : 'text-gray-600'}`}>
+                      {pendingRequests.length > 0
+                        ? `${pendingRequests.length} Pending Pickup Request${pendingRequests.length > 1 ? 's' : ''}`
+                        : 'No Pending Requests'}
                     </h3>
                   </div>
+                  <div className="flex items-center gap-2">
+                    {lastSynced && (
+                      <span className="text-xs text-gray-500 hidden sm:inline">
+                        {lastSynced.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    )}
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleManualRefresh}
+                      disabled={refreshing}
+                      className="h-7 w-7 p-0"
+                    >
+                      <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin' : ''}`} />
+                    </Button>
+                  </div>
+                </div>
+                {pendingRequests.length > 0 && (
                   <div className="space-y-2">
-                    {pendingRequests.slice(0, 2).map((request: any) => (
+                    {pendingRequests.map((request: any) => (
                       <div key={request.id} className="bg-white p-3 rounded-lg">
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex-1 min-w-0">
@@ -471,6 +504,12 @@ export function DriverDashboard({ driver, token, onLogout }: DriverDashboardProp
                               <MapPin className="h-3 w-3 inline mr-1" />
                               {request.pickupLocation}
                             </p>
+                            {request.createdAt && (
+                              <p className="text-xs text-gray-400 mt-0.5">
+                                <Clock className="h-3 w-3 inline mr-1" />
+                                {formatTime(request.createdAt)}
+                              </p>
+                            )}
                           </div>
                           <Button
                             onClick={() => acceptPickupRequest(request.id)}
@@ -482,15 +521,10 @@ export function DriverDashboard({ driver, token, onLogout }: DriverDashboardProp
                         </div>
                       </div>
                     ))}
-                    {pendingRequests.length > 2 && (
-                      <p className="text-sm text-yellow-800 text-center pt-1">
-                        + {pendingRequests.length - 2} more
-                      </p>
-                    )}
                   </div>
-                </CardContent>
-              </Card>
-            )}
+                )}
+              </CardContent>
+            </Card>
 
             {/* Main Action Buttons */}
             <div className="grid grid-cols-1 gap-4">
@@ -512,15 +546,31 @@ export function DriverDashboard({ driver, token, onLogout }: DriverDashboardProp
               </button>
             </div>
 
-            {/* Sell Tickets Form (always visible) */}
-            <div className="mt-6">
-              <SellTicketsForm 
-                driverId={driver.id} 
-                onSaleComplete={() => {
-                  loadMetrics();
-                  loadActivity();
-                }} 
-              />
+            {/* Sell Tickets — collapsible */}
+            <div>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full justify-between"
+                onClick={() => setShowSellForm(!showSellForm)}
+              >
+                <div className="flex items-center gap-2">
+                  <Plus className="h-4 w-4" />
+                  Sell Tickets
+                </div>
+                <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${showSellForm ? 'rotate-180' : ''}`} />
+              </Button>
+              {showSellForm && (
+                <div className="mt-4">
+                  <SellTicketsForm
+                    driverId={driver.id}
+                    onSaleComplete={() => {
+                      loadMetrics();
+                      loadActivity();
+                    }}
+                  />
+                </div>
+              )}
             </div>
 
             {/* Today's Quick Stats */}
@@ -821,52 +871,52 @@ export function DriverDashboard({ driver, token, onLogout }: DriverDashboardProp
                           </div>
                         )}
 
-                        {/* Completed Pickups (load from server) */}
-                        <div>
-                          <h3 className="text-sm font-medium mb-3 text-gray-600">Completed</h3>
-                          {(() => {
-                            const completedPickups = activity.filter((item: any) => 
-                              item.type === 'pickup_completed'
-                            );
-                            
-                            if (completedPickups.length === 0) {
-                              return (
-                                <div className="text-center py-8 text-gray-500">
-                                  No completed pickups yet
-                                </div>
-                              );
-                            }
-                            
+                        {/* Completed Pickups */}
+                        {(() => {
+                          const completedPickups = activity.filter((item: any) =>
+                            item.type === 'pickup_completed'
+                          );
+
+                          if (acceptedRequests.length === 0 && completedPickups.length === 0) {
                             return (
-                              <div className="space-y-3">
-                                {completedPickups.map((item: any, index: number) => (
-                                  <Card key={index} className="border-l-4 border-l-green-500">
-                                    <CardContent className="pt-4">
-                                      <div className="space-y-2">
-                                        <div className="flex items-center justify-between">
-                                          <div className="flex items-center gap-2">
-                                            <CheckCircle className="h-4 w-4 text-green-500" />
-                                            <p className="font-medium">{item.customerName || 'Customer'}</p>
-                                            <Badge className="bg-green-500 text-xs">Completed</Badge>
-                                          </div>
-                                          <p className="text-xs text-gray-500">
-                                            {formatDate(item.timestamp)} {formatTime(item.timestamp)}
-                                          </p>
-                                        </div>
-                                      </div>
-                                    </CardContent>
-                                  </Card>
-                                ))}
+                              <div className="text-center py-8 text-gray-500">
+                                No pickup requests yet. Return to Quick Actions to accept incoming requests.
                               </div>
                             );
-                          })()}
-                        </div>
+                          }
 
-                        {acceptedRequests.length === 0 && (
-                          <div className="text-center py-8 text-gray-500">
-                            No active pickup requests. Accept requests from the pending list above to see them here.
-                          </div>
-                        )}
+                          return (
+                            <div>
+                              <h3 className="text-sm font-medium mb-3 text-gray-600">Completed</h3>
+                              {completedPickups.length === 0 ? (
+                                <div className="text-center py-4 text-gray-500 text-sm">
+                                  No completed pickups yet
+                                </div>
+                              ) : (
+                                <div className="space-y-3">
+                                  {completedPickups.map((item: any, index: number) => (
+                                    <Card key={index} className="border-l-4 border-l-green-500">
+                                      <CardContent className="pt-4">
+                                        <div className="space-y-2">
+                                          <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                              <CheckCircle className="h-4 w-4 text-green-500" />
+                                              <p className="font-medium">{item.customerName || 'Customer'}</p>
+                                              <Badge className="bg-green-500 text-xs">Completed</Badge>
+                                            </div>
+                                            <p className="text-xs text-gray-500">
+                                              {formatDate(item.timestamp)} {formatTime(item.timestamp)}
+                                            </p>
+                                          </div>
+                                        </div>
+                                      </CardContent>
+                                    </Card>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })()}
                       </div>
                     )}
                   </CardContent>

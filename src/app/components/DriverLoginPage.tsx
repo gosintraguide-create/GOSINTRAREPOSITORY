@@ -37,42 +37,26 @@ export function DriverLoginPage({ onLoginSuccess }: DriverLoginPageProps) {
     setError('');
 
     try {
-      console.log('🔐 Attempting driver login...', { username });
-      
-      const url = `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/drivers/login`;
-      console.log('📍 Login URL:', url);
-      
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${publicAnonKey}`
-        },
-        body: JSON.stringify({ username, password })
-      });
-
-      console.log('📡 Response status:', response.status);
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/drivers/login`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${publicAnonKey}`
+          },
+          body: JSON.stringify({ username, password })
+        }
+      );
 
       const data = await response.json();
-      console.log('📦 Response data:', data);
 
       if (!response.ok) {
         throw new Error(data.error || 'Login failed');
       }
 
-      // Store driver session
-      localStorage.setItem('driver_session', JSON.stringify({
-        driver: data.driver,
-        token: data.token,
-        loginTime: new Date().toISOString()
-      }));
-
-      console.log('✅ Login successful');
       onLoginSuccess(data.driver, data.token);
     } catch (err) {
-      console.error('❌ Login error:', err);
-      
-      // More detailed error messages
       let errorMessage = 'Login failed';
       
       if (err instanceof TypeError && err.message.includes('fetch')) {
