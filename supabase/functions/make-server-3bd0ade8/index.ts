@@ -815,7 +815,7 @@ app.post("/make-server-3bd0ade8/pricing", async (c) => {
 
 // ===== IMAGE MANAGEMENT (Supabase Storage) =====
 
-const IMAGE_BUCKET = "website-images";
+const IMAGE_BUCKET = "make-3bd0ade8-images";
 
 async function ensureImageBucket() {
   const { data: buckets } = await supabase.storage.listBuckets();
