@@ -1154,6 +1154,7 @@
   },
   "productComponents": {
     "perPass": "per pas",
+    "learnMoreService": "Meer informatie over de service",
     "quantity": "Aantal",
     "each": "elk",
     "back": "Terug",

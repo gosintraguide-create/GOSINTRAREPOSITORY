@@ -1154,6 +1154,7 @@
   },
   "productComponents": {
     "perPass": "per pass",
+    "learnMoreService": "Learn more about the service",
     "quantity": "Quantity",
     "each": "each",
     "back": "Back",

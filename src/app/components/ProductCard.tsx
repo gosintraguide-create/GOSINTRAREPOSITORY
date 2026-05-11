@@ -219,7 +219,7 @@ export function ProductCard({
                 €{basePrice}
               </span>
               <span className="text-xs text-muted-foreground ml-2">
-                per pass
+                {t.perPass}
               </span>
             </div>
           ) : (
@@ -235,7 +235,7 @@ export function ProductCard({
               className="h-11 w-full bg-accent text-white hover:bg-accent/90 shadow-md text-sm mb-2"
               size="lg"
             >
-              Learn more about the service
+              {t.learnMoreService}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           )}

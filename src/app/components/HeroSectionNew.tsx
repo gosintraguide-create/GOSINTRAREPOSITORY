@@ -136,12 +136,6 @@ export function HeroSection({
               language={language}
               productType="daypass"
               customImages={editableContent.homepage?.productCards?.daypass?.images}
-              customContent={editableContent.homepage?.productCards?.daypass ? {
-                title: editableContent.homepage.productCards.daypass.title,
-                description: editableContent.homepage.productCards.daypass.description,
-                features: editableContent.homepage.productCards.daypass.features,
-                buttonText: editableContent.homepage.productCards.daypass.buttonText,
-              } : undefined}
             />
 
             {/* Travel Guide Card */}
@@ -150,12 +144,6 @@ export function HeroSection({
               language={language}
               cardType="travel-guide"
               customImages={editableContent.homepage?.productCards?.travelGuide?.images}
-              customContent={editableContent.homepage?.productCards?.travelGuide ? {
-                title: editableContent.homepage.productCards.travelGuide.title,
-                description: editableContent.homepage.productCards.travelGuide.description,
-                content: editableContent.homepage.productCards.travelGuide.content,
-                buttonText: editableContent.homepage.productCards.travelGuide.buttonText,
-              } : undefined}
             />
 
             {/* Monuments Card */}
@@ -164,12 +152,6 @@ export function HeroSection({
               language={language}
               cardType="monuments"
               customImages={editableContent.homepage?.productCards?.monuments?.images}
-              customContent={editableContent.homepage?.productCards?.monuments ? {
-                title: editableContent.homepage.productCards.monuments.title,
-                description: editableContent.homepage.productCards.monuments.description,
-                content: editableContent.homepage.productCards.monuments.content,
-                buttonText: editableContent.homepage.productCards.monuments.buttonText,
-              } : undefined}
             />
           </div>
         </div>
