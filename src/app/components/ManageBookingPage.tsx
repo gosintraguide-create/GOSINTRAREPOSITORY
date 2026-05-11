@@ -70,7 +70,6 @@ export function ManageBookingPage() {
         setBooking(result.booking);
         sessionStorage.setItem("currentBooking", JSON.stringify(result.booking));
       } else {
-        console.error('❌ Booking lookup failed:', result.error);
         toast.error(result.error || "Booking not found");
       }
     } catch (error) {
@@ -373,7 +372,7 @@ export function ManageBookingPage() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Operating Hours</p>
-                  <p className="text-foreground">9:00 AM - 8:00 PM</p>
+                  <p className="text-foreground">9:00 AM - 7:00 PM</p>
                 </div>
               </div>
             </Card>

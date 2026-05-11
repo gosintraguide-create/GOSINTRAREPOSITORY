@@ -1775,43 +1775,27 @@ export function BuyTicketPage() {
                     >
                       Phone Number
                     </Label>
-                    <div className="mt-2 flex">
-                      <div className="relative">
-                        <Phone className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-                        <Input
-                          type="text"
-                          placeholder="+351"
-                          value={formData.phonePrefix}
-                          onChange={(e) => {
-                            let value = e.target.value;
-                            // Ensure it starts with +
-                            if (!value.startsWith('+')) {
-                              value = '+' + value.replace(/\+/g, '');
-                            }
-                            // Only allow + and digits
-                            value = value.replace(/[^\d+]/g, '');
-                            // Limit to reasonable length (+ followed by up to 4 digits)
-                            if (value.length <= 5) {
-                              handleInputChange("phonePrefix", value);
-                            }
-                          }}
-                          className="w-[120px] rounded-r-none border-r-0 border-border text-center bg-white pl-10"
-                          maxLength={5}
-                        />
-                      </div>
+                    <div className="relative mt-2">
+                      <Phone className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                       <Input
                         id="phoneNumber"
                         type="tel"
-                        placeholder="123456789"
-                        value={formData.phoneNumber}
+                        placeholder="+351 912 345 678"
+                        value={`${formData.phonePrefix}${formData.phoneNumber}`}
                         onChange={(e) => {
-                          const value = e.target.value.replace(/\D/g, '');
-                          if (value.length <= 12) {
-                            handleInputChange("phoneNumber", value);
+                          const raw = e.target.value.replace(/[^\d+\s-]/g, '');
+                          const prefixMatch = raw.match(/^(\+\d{1,4})/);
+                          if (prefixMatch) {
+                            const prefix = prefixMatch[1];
+                            const number = raw.slice(prefix.length).replace(/\D/g, '');
+                            handleInputChange("phonePrefix", prefix);
+                            handleInputChange("phoneNumber", number);
+                          } else {
+                            handleInputChange("phonePrefix", "+351");
+                            handleInputChange("phoneNumber", raw.replace(/\D/g, ''));
                           }
                         }}
-                        className="flex-1 rounded-l-none border-border bg-white"
-                        maxLength={12}
+                        className="w-full border-border bg-white pl-10"
                         required
                       />
                     </div>

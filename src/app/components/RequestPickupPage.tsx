@@ -34,6 +34,15 @@ export function RequestPickupPage() {
   const [customerName, setCustomerName] = useState<string>("");
   const [phonePrefix, setPhonePrefix] = useState<string>("+351");
   const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [showSlowMessage, setShowSlowMessage] = useState(false);
+
+  useEffect(() => {
+    if (step === "searching") {
+      setShowSlowMessage(false);
+      const timer = setTimeout(() => setShowSlowMessage(true), 10000);
+      return () => clearTimeout(timer);
+    }
+  }, [step]);
 
   // Parse phone number into prefix and number
   const parsePhoneNumber = (fullPhone: string) => {
@@ -162,7 +171,6 @@ export function RequestPickupPage() {
         setVerificationError("Unable to verify booking. Please try again.");
       }
     } catch (error) {
-      console.error('Booking verification error:', error);
       setVerificationError("Connection error. Please check your internet and try again.");
     }
   };
@@ -182,11 +190,10 @@ export function RequestPickupPage() {
       groupSize: parseInt(groupSize),
     };
 
-    console.log('🚗 Creating pickup request:', requestData);
-    console.log('📍 API endpoint:', `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/pickup-requests`);
-    
     try {
-      // Send pickup request to backend
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 20000);
+
       const response = await fetch(
         `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/pickup-requests`,
         {
@@ -196,46 +203,31 @@ export function RequestPickupPage() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(requestData),
+          signal: controller.signal,
         }
       );
 
-      console.log('📡 Server response status:', response.status);
-      console.log('📡 Server response headers:', Object.fromEntries(response.headers.entries()));
+      clearTimeout(timeout);
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('❌ Server error response:', errorText);
         throw new Error(`Server error: ${response.status} - ${errorText}`);
       }
 
       const result = await response.json();
-      console.log('✅ Pickup request result:', result);
-      console.log('✅ Request ID:', result.request?.id);
-      console.log('✅ Request status:', result.request?.status);
-      
+
       if (result.success) {
-        console.log('✅ Pickup request created successfully:', result.request.id);
-        toast.success('🚗 Pickup request sent successfully!');
-        // ✅ Only show success if server confirms
-        setTimeout(() => {
-          setStep("confirmed");
-        }, 2500);
+        setStep("confirmed");
       } else {
         throw new Error(result.error || 'Failed to create pickup request');
       }
     } catch (error) {
-      console.error('❌ Pickup request failed:', error);
-      console.error('❌ Error details:', {
-        name: error instanceof Error ? error.name : 'Unknown',
-        message: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined
-      });
-      // ✅ Show error to user and return to form
       setStep("request");
+      const isTimeout = error instanceof Error && error.name === 'AbortError';
       toast.error(
-        error instanceof Error 
-          ? `Unable to request pickup: ${error.message}` 
-          : "Failed to request pickup. Please try again or contact us via WhatsApp.",
+        isTimeout
+          ? "Request timed out. Please check your connection and try again."
+          : "Unable to send request. Please try again or contact us via WhatsApp.",
         { duration: 6000 }
       );
     }
@@ -347,25 +339,22 @@ export function RequestPickupPage() {
               </div>
             </div>
           </div>
-          <h2 className="mb-2 text-foreground">
-            {parseInt(groupSize) > 6 ? 'Coordinating Your Vehicles...' : 'Finding Your Vehicle...'}
-          </h2>
+          <h2 className="mb-2 text-foreground">Sending Your Request...</h2>
           <p className="mb-4 text-muted-foreground">
-            Notifying drivers about your group of <strong>{groupSize} {parseInt(groupSize) === 1 ? 'passenger' : 'passengers'}</strong>
+            Notifying nearby drivers about your group of <strong>{groupSize} {parseInt(groupSize) === 1 ? 'passenger' : 'passengers'}</strong>
           </p>
-          <div className="rounded-lg border border-border bg-secondary/50 p-4">
-            <div className="flex flex-col gap-2 text-muted-foreground">
-              <div className="flex items-center justify-between">
-                <span>Vehicles needed:</span>
-                <span className="text-foreground">
-                  {parseInt(groupSize) <= 6 ? '1 vehicle' : `${Math.ceil(parseInt(groupSize) / 6)} vehicles`}
-                </span>
-              </div>
-              {parseInt(groupSize) > 6 && (
-                <p className="mt-2 text-accent">Coordinating multiple vehicles</p>
-              )}
+          {showSlowMessage && (
+            <div className="mt-4 space-y-3">
+              <p className="text-sm text-muted-foreground">Taking longer than expected...</p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setStep("request")}
+              >
+                Go Back
+              </Button>
             </div>
-          </div>
+          )}
         </Card>
       </div>
     );
@@ -381,9 +370,9 @@ export function RequestPickupPage() {
             </div>
           </div>
           
-          <h2 className="mb-2 text-center text-foreground">Vehicle On The Way!</h2>
+          <h2 className="mb-2 text-center text-foreground">Request Sent!</h2>
           <p className="mb-6 text-center text-muted-foreground">
-            Your driver has been notified and will arrive shortly
+            Drivers have been notified. Someone will confirm and be with you shortly.
           </p>
 
           <div className="space-y-4">
@@ -433,11 +422,9 @@ export function RequestPickupPage() {
                 <AlertCircle className="h-5 w-5 flex-shrink-0 text-accent" />
                 <div className="text-muted-foreground">
                   {parseInt(groupSize) <= 6 ? (
-                    <p>Our drivers have been notified of your group size and will dispatch an <strong className="text-foreground">appropriate vehicle</strong> to accommodate everyone comfortably.</p>
-                  ) : parseInt(groupSize) === 7 ? (
-                    <p>We've coordinated <strong className="text-foreground">2 vehicles</strong> for your group. They'll arrive together.</p>
+                    <p>A driver has been notified of your group of <strong className="text-foreground">{groupSize}</strong> and will send an appropriate vehicle.</p>
                   ) : (
-                    <p>We've coordinated <strong className="text-foreground">{Math.ceil(parseInt(groupSize) / 6)} vehicles</strong> for your large group. Our drivers will ensure everyone departs together.</p>
+                    <p>Drivers have been notified. <strong className="text-foreground">{Math.ceil(parseInt(groupSize) / 6)} vehicles</strong> will be coordinated for your group of {groupSize}.</p>
                   )}
                 </div>
               </div>
@@ -508,42 +495,25 @@ export function RequestPickupPage() {
               {/* Customer Phone */}
               <div className="space-y-2">
                 <Label htmlFor="customer-phone">Phone Number</Label>
-                <div className="flex">
-                  <Input
-                    type="text"
-                    placeholder="+351"
-                    value={phonePrefix}
-                    onChange={(e) => {
-                      let value = e.target.value;
-                      // Ensure it starts with +
-                      if (!value.startsWith('+')) {
-                        value = '+' + value.replace(/\+/g, '');
-                      }
-                      // Only allow + and digits
-                      value = value.replace(/[^\d+]/g, '');
-                      // Limit to reasonable length (+ followed by up to 4 digits)
-                      if (value.length <= 5) {
-                        setPhonePrefix(value);
-                      }
-                    }}
-                    className="w-[100px] rounded-r-none border-r-0 border-border text-center"
-                    maxLength={5}
-                  />
-                  <Input
-                    id="customer-phone"
-                    type="tel"
-                    placeholder="123456789"
-                    value={phoneNumber}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, '');
-                      if (value.length <= 12) {
-                        setPhoneNumber(value);
-                      }
-                    }}
-                    className="flex-1 rounded-l-none border-border"
-                    maxLength={12}
-                  />
-                </div>
+                <Input
+                  id="customer-phone"
+                  type="tel"
+                  placeholder="+351 912 345 678"
+                  value={`${phonePrefix}${phoneNumber}`}
+                  onChange={(e) => {
+                    const raw = e.target.value.replace(/[^\d+\s-]/g, '');
+                    const prefixMatch = raw.match(/^(\+\d{1,4})/);
+                    if (prefixMatch) {
+                      const prefix = prefixMatch[1];
+                      setPhonePrefix(prefix);
+                      setPhoneNumber(raw.slice(prefix.length).replace(/\D/g, ''));
+                    } else {
+                      setPhonePrefix("+351");
+                      setPhoneNumber(raw.replace(/\D/g, ''));
+                    }
+                  }}
+                  className="border-border"
+                />
               </div>
 
               {/* Group Size */}
