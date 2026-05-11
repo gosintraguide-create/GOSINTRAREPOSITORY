@@ -235,12 +235,12 @@ export function BlogPage() {
       {/* Categories + Tag Filter */}
       <section className="border-b border-border bg-white py-4">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3 overflow-x-auto pb-1 scrollbar-none">
+            <div className="flex flex-shrink-0 items-center gap-2">
               <Filter className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm text-muted-foreground">{content.blog.filterBy}</span>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-shrink-0 gap-2">
               <Button
                 variant={selectedCategory === "all" && !selectedTag ? "default" : "outline"}
                 size="sm"
@@ -260,7 +260,7 @@ export function BlogPage() {
               ))}
             </div>
             {selectedTag && (
-              <div className="flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-sm text-primary">
+              <div className="flex flex-shrink-0 items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-sm text-primary">
                 <Tag className="h-3.5 w-3.5" />
                 {selectedTag}
                 <button onClick={() => setSelectedTag("")} className="ml-1 hover:text-destructive">

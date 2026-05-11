@@ -239,18 +239,18 @@ export function BlogArticlePage() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handleCopyLink}
-                    className="flex items-center gap-1.5 rounded-md border border-border bg-white px-3 py-1.5 text-xs text-muted-foreground hover:bg-secondary transition-colors"
+                    className="flex min-h-[44px] items-center gap-1.5 rounded-md border border-border bg-white px-4 py-2.5 text-sm text-muted-foreground hover:bg-secondary transition-colors"
                     title="Copy link"
                   >
-                    {copied ? <Check className="h-3.5 w-3.5 text-green-600" /> : <Copy className="h-3.5 w-3.5" />}
+                    {copied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
                     {copied ? "Copied!" : "Copy link"}
                   </button>
                   <button
                     onClick={handleWhatsAppShare}
-                    className="flex items-center gap-1.5 rounded-md border border-green-300 bg-green-50 px-3 py-1.5 text-xs text-green-700 hover:bg-green-100 transition-colors"
+                    className="flex min-h-[44px] items-center gap-1.5 rounded-md border border-green-300 bg-green-50 px-4 py-2.5 text-sm text-green-700 hover:bg-green-100 transition-colors"
                     title="Share on WhatsApp"
                   >
-                    <Share2 className="h-3.5 w-3.5" />
+                    <Share2 className="h-4 w-4" />
                     Share
                   </button>
                 </div>

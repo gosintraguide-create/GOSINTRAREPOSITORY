@@ -565,7 +565,7 @@ export function ManageBookingPage() {
 
         {/* Contact Support Dialog */}
         <Dialog open={contactDialogOpen} onOpenChange={setContactDialogOpen}>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-md">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <Phone className="h-5 w-5 text-primary" />

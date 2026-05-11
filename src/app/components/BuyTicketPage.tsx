@@ -824,27 +824,27 @@ export function BuyTicketPage() {
               <div className="flex flex-col items-center flex-1">
                 <div className="relative flex items-center w-full justify-center">
                   <div
-                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all z-10 ${
+                    className={`w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all z-10 ${
                       currentStep >= 1
                         ? "bg-accent text-white"
                         : "bg-border text-muted-foreground"
                     }`}
                   >
                     {currentStep > 1 ? (
-                      <Check className="h-6 w-6" />
+                      <Check className="h-4 w-4 sm:h-6 sm:w-6" />
                     ) : (
-                      <CalendarIcon className="h-6 w-6" />
+                      <CalendarIcon className="h-4 w-4 sm:h-6 sm:w-6" />
                     )}
                   </div>
                 </div>
-                <p className="mt-2 text-xs text-center text-muted-foreground max-w-[80px] font-semibold">
+                <p className="mt-1 text-xs text-center text-muted-foreground max-w-[80px] font-semibold hidden sm:block">
                   {ct.buyTicketPage.progressLabels.dateTime}
                 </p>
               </div>
 
               {/* Connector 1-2 */}
               <div className="flex flex-col items-center flex-1">
-                <div className="relative flex items-center w-full justify-center h-12">
+                <div className="relative flex items-center w-full justify-center h-8 sm:h-12">
                   <div
                     className={`h-1 w-3/5 rounded-full transition-all ${
                       currentStep > 1 ? "bg-accent" : "bg-border"
@@ -857,27 +857,27 @@ export function BuyTicketPage() {
               <div className="flex flex-col items-center flex-1">
                 <div className="relative flex items-center w-full justify-center">
                   <div
-                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all z-10 ${
+                    className={`w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all z-10 ${
                       currentStep >= 2
                         ? "bg-accent text-white"
                         : "bg-border text-muted-foreground"
                     }`}
                   >
                     {currentStep > 2 ? (
-                      <Check className="h-6 w-6" />
+                      <Check className="h-4 w-4 sm:h-6 sm:w-6" />
                     ) : (
-                      <MapPin className="h-6 w-6" />
+                      <MapPin className="h-4 w-4 sm:h-6 sm:w-6" />
                     )}
                   </div>
                 </div>
-                <p className="mt-2 text-xs text-center text-muted-foreground max-w-[80px] font-semibold">
+                <p className="mt-1 text-xs text-center text-muted-foreground max-w-[80px] font-semibold hidden sm:block">
                   {ct.buyTicketPage.progressLabels.pickupSpot}
                 </p>
               </div>
 
               {/* Connector 2-3 */}
               <div className="flex flex-col items-center flex-1">
-                <div className="relative flex items-center w-full justify-center h-12">
+                <div className="relative flex items-center w-full justify-center h-8 sm:h-12">
                   <div
                     className={`h-1 w-3/5 rounded-full transition-all ${
                       currentStep > 2 ? "bg-accent" : "bg-border"
@@ -890,27 +890,27 @@ export function BuyTicketPage() {
               <div className="flex flex-col items-center flex-1">
                 <div className="relative flex items-center w-full justify-center">
                   <div
-                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all z-10 ${
+                    className={`w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all z-10 ${
                       currentStep >= 3
                         ? "bg-accent text-white"
                         : "bg-border text-muted-foreground"
                     }`}
                   >
                     {currentStep > 3 ? (
-                      <Check className="h-6 w-6" />
+                      <Check className="h-4 w-4 sm:h-6 sm:w-6" />
                     ) : (
-                      <Ticket className="h-6 w-6" />
+                      <Ticket className="h-4 w-4 sm:h-6 sm:w-6" />
                     )}
                   </div>
                 </div>
-                <p className="mt-2 text-xs text-center text-muted-foreground max-w-[80px] font-semibold">
+                <p className="mt-1 text-xs text-center text-muted-foreground max-w-[80px] font-semibold hidden sm:block">
                   {ct.buyTicketPage.progressLabels.attractions}
                 </p>
               </div>
 
               {/* Connector 3-4 */}
               <div className="flex flex-col items-center flex-1">
-                <div className="relative flex items-center w-full justify-center h-12">
+                <div className="relative flex items-center w-full justify-center h-8 sm:h-12">
                   <div
                     className={`h-1 w-3/5 rounded-full transition-all ${
                       currentStep > 3 ? "bg-accent" : "bg-border"
@@ -923,27 +923,27 @@ export function BuyTicketPage() {
               <div className="flex flex-col items-center flex-1">
                 <div className="relative flex items-center w-full justify-center">
                   <div
-                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all z-10 ${
+                    className={`w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all z-10 ${
                       currentStep >= 4
                         ? "bg-accent text-white"
                         : "bg-border text-muted-foreground"
                     }`}
                   >
                     {currentStep > 4 ? (
-                      <Check className="h-6 w-6" />
+                      <Check className="h-4 w-4 sm:h-6 sm:w-6" />
                     ) : (
-                      <User className="h-6 w-6" />
+                      <User className="h-4 w-4 sm:h-6 sm:w-6" />
                     )}
                   </div>
                 </div>
-                <p className="mt-2 text-xs text-center text-muted-foreground max-w-[80px] font-semibold">
+                <p className="mt-1 text-xs text-center text-muted-foreground max-w-[80px] font-semibold hidden sm:block">
                   {ct.buyTicketPage.progressLabels.yourDetails}
                 </p>
               </div>
 
               {/* Connector 4-5 */}
               <div className="flex flex-col items-center flex-1">
-                <div className="relative flex items-center w-full justify-center h-12">
+                <div className="relative flex items-center w-full justify-center h-8 sm:h-12">
                   <div
                     className={`h-1 w-3/5 rounded-full transition-all ${
                       currentStep > 4 ? "bg-accent" : "bg-border"
@@ -956,16 +956,16 @@ export function BuyTicketPage() {
               <div className="flex flex-col items-center flex-1">
                 <div className="relative flex items-center w-full justify-center">
                   <div
-                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all z-10 ${
+                    className={`w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all z-10 ${
                       currentStep >= 5
                         ? "bg-accent text-white"
                         : "bg-border text-muted-foreground"
                     }`}
                   >
-                    <Check className="h-6 w-6" />
+                    <Check className="h-4 w-4 sm:h-6 sm:w-6" />
                   </div>
                 </div>
-                <p className="mt-2 text-xs text-center text-muted-foreground max-w-[80px] font-semibold">
+                <p className="mt-1 text-xs text-center text-muted-foreground max-w-[80px] font-semibold hidden sm:block">
                   {ct.buyTicketPage.progressLabels.confirmation}
                 </p>
               </div>
@@ -1451,7 +1451,7 @@ export function BuyTicketPage() {
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-3xl text-accent font-semibold">
+                        <p className="text-2xl sm:text-3xl text-accent font-semibold">
                           €{(passTotal + guidedTourTotal).toFixed(2)}
                         </p>
                       </div>

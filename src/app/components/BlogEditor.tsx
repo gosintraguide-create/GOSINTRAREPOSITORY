@@ -511,7 +511,7 @@ export function BlogEditor() {
 
       {/* Edit Dialog */}
       <Dialog open={isEditing} onOpenChange={setIsEditing}>
-        <DialogContent className="max-h-[90vh] max-w-6xl overflow-y-auto">
+        <DialogContent className="max-h-[90vh] w-[95vw] max-w-[1400px] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {editingArticle?.id.startsWith("article-")
