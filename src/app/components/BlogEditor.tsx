@@ -592,18 +592,22 @@ export function BlogEditor() {
                       <Input
                         value={currentTranslation.title}
                         onChange={(e) => {
-                          updateCurrentTranslation({
-                            title: e.target.value,
+                          const newTitle = e.target.value;
+                          setEditingArticle((prev) => {
+                            if (!prev) return prev;
+                            const existing = prev.translations[currentLanguage] || {
+                              title: "", excerpt: "", content: "",
+                              seo: { title: "", description: "", keywords: "" },
+                            };
+                            return {
+                              ...prev,
+                              ...(currentLanguage === "en" && { slug: generateSlug(newTitle) }),
+                              translations: {
+                                ...prev.translations,
+                                [currentLanguage]: { ...existing, title: newTitle },
+                              },
+                            };
                           });
-                          // Auto-generate slug from English title only
-                          if (currentLanguage === "en") {
-                            setEditingArticle({
-                              ...editingArticle,
-                              slug: generateSlug(
-                                e.target.value,
-                              ),
-                            });
-                          }
                         }}
                         placeholder="e.g., How to Get to Sintra from Lisbon"
                       />
