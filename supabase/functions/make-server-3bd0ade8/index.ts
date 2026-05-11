@@ -751,4 +751,359 @@ app.get("/make-server-3bd0ade8/drivers", async (c) => {
   return c.json({ success: true, drivers: driversData || [] });
 });
 
+// ===== CONTENT MANAGEMENT =====
+
+// Legacy website content (used by contentManager.ts)
+app.get("/make-server-3bd0ade8/content", async (c) => {
+  try {
+    const content = await kvWithRetry.get("website_content");
+    return c.json({ success: true, content: content || null });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+app.post("/make-server-3bd0ade8/content", async (c) => {
+  try {
+    const body = await c.req.json();
+    await kvWithRetry.set("website_content", { ...body, lastUpdated: new Date().toISOString() });
+    return c.json({ success: true });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// Comprehensive content (used by comprehensiveContent.ts — powers all visible site content)
+app.get("/make-server-3bd0ade8/comprehensive-content", async (c) => {
+  try {
+    const content = await kvWithRetry.get("comprehensive_content");
+    return c.json({ success: true, content: content || null });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+app.post("/make-server-3bd0ade8/comprehensive-content", async (c) => {
+  try {
+    const body = await c.req.json();
+    await kvWithRetry.set("comprehensive_content", body);
+    return c.json({ success: true });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// Pricing configuration
+app.get("/make-server-3bd0ade8/pricing", async (c) => {
+  try {
+    const pricing = await kvWithRetry.get("pricing_config");
+    return c.json({ success: true, pricing: pricing || null });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+app.post("/make-server-3bd0ade8/pricing", async (c) => {
+  try {
+    const body = await c.req.json();
+    await kvWithRetry.set("pricing_config", body);
+    return c.json({ success: true });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// ===== IMAGE MANAGEMENT (Supabase Storage) =====
+
+const IMAGE_BUCKET = "website-images";
+
+async function ensureImageBucket() {
+  const { data: buckets } = await supabase.storage.listBuckets();
+  const exists = buckets?.some((b: any) => b.name === IMAGE_BUCKET);
+  if (!exists) {
+    await supabase.storage.createBucket(IMAGE_BUCKET, { public: true });
+  }
+}
+
+app.get("/make-server-3bd0ade8/images", async (c) => {
+  try {
+    await ensureImageBucket();
+    const { data: files, error } = await supabase.storage
+      .from(IMAGE_BUCKET)
+      .list("", { limit: 200, sortBy: { column: "created_at", order: "desc" } });
+
+    if (error) throw error;
+
+    const images = (files || [])
+      .filter((f: any) => f.name !== ".emptyFolderPlaceholder")
+      .map((f: any) => ({
+        name: f.name,
+        url: supabase.storage.from(IMAGE_BUCKET).getPublicUrl(f.name).data.publicUrl,
+        uploadedAt: f.created_at || new Date().toISOString(),
+        size: f.metadata?.size || 0,
+      }));
+
+    return c.json({ success: true, images });
+  } catch (error) {
+    console.error("Error listing images:", error);
+    return c.json({ success: false, error: String(error), images: [] }, 500);
+  }
+});
+
+app.post("/make-server-3bd0ade8/images/upload", async (c) => {
+  try {
+    await ensureImageBucket();
+    const { fileName, fileData, fileType } = await c.req.json();
+
+    // Decode base64 data URL to bytes
+    const base64Data = fileData.replace(/^data:[^;]+;base64,/, "");
+    const binaryString = atob(base64Data);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+
+    // Make filename unique to avoid collisions
+    const timestamp = Date.now();
+    const ext = fileName.split(".").pop() || "jpg";
+    const baseName = fileName
+      .replace(/\.[^/.]+$/, "")
+      .replace(/[^a-zA-Z0-9\-_]/g, "-")
+      .slice(0, 60);
+    const uniqueName = `${baseName}-${timestamp}.${ext}`;
+
+    const { error } = await supabase.storage
+      .from(IMAGE_BUCKET)
+      .upload(uniqueName, bytes, { contentType: fileType, upsert: false });
+
+    if (error) throw error;
+
+    const { data: { publicUrl } } = supabase.storage
+      .from(IMAGE_BUCKET)
+      .getPublicUrl(uniqueName);
+
+    return c.json({ success: true, url: publicUrl, name: uniqueName });
+  } catch (error) {
+    console.error("Error uploading image:", error);
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+app.delete("/make-server-3bd0ade8/images/:name", async (c) => {
+  try {
+    const name = decodeURIComponent(c.req.param("name"));
+    const { error } = await supabase.storage.from(IMAGE_BUCKET).remove([name]);
+    if (error) throw error;
+    return c.json({ success: true });
+  } catch (error) {
+    console.error("Error deleting image:", error);
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// ===== PRIVATE TOURS =====
+
+app.get("/make-server-3bd0ade8/private-tours", async (c) => {
+  try {
+    const tours = await kvWithRetry.get("private_tours");
+    return c.json({ success: true, tours: tours || [] });
+  } catch (error) {
+    return c.json({ success: false, error: String(error), tours: [] }, 500);
+  }
+});
+
+app.post("/make-server-3bd0ade8/private-tours/reorder", async (c) => {
+  try {
+    const { tours } = await c.req.json();
+    await kvWithRetry.set("private_tours", tours);
+    return c.json({ success: true });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+app.post("/make-server-3bd0ade8/private-tours", async (c) => {
+  try {
+    const { tour } = await c.req.json();
+    const existing = (await kvWithRetry.get("private_tours") as any[]) || [];
+    const idx = existing.findIndex((t: any) => t.id === tour.id);
+    if (idx >= 0) {
+      existing[idx] = tour;
+    } else {
+      existing.push(tour);
+    }
+    await kvWithRetry.set("private_tours", existing);
+    return c.json({ success: true });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+app.delete("/make-server-3bd0ade8/private-tours/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const existing = (await kvWithRetry.get("private_tours") as any[]) || [];
+    await kvWithRetry.set("private_tours", existing.filter((t: any) => t.id !== id));
+    return c.json({ success: true });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// ===== MONUMENTS =====
+
+app.get("/make-server-3bd0ade8/monuments", async (c) => {
+  try {
+    const monuments = await kvWithRetry.get("monuments");
+    return c.json({ success: true, monuments: monuments || [] });
+  } catch (error) {
+    return c.json({ success: false, error: String(error), monuments: [] }, 500);
+  }
+});
+
+app.post("/make-server-3bd0ade8/monuments", async (c) => {
+  try {
+    const { monuments } = await c.req.json();
+    await kvWithRetry.set("monuments", monuments);
+    return c.json({ success: true });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// ===== BLOG =====
+
+app.get("/make-server-3bd0ade8/blog-articles", async (c) => {
+  try {
+    const articles = await kvWithRetry.get("blog_articles");
+    return c.json({ success: true, articles: articles || [] });
+  } catch (error) {
+    return c.json({ success: false, error: String(error), articles: [] }, 500);
+  }
+});
+
+app.post("/make-server-3bd0ade8/blog-articles", async (c) => {
+  try {
+    const { articles } = await c.req.json();
+    await kvWithRetry.set("blog_articles", articles);
+    return c.json({ success: true });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+app.get("/make-server-3bd0ade8/blog-categories", async (c) => {
+  try {
+    const categories = await kvWithRetry.get("blog_categories");
+    return c.json({ success: true, categories: categories || [] });
+  } catch (error) {
+    return c.json({ success: false, error: String(error), categories: [] }, 500);
+  }
+});
+
+app.post("/make-server-3bd0ade8/blog-categories", async (c) => {
+  try {
+    const { categories } = await c.req.json();
+    await kvWithRetry.set("blog_categories", categories);
+    return c.json({ success: true });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// ===== AVAILABILITY =====
+
+app.get("/make-server-3bd0ade8/availability", async (c) => {
+  try {
+    const all = await kvWithRetry.getByPrefix("availability_");
+    return c.json({ success: true, availability: all || [] });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+app.get("/make-server-3bd0ade8/availability/:date", async (c) => {
+  try {
+    const date = c.req.param("date");
+    const stored = await kvWithRetry.get(`availability_${date}`);
+    return c.json({
+      success: true,
+      availability: stored || { date, totalSeats: 100, bookedSeats: 0, availableSeats: 100 },
+    });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+app.post("/make-server-3bd0ade8/availability/:date", async (c) => {
+  try {
+    const date = c.req.param("date");
+    const body = await c.req.json();
+    await kvWithRetry.set(`availability_${date}`, { ...body, date });
+    return c.json({ success: true });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// ===== SUNSET SPECIAL AVAILABILITY =====
+
+app.get("/make-server-3bd0ade8/sunset-special/availability/:date", async (c) => {
+  try {
+    const date = c.req.param("date");
+    const maxSeats = parseInt(c.req.query("maxSeats") || "8");
+    const bookings = (await kvWithRetry.get(`sunset_bookings_${date}`) as any[]) || [];
+    const bookedSeats = bookings.reduce((sum: number, b: any) => sum + (b.quantity || 1), 0);
+    const availableSeats = Math.max(0, maxSeats - bookedSeats);
+    return c.json({ success: true, date, availableSeats, bookedSeats, maxSeats, available: availableSeats > 0 });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// ===== PAYMENTS =====
+
+app.post("/make-server-3bd0ade8/create-payment-intent", async (c) => {
+  if (!stripe) return c.json({ success: false, error: "Payment processing not configured" }, 503);
+  try {
+    const { amount, currency = "eur", metadata } = await c.req.json();
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(amount * 100),
+      currency,
+      metadata: metadata || {},
+      automatic_payment_methods: { enabled: true },
+    });
+    return c.json({ success: true, clientSecret: paymentIntent.client_secret, paymentIntentId: paymentIntent.id });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+app.post("/make-server-3bd0ade8/tour-bookings/create-payment-intent", async (c) => {
+  if (!stripe) return c.json({ success: false, error: "Payment processing not configured" }, 503);
+  try {
+    const { amount, currency = "eur", metadata } = await c.req.json();
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(amount * 100),
+      currency,
+      metadata: metadata || {},
+      automatic_payment_methods: { enabled: true },
+    });
+    return c.json({ success: true, clientSecret: paymentIntent.client_secret, paymentIntentId: paymentIntent.id });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+app.post("/make-server-3bd0ade8/verify-payment", async (c) => {
+  if (!stripe) return c.json({ success: false, error: "Payment processing not configured" }, 503);
+  try {
+    const { paymentIntentId } = await c.req.json();
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+    return c.json({ success: true, status: paymentIntent.status, paid: paymentIntent.status === "succeeded" });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
 Deno.serve(app.fetch);

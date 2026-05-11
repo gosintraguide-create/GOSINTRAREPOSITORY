@@ -86,7 +86,6 @@ import { CompactBookingsList } from "./CompactBookingsList";
 import { FeatureFlagManager } from "./FeatureFlagManager";
 import { DatabaseCleanup } from "./DatabaseCleanup";
 import { BookingDiagnostics } from "./BookingDiagnostics";
-import { SunsetSpecialManager } from "./SunsetSpecialManager";
 import { BookingLogs } from "./BookingLogs";
 import { PrivateTourManager } from "./PrivateTourManager";
 import { TourRequestsManagement } from "./TourRequestsManagement";
@@ -3298,9 +3297,6 @@ export function AdminPage() {
           >
             {/* Feature Flags */}
             <FeatureFlagManager />
-
-            {/* Sunset Special Manager */}
-            <SunsetSpecialManager />
 
             {/* Pricing & Availability - moved from old location */}
             <Card className="border-border p-4 sm:p-6 lg:p-8">

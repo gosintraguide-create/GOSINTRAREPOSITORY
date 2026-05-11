@@ -224,7 +224,7 @@ export function MultiImageSelector({
               {images.map((image) => {
                 const isSelected = value.includes(image.url);
                 const selectedIndex = value.indexOf(image.url);
-                
+
                 return (
                   <button
                     key={image.name}
@@ -261,6 +261,12 @@ export function MultiImageSelector({
               })}
             </div>
           )}
+
+          <div className="flex justify-end pt-2">
+            <Button type="button" onClick={() => setIsOpen(false)}>
+              Done ({value.length} selected)
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

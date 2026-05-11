@@ -291,8 +291,8 @@ export function PrivateTourManager() {
 
             {/* Hero Image */}
             <div>
-              <Label>Hero Image</Label>
               <ImageSelector
+                label="Hero Image"
                 value={editingTour.heroImage || ""}
                 onChange={(url) =>
                   setEditingTour({ ...editingTour, heroImage: url })
@@ -609,7 +609,15 @@ export function PrivateTourManager() {
               <div className="space-y-2">
                 {editingTour.features.map((feature, index) => (
                   <div key={index} className="flex items-center gap-2">
-                    <Input value={feature} readOnly className="flex-1" />
+                    <Input
+                      value={feature}
+                      onChange={(e) => {
+                        const newFeatures = [...editingTour.features];
+                        newFeatures[index] = e.target.value;
+                        setEditingTour({ ...editingTour, features: newFeatures });
+                      }}
+                      className="flex-1"
+                    />
                     <Button
                       variant="ghost"
                       size="sm"
@@ -624,7 +632,7 @@ export function PrivateTourManager() {
                     value={currentFeature}
                     onChange={(e) => setCurrentFeature(e.target.value)}
                     placeholder="Add a feature..."
-                    onKeyPress={(e) => e.key === "Enter" && handleAddFeature()}
+                    onKeyDown={(e) => e.key === "Enter" && handleAddFeature()}
                   />
                   <Button onClick={handleAddFeature} size="sm">
                     <Plus className="h-4 w-4" />

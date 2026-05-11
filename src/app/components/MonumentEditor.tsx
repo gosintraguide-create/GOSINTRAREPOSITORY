@@ -12,6 +12,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
+import { ImageSelector } from "./ImageSelector";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
@@ -480,29 +481,19 @@ export function MonumentEditor() {
                   </div>
 
                   {/* Images */}
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <div>
-                      <label className="text-sm font-medium text-foreground">Card Image URL</label>
-                      <Input
-                        value={monument.cardImage || ""}
-                        onChange={(e) => updateMonument(monument.id, { cardImage: e.target.value })}
-                        placeholder="https://images.unsplash.com/..."
-                      />
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Image shown in attraction cards
-                      </p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-foreground">Hero Image URL</label>
-                      <Input
-                        value={monument.heroImage || ""}
-                        onChange={(e) => updateMonument(monument.id, { heroImage: e.target.value })}
-                        placeholder="https://images.unsplash.com/..."
-                      />
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Large image shown on detail page
-                      </p>
-                    </div>
+                  <div className="space-y-4">
+                    <ImageSelector
+                      label="Card Image"
+                      description="Image shown in attraction cards"
+                      value={monument.cardImage || ""}
+                      onChange={(url) => updateMonument(monument.id, { cardImage: url })}
+                    />
+                    <ImageSelector
+                      label="Hero Image"
+                      description="Large image shown on the detail page"
+                      value={monument.heroImage || ""}
+                      onChange={(url) => updateMonument(monument.id, { heroImage: url })}
+                    />
                   </div>
                 </div>
               )}
