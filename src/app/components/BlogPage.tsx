@@ -24,6 +24,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { getUITranslation } from "../lib/translations";
+import { getTranslation } from "../lib/translations/loader";
 import {
   loadArticles,
   getArticleTranslation,
@@ -50,6 +51,7 @@ export function BlogPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const content = loadContentWithLanguage(language);
+  const tb = getTranslation(language).blog;
   const [articles, setArticles] = useState<BlogArticle[]>([]);
   const [categories, setCategories] = useState<BlogCategory[]>([]);
   const [filteredArticles, setFilteredArticles] = useState<BlogArticle[]>([]);
@@ -178,18 +180,13 @@ export function BlogPage() {
   };
 
   const getCategoryName = (categorySlug: string) => {
-    const category = categories.find(
-      (cat) => cat.slug === categorySlug,
-    );
+    const jsonName = tb.categories[categorySlug as keyof typeof tb.categories];
+    if (jsonName) return jsonName;
+    const category = categories.find((cat) => cat.slug === categorySlug);
     if (category) {
-      const categoryTranslation = getCategoryTranslation(category, language);
-      return categoryTranslation.name;
+      return getCategoryTranslation(category, language).name;
     }
-    return (
-      content.blog.categories[
-        categorySlug as keyof typeof content.blog.categories
-      ] || categorySlug
-    );
+    return categorySlug;
   };
 
   const getCategoryIcon = (categoryName: string) => {
@@ -210,10 +207,10 @@ export function BlogPage() {
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="mb-6 text-center">
             <h1 className="mb-3 text-primary font-extrabold text-[23px]">
-              {content.blog.pageTitle}
+              {tb.pageTitle}
             </h1>
             <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-              {content.blog.pageSubtitle
+              {tb.pageSubtitle
                 .replace(/\u2728/g, "")
                 .trim()}
             </p>
@@ -223,7 +220,7 @@ export function BlogPage() {
             <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
             <Input
               type="text"
-              placeholder={content.blog.searchPlaceholder}
+              placeholder={tb.searchPlaceholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="h-12 rounded-xl bg-secondary/30 pl-12 pr-4"
@@ -238,7 +235,7 @@ export function BlogPage() {
           <div className="flex items-center gap-3 overflow-x-auto pb-1 scrollbar-none">
             <div className="flex flex-shrink-0 items-center gap-2">
               <Filter className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">{content.blog.filterBy}</span>
+              <span className="text-sm text-muted-foreground">{tb.filterBy}</span>
             </div>
             <div className="flex flex-shrink-0 gap-2">
               <Button
@@ -246,7 +243,7 @@ export function BlogPage() {
                 size="sm"
                 onClick={() => { setSelectedCategory("all"); setSelectedTag(""); }}
               >
-                {content.blog.allArticles}
+                {tb.allArticles}
               </Button>
               {categories.map((category) => (
                 <Button
@@ -288,12 +285,12 @@ export function BlogPage() {
             <div className="py-20 text-center">
               <BookOpen className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
               <h3 className="mb-2 text-foreground">
-                {content.blog.noArticlesFound}
+                {tb.noArticlesFound}
               </h3>
               <p className="text-muted-foreground">
                 {searchQuery
-                  ? content.blog.tryDifferentSearch
-                  : content.blog.noArticlesInCategory}
+                  ? tb.tryDifferentSearch
+                  : tb.noArticlesInCategory}
               </p>
             </div>
           ) : (
@@ -301,8 +298,8 @@ export function BlogPage() {
               <div className="mb-6 text-center">
                 <Badge variant="outline">
                   {filteredArticles.length}{" "}
-                  {filteredArticles.length === 1 ? content.blog.article : content.blog.articles}{" "}
-                  {content.blog.articlesFound}
+                  {filteredArticles.length === 1 ? tb.article : tb.articles}{" "}
+                  {tb.articlesFound}
                 </Badge>
               </div>
 
@@ -339,7 +336,7 @@ export function BlogPage() {
                         <p className="mb-4 line-clamp-3 text-muted-foreground">{featT.excerpt}</p>
                         <div className="mb-4 flex flex-wrap gap-3 text-sm text-muted-foreground">
                           <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{formatDate(featured.publishDate)}</span>
-                          <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{featured.readTimeMinutes} {content.blog.minRead}</span>
+                          <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{featured.readTimeMinutes} {tb.minRead}</span>
                         </div>
                         {featured.tags.length > 0 && (
                           <div className="mb-4 flex flex-wrap gap-2">
@@ -355,7 +352,7 @@ export function BlogPage() {
                           </div>
                         )}
                         <div className="flex items-center gap-2 font-medium text-primary">
-                          {content.blog.readGuide}
+                          {tb.readGuide}
                           <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-2" />
                         </div>
                       </div>
@@ -391,7 +388,7 @@ export function BlogPage() {
                         <div className="flex h-full flex-col p-5">
                           <div className="mb-2 flex flex-wrap gap-3 text-xs text-muted-foreground">
                             <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{formatDate(article.publishDate)}</span>
-                            <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{article.readTimeMinutes} {content.blog.minRead}</span>
+                            <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{article.readTimeMinutes} {tb.minRead}</span>
                           </div>
                           <h3 className="mb-2 text-base font-semibold leading-snug text-foreground group-hover:text-primary">
                             {t.title}
@@ -411,7 +408,7 @@ export function BlogPage() {
                             </div>
                           )}
                           <div className="flex items-center gap-1.5 text-sm font-medium text-primary">
-                            {content.blog.readGuide}
+                            {tb.readGuide}
                             <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
                           </div>
                         </div>
@@ -512,13 +509,13 @@ export function BlogPage() {
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="mb-12 text-center">
             <Badge className="mb-4">
-              {content.blog.browseTopics}
+              {tb.browseTopics}
             </Badge>
             <h2 className="mb-4 text-foreground">
-              {content.blog.exploreByCategory}
+              {tb.exploreByCategory}
             </h2>
             <p className="text-muted-foreground">
-              {content.blog.exploreCategoryDescription}
+              {tb.exploreCategoryDescription}
             </p>
           </div>
 
@@ -551,16 +548,16 @@ export function BlogPage() {
                       {getCategoryName(category.slug)}
                     </h3>
                     <p className="mb-4 text-muted-foreground">
-                      {content.blog.categoryDescriptions[
-                        category.slug as keyof typeof content.blog.categoryDescriptions
+                      {tb.categoryDescriptions[
+                        category.slug as keyof typeof tb.categoryDescriptions
                       ] || catTranslation.description}
                     </p>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">
                         {articlesInCategory}{" "}
                         {articlesInCategory === 1
-                          ? content.blog.guide
-                          : content.blog.guides}
+                          ? tb.guide
+                          : tb.guides}
                       </span>
                       <ArrowRight className="h-4 w-4 text-primary transition-transform group-hover:translate-x-2" />
                     </div>
@@ -582,17 +579,17 @@ export function BlogPage() {
           </div>
 
           <h2 className="mb-4 text-white">
-            {content.blog.ctaTitle}
+            {tb.ctaTitle}
           </h2>
           <p className="mb-8 text-xl text-white/90">
-            {content.blog.ctaSubtitle}
+            {tb.ctaSubtitle}
           </p>
           <Button
             size="lg"
             className="bg-white text-accent shadow-xl hover:bg-white/90"
             onClick={() => onNavigate("buy-ticket")}
           >
-            {content.blog.ctaButton}
+            {tb.ctaButton}
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </div>
