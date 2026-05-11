@@ -238,6 +238,7 @@ export function AdminPage() {
     setShowArchivedConversations,
   ] = useState(false);
   const [activeTab, setActiveTab] = useState("pickups");
+  const [toursSubTab, setToursSubTab] = useState("requests");
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [ticketPurchasesEnabled, setTicketPurchasesEnabled] =
     useState(true);
@@ -2045,6 +2046,13 @@ export function AdminPage() {
                   )}
                 </TabsTrigger>
                 <TabsTrigger
+                  value="tours"
+                  className="flex items-center gap-1.5 text-xs sm:text-sm px-2 sm:px-3"
+                >
+                  <Car className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <span>Tours</span>
+                </TabsTrigger>
+                <TabsTrigger
                   value="metrics"
                   className="flex items-center gap-1.5 text-xs sm:text-sm px-2 sm:px-3"
                 >
@@ -2076,60 +2084,11 @@ export function AdminPage() {
                       Access additional admin tools and settings
                     </SheetDescription>
                   </SheetHeader>
-                  <div className="mt-6 space-y-2">
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-3"
-                      onClick={() => {
-                        setActiveTab("drivers");
-                        setMoreMenuOpen(false);
-                      }}
-                    >
-                      <UserCog className="h-5 w-5" />
-                      <div className="flex flex-col items-start">
-                        <span>Drivers</span>
-                        <span className="text-xs text-muted-foreground">
-                          Manage driver accounts
-                        </span>
-                      </div>
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-3"
-                      onClick={() => {
-                        setActiveTab("settings");
-                        setMoreMenuOpen(false);
-                      }}
-                    >
-                      <DollarSign className="h-5 w-5" />
-                      <div className="flex flex-col items-start">
-                        <span>Settings</span>
-                        <span className="text-xs text-muted-foreground">
-                          Pricing, availability & system
-                          settings
-                        </span>
-                      </div>
-                    </Button>
-
-                    <div className="my-4 h-px bg-border" />
-
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-3"
-                      onClick={() => {
-                        setActiveTab("images");
-                        setMoreMenuOpen(false);
-                      }}
-                    >
-                      <Image className="h-5 w-5" />
-                      <div className="flex flex-col items-start">
-                        <span>Images</span>
-                        <span className="text-xs text-muted-foreground">
-                          Upload and manage images
-                        </span>
-                      </div>
-                    </Button>
+                  <div className="mt-6 space-y-1">
+                    {/* Section: Content Management */}
+                    <p className="px-3 pb-1 pt-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      Content Management
+                    </p>
 
                     <Button
                       variant="ghost"
@@ -2143,7 +2102,7 @@ export function AdminPage() {
                       <div className="flex flex-col items-start">
                         <span>Content</span>
                         <span className="text-xs text-muted-foreground">
-                          Edit website content
+                          Edit website content &amp; images
                         </span>
                       </div>
                     </Button>
@@ -2186,32 +2145,39 @@ export function AdminPage() {
                       variant="ghost"
                       className="w-full justify-start gap-3"
                       onClick={() => {
-                        setActiveTab("tour-requests");
+                        setActiveTab("images");
                         setMoreMenuOpen(false);
                       }}
                     >
-                      <MessageCircle className="h-5 w-5" />
+                      <Image className="h-5 w-5" />
                       <div className="flex flex-col items-start">
-                        <span>Tour Requests</span>
+                        <span>Image Library</span>
                         <span className="text-xs text-muted-foreground">
-                          Manage booking inquiries
+                          Upload and manage images
                         </span>
                       </div>
                     </Button>
+
+                    <div className="my-3 h-px bg-border" />
+
+                    {/* Section: Settings */}
+                    <p className="px-3 pb-1 pt-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      Settings
+                    </p>
 
                     <Button
                       variant="ghost"
                       className="w-full justify-start gap-3"
                       onClick={() => {
-                        setActiveTab("tour-calendar");
+                        setActiveTab("settings");
                         setMoreMenuOpen(false);
                       }}
                     >
-                      <CalendarIcon className="h-5 w-5" />
+                      <DollarSign className="h-5 w-5" />
                       <div className="flex flex-col items-start">
-                        <span>Tour Calendar</span>
+                        <span>Pricing &amp; Features</span>
                         <span className="text-xs text-muted-foreground">
-                          View tour bookings calendar
+                          Ticket prices &amp; feature flags
                         </span>
                       </div>
                     </Button>
@@ -2250,6 +2216,13 @@ export function AdminPage() {
                       </div>
                     </Button>
 
+                    <div className="my-3 h-px bg-border" />
+
+                    {/* Section: System */}
+                    <p className="px-3 pb-1 pt-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      System
+                    </p>
+
                     <Button
                       variant="ghost"
                       className="w-full justify-start gap-3"
@@ -2262,12 +2235,10 @@ export function AdminPage() {
                       <div className="flex flex-col items-start">
                         <span>Booking Logs</span>
                         <span className="text-xs text-muted-foreground">
-                          View booking history & trip records
+                          View booking history &amp; trip records
                         </span>
                       </div>
                     </Button>
-
-                    <div className="my-4 h-px bg-border" />
 
                     <Button
                       variant="ghost"
@@ -2297,6 +2268,16 @@ export function AdminPage() {
             className="space-y-4 sm:space-y-6"
           >
             <PickupRequestsManagement />
+            <div className="border-t border-border pt-4 sm:pt-6">
+              <div className="mb-4">
+                <div className="flex items-center gap-2">
+                  <UserCog className="h-5 w-5 text-primary" />
+                  <h2 className="text-foreground text-base sm:text-lg">Drivers</h2>
+                </div>
+                <p className="mt-1 text-sm text-muted-foreground">Manage driver accounts and assignments</p>
+              </div>
+              <DriverManagement />
+            </div>
           </TabsContent>
 
           {/* ====== BOOKINGS TAB ====== */}
@@ -2308,6 +2289,70 @@ export function AdminPage() {
               bookings={bookings}
               onRefresh={loadBookings}
             />
+
+            {/* Availability — here because it's changed per operational day */}
+            <Card className="border-border p-4 sm:p-6 lg:p-8">
+              <div className="mb-4 sm:mb-6">
+                <h2 className="mb-2 text-foreground text-sm sm:text-base">Availability Management</h2>
+                <div className="h-1 w-16 rounded-full bg-accent" />
+                <p className="mt-2 text-sm text-muted-foreground">Set available seats per time slot for a given date.</p>
+              </div>
+              <div className="space-y-6">
+                <div>
+                  <Label>Select Date</Label>
+                  <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="mt-2 w-full justify-start border-border text-left">
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {new Date(selectedDate).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={new Date(selectedDate)}
+                        onSelect={(date) => { if (date) { setSelectedDate(date.toISOString().split("T")[0]); setCalendarOpen(false); } }}
+                        disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div className="rounded-lg border border-border bg-white p-4 sm:p-6">
+                  <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <h3 className="text-foreground text-sm sm:text-base">
+                      Time Slots for {new Date(selectedDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                    </h3>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="outline" onClick={() => setAllSlotsForDate(selectedDate, 50)}>Set All to 50</Button>
+                      <Button size="sm" variant="outline" onClick={() => setAllSlotsForDate(selectedDate, 0)}>Set All to 0</Button>
+                    </div>
+                  </div>
+                  <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-4">
+                    {TIME_SLOTS.map((slot) => (
+                      <div key={slot} className="rounded-lg border border-border p-3 sm:p-4">
+                        <Label htmlFor={`bslot-${slot}`} className="text-foreground">{slot}</Label>
+                        <Input
+                          id={`bslot-${slot}`}
+                          type="number"
+                          min="0"
+                          max="50"
+                          value={availability[selectedDate]?.[slot] ?? 50}
+                          onChange={(e) => updateAvailability(selectedDate, slot, parseInt(e.target.value) || 0)}
+                          className="mt-2 border-border"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-4 sm:mt-6">
+                    <Button onClick={saveAvailability} className="bg-primary hover:bg-primary/90">
+                      <Save className="mr-2 h-4 w-4" />
+                      Save Availability
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </Card>
           </TabsContent>
 
           {/* ====== MESSAGES TAB ====== */}
@@ -2676,6 +2721,32 @@ export function AdminPage() {
                 )}
               </div>
             </div>
+          </TabsContent>
+
+          {/* ====== TOURS TAB ====== */}
+          <TabsContent value="tours" className="space-y-4 sm:space-y-6">
+            <div className="flex gap-2 border-b border-border pb-3">
+              <Button
+                variant={toursSubTab === "requests" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setToursSubTab("requests")}
+                className="gap-2"
+              >
+                <MessageCircle className="h-4 w-4" />
+                Tour Requests
+              </Button>
+              <Button
+                variant={toursSubTab === "calendar" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setToursSubTab("calendar")}
+                className="gap-2"
+              >
+                <CalendarIcon className="h-4 w-4" />
+                Calendar
+              </Button>
+            </div>
+            {toursSubTab === "requests" && <TourRequestsManagement />}
+            {toursSubTab === "calendar" && <TourCalendar />}
           </TabsContent>
 
           {/* ====== METRICS TAB ====== */}
@@ -3536,156 +3607,6 @@ export function AdminPage() {
               </div>
             </Card>
 
-            {/* Availability Management */}
-            <Card className="border-border p-8">
-              <div className="mb-6">
-                <h2 className="mb-2 text-foreground">
-                  Availability Management
-                </h2>
-                <div className="h-1 w-16 rounded-full bg-accent" />
-              </div>
-
-              <div className="space-y-6">
-                <div>
-                  <Label>Select Date</Label>
-                  <Popover
-                    open={calendarOpen}
-                    onOpenChange={setCalendarOpen}
-                  >
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="mt-2 w-full justify-start border-border text-left"
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {new Date(
-                          selectedDate,
-                        ).toLocaleDateString("en-US", {
-                          weekday: "long",
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <Calendar
-                        mode="single"
-                        selected={new Date(selectedDate)}
-                        onSelect={(date) => {
-                          if (date) {
-                            setSelectedDate(
-                              date.toISOString().split("T")[0],
-                            );
-                            setCalendarOpen(false);
-                          }
-                        }}
-                        disabled={(date) =>
-                          date <
-                          new Date(
-                            new Date().setHours(0, 0, 0, 0),
-                          )
-                        }
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-
-                <div className="rounded-lg border border-border bg-white p-6">
-                  <div className="mb-4 flex items-center justify-between">
-                    <div>
-                      <h3 className="text-foreground">
-                        Time Slots for{" "}
-                        {new Date(
-                          selectedDate,
-                        ).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
-                      </h3>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Set available seats for each time slot. Click "Save Availability" to apply changes.
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() =>
-                          setAllSlotsForDate(selectedDate, 50)
-                        }
-                      >
-                        Set All to 50
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() =>
-                          setAllSlotsForDate(selectedDate, 0)
-                        }
-                      >
-                        Set All to 0
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    {TIME_SLOTS.map((slot) => (
-                      <div
-                        key={slot}
-                        className="rounded-lg border border-border p-4"
-                      >
-                        <Label
-                          htmlFor={`slot-${slot}`}
-                          className="text-foreground"
-                        >
-                          {slot}
-                        </Label>
-                        <Input
-                          id={`slot-${slot}`}
-                          type="number"
-                          min="0"
-                          max="50"
-                          value={
-                            availability[selectedDate]?.[
-                              slot
-                            ] ?? 50
-                          }
-                          onChange={(e) =>
-                            updateAvailability(
-                              selectedDate,
-                              slot,
-                              parseInt(e.target.value) || 0,
-                            )
-                          }
-                          className="mt-2 border-border"
-                        />
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="mt-6">
-                    <Button
-                      onClick={saveAvailability}
-                      className="bg-primary hover:bg-primary/90"
-                    >
-                      <Save className="mr-2 h-4 w-4" />
-                      Save Availability
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </TabsContent>
-
-          {/* ====== DRIVERS TAB ====== */}
-          <TabsContent
-            value="drivers"
-            className="space-y-4 sm:space-y-6"
-          >
-            <DriverManagement />
           </TabsContent>
 
           {/* ====== IMAGES TAB ====== */}
@@ -3706,16 +3627,6 @@ export function AdminPage() {
           {/* ====== PRIVATE TOURS TAB ====== */}
           <TabsContent value="private-tours" className="space-y-6">
             <PrivateTourManager />
-          </TabsContent>
-
-          {/* ====== TOUR REQUESTS TAB ====== */}
-          <TabsContent value="tour-requests" className="space-y-6">
-            <TourRequestsManagement />
-          </TabsContent>
-
-          {/* ====== TOUR CALENDAR TAB ====== */}
-          <TabsContent value="tour-calendar" className="space-y-6">
-            <TourCalendar />
           </TabsContent>
 
           {/* ====== SEO TAB ====== */}
