@@ -259,7 +259,8 @@
         "Visita il parco prima o dopo il tour del palazzo"
       ],
       "price": 14,
-      "parkOnlyPrice": 8
+      "parkOnlyPrice": 8,
+      "imageUrl": "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800"
     },
     "quinta-regaleira": {
       "name": "Quinta da Regaleira",
@@ -280,7 +281,8 @@
         "Prenditi del tempo per esplorare tutti gli angoli nascosti",
         "Il Pozzo Iniziatico è un luogo foto imperdibile"
       ],
-      "price": 12
+      "price": 12,
+      "imageUrl": "https://images.unsplash.com/photo-1668377298351-3f7a745a56fe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800"
     },
     "moorish-castle": {
       "name": "Castello dei Mori",
@@ -301,7 +303,8 @@
         "Combina con il Palazzo di Pena per una giornata intera",
         "Porta acqua e protezione solare"
       ],
-      "price": 10
+      "price": 10,
+      "imageUrl": "https://images.unsplash.com/photo-1651520011190-6f37b5213684?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800"
     },
     "monserrate-palace": {
       "name": "Palazzo di Monserrate",
@@ -322,7 +325,8 @@
         "Perfetto per gli appassionati di fotografia",
         "Porta un picnic da gustare nei giardini"
       ],
-      "price": 10
+      "price": 10,
+      "imageUrl": "https://images.unsplash.com/photo-1609137144813-7d9921338f24?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800"
     },
     "sintra-palace": {
       "name": "Palazzo Nazionale di Sintra",
@@ -343,7 +347,140 @@
         "Ottimo per una giornata piovosa - principalmente al coperto",
         "Combina con l'esplorazione dei caffè e negozi di Sintra"
       ],
-      "price": 10
+      "price": 10,
+      "imageUrl": "https://images.unsplash.com/photo-1668945306762-a31d14d8a940?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800"
+    },
+    "convento-capuchos": {
+      "name": "Convento dos Capuchos",
+      "description": "Un sereno monastero francescano del XVI secolo costruito in formazioni rocciose naturali, che offre uno sguardo unico sulla vita monastica di semplicità e comunione con la natura.",
+      "longDescription": "Il Convento dei Frati Cappuccini fu fondato nel 1560 ed è uno degli esempi più notevoli di architettura monastica in Portogallo. Costruito direttamente in enormi massi e querce da sughero, il convento incarna gli ideali francescani di povertà e armonia con la natura. Le minuscole celle, le porte basse e le pareti rivestite di sughero creano un'atmosfera di profonda tranquillità e umiltà. Abbandonato nel 1834, il convento è stato preservato come monumento alla vita semplice.",
+      "highlights": [
+        "Architettura unica integrata con la roccia naturale",
+        "Pareti e soffitti rivestiti di sughero ovunque",
+        "Ambiente forestale tranquillo lontano dalle folle",
+        "Piccole celle monacali scavate nella roccia",
+        "Viste mozzafiato sulle montagne di Sintra"
+      ],
+      "hours": "9:30 - 18:00 (Ultimo ingresso alle 17:00)",
+      "duration": "1-1,5 ore consigliate",
+      "tips": [
+        "Preparati per porte basse - attenzione alla testa!",
+        "Indossa scarpe comode per sentieri irregolari",
+        "Porta acqua - strutture limitate in loco",
+        "Perfetto per chi cerca pace e tranquillità"
+      ],
+      "price": 8,
+      "imageUrl": "https://images.unsplash.com/photo-1672692921041-f676e2cae79a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800"
+    },
+    "cabo-da-roca": {
+      "name": "Cabo da Roca",
+      "description": "Il punto più occidentale dell'Europa continentale, dove spettacolari scogliere incontrano l'Oceano Atlantico. Vivi viste costiere mozzafiato e stai al margine del continente.",
+      "longDescription": "Cabo da Roca si trova alla latitudine 38° 47' nord e longitudine 9° 30' ovest, segnando l'estremità più occidentale del continente europeo. Il capo dispone di un faro costruito nel 1772 e offre viste spettacolari sull'Oceano Atlantico che si infrange su scogliere alte 140 metri. Il poeta portoghese Luís de Camões lo descrisse come 'dove la terra finisce e il mare comincia'. Il paesaggio drammatico e il potente oceano creano un'esperienza indimenticabile.",
+      "highlights": [
+        "Punto più occidentale dell'Europa continentale",
+        "Spettacolari scogliere di 140 metri sull'Atlantico",
+        "Faro storico del 1772",
+        "Certificato di visita disponibile nel negozio di souvenir",
+        "Viste spettacolari al tramonto"
+      ],
+      "hours": "Aperto 24 ore (Faro e negozio: 9:00 - 18:00)",
+      "duration": "45 minuti - 1 ora consigliata",
+      "tips": [
+        "Può essere molto ventoso - porta una giacca",
+        "Meglio visitato al tramonto per foto mozzafiato",
+        "Visita gratuita - nessun biglietto di ingresso",
+        "Prendi il tuo certificato per dimostrare di esserci stato"
+      ],
+      "price": 0,
+      "imageUrl": "https://images.unsplash.com/photo-1700739745973-bbd552072e98?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800"
+    },
+    "villa-sassetti": {
+      "name": "Villa Sassetti",
+      "description": "Un'elegante villa in stile italiano circondata da giardini romantici, collegata al centro storico da un pittoresco sentiero pedonale attraverso un lussureggiante bosco.",
+      "longDescription": "Villa Sassetti fu costruita nel 1890 dal mercante italiano Victor Carlos Sassetti, progettata da Luigi Manini (lo stesso architetto di Quinta da Regaleira). La villa mostra influenze architettoniche italiane e si trova in giardini paesaggistici con alberi esotici, fontane ornamentali e romantici sentieri. La proprietà è collegata al centro storico di Sintra da un pittoresco sentiero che si snoda attraverso la foresta.",
+      "highlights": [
+        "Elegante architettura in stile italiano",
+        "Bellissimi giardini romantici e fontane",
+        "Pittoresco sentiero forestale verso il centro di Sintra",
+        "Atmosfera tranquilla e meno affollata",
+        "Viste mozzafiato sul Castello dei Mori"
+      ],
+      "hours": "10:00 - 18:00",
+      "duration": "1 ora consigliata",
+      "tips": [
+        "Ingresso gratuito ai giardini",
+        "Posto perfetto per una passeggiata tranquilla",
+        "Combina con il sentiero pedonale verso il paese",
+        "Ottimo per evitare le folle turistiche"
+      ],
+      "price": 0,
+      "imageUrl": "https://images.unsplash.com/photo-1670060434149-220a5fce89da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800"
+    },
+    "biester-chalet": {
+      "name": "Chalet Biester",
+      "description": "Un affascinante chalet dell'era romantica nascosto tra le colline di Sintra, con elegante architettura e bellissimi giardini. Questo gioiello meno noto offre uno sguardo intimo sulla vita aristocratica del XIX secolo.",
+      "longDescription": "Costruito negli anni 1890 per Ernest Biester, un ricco uomo d'affari e collezionista d'arte, il Chalet Biester rappresenta l'eclettismo romantico dell'architettura della fine del XIX secolo. Progettato dall'architetto francese José Leopoldo Gouveia, il chalet combina influenze degli chalet svizzeri con elementi decorativi portoghesi. Dopo un'estesa restaurazione, la proprietà aprì ai visitatori, rivelando interni ornati con affreschi originali, lavori in legno scolpiti e arredi d'epoca in giardini paesaggistici.",
+      "highlights": [
+        "Bellissimi interni del XIX secolo restaurati",
+        "Architettura eclettica romantica",
+        "Giardini tranquilli con piante esotiche",
+        "Meno affollato dei grandi palazzi",
+        "Visite guidate con approfondimenti storici"
+      ],
+      "hours": "10:00 - 18:00 (Ultimo ingresso alle 17:30)",
+      "duration": "1-1,5 ore consigliate",
+      "tips": [
+        "Prenota i biglietti in anticipo - capacità giornaliera limitata",
+        "Le visite guidate forniscono un affascinante contesto storico",
+        "Perfetto per gli appassionati di architettura e design",
+        "Combina con i giardini del vicino Palazzo di Seteais"
+      ],
+      "price": 8,
+      "imageUrl": "https://images.unsplash.com/photo-1630272088070-8daf9644018b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800"
+    },
+    "queluz-palace": {
+      "name": "Palazzo di Queluz",
+      "description": "Spesso chiamato la 'Versailles portoghese', questo magnifico palazzo del XVIII secolo presenta opulenti interni rococò e splendidi giardini di ispirazione francese.",
+      "longDescription": "Il Palazzo di Queluz fu costruito come ritiro estivo per Dom Pedro di Braganza, poi Re Pedro III e marito della Regina Maria I. Progettato dagli architetti Mateus Vicente de Oliveira e Jean-Baptiste Robillon, il palazzo esemplifica l'architettura rococò portoghese nel suo massimo splendore. I sontuosi interni presentano sale dorate, soffitti dipinti e decorazioni ornate, mentre i giardini geometrici sono adorni di statue, fontane e topiaria nello stile formale francese.",
+      "highlights": [
+        "Magnifiche sale rococò",
+        "Splendidi giardini formali ispirati a Versailles",
+        "Sala del Trono con lampadari di cristallo e specchi",
+        "Canale di azulejos con pannelli di piastrelle decorative",
+        "Sale cerimoniali reali e camere private"
+      ],
+      "hours": "9:00 - 18:00 (Ultimo ingresso alle 17:30)",
+      "duration": "2-2,5 ore consigliate",
+      "tips": [
+        "Situato a 15 km dal centro di Sintra - pianifica il trasporto",
+        "I giardini sono spettacolari in primavera e in estate",
+        "Meno affollato delle principali attrazioni di Sintra",
+        "Biglietti combinati disponibili con il Palazzo Nazionale di Sintra"
+      ],
+      "price": 10,
+      "imageUrl": "https://images.unsplash.com/photo-1720434566459-4c3eb849a0d7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800"
+    },
+    "mafra-convent": {
+      "name": "Palazzo Nazionale e Convento di Mafra",
+      "description": "Uno dei monumenti barocchi più impressionanti d'Europa, questo colossale complesso palazzo-convento presenta una magnifica biblioteca, una basilica ornata e appartamenti reali. Un capolavoro del Patrimonio Mondiale dell'UNESCO.",
+      "longDescription": "Commissionato dal Re João V nel 1717 per adempiere a un voto fatto per un erede, il Palazzo Nazionale di Mafra rappresenta la ricchezza e il potere del Portogallo del XVIII secolo. Questo complesso monumentale combina un palazzo reale, un convento francescano, una basilica e una delle più belle biblioteche barocche d'Europa. La costruzione durò 13 anni e impiegò oltre 50.000 lavoratori. La scala dell'edificio è sbalorditiva: contiene 1.200 stanze, 4.700 porte e finestre e 156 scalinate. La biblioteca rococò ospita oltre 36.000 volumi rilegati in pelle.",
+      "highlights": [
+        "Magnifica biblioteca barocca con 36.000 libri",
+        "Impressionante basilica con 6 organi e 2 campanili",
+        "Appartamenti reali con arredi d'epoca",
+        "Vasto monastero con ospedale e farmacia",
+        "Patrimonio Mondiale dell'UNESCO"
+      ],
+      "hours": "9:30 - 17:30 (Chiuso il martedì)",
+      "duration": "2,5-3 ore consigliate",
+      "tips": [
+        "Situato a 40 km da Sintra - pianifica il tempo di viaggio",
+        "Visite guidate altamente raccomandate per un'esperienza completa",
+        "Fotografia non consentita in biblioteca",
+        "Uno dei più importanti monumenti barocchi del Portogallo"
+      ],
+      "price": 8,
+      "imageUrl": "https://images.unsplash.com/photo-1726156982862-e75f7cacc21c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800"
     }
   },
   "seo": {

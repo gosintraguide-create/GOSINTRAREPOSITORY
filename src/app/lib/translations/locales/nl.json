@@ -259,7 +259,8 @@
         "Bezoek het park voor of na het bezichtigen van het paleis"
       ],
       "price": 14,
-      "parkOnlyPrice": 8
+      "parkOnlyPrice": 8,
+      "imageUrl": "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800"
     },
     "quinta-regaleira": {
       "name": "Quinta da Regaleira",
@@ -280,7 +281,8 @@
         "Neem de tijd om alle verborgen hoeken te verkennen",
         "De Initiatie Put is een must-see fotoplek"
       ],
-      "price": 12
+      "price": 12,
+      "imageUrl": "https://images.unsplash.com/photo-1668377298351-3f7a745a56fe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800"
     },
     "moorish-castle": {
       "name": "Moorse Kasteel",
@@ -301,7 +303,8 @@
         "Combineer met Pena Paleis voor een hele dag",
         "Neem water en zonnebescherming mee"
       ],
-      "price": 10
+      "price": 10,
+      "imageUrl": "https://images.unsplash.com/photo-1651520011190-6f37b5213684?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800"
     },
     "monserrate-palace": {
       "name": "Monserrate Paleis",
@@ -322,7 +325,8 @@
         "Perfect voor fotografie-enthousiastelingen",
         "Neem een picknick mee om te genieten in de tuinen"
       ],
-      "price": 10
+      "price": 10,
+      "imageUrl": "https://images.unsplash.com/photo-1609137144813-7d9921338f24?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800"
     },
     "sintra-palace": {
       "name": "Nationaal Paleis van Sintra",
@@ -343,7 +347,140 @@
         "Geweldig voor een regenachtige dag - grotendeels binnen",
         "Combineer met het verkennen van Sintra's cafés en winkels"
       ],
-      "price": 10
+      "price": 10,
+      "imageUrl": "https://images.unsplash.com/photo-1668945306762-a31d14d8a940?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800"
+    },
+    "convento-capuchos": {
+      "name": "Convento dos Capuchos",
+      "description": "Een sereen 16e-eeuws Franciscaans klooster gebouwd in natuurlijke rotsformaties, dat een unieke blik biedt op het kloosterleven van eenvoud en verbondenheid met de natuur.",
+      "longDescription": "Het Convent van de Kapucijner Broeders werd gesticht in 1560 en is een van de meest opmerkelijke voorbeelden van kloosterarchitectuur in Portugal. Rechtstreeks gebouwd in enorme rotsblokken en kurkeiken, belichaamt het convent de Franciscaanse idealen van armoede en harmonie met de natuur. De kleine cellen, lage deuren en kurken muren creëren een sfeer van diepe rust en nederigheid. Verlaten in 1834 is het convent bewaard gebleven als monument voor het eenvoudige leven.",
+      "highlights": [
+        "Unieke architectuur geïntegreerd met natuurlijk gesteente",
+        "Kurken muren en plafonds overal",
+        "Vredige bosomgeving weg van de menigte",
+        "Kleine monnikscellen uitgehakt in rotsblokken",
+        "Verbluffende uitzichten over de Sintra-bergen"
+      ],
+      "hours": "9:30 - 18:00 (Laatste toegang om 17:00)",
+      "duration": "1-1,5 uur aanbevolen",
+      "tips": [
+        "Wees voorbereid op lage deuren - pas op je hoofd!",
+        "Draag comfortabele schoenen voor ongelijke paden",
+        "Neem water mee - beperkte voorzieningen op locatie",
+        "Perfect voor wie rust en stilte zoekt"
+      ],
+      "price": 8,
+      "imageUrl": "https://images.unsplash.com/photo-1672692921041-f676e2cae79a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800"
+    },
+    "cabo-da-roca": {
+      "name": "Cabo da Roca",
+      "description": "Het meest westelijke punt van het Europese vasteland, waar dramatische kliffen de Atlantische Oceaan ontmoeten. Beleef adembenemende kustvisies en sta aan de rand van het continent.",
+      "longDescription": "Cabo da Roca ligt op breedte 38° 47' noord en lengte 9° 30' west, het westelijkste punt van het Europese vasteland. De kaap heeft een vuurtoren gebouwd in 1772 en biedt spectaculaire uitzichten op de Atlantische Oceaan die botst tegen 140 meter hoge kliffen. De Portugese dichter Luís de Camões beschreef het als 'waar het land eindigt en de zee begint'. Het dramatische landschap en de krachtige oceaan creëren een onvergetelijke ervaring.",
+      "highlights": [
+        "Meest westelijke punt van het Europese vasteland",
+        "Dramatische kliffen van 140 meter boven de Atlantische Oceaan",
+        "Historische vuurtoren uit 1772",
+        "Bezoekerscertificaat beschikbaar bij de souvenirswinkel",
+        "Spectaculaire zonsondergangsuitzichten"
+      ],
+      "hours": "24 uur open (Vuurtoren en winkel: 9:00 - 18:00)",
+      "duration": "45 minuten - 1 uur aanbevolen",
+      "tips": [
+        "Kan erg winderig zijn - neem een jas mee",
+        "Best bezocht bij zonsondergang voor verbluffende foto's",
+        "Gratis te bezoeken - geen toegangsprijs",
+        "Haal je certificaat om te bewijzen dat je er bent geweest"
+      ],
+      "price": 0,
+      "imageUrl": "https://images.unsplash.com/photo-1700739745973-bbd552072e98?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800"
+    },
+    "villa-sassetti": {
+      "name": "Villa Sassetti",
+      "description": "Een elegante Italiaanse villa omringd door romantische tuinen, verbonden met het historische centrum door een schilderachtig voetpad door weelderig bos.",
+      "longDescription": "Villa Sassetti werd gebouwd in 1890 door de Italiaanse koopman Victor Carlos Sassetti, ontworpen door Luigi Manini (dezelfde architect als Quinta da Regaleira). De villa toont Italiaanse architecturale invloeden en ligt in prachtig aangelegde tuinen met exotische bomen, sierfontijnen en romantische paden. Het pand is verbonden met het historische centrum van Sintra door een pittoresk wandelpad dat door het bos slingert.",
+      "highlights": [
+        "Elegante Italiaanse architectuur",
+        "Mooie romantische tuinen en fonteinen",
+        "Schilderachtig bospad naar het centrum van Sintra",
+        "Rustige sfeer, minder druk",
+        "Verbluffend uitzicht op het Moorse Kasteel"
+      ],
+      "hours": "10:00 - 18:00",
+      "duration": "1 uur aanbevolen",
+      "tips": [
+        "Gratis toegang tot de tuinen",
+        "Perfecte plek voor een rustige wandeling",
+        "Combineer met het voetpad naar het dorp",
+        "Ideaal om toeristische drukte te vermijden"
+      ],
+      "price": 0,
+      "imageUrl": "https://images.unsplash.com/photo-1670060434149-220a5fce89da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800"
+    },
+    "biester-chalet": {
+      "name": "Biester Chalet",
+      "description": "Een charmant chalet uit het romantische tijdperk verstopt in de heuvels van Sintra, met elegante architectuur en mooie tuinen. Dit minder bekende juweeltje biedt een intieme blik op het aristocratische leven van de 19e eeuw.",
+      "longDescription": "Gebouwd in de jaren 1890 voor Ernest Biester, een welvarende zakenman en kunstcollectioneur, vertegenwoordigt het Biester Chalet het romantische eclecticisme van de architectuur van het late 19e eeuw. Ontworpen door de Franse architect José Leopoldo Gouveia, combineert het chalet Zwitserse chalet-invloeden met Portugese decoratieve elementen. Na uitgebreide restauratie opende het pand voor bezoekers, met sierlijke interieurs met originele fresco's, gesneden houtwerk en historisch meubilair in prachtig aangelegde tuinen.",
+      "highlights": [
+        "Prachtig gerestaureerde 19e-eeuwse interieurs",
+        "Romantische eclectische architectuur",
+        "Rustige tuinen met exotische planten",
+        "Minder druk dan grote paleizen",
+        "Rondleidingen met historische inzichten"
+      ],
+      "hours": "10:00 - 18:00 (Laatste toegang om 17:30)",
+      "duration": "1-1,5 uur aanbevolen",
+      "tips": [
+        "Koop tickets van tevoren - beperkte dagelijkse capaciteit",
+        "Rondleidingen bieden fascinerende historische context",
+        "Perfect voor liefhebbers van architectuur en design",
+        "Combineer met de tuinen van het nabijgelegen Seteais Paleis"
+      ],
+      "price": 8,
+      "imageUrl": "https://images.unsplash.com/photo-1630272088070-8daf9644018b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800"
+    },
+    "queluz-palace": {
+      "name": "Paleis van Queluz",
+      "description": "Vaak het 'Portugese Versailles' genoemd, toont dit prachtige 18e-eeuwse paleis weelderige rococo-interieurs en verbluffende Franse tuinen.",
+      "longDescription": "Het Paleis van Queluz werd gebouwd als zomerverblijf voor Dom Pedro van Bragança, later Koning Pedro III en echtgenoot van Koningin Maria I. Ontworpen door architecten Mateus Vicente de Oliveira en Jean-Baptiste Robillon, belichaamt het paleis Portugese rococo-architectuur op zijn best. De weelderige interieurs tonen vergulde zalen, beschilderde plafonds en sierlijke decoraties, terwijl de geometrische tuinen zijn versierd met standbeelden, fonteinen en topiari in de Franse formele stijl.",
+      "highlights": [
+        "Prachtige rococo-paleiszalen",
+        "Verbluffende formele tuinen geïnspireerd op Versailles",
+        "Troonzaal met kristallen kroonluchters en spiegels",
+        "Azulejo-kanaal met decoratieve tegelpanelen",
+        "Koninklijke ceremoniële zalen en privé-vertrekken"
+      ],
+      "hours": "9:00 - 18:00 (Laatste toegang om 17:30)",
+      "duration": "2-2,5 uur aanbevolen",
+      "tips": [
+        "15 km van het centrum van Sintra - plan vervoer",
+        "Tuinen zijn spectaculair in lente en zomer",
+        "Minder druk dan de belangrijkste attracties van Sintra",
+        "Gecombineerde tickets beschikbaar met het Nationaal Paleis van Sintra"
+      ],
+      "price": 10,
+      "imageUrl": "https://images.unsplash.com/photo-1720434566459-4c3eb849a0d7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800"
+    },
+    "mafra-convent": {
+      "name": "Nationaal Paleis en Klooster van Mafra",
+      "description": "Een van Europa's meest indrukwekkende barokke monumenten, dit kolossale paleis-kloostercomplex heeft een prachtige bibliotheek, sierlijke basiliek en koninklijke appartementen. Een meesterwerk van het UNESCO Werelderfgoed.",
+      "longDescription": "In opdracht van Koning João V in 1717 om een gelofte voor een erfgenaam te vervullen, vertegenwoordigt het Nationaal Paleis van Mafra de rijkdom en macht van 18e-eeuws Portugal. Dit monumentale complex combineert een koninklijk paleis, Franciscaans klooster, basiliek en een van Europa's mooiste barokke bibliotheken. De bouw duurde 13 jaar en emplooide meer dan 50.000 arbeiders. De schaal van het gebouw is verbijsterend - het bevat 1.200 kamers, 4.700 deuren en ramen en 156 trappenhallen. De rococo-bibliotheek herbergt meer dan 36.000 leren gebonden volumes.",
+      "highlights": [
+        "Verbluffende barokke bibliotheek met 36.000 boeken",
+        "Indrukwekkende basiliek met 6 orgels en 2 klokkentorens",
+        "Koninklijke appartementen met historisch meubilair",
+        "Uitgestrekt klooster met ziekenhuis en apotheek",
+        "UNESCO Werelderfgoed"
+      ],
+      "hours": "9:30 - 17:30 (Gesloten op dinsdag)",
+      "duration": "2,5-3 uur aanbevolen",
+      "tips": [
+        "40 km van Sintra - plan reistijd",
+        "Rondleidingen sterk aanbevolen voor volledige ervaring",
+        "Fotograferen niet toegestaan in de bibliotheek",
+        "Een van Portugal's belangrijkste barokke monumenten"
+      ],
+      "price": 8,
+      "imageUrl": "https://images.unsplash.com/photo-1726156982862-e75f7cacc21c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800"
     }
   },
   "seo": {

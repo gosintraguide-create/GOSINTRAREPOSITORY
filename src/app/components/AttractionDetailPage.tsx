@@ -17,12 +17,9 @@ import {
   ChevronLeft,
 } from "lucide-react";
 import {
-  loadComprehensiveContent,
-  loadComprehensiveContentForLanguage,
-  type ComprehensiveContent,
   DEFAULT_COMPREHENSIVE_CONTENT,
 } from "../lib/comprehensiveContent";
-import { useEditableContent } from "../lib/useEditableContent";
+import { getTranslation } from "../lib/translations/loader";
 import Slider from "react-slick";
 import "../../styles/slick-custom.css";
 
@@ -58,25 +55,6 @@ interface OutletContext {
   onNavigate: (page: string, data?: any) => void;
 }
 
-// Fallback images for attractions without uploaded images
-const attractionFallbackImages: { [key: string]: string } = {
-  "pena-palace":
-    "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwZW5hJTIwcGFsYWNlJTIwc2ludHJhfGVufDF8fHx8MTc2MDE0MDYwMnww&ixlib=rb-4.1.0&q=80&w=1080",
-  "quinta-regaleira":
-    "https://images.unsplash.com/photo-1668377298351-3f7a745a56fe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxxdWludGElMjBkYSUyMHJlZ2FsZWlyYSUyMHNpbnRyYXxlbnwxfHx8fDE3NjMxNjg3Njl8MA&ixlib=rb-4.1.0&q=80&w=1080",
-  "moorish-castle":
-    "https://images.unsplash.com/photo-1651520011190-6f37b5213684?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb29yaXNoJTIwY2FzdGxlJTIwc2ludHJhfGVufDF8fHx8MTc2MzE2ODc2OXww&ixlib=rb-4.1.0&q=80&w=1080",
-  "monserrate-palace":
-    "https://images.unsplash.com/photo-1609137144813-7d9921338f24?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb25zZXJyYXRlJTIwcGFsYWNlJTIwc2ludHJhfGVufDF8fHx8MTc2MDE0MDYwM3ww&ixlib=rb-4.1.0&q=80&w=1080",
-  "sintra-palace":
-    "https://images.unsplash.com/photo-1668945306762-a31d14d8a940?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzaW50cmElMjBwb3J0dWdhbCUyMHBhbGFjZXxlbnwxfHx8fDE3NjAxNDAyMDB8MA&ixlib=rb-4.1.0&q=80&w=1080",
-  "convento-capuchos":
-    "https://images.unsplash.com/photo-1672692921041-f676e2cae79a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb252ZW50byUyMGNhcHVjaG9zJTIwc2ludHJhfGVufDF8fHx8MTc2MzE2NjU5OHww&ixlib=rb-4.1.0&q=80&w=1080",
-  "cabo-da-roca":
-    "https://images.unsplash.com/photo-1700739745973-bbd552072e98?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjYWJvJTIwZGElMjByb2NhJTIwbGlnaHRob3VzZXxlbnwxfHx8fDE3NjMxNjY2MDN8MA&ixlib=rb-4.1.0&q=80&w=1080",
-  "villa-sassetti":
-    "https://images.unsplash.com/photo-1670060434149-220a5fce89da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx2aWxsYSUyMHNhc3NldHRpJTIwc2ludHJhfGVufDF8fHx8MTc2MzE2NjYwNnww&ixlib=rb-4.1.0&q=80&w=1080",
-};
 
 // Address mapping for each attraction
 const attractionAddresses: { [key: string]: any } = {
@@ -146,14 +124,33 @@ export function AttractionDetailPage() {
   // Map slug to attraction ID - we'll need to find the attraction by slug or ID
   const attractionId = slug || "";
 
-  // Use the hook that auto-updates when content changes
-  const content = useEditableContent(language);
+  // Get translated text from JSON locale
+  const translatedAttractions = getTranslation(language).attractions;
+  const translatedAttraction = (translatedAttractions as any)[attractionId];
+
+  // Get gallery images from comprehensiveContent (not language-dependent)
+  const comprehensiveAttraction =
+    DEFAULT_COMPREHENSIVE_CONTENT.attractions.attractionDetails[attractionId];
+
+  // Merge: translated text takes precedence; gallery from comprehensiveContent
+  const attraction = translatedAttraction
+    ? {
+        ...translatedAttraction,
+        // normalize field: JSON uses 'description', component used 'shortDescription'
+        shortDescription: translatedAttraction.description,
+        // gallery from comprehensive data (may be undefined for some attractions)
+        gallery: comprehensiveAttraction?.gallery,
+        heroImage: comprehensiveAttraction?.heroImage,
+      }
+    : comprehensiveAttraction
+      ? {
+          ...comprehensiveAttraction,
+          imageUrl: comprehensiveAttraction.imageUrl,
+        }
+      : null;
 
   const [ticketQuantity, setTicketQuantity] = useState(1);
   const [selectedOption, setSelectedOption] = useState("");
-
-  const attraction =
-    content.attractions.attractionDetails[attractionId];
 
   if (!attraction) {
     return (
@@ -204,7 +201,7 @@ export function AttractionDetailPage() {
         attraction.shortDescription,
       image:
         attraction.heroImage ||
-        attractionFallbackImages[attractionId] ||
+        attraction.imageUrl ||
         "",
       address: attractionAddresses[attractionId] || {
         "@type": "PostalAddress",
@@ -259,9 +256,9 @@ export function AttractionDetailPage() {
         <meta property="og:url" content={`https://www.hoponsintra.com/attractions/${attractionId}`} />
         <meta property="og:title" content={`${attraction.name} - Tickets & Visitor Guide`} />
         <meta property="og:description" content={`${attraction.shortDescription} Entry from €${attraction.price}. ${attraction.duration}.`} />
-        <meta 
-          property="og:image" 
-          content={attraction.heroImage || attractionFallbackImages[attractionId] || "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop"}
+        <meta
+          property="og:image"
+          content={attraction.heroImage || attraction.imageUrl || "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop"}
         />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
@@ -274,9 +271,9 @@ export function AttractionDetailPage() {
         <meta name="twitter:url" content={`https://www.hoponsintra.com/attractions/${attractionId}`} />
         <meta name="twitter:title" content={`${attraction.name} - Tickets & Visitor Guide`} />
         <meta name="twitter:description" content={`${attraction.shortDescription} Entry from €${attraction.price}.`} />
-        <meta 
-          name="twitter:image" 
-          content={attraction.heroImage || attractionFallbackImages[attractionId] || "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop"}
+        <meta
+          name="twitter:image"
+          content={attraction.heroImage || attraction.imageUrl || "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop"}
         />
         <meta name="twitter:image:alt" content={`${attraction.name} - Sintra`} />
         
@@ -314,13 +311,11 @@ export function AttractionDetailPage() {
       {/* Hero Section */}
       <section className="relative h-[50vh] min-h-[400px] sm:h-[60vh] sm:min-h-[500px] overflow-hidden">
         <ImageWithFallback
-          src={
-            attraction.heroImage ||
-            attractionFallbackImages[attractionId] ||
-            "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1920&h=1080&fit=crop"
-          }
+          src={attraction.heroImage || attraction.imageUrl || ""}
+          fallbackSrc={attraction.imageUrl}
           alt={attraction.name}
           className="h-full w-full object-cover"
+          loading="eager"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/20" />
 
@@ -411,6 +406,8 @@ export function AttractionDetailPage() {
                                     src={image}
                                     alt={`${attraction.name} - Image ${index + 1}`}
                                     className="w-full h-full object-cover"
+                                    loading="lazy"
+                                    decoding="async"
                                     onError={(e) => {
                                       console.error(
                                         `Failed to load image: ${image}`,

@@ -4,24 +4,24 @@ interface ImageWithFallbackProps
   extends React.ImgHTMLAttributes<HTMLImageElement> {
   src: string;
   alt: string;
+  fallbackSrc?: string;
   unsplashQuery?: string;
 }
 
 export function ImageWithFallback({
   src,
   alt,
+  fallbackSrc,
   unsplashQuery,
+  loading = "lazy",
   ...props
 }: ImageWithFallbackProps) {
   const [imgSrc, setImgSrc] = useState(src);
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
-    // Reset error state when src changes
     setHasError(false);
-
     if (!src && unsplashQuery) {
-      // Fetch from Unsplash API
       fetch(
         `https://source.unsplash.com/1600x900/?${encodeURIComponent(unsplashQuery)}`,
       )
@@ -32,10 +32,18 @@ export function ImageWithFallback({
           setHasError(true);
         });
     } else {
-      // Use the src directly - no loading state to prevent flashing
       setImgSrc(src);
     }
   }, [src, unsplashQuery]);
+
+  const handleError = () => {
+    if (fallbackSrc && imgSrc !== fallbackSrc) {
+      // Try the fallback image before giving up
+      setImgSrc(fallbackSrc);
+    } else {
+      setHasError(true);
+    }
+  };
 
   if (hasError) {
     return (
@@ -51,7 +59,8 @@ export function ImageWithFallback({
       {...props}
       src={imgSrc}
       alt={alt}
-      onError={() => setHasError(true)}
+      loading={loading}
+      onError={handleError}
     />
   );
 }
