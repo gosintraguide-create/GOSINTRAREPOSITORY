@@ -821,6 +821,114 @@ app.post("/make-server-3bd0ade8/tour-bookings/:id/cancel", async (c) => {
   }
 });
 
+// POST /tour-bookings/create — called after Stripe payment succeeds
+app.post("/make-server-3bd0ade8/tour-bookings/create", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { tourId, tourDate, customerInfo, paymentIntentId } = body;
+
+    // Verify the payment actually succeeded before saving the booking
+    if (stripe && paymentIntentId) {
+      const intent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      if (intent.status !== "succeeded") {
+        return c.json({ success: false, error: "Payment not completed" }, 400);
+      }
+    }
+
+    const existing = (await kvWithRetry.get("tour_bookings") as any[]) || [];
+
+    // Prevent duplicate bookings for the same payment intent
+    if (paymentIntentId && existing.some((b: any) => b.paymentIntentId === paymentIntentId)) {
+      const duplicate = existing.find((b: any) => b.paymentIntentId === paymentIntentId);
+      return c.json({ success: true, booking: duplicate });
+    }
+
+    const newBooking = {
+      id: `TB-${Date.now()}`,
+      tourId,
+      tourDate,
+      customerInfo,
+      paymentIntentId: paymentIntentId || null,
+      status: "confirmed",
+      createdAt: new Date().toISOString(),
+    };
+    existing.push(newBooking);
+    await kvWithRetry.set("tour_bookings", existing);
+
+    return c.json({ success: true, booking: newBooking });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// GET /tour-availability/:tourId — returns per-date availability for the booking calendar
+app.get("/make-server-3bd0ade8/tour-availability/:tourId", async (c) => {
+  const tourId = c.req.param("tourId");
+  const startDate = c.req.query("startDate");
+  const endDate = c.req.query("endDate");
+
+  try {
+    // Get tour to know maxGroupSize
+    const tours = (await kvWithRetry.get("private_tours") as any[]) || [];
+    const tour = (tours as any[]).find((t: any) => t.id === tourId);
+    const maxCapacity: number = tour?.maxGroupSize || 10;
+
+    // Get all confirmed bookings for this tour
+    const allBookings = (await kvWithRetry.get("tour_bookings") as any[]) || [];
+    const tourBookings = (allBookings as any[]).filter(
+      (b: any) => b.tourId === tourId && b.status !== "cancelled"
+    );
+
+    // Build availability map — only include dates that have at least one booking
+    // (frontend treats missing dates as fully available)
+    const availability: Record<string, { available: number; isFull: boolean }> = {};
+
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+
+      for (const d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+        const dateStr = d.toISOString().split("T")[0];
+
+        const bookedPeople = tourBookings
+          .filter((b: any) => b.tourDate && b.tourDate.startsWith(dateStr))
+          .reduce((sum: number, b: any) => sum + (b.customerInfo?.numberOfPeople || 1), 0);
+
+        if (bookedPeople > 0) {
+          availability[dateStr] = {
+            available: Math.max(0, maxCapacity - bookedPeople),
+            isFull: bookedPeople >= maxCapacity,
+          };
+        }
+      }
+    }
+
+    return c.json({ success: true, availability });
+  } catch (error) {
+    return c.json({ success: false, error: String(error), availability: {} }, 500);
+  }
+});
+
+// POST /tour-quote-requests/create — quote request from TourBookingDialog
+app.post("/make-server-3bd0ade8/tour-quote-requests/create", async (c) => {
+  try {
+    const body = await c.req.json();
+    const existing = (await kvWithRetry.get("tour_requests") as any[]) || [];
+    const newRequest = {
+      id: `TQR-${Date.now()}`,
+      ...body,
+      type: "quote",
+      status: "pending",
+      createdAt: new Date().toISOString(),
+    };
+    existing.push(newRequest);
+    await kvWithRetry.set("tour_requests", existing);
+    return c.json({ success: true, request: newRequest });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
 // ===== TOUR REQUESTS =====
 
 app.get("/make-server-3bd0ade8/tour-requests", async (c) => {
