@@ -8,7 +8,7 @@ import * as kv from "./kv_store.ts";
 import QRCode from "npm:qrcode@1.5.4";
 import { PDFDocument, rgb } from "npm:pdf-lib@1.17.1";
 import Stripe from "npm:stripe@17.3.1";
-import { generateBookingConfirmationHTML } from "./email_template.ts";
+import { generateBookingConfirmationHTML, generateTourBookingConfirmationHTML, generateTourQuoteRequestHTML } from "./email_template.ts";
 import { cleanupDatabase, removeLegacyBranding, cleanupOldAvailability } from "./cleanup.ts";
 
 // Retry wrapper for KV store operations to handle transient connection errors
@@ -855,6 +855,35 @@ app.post("/make-server-3bd0ade8/tour-bookings/create", async (c) => {
     existing.push(newBooking);
     await kvWithRetry.set("tour_bookings", existing);
 
+    // Send confirmation email to customer
+    const resendApiKey = Deno.env.get("RESEND_API_KEY");
+    if (resendApiKey && customerInfo?.email) {
+      try {
+        const html = generateTourBookingConfirmationHTML({
+          customerName: customerInfo.name || "Guest",
+          bookingId: newBooking.id,
+          tourTitle: body.tourTitle || tourId,
+          tourDate: tourDate,
+          numberOfPeople: customerInfo.numberOfPeople || 1,
+          totalPrice: body.amount || 0,
+          specialRequests: customerInfo.specialRequests,
+        });
+        await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${resendApiKey}` },
+          body: JSON.stringify({
+            from: "Go Sintra <bookings@hoponsintra.com>",
+            to: [customerInfo.email],
+            subject: `✅ Your Private Tour is Confirmed – ${body.tourTitle || tourId}`,
+            html,
+          }),
+        });
+      } catch (emailError) {
+        console.error("Tour booking email failed:", emailError);
+        // Don't fail the booking if email fails
+      }
+    }
+
     return c.json({ success: true, booking: newBooking });
   } catch (error) {
     return c.json({ success: false, error: String(error) }, 500);
@@ -923,6 +952,35 @@ app.post("/make-server-3bd0ade8/tour-quote-requests/create", async (c) => {
     };
     existing.push(newRequest);
     await kvWithRetry.set("tour_requests", existing);
+
+    // Send acknowledgement email to customer
+    const resendApiKey = Deno.env.get("RESEND_API_KEY");
+    const customerEmail = body.customerInfo?.email;
+    if (resendApiKey && customerEmail) {
+      try {
+        const html = generateTourQuoteRequestHTML({
+          customerName: body.customerInfo?.name || "Guest",
+          requestId: newRequest.id,
+          tourTitle: body.tourTitle || body.tourId || "Private Tour",
+          tourDate: body.tourDate || "",
+          numberOfPeople: body.customerInfo?.numberOfPeople || 1,
+          specialRequests: body.customerInfo?.specialRequests,
+        });
+        await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${resendApiKey}` },
+          body: JSON.stringify({
+            from: "Go Sintra <bookings@hoponsintra.com>",
+            to: [customerEmail],
+            subject: `✉️ Quote Request Received – ${body.tourTitle || "Private Tour"}`,
+            html,
+          }),
+        });
+      } catch (emailError) {
+        console.error("Tour quote email failed:", emailError);
+      }
+    }
+
     return c.json({ success: true, request: newRequest });
   } catch (error) {
     return c.json({ success: false, error: String(error) }, 500);
