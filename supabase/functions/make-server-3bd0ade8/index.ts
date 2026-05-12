@@ -1256,22 +1256,28 @@ app.get("/make-server-3bd0ade8/sitemap.xml", async (c) => {
   // Dynamic URLs collected from KV
   const dynamicUrls: { loc: string; changefreq: string; priority: string; lastmod: string }[] = [];
 
-  // --- Attractions / Monuments ---
-  try {
-    const monuments = (await kvWithRetry.get("monuments") as any[]) || [];
-    for (const m of monuments) {
-      const slug = m.id || m.slug ||
-        (m.name ? m.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") : null);
-      if (slug) {
-        dynamicUrls.push({
-          loc: `${BASE_URL}/attractions/${slug}`,
-          changefreq: "monthly",
-          priority: "0.8",
-          lastmod: m.updatedAt ? m.updatedAt.split("T")[0] : today,
-        });
-      }
-    }
-  } catch (_) { /* skip on error */ }
+  // --- Attractions (driven by JSON locale files in the codebase) ---
+  const attractionSlugs = [
+    "pena-palace",
+    "quinta-regaleira",
+    "moorish-castle",
+    "monserrate-palace",
+    "sintra-palace",
+    "convento-capuchos",
+    "cabo-da-roca",
+    "villa-sassetti",
+    "biester-chalet",
+    "queluz-palace",
+    "mafra-convent",
+  ];
+  for (const slug of attractionSlugs) {
+    dynamicUrls.push({
+      loc: `${BASE_URL}/attractions/${slug}`,
+      changefreq: "monthly",
+      priority: "0.8",
+      lastmod: today,
+    });
+  }
 
   // --- Blog articles ---
   try {
