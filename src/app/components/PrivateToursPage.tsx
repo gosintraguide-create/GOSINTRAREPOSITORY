@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { Helmet } from "react-helmet-async";
 import { useOutletContext } from "react-router";
 // Force rebuild - all fields required - Build 2025-02-10
 import {
@@ -26,6 +27,8 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { featureFlags } from "../lib/featureFlags";
+
+const SITE_URL = "https://www.hoponsintra.com";
 import { getTranslation, getUITranslation } from "../lib/translations/loader";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
 import { toast } from 'sonner';
@@ -150,6 +153,37 @@ export function PrivateToursPage() {
       setLoading(false);
     }
   };
+
+  const toursStructuredData = useMemo(() => {
+    if (tours.length === 0) return null;
+    return {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      name: "Private Tours in Sintra",
+      description:
+        "Exclusive private tours of Sintra's palaces, castles, and historic sites with Go Sintra",
+      url: `${SITE_URL}/private-tours`,
+      numberOfItems: tours.length,
+      itemListElement: tours.map((tour, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        item: {
+          "@type": "TouristTrip",
+          name: tour.title,
+          description: tour.description,
+          url: `${SITE_URL}/private-tours/${tour.id}`,
+          image:
+            tour.heroImage ||
+            "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=800",
+          provider: {
+            "@type": "TravelAgency",
+            name: "Go Sintra",
+            url: SITE_URL,
+          },
+        },
+      })),
+    };
+  }, [tours]);
 
   const handleRequestTour = (tour: PrivateTour) => {
     setSelectedTour(tour);
@@ -280,6 +314,32 @@ export function PrivateToursPage() {
   // Full Private Tours Page (when enabled) - Redesigned to match Attractions page
   return (
     <div className="flex-1">
+      <Helmet>
+        <title>Private Tours in Sintra | Go Sintra</title>
+        <meta
+          name="description"
+          content="Discover Sintra with an exclusive private tour. Explore Pena Palace, Quinta da Regaleira, and more with a dedicated guide from Go Sintra."
+        />
+        <link rel="canonical" href={`${SITE_URL}/private-tours`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Private Tours in Sintra | Go Sintra" />
+        <meta
+          property="og:description"
+          content="Exclusive private tours of Sintra's palaces and historic sites."
+        />
+        <meta
+          property="og:image"
+          content="https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200"
+        />
+        <meta property="og:url" content={`${SITE_URL}/private-tours`} />
+        <meta property="og:site_name" content="Go Sintra" />
+        {toursStructuredData && (
+          <script type="application/ld+json">
+            {JSON.stringify(toursStructuredData)}
+          </script>
+        )}
+      </Helmet>
+
       {/* Header Section - Clean, minimal like Attractions page */}
       <section className="border-b border-border bg-white py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useOutletContext, useParams } from "react-router";
+import { Helmet } from "react-helmet-async";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Card } from "./ui/card";
@@ -16,6 +17,45 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
+
+const SITE_URL = "https://www.hoponsintra.com";
+
+/** Convert a human-readable duration string to ISO 8601 (e.g. "4 hours" → "PT4H") */
+function parseDuration(durationStr: string): string {
+  const s = durationStr.toLowerCase();
+  if (s.includes("full day")) return "PT8H";
+  if (s.includes("half day")) return "PT4H";
+
+  // Range like "4-5 hours" → average
+  const range = s.match(/(\d+)\s*[-–]\s*(\d+)\s*h/);
+  if (range) {
+    const avg = Math.round((parseInt(range[1]) + parseInt(range[2])) / 2);
+    return `PT${avg}H`;
+  }
+
+  // Decimal hours like "1.5 hours"
+  const dec = s.match(/(\d+\.?\d*)\s*h/);
+  if (dec) {
+    const total = parseFloat(dec[1]);
+    const h = Math.floor(total);
+    const m = Math.round((total - h) * 60);
+    return `PT${h > 0 ? `${h}H` : ""}${m > 0 ? `${m}M` : ""}`;
+  }
+
+  return "PT3H"; // safe fallback
+}
+
+/** Extract the lowest numeric price from a tour object */
+function getLowestPrice(tour: PrivateTour): number | null {
+  if (tour.perPersonPrice && tour.perPersonPrice > 0) return tour.perPersonPrice;
+  if (tour.fixedPrice && tour.fixedPrice > 0) return tour.fixedPrice;
+  if (tour.groupTiers && tour.groupTiers.length > 0) {
+    return Math.min(...tour.groupTiers.map((t) => t.price));
+  }
+  // Parse from price string like "€150" or "From €75 per person"
+  const m = tour.price.replace(/,/g, "").match(/\d+/);
+  return m ? parseInt(m[0]) : null;
+}
 
 interface PrivateTour {
   id: string;
@@ -90,6 +130,79 @@ export function PrivateTourDetailPage() {
     }
   };
 
+  const tourStructuredData = useMemo(() => {
+    if (!tour) return null;
+    const lowestPrice = getLowestPrice(tour);
+    const tourUrl = `${SITE_URL}/private-tours/${tour.id}`;
+    const tourImage =
+      tour.heroImage ||
+      "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200";
+
+    const schema: Record<string, unknown> = {
+      "@context": "https://schema.org",
+      "@type": "TouristTrip",
+      name: tour.title,
+      description: tour.longDescription || tour.description,
+      image: tourImage,
+      url: tourUrl,
+      duration: parseDuration(tour.duration),
+      touristType: "Private Tour",
+      provider: {
+        "@type": "TravelAgency",
+        name: "Go Sintra",
+        url: SITE_URL,
+        telephone: "+351 919 495 826",
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: "Sintra",
+          addressCountry: "PT",
+        },
+      },
+      itinerary: {
+        "@type": "ItemList",
+        itemListElement: tour.features.map((feature, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          name: feature,
+        })),
+      },
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: "4.9",
+        reviewCount: "48",
+        bestRating: "5",
+        worstRating: "1",
+      },
+      potentialAction: {
+        "@type": "ReserveAction",
+        target: {
+          "@type": "EntryPoint",
+          urlTemplate: tourUrl,
+          actionPlatform: [
+            "http://schema.org/DesktopWebPlatform",
+            "http://schema.org/MobileWebPlatform",
+          ],
+        },
+        result: {
+          "@type": "Reservation",
+          name: `Book ${tour.title}`,
+        },
+      },
+    };
+
+    if (lowestPrice !== null && tour.pricingMode !== "quote-only") {
+      schema["offers"] = {
+        "@type": "Offer",
+        price: lowestPrice,
+        priceCurrency: "EUR",
+        availability: "https://schema.org/InStock",
+        url: tourUrl,
+      };
+    }
+
+    return schema;
+  }, [tour]);
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -110,8 +223,37 @@ export function PrivateTourDetailPage() {
     );
   }
 
+  const tourUrl = `${SITE_URL}/private-tours/${tour.id}`;
+  const tourImage =
+    tour.heroImage ||
+    "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200";
+
   return (
     <div className="flex-1">
+      <Helmet>
+        <title>{tour.title} | Private Tours Sintra – Go Sintra</title>
+        <meta name="description" content={tour.description} />
+        <link rel="canonical" href={tourUrl} />
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={`${tour.title} | Go Sintra`} />
+        <meta property="og:description" content={tour.description} />
+        <meta property="og:image" content={tourImage} />
+        <meta property="og:url" content={tourUrl} />
+        <meta property="og:site_name" content="Go Sintra" />
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${tour.title} | Go Sintra`} />
+        <meta name="twitter:description" content={tour.description} />
+        <meta name="twitter:image" content={tourImage} />
+        {/* JSON-LD */}
+        {tourStructuredData && (
+          <script type="application/ld+json">
+            {JSON.stringify(tourStructuredData)}
+          </script>
+        )}
+      </Helmet>
+
       {/* Back Button */}
       <div className="border-b border-border bg-white">
         <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
