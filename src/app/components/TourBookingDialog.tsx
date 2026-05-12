@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Separator } from './ui/separator';
 import { Calendar } from './ui/calendar';
 import { Alert, AlertDescription } from './ui/alert';
-import { Loader2, CheckCircle, AlertCircle, ChevronLeft, Users, Clock, Calendar as CalendarIcon } from 'lucide-react';
+import { Loader2, CheckCircle, AlertCircle, ChevronLeft, Users, Clock, Calendar as CalendarIcon, Minus, Plus } from 'lucide-react';
 import { format } from 'date-fns';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { toast } from 'sonner';
@@ -333,7 +333,6 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
 
   const minGuests = tour.minPeople ?? 1;
   const maxGuests = 20;
-  const guestOptions = Array.from({ length: maxGuests - minGuests + 1 }, (_, i) => i + minGuests);
 
   // ══════════════════════════════════════════════════════════════════════════
   // RENDER
@@ -438,21 +437,37 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
 
               <div>
                 <Label className="text-xs text-muted-foreground">Guests *</Label>
-                <Select
-                  value={String(numberOfPeople)}
-                  onValueChange={(v) => setNumberOfPeople(parseInt(v))}
-                >
-                  <SelectTrigger className="mt-1 h-10">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {guestOptions.map((n) => (
-                      <SelectItem key={n} value={String(n)}>
-                        {n} {n === 1 ? 'guest' : 'guests'}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="mt-1 flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setNumberOfPeople((n) => Math.max(minGuests, n - 1))}
+                    disabled={numberOfPeople <= minGuests}
+                    className={cn(
+                      'flex h-9 w-9 items-center justify-center rounded-full border transition-colors',
+                      numberOfPeople <= minGuests
+                        ? 'border-border text-muted-foreground opacity-40 cursor-not-allowed'
+                        : 'border-border hover:border-primary hover:bg-primary/5'
+                    )}
+                  >
+                    <Minus className="h-4 w-4" />
+                  </button>
+                  <span className="w-20 text-center text-base font-semibold">
+                    {numberOfPeople} {numberOfPeople === 1 ? 'guest' : 'guests'}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setNumberOfPeople((n) => Math.min(maxGuests, n + 1))}
+                    disabled={numberOfPeople >= maxGuests}
+                    className={cn(
+                      'flex h-9 w-9 items-center justify-center rounded-full border transition-colors',
+                      numberOfPeople >= maxGuests
+                        ? 'border-border text-muted-foreground opacity-40 cursor-not-allowed'
+                        : 'border-border hover:border-primary hover:bg-primary/5'
+                    )}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
 
               <div className="rounded-lg bg-secondary/30 px-4 py-3">
@@ -646,7 +661,7 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
 export function TourBookingDialog({ open, onOpenChange, tour }: TourBookingDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] max-w-3xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+      <DialogContent className="w-[95vw] max-w-5xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle>Book Your Private Tour</DialogTitle>
           <DialogDescription>{tour.title} — complete the steps below to confirm your booking</DialogDescription>
