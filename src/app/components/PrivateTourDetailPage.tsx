@@ -76,6 +76,7 @@ interface PrivateTour {
   fixedPrice?: number;
   maxGroupSize?: number;
   allowQuoteRequest?: boolean;
+  availableTimeSlots?: string[];
   features: string[];
   badge?: string;
   badgeColor?: "primary" | "accent";
@@ -385,6 +386,7 @@ export function PrivateTourDetailPage() {
             fixedPrice: tour.fixedPrice,
             maxGroupSize: tour.maxGroupSize,
             allowQuoteRequest: tour.allowQuoteRequest,
+            availableTimeSlots: tour.availableTimeSlots,
           }}
         />
       )}

@@ -42,6 +42,7 @@ export interface PrivateTour {
   fixedPrice?: number; // For fixed mode
   maxGroupSize?: number; // Maximum before requiring quote
   allowQuoteRequest?: boolean; // Show "Request Quote" for large groups
+  availableTimeSlots?: string[]; // Which time slots to show in the booking calendar
   features: string[];
   badge?: string;
   badgeColor?: "primary" | "accent";
@@ -351,6 +352,47 @@ export function PrivateTourManager() {
                   placeholder="e.g., From €150"
                 />
               </div>
+            </div>
+
+            {/* Available Start Times */}
+            <div className="space-y-3 rounded-lg border border-border bg-secondary/20 p-4">
+              <div>
+                <Label className="text-base font-semibold">Available Start Times</Label>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  Select which times customers can choose when booking. Leave all deselected to show all times.
+                </p>
+              </div>
+              {(() => {
+                const ALL_SLOTS = [
+                  '8:30 AM','9:00 AM','9:30 AM','10:00 AM','10:30 AM','11:00 AM',
+                  '2:00 PM','2:30 PM','3:00 PM','3:30 PM','4:00 PM','4:30 PM',
+                ];
+                const selected = editingTour.availableTimeSlots || [];
+                const toggle = (slot: string) => {
+                  const next = selected.includes(slot)
+                    ? selected.filter((s) => s !== slot)
+                    : [...selected, slot];
+                  setEditingTour({ ...editingTour, availableTimeSlots: next });
+                };
+                return (
+                  <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+                    {ALL_SLOTS.map((slot) => (
+                      <button
+                        key={slot}
+                        type="button"
+                        onClick={() => toggle(slot)}
+                        className={`rounded-md border px-2 py-1.5 text-sm font-medium transition-colors ${
+                          selected.includes(slot)
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border bg-white text-foreground hover:border-primary/50"
+                        }`}
+                      >
+                        {slot}
+                      </button>
+                    ))}
+                  </div>
+                );
+              })()}
             </div>
 
             {/* Price Subtext */}
