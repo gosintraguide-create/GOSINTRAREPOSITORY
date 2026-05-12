@@ -21,7 +21,7 @@ import {
   loadArticles,
   type BlogArticle,
 } from "../lib/blogManager";
-import { getUITranslation } from "../lib/translations";
+import { getUITranslation, getTranslation } from "../lib/translations/loader";
 import { useEditableContent } from "../lib/useEditableContent";
 import { generateSlug } from "../routes";
 
@@ -120,13 +120,13 @@ export function AttractionsPage() {
 
   // Structured Data for SEO (matching HopOnServiceDetailPage pattern)
   const structuredData = useMemo(() => {
-    const attractionEntries = Object.entries(content.attractions.attractionDetails);
+    const attractionEntries = Object.entries(getTranslation(language).attractions);
 
     const itemListSchema = {
       "@context": "https://schema.org",
       "@type": "ItemList",
-      name: content.attractions.hero?.title || "Sintra Attractions",
-      description: content.attractions.hero?.subtitle || "UNESCO World Heritage Sites in Sintra",
+      name: t.attractionsPageTitle || "Sintra Attractions",
+      description: t.attractionsPageSubtitle || "UNESCO World Heritage Sites in Sintra",
       numberOfItems: attractionEntries.length,
       itemListElement: attractionEntries.map(([id, attr], index) => ({
         "@type": "ListItem",
@@ -156,7 +156,7 @@ export function AttractionsPage() {
     };
 
     return { itemList: itemListSchema, breadcrumb: breadcrumbSchema };
-  }, [content.attractions]);
+  }, [language]);
 
   // Blog article search
   const searchArticles = (query: string): BlogArticle[] => {
@@ -213,17 +213,17 @@ export function AttractionsPage() {
   }, []);
 
   const attractions = useMemo(() => Object.entries(
-    content.attractions.attractionDetails,
+    getTranslation(language).attractions,
   ).map(([id, attr]) => ({
     id,
     name: attr.name,
-    description: attr.shortDescription,
+    description: attr.description,
     duration: attr.duration,
     price: attr.price,
     parkOnlyPrice: attr.parkOnlyPrice,
-    cardImage: attr.cardImage,
-    heroImage: attr.heroImage,
-  })), [content.attractions.attractionDetails]);
+    cardImage: undefined as string | undefined,
+    heroImage: undefined as string | undefined,
+  })), [language]);
 
   const handleExploreClick = (attractionId: string) => {
     const slug = generateSlug(attractionId);
