@@ -1,7 +1,11 @@
 {
   "rewrites": [
     {
-      "source": "/((?!api|assets|sw\\.js|manifest\\.json|offline\\.html|robots\\.txt|sitemap\\.xml|.*\\.(?:png|jpg|jpeg|svg|ico|webp|woff|woff2|ttf|eot|otf|js|css)).*)",
+      "source": "/sitemap.xml",
+      "destination": "https://dwiznaefeqnduglmcivr.supabase.co/functions/v1/make-server-3bd0ade8/sitemap.xml"
+    },
+    {
+      "source": "/((?!api|assets|sw\\.js|manifest\\.json|offline\\.html|robots\\.txt|.*\\.(?:png|jpg|jpeg|svg|ico|webp|woff|woff2|ttf|eot|otf|js|css)).*)",
       "destination": "/index.html"
     }
   ],

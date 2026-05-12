@@ -7,4 +7,4 @@ Disallow: /404
 Disallow: /manage-booking
 Disallow: /sunset-special
 
-Sitemap: https://dwiznaefeqnduglmcivr.supabase.co/functions/v1/make-server-3bd0ade8/sitemap.xml
+Sitemap: https://www.hoponsintra.com/sitemap.xml
