@@ -745,6 +745,134 @@ app.post("/make-server-3bd0ade8/verify-booking-login", async (c) => {
   }
 });
 
+// List all bookings
+app.get("/make-server-3bd0ade8/bookings", async (c) => {
+  try {
+    const usedPrefixes: string[] = (await kvWithRetry.get("booking_used_prefixes")) || [];
+    const currentPrefix: string = (await kvWithRetry.get("booking_current_prefix")) || "AA";
+    if (!usedPrefixes.includes(currentPrefix)) usedPrefixes.push(currentPrefix);
+
+    const allBookings: any[] = [];
+    for (const prefix of usedPrefixes) {
+      const entries = await kvWithRetry.getByPrefix(`${prefix}-`);
+      const bookings = (entries as any[]).filter((b: any) => b && b.id && b.selectedDate);
+      allBookings.push(...bookings);
+    }
+
+    return c.json({ success: true, bookings: allBookings });
+  } catch (error) {
+    console.error("Error fetching bookings:", error);
+    return c.json({ success: false, error: String(error), bookings: [] }, 500);
+  }
+});
+
+// ===== TOUR BOOKINGS (private tour calendar) =====
+
+app.get("/make-server-3bd0ade8/tour-bookings", async (c) => {
+  try {
+    const bookings = (await kvWithRetry.get("tour_bookings") as any[]) || [];
+    const { startDate, endDate } = c.req.query();
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      const filtered = bookings.filter((b: any) => {
+        const d = new Date(b.tourDate);
+        return d >= start && d <= end;
+      });
+      return c.json({ success: true, bookings: filtered });
+    }
+    return c.json({ success: true, bookings });
+  } catch (error) {
+    return c.json({ success: false, error: String(error), bookings: [] }, 500);
+  }
+});
+
+app.post("/make-server-3bd0ade8/tour-bookings/create-manual", async (c) => {
+  try {
+    const body = await c.req.json();
+    const existing = (await kvWithRetry.get("tour_bookings") as any[]) || [];
+    const newBooking = {
+      ...body,
+      bookingId: `TB-${Date.now()}`,
+      status: "confirmed",
+      createdAt: new Date().toISOString(),
+    };
+    existing.push(newBooking);
+    await kvWithRetry.set("tour_bookings", existing);
+    return c.json({ success: true, booking: newBooking });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+app.post("/make-server-3bd0ade8/tour-bookings/:id/cancel", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const existing = (await kvWithRetry.get("tour_bookings") as any[]) || [];
+    const idx = existing.findIndex((b: any) => b.bookingId === id);
+    if (idx === -1) return c.json({ success: false, error: "Not found" }, 404);
+    existing[idx] = { ...existing[idx], status: "cancelled", cancelledAt: new Date().toISOString() };
+    await kvWithRetry.set("tour_bookings", existing);
+    return c.json({ success: true, booking: existing[idx] });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// ===== TOUR REQUESTS =====
+
+app.get("/make-server-3bd0ade8/tour-requests", async (c) => {
+  try {
+    const requests = await kvWithRetry.get("tour_requests");
+    return c.json({ success: true, requests: requests || [] });
+  } catch (error) {
+    return c.json({ success: false, error: String(error), requests: [] }, 500);
+  }
+});
+
+app.post("/make-server-3bd0ade8/tour-requests", async (c) => {
+  try {
+    const body = await c.req.json();
+    const existing = (await kvWithRetry.get("tour_requests") as any[]) || [];
+    const newRequest = { ...body, id: `tour_req_${Date.now()}`, createdAt: new Date().toISOString(), status: "pending" };
+    existing.push(newRequest);
+    await kvWithRetry.set("tour_requests", existing);
+    return c.json({ success: true, request: newRequest });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+app.post("/make-server-3bd0ade8/tour-requests/:id/status", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const { status } = await c.req.json();
+    const existing = (await kvWithRetry.get("tour_requests") as any[]) || [];
+    const idx = existing.findIndex((r: any) => r.id === id);
+    if (idx === -1) return c.json({ success: false, error: "Not found" }, 404);
+    existing[idx] = { ...existing[idx], status, updatedAt: new Date().toISOString() };
+    await kvWithRetry.set("tour_requests", existing);
+    return c.json({ success: true, request: existing[idx] });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+app.post("/make-server-3bd0ade8/tour-requests/:id/notes", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const { notes } = await c.req.json();
+    const existing = (await kvWithRetry.get("tour_requests") as any[]) || [];
+    const idx = existing.findIndex((r: any) => r.id === id);
+    if (idx === -1) return c.json({ success: false, error: "Not found" }, 404);
+    existing[idx] = { ...existing[idx], notes, updatedAt: new Date().toISOString() };
+    await kvWithRetry.set("tour_requests", existing);
+    return c.json({ success: true, request: existing[idx] });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
 // Driver Management (Simplified for space, assuming standard kv getters)
 app.get("/make-server-3bd0ade8/drivers", async (c) => {
   const driversData = await kv.get("drivers_list");
