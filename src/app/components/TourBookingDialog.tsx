@@ -345,10 +345,10 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
 
       {/* ── STEP 1: Date, Time & Guests ──────────────────────────────────── */}
       {step === 'datetime' && (
-        <div className="grid grid-cols-1 gap-0 sm:grid-cols-[1fr_1px_1fr]">
+        <div className="flex flex-col gap-6 md:flex-row md:gap-0">
           {/* Left: Calendar */}
-          <div className="pb-4 pr-0 sm:pb-0 sm:pr-6">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <div className="flex-shrink-0 md:w-[52%] md:pr-6">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Select a Date
             </p>
             <Calendar
@@ -359,59 +359,78 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
               disabled={isDateDisabled}
               initialFocus
               dayContent={renderDayContent}
-              className="rounded-lg border border-border p-0"
+              classNames={{
+                months: 'w-full',
+                month: 'w-full space-y-3',
+                caption: 'flex justify-center pt-1 relative items-center',
+                caption_label: 'text-sm font-semibold',
+                nav: 'space-x-1 flex items-center',
+                nav_button: 'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100',
+                nav_button_previous: 'absolute left-1',
+                nav_button_next: 'absolute right-1',
+                table: 'w-full border-collapse',
+                head_row: 'flex w-full',
+                head_cell: 'text-muted-foreground rounded-md flex-1 font-normal text-[0.8rem] text-center',
+                row: 'flex w-full mt-2',
+                cell: 'flex-1 text-center text-sm p-0 relative',
+                day: 'h-9 w-full rounded-md p-0 font-normal aria-selected:opacity-100 hover:bg-accent hover:text-accent-foreground mx-auto',
+                day_selected: 'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground',
+                day_today: 'bg-accent text-accent-foreground font-semibold',
+                day_outside: 'text-muted-foreground opacity-50',
+                day_disabled: 'text-muted-foreground opacity-30',
+              }}
             />
             {loadingAvailability && (
               <p className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
                 <Loader2 className="h-3 w-3 animate-spin" /> Checking availability…
               </p>
             )}
-            {/* Legend */}
-            <div className="mt-3 flex flex-wrap gap-3 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-green-500 inline-block" /> Available</span>
-              <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-orange-500 inline-block" /> Limited</span>
-              <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-red-500 inline-block" /> Full</span>
+            <div className="mt-3 flex flex-wrap gap-4 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-green-500 inline-block" /> Available</span>
+              <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-orange-500 inline-block" /> Limited</span>
+              <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-red-500 inline-block" /> Full</span>
             </div>
           </div>
 
           {/* Divider */}
-          <div className="hidden sm:block bg-border w-px mx-4" />
+          <div className="hidden md:block w-px bg-border flex-shrink-0" />
 
           {/* Right: Time slots + Preferences */}
-          <div className="space-y-4 pt-4 sm:pt-0 sm:pl-2">
+          <div className="flex-1 space-y-5 md:pl-6">
+            {/* Time slots */}
             {selectedDate ? (
-              <>
-                <div>
-                  <p className="mb-3 text-sm font-semibold text-foreground">
-                    Availability for {format(selectedDate, 'EEEE, MMMM d')}
-                  </p>
-                  <div className="grid grid-cols-2 gap-2">
-                    {timeSlots.map((slot) => (
-                      <button
-                        key={slot}
-                        type="button"
-                        onClick={() => setSelectedTime(slot)}
-                        className={cn(
-                          'rounded-md border px-3 py-2 text-sm font-medium transition-colors',
-                          selectedTime === slot
-                            ? 'border-primary bg-primary text-primary-foreground'
-                            : 'border-border bg-white text-foreground hover:border-primary/60'
-                        )}
-                      >
-                        {slot}
-                      </button>
-                    ))}
-                  </div>
+              <div>
+                <p className="mb-3 text-sm font-semibold text-foreground">
+                  {format(selectedDate, 'EEEE, MMMM d')}
+                </p>
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                  {timeSlots.map((slot) => (
+                    <button
+                      key={slot}
+                      type="button"
+                      onClick={() => setSelectedTime(slot)}
+                      className={cn(
+                        'rounded-md border py-2.5 text-sm font-medium transition-colors',
+                        selectedTime === slot
+                          ? 'border-primary bg-primary text-primary-foreground shadow-sm'
+                          : 'border-border bg-white text-foreground hover:border-primary/50 hover:bg-primary/5'
+                      )}
+                    >
+                      {slot}
+                    </button>
+                  ))}
                 </div>
-                <Separator />
-              </>
+              </div>
             ) : (
-              <div className="flex h-24 items-center justify-center rounded-lg border border-dashed border-border">
-                <p className="text-sm text-muted-foreground flex items-center gap-2">
-                  <CalendarIcon className="h-4 w-4" /> Pick a date to see available times
+              <div className="flex h-28 items-center justify-center rounded-xl border border-dashed border-border bg-secondary/20">
+                <p className="text-sm text-muted-foreground flex flex-col items-center gap-2">
+                  <CalendarIcon className="h-5 w-5 opacity-50" />
+                  Pick a date to see times
                 </p>
               </div>
             )}
+
+            <Separator />
 
             {/* Preferences */}
             <div className="space-y-3">
@@ -423,7 +442,7 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
                   value={String(numberOfPeople)}
                   onValueChange={(v) => setNumberOfPeople(parseInt(v))}
                 >
-                  <SelectTrigger className="mt-1">
+                  <SelectTrigger className="mt-1 h-10">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -436,16 +455,16 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
                 </Select>
               </div>
 
-              <div className="rounded-md bg-secondary/30 px-3 py-2">
-                <p className="text-xs font-semibold text-muted-foreground">Service Details</p>
-                <p className="text-sm font-medium text-foreground">{tour.title}</p>
-                <p className="text-xs text-muted-foreground">
-                  {quoteMode ? 'Personalised quote' : `€${tourPrice > 0 ? tourPrice.toFixed(2) : tour.price}`}
+              <div className="rounded-lg bg-secondary/30 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Service Details</p>
+                <p className="mt-0.5 text-sm font-semibold text-foreground">{tour.title}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {quoteMode ? 'Personalised quote' : tourPrice > 0 ? `€${tourPrice.toFixed(2)}` : tour.price}
                 </p>
               </div>
 
               <Button
-                className="w-full"
+                className="w-full h-11"
                 disabled={!selectedDate || !selectedTime}
                 onClick={() => setStep('details')}
               >
@@ -627,7 +646,7 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
 export function TourBookingDialog({ open, onOpenChange, tour }: TourBookingDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] max-w-3xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle>Book Your Private Tour</DialogTitle>
           <DialogDescription>{tour.title} — complete the steps below to confirm your booking</DialogDescription>
