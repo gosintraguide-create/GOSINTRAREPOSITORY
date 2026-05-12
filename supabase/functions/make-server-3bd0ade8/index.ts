@@ -1234,4 +1234,95 @@ app.post("/make-server-3bd0ade8/verify-payment", async (c) => {
   }
 });
 
+// ===== SITEMAP =====
+
+app.get("/make-server-3bd0ade8/sitemap.xml", async (c) => {
+  const BASE_URL = "https://www.hoponsintra.com";
+  const today = new Date().toISOString().split("T")[0];
+
+  // Static pages that never change
+  const staticUrls = [
+    { loc: `${BASE_URL}/`,               changefreq: "daily",   priority: "1.0", lastmod: today },
+    { loc: `${BASE_URL}/hop-on-service`, changefreq: "weekly",  priority: "0.9", lastmod: today },
+    { loc: `${BASE_URL}/attractions`,    changefreq: "weekly",  priority: "0.9", lastmod: today },
+    { loc: `${BASE_URL}/private-tours`,  changefreq: "weekly",  priority: "0.9", lastmod: today },
+    { loc: `${BASE_URL}/blog`,           changefreq: "weekly",  priority: "0.9", lastmod: today },
+    { loc: `${BASE_URL}/about`,          changefreq: "monthly", priority: "0.7", lastmod: today },
+    { loc: `${BASE_URL}/route-map`,      changefreq: "monthly", priority: "0.7", lastmod: today },
+  ];
+
+  // Dynamic URLs collected from KV
+  const dynamicUrls: { loc: string; changefreq: string; priority: string; lastmod: string }[] = [];
+
+  // --- Attractions / Monuments ---
+  try {
+    const monuments = (await kvWithRetry.get("monuments") as any[]) || [];
+    for (const m of monuments) {
+      const slug = m.id || m.slug ||
+        (m.name ? m.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") : null);
+      if (slug) {
+        dynamicUrls.push({
+          loc: `${BASE_URL}/attractions/${slug}`,
+          changefreq: "monthly",
+          priority: "0.8",
+          lastmod: m.updatedAt ? m.updatedAt.split("T")[0] : today,
+        });
+      }
+    }
+  } catch (_) { /* skip on error */ }
+
+  // --- Blog articles ---
+  try {
+    const articles = (await kvWithRetry.get("blog_articles") as any[]) || [];
+    for (const a of articles) {
+      if (a.published === false || a.status === "draft") continue;
+      const slug = a.slug || a.id;
+      if (slug) {
+        dynamicUrls.push({
+          loc: `${BASE_URL}/blog/${slug}`,
+          changefreq: "monthly",
+          priority: "0.7",
+          lastmod: a.updatedAt ? a.updatedAt.split("T")[0]
+                 : a.publishedAt ? a.publishedAt.split("T")[0]
+                 : today,
+        });
+      }
+    }
+  } catch (_) { /* skip on error */ }
+
+  // --- Private tours ---
+  try {
+    const tours = (await kvWithRetry.get("private_tours") as any[]) || [];
+    for (const t of tours) {
+      if (!t.published) continue;
+      dynamicUrls.push({
+        loc: `${BASE_URL}/private-tours/${t.id}`,
+        changefreq: "monthly",
+        priority: "0.7",
+        lastmod: t.updatedAt ? t.updatedAt.split("T")[0] : today,
+      });
+    }
+  } catch (_) { /* skip on error */ }
+
+  const allUrls = [...staticUrls, ...dynamicUrls];
+
+  const xml =
+    `<?xml version="1.0" encoding="UTF-8"?>\n` +
+    `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+    allUrls.map(u =>
+      `  <url>\n` +
+      `    <loc>${u.loc}</loc>\n` +
+      `    <lastmod>${u.lastmod}</lastmod>\n` +
+      `    <changefreq>${u.changefreq}</changefreq>\n` +
+      `    <priority>${u.priority}</priority>\n` +
+      `  </url>`
+    ).join("\n") +
+    `\n</urlset>`;
+
+  return c.body(xml, 200, {
+    "Content-Type": "application/xml; charset=utf-8",
+    "Cache-Control": "public, max-age=3600",
+  });
+});
+
 Deno.serve(app.fetch);
