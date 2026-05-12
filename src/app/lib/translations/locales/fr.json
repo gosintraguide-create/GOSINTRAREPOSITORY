@@ -170,7 +170,23 @@
     "bookingNotFoundDescription": "Nous n'avons pas pu trouver de réservation avec ces détails. Veuillez vérifier votre ID de Réservation et nom de famille.",
     "checkDetails": "Veuillez vérifier:",
     "tryAgain": "Réessayer",
-    "backToSearch": "Retour à la Recherche"
+    "backToSearch": "Retour à la Recherche",
+    "loading": "Chargement de votre réservation...",
+    "backToHome": "Retour à l'Accueil",
+    "lastNameHint": "Saisissez votre nom de famille tel qu'il apparaît dans l'e-mail de confirmation de réservation",
+    "dateAndTime": "Date et Heure",
+    "contactInformation": "Informations de Contact",
+    "yourDayPassTickets": "Vos Billets de Pass Journalier",
+    "showTicketsDescription": "Présentez ces billets lors de l'embarquement. Chaque passager a besoin de son propre billet.",
+    "downloadAllTickets": "Télécharger Tous les Billets (PDF)",
+    "pickupInformation": "Informations de Prise en Charge",
+    "pickupDescription": "Nos véhicules opèrent dans toutes les principales attractions de Sintra. Embarquez à n'importe quel endroit:",
+    "requestPickupNow": "Demander une Prise en Charge Maintenant",
+    "downloadTicketsButton": "Télécharger les Billets",
+    "requestPickupButton": "Demander une Prise en Charge",
+    "contactSupportButton": "Contacter le Support",
+    "contactSupportTitle": "Contacter le Support",
+    "contactSupportDescription": "Besoin d'aide? Nous sommes là pour vous! Contactez-nous via l'un de ces canaux."
   },
   "about": {
     "title": "À Propos de Hop On Sintra - Service Premium Hop-On/Hop-Off avec Guides Professionnels",
@@ -194,6 +210,32 @@
         "title": "Professional Local Guides",
         "description": "All our vehicles are driven by professional local guides who know Sintra inside and out, offering insights you won't find in guidebooks."
       }
+    ],
+    "storyBadge": "Notre Histoire",
+    "storyHeading": "Comment Hop On Sintra Est Né",
+    "missionBadge": "Notre Mission",
+    "missionHeading": "Ce Qui Nous Anime",
+    "perksBadge": "Ce Qui Nous Rend Spéciaux",
+    "perksHeading": "La Différence Hop On Sintra",
+    "perksSubtitle": "Nous avons réinventé la façon dont vous explorez Sintra—pas de bus bondés, pas d'horaires rigides !",
+    "perks": [
+      { "title": "Petits Groupes", "description": "Seulement 2 à 6 passagers par véhicule pour une expérience intime et personnelle" },
+      { "title": "Guides Professionnels", "description": "Chaque conducteur est un expert local certifié qui aime Sintra" },
+      { "title": "Places Garanties", "description": "Confort réservé à l'avance sans attente ni place debout" },
+      { "title": "Votre Rythme", "description": "Montez et descendez autant que vous voulez tout au long de la journée" }
+    ],
+    "valuesBadge": "Nos Valeurs",
+    "valuesHeading": "Ce Pour Quoi Nous Nous Battons",
+    "valuesSubtitle": "Chaque décision que nous prenons est guidée par ces principes",
+    "faqBadge": "FAQ",
+    "faqHeading": "Questions Fréquentes",
+    "faqSubtitle": "Tout ce que vous devez savoir sur Hop On Sintra",
+    "faq": [
+      { "q": "Qu'est-ce qui est inclus dans le pass journée ?", "a": "Trajets illimités sur tous les véhicules participants (tuk-tuks, jeeps UMM) avec des guides-conducteurs professionnels pour une journée complète. Places garanties dans chaque véhicule. Vous pouvez optionnellement ajouter des billets d'entrée aux attractions." },
+      { "q": "Puis-je acheter des billets d'attraction avec mon pass ?", "a": "Oui ! Lors de la réservation, vous pouvez ajouter des billets d'entrée aux attractions populaires comme le Palais de Pena, la Quinta da Regaleira et bien d'autres. Cela vous fait gagner du temps—plus d'attente aux guichets." },
+      { "q": "Que sont les visites guidées ?", "a": "Nos départs de 10h et 14h proposent des visites guidées où votre conducteur-guide professionnel s'arrête aux principales attractions pour partager des commentaires d'experts sur l'histoire et les joyaux cachés de Sintra." },
+      { "q": "Comment utiliser mon code QR ?", "a": "Montrez simplement votre code QR (envoyé par e-mail) à n'importe quel conducteur Hop On Sintra avant de monter. Il le scannera pour vérifier votre pass." },
+      { "q": "À quelle fréquence les véhicules partent-ils ?", "a": "Les véhicules partent toutes les 30 minutes depuis toutes les principales attractions pendant les heures d'exploitation (9h00 - 19h00)." }
     ]
   },
   "attractions": {
@@ -754,6 +796,30 @@
       "subtitle": "Contactez-nous aujourd'hui pour créer votre tour personnalisé parfait",
       "requestQuoteButton": "Demander un Devis",
       "chatButton": "Discutez Avec Nous"
+    },
+    "loading": "Chargement des tours privés...",
+    "noPackagesAvailable": "Aucun forfait de tour disponible",
+    "contactForCustomTours": "Contactez-nous pour des options de tour privé personnalisées adaptées à vos besoins",
+    "contactUs": "Contactez-nous",
+    "viewDetails": "Voir les Détails",
+    "exploreMore": {
+      "title": "D'Autres Façons de Découvrir Sintra",
+      "subtitle": "Explorez nos options flexibles pour découvrir les trésors de Sintra",
+      "hopOnTitle": "Service Hop On",
+      "hopOnDescription": "Explorez à votre rythme avec des trajets illimités hop-on/hop-off vers toutes les principales attractions",
+      "hopOnBadge": "Liberté & Flexibilité",
+      "attractionsTitle": "Attractions",
+      "attractionsDescription": "Découvrez des palais classés au Patrimoine Mondial de l'UNESCO, des châteaux et des sites historiques",
+      "attractionsBadge": "11+ Sites",
+      "travelGuideTitle": "Guide de Voyage",
+      "travelGuideDescription": "Conseils d'experts, spots photo et astuces d'initiés pour visiter Sintra",
+      "travelGuideBadge": "Expertise Locale"
+    },
+    "customExperience": {
+      "title": "Besoin d'une Expérience Personnalisée ?",
+      "subtitle": "Contactez-nous pour créer un tour privé personnalisé adapté à vos intérêts, votre emploi du temps et la taille de votre groupe.",
+      "chatButton": "Discutez Avec Nous",
+      "exploreDayPass": "Explorer le Pass Journée"
     }
   },
   "routeMap": {

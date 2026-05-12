@@ -11,7 +11,7 @@ import { Calendar, Download, MapPin, Users, Clock, CheckCircle2, QrCode, Car, Ma
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { toast } from 'sonner';
 import { TicketCard } from "./TicketCard";
-import { getTranslation } from "../lib/translations";
+import { getTranslation } from "../lib/translations/loader";
 import { getSession } from "../lib/sessionManager";
 
 interface OutletContext {
@@ -175,7 +175,7 @@ export function ManageBookingPage() {
           <Card className="border-border p-8">
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <div className="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-              <p className="text-muted-foreground">Loading your booking...</p>
+              <p className="text-muted-foreground">{content.manageBooking.loading}</p>
             </div>
           </Card>
         </div>
@@ -195,7 +195,7 @@ export function ManageBookingPage() {
             className="mb-6 gap-2"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Home
+            {content.manageBooking.backToHome}
           </Button>
 
           <Card className="border-border p-8">
@@ -236,7 +236,7 @@ export function ManageBookingPage() {
                   onKeyPress={(e) => e.key === "Enter" && handleLookup()}
                 />
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Enter your last name as it appears in your booking confirmation email
+                  {content.manageBooking.lastNameHint}
                 </p>
               </div>
 
@@ -327,7 +327,7 @@ export function ManageBookingPage() {
             className="h-auto flex-col gap-2 py-6"
           >
             <Download className="h-6 w-6 text-primary" />
-            <span>Download Tickets</span>
+            <span>{content.manageBooking.downloadTicketsButton}</span>
           </Button>
 
           {isFuture(booking.selectedDate) && (
@@ -337,7 +337,7 @@ export function ManageBookingPage() {
               className="h-auto flex-col gap-2 py-6"
             >
               <Car className="h-6 w-6 text-primary" />
-              <span>Request Pickup</span>
+              <span>{content.manageBooking.requestPickupButton}</span>
             </Button>
           )}
 
@@ -347,7 +347,7 @@ export function ManageBookingPage() {
             className="h-auto flex-col gap-2 py-6"
           >
             <Phone className="h-6 w-6 text-primary" />
-            <span>Contact Support</span>
+            <span>{content.manageBooking.contactSupportButton}</span>
           </Button>
         </div>
 
@@ -359,20 +359,20 @@ export function ManageBookingPage() {
             <Card className="border-border p-6">
               <h2 className="mb-4 flex items-center gap-2 text-foreground">
                 <Calendar className="h-5 w-5 text-primary" />
-                Date & Time
+                {content.manageBooking.dateAndTime}
               </h2>
               <div className="space-y-3">
                 <div>
-                  <p className="text-sm text-muted-foreground">Pass Date</p>
+                  <p className="text-sm text-muted-foreground">{content.manageBooking.passDate}</p>
                   <p className="text-foreground">{formatDate(booking.selectedDate)}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Pickup Time</p>
+                  <p className="text-sm text-muted-foreground">{content.manageBooking.pickupTime}</p>
                   <p className="text-foreground">{booking.timeSlot}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Operating Hours</p>
-                  <p className="text-foreground">9:00 AM - 7:00 PM</p>
+                  <p className="text-sm text-muted-foreground">{content.manageBooking.operatingHours}</p>
+                  <p className="text-foreground">{content.manageBooking.operatingHoursValue}</p>
                 </div>
               </div>
             </Card>
@@ -381,7 +381,7 @@ export function ManageBookingPage() {
             <Card className="border-border p-6">
               <h2 className="mb-4 flex items-center gap-2 text-foreground">
                 <User className="h-5 w-5 text-primary" />
-                Contact Information
+                {content.manageBooking.contactInformation}
               </h2>
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
@@ -405,22 +405,22 @@ export function ManageBookingPage() {
             <Card className="border-border p-6">
               <h2 className="mb-4 flex items-center gap-2 text-foreground">
                 <Users className="h-5 w-5 text-primary" />
-                Booking Summary
+                {content.manageBooking.bookingDetails}
               </h2>
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Passengers</span>
+                  <span className="text-muted-foreground">{content.manageBooking.passengers}</span>
                   <span className="text-foreground">{booking.passengers.length}</span>
                 </div>
                 {booking.guidedTour && (
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Guided Commentary</span>
+                    <span className="text-muted-foreground">{content.manageBooking.guidedCommentary}</span>
                     <CheckCircle2 className="h-5 w-5 text-green-600" />
                   </div>
                 )}
                 {booking.selectedAttractions && booking.selectedAttractions.length > 0 && (
                   <div>
-                    <p className="mb-2 text-sm text-muted-foreground">Attraction Tickets</p>
+                    <p className="mb-2 text-sm text-muted-foreground">{content.manageBooking.attractionTickets}</p>
                     <ul className="space-y-1">
                       {booking.selectedAttractions.map((attr: any, index: number) => (
                         <li key={index} className="flex items-center gap-2 text-sm text-foreground">
@@ -433,7 +433,7 @@ export function ManageBookingPage() {
                 )}
                 <Separator />
                 <div className="flex justify-between">
-                  <span className="text-foreground">Total Paid</span>
+                  <span className="text-foreground">{content.manageBooking.totalPaid}</span>
                   <span className="text-lg text-primary">€{booking.totalPrice.toFixed(2)}</span>
                 </div>
               </div>
@@ -445,10 +445,10 @@ export function ManageBookingPage() {
             <Card className="border-border p-6">
               <h2 className="mb-4 flex items-center gap-2 text-foreground">
                 <QrCode className="h-5 w-5 text-primary" />
-                Your Day Pass Tickets
+                {content.manageBooking.yourDayPassTickets}
               </h2>
               <p className="mb-6 text-sm text-muted-foreground">
-                Show these tickets when boarding. Each passenger needs their own ticket.
+                {content.manageBooking.showTicketsDescription}
               </p>
 
               <div className="space-y-8">
@@ -473,7 +473,7 @@ export function ManageBookingPage() {
                 className="mt-6 w-full bg-accent text-accent-foreground hover:bg-accent/90"
               >
                 <Download className="mr-2 h-4 w-4" />
-                Download All Tickets (PDF)
+                {content.manageBooking.downloadAllTickets}
               </Button>
             </Card>
 
@@ -482,10 +482,10 @@ export function ManageBookingPage() {
               <Card className="border-border p-6">
                 <h2 className="mb-4 flex items-center gap-2 text-foreground">
                   <MapPin className="h-5 w-5 text-primary" />
-                  Pickup Information
+                  {content.manageBooking.pickupInformation}
                 </h2>
                 <p className="mb-4 text-sm text-muted-foreground">
-                  Our vehicles operate at all major attractions in Sintra. Board at any location:
+                  {content.manageBooking.pickupDescription}
                 </p>
                 <ul className="space-y-2 text-sm text-foreground">
                   <li className="flex items-start gap-2">
@@ -512,7 +512,7 @@ export function ManageBookingPage() {
                     className="mt-4 w-full bg-primary text-primary-foreground hover:bg-primary/90"
                   >
                     <Car className="mr-2 h-4 w-4" />
-                    Request Pickup Now
+                    {content.manageBooking.requestPickupNow}
                   </Button>
                 )}
               </Card>
@@ -522,41 +522,41 @@ export function ManageBookingPage() {
 
         {/* Important Information */}
         <Card className="mt-6 border-border p-6">
-          <h2 className="mb-4 text-foreground">Important Information</h2>
+          <h2 className="mb-4 text-foreground">{content.manageBooking.importantInformation}</h2>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="flex items-start gap-3">
               <Clock className="mt-1 h-5 w-5 flex-shrink-0 text-primary" />
               <div>
-                <p className="mb-1 text-foreground">Service Hours</p>
+                <p className="mb-1 text-foreground">{content.manageBooking.serviceHours}</p>
                 <p className="text-sm text-muted-foreground">
-                  9:00 AM - 7:00 PM daily. Pickups every 30 minutes.
+                  {content.manageBooking.serviceHoursDescription}
                 </p>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <QrCode className="mt-1 h-5 w-5 flex-shrink-0 text-primary" />
               <div>
-                <p className="mb-1 text-foreground">Digital Tickets</p>
+                <p className="mb-1 text-foreground">{content.manageBooking.digitalTickets}</p>
                 <p className="text-sm text-muted-foreground">
-                  Show your QR code from this page or your PDF tickets when boarding.
+                  {content.manageBooking.digitalTicketsDescription}
                 </p>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <Users className="mt-1 h-5 w-5 flex-shrink-0 text-primary" />
               <div>
-                <p className="mb-1 text-foreground">Guaranteed Seating</p>
+                <p className="mb-1 text-foreground">{content.manageBooking.guaranteedSeating}</p>
                 <p className="text-sm text-muted-foreground">
-                  Your seats are reserved. No need to worry about availability.
+                  {content.manageBooking.guaranteedSeatingDescription}
                 </p>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <MapPin className="mt-1 h-5 w-5 flex-shrink-0 text-primary" />
               <div>
-                <p className="mb-1 text-foreground">Hop On/Off</p>
+                <p className="mb-1 text-foreground">{content.manageBooking.hopOnOff}</p>
                 <p className="text-sm text-muted-foreground">
-                  Unlimited rides. Board and exit at any stop as many times as you like.
+                  {content.manageBooking.hopOnOffDescription}
                 </p>
               </div>
             </div>
@@ -569,10 +569,10 @@ export function ManageBookingPage() {
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <Phone className="h-5 w-5 text-primary" />
-                Contact Support
+                {content.manageBooking.contactSupportTitle}
               </DialogTitle>
               <DialogDescription>
-                Need help? We're here for you! Reach out through any of these channels.
+                {content.manageBooking.contactSupportDescription}
               </DialogDescription>
             </DialogHeader>
             

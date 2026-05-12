@@ -170,7 +170,23 @@
     "bookingNotFoundDescription": "We konden geen boeking vinden met deze gegevens. Controleer alstublieft uw Boekings-ID en achternaam.",
     "checkDetails": "Controleer alstublieft:",
     "tryAgain": "Opnieuw Proberen",
-    "backToSearch": "Terug naar Zoeken"
+    "backToSearch": "Terug naar Zoeken",
+    "loading": "Uw boeking wordt geladen...",
+    "backToHome": "Terug naar Home",
+    "lastNameHint": "Voer uw achternaam in zoals die verschijnt in uw boekingsbevestigingsmail",
+    "dateAndTime": "Datum en Tijd",
+    "contactInformation": "Contactgegevens",
+    "yourDayPassTickets": "Uw Dagpas Tickets",
+    "showTicketsDescription": "Toon deze tickets bij het instappen. Elke passagier heeft zijn eigen ticket nodig.",
+    "downloadAllTickets": "Alle Tickets Downloaden (PDF)",
+    "pickupInformation": "Ophaalinformatie",
+    "pickupDescription": "Onze voertuigen rijden alle belangrijke attracties in Sintra aan. Stap in op elke locatie:",
+    "requestPickupNow": "Nu Ophaling Aanvragen",
+    "downloadTicketsButton": "Tickets Downloaden",
+    "requestPickupButton": "Ophaling Aanvragen",
+    "contactSupportButton": "Contact Support",
+    "contactSupportTitle": "Contact Support",
+    "contactSupportDescription": "Heeft u hulp nodig? We zijn er voor u! Neem contact met ons op via een van deze kanalen."
   },
   "about": {
     "title": "Over Hop On Sintra - Premium Hop-On/Hop-Off Service met Professionele Gidsen",
@@ -194,6 +210,32 @@
         "title": "Professional Local Guides",
         "description": "All our vehicles are driven by professional local guides who know Sintra inside and out, offering insights you won't find in guidebooks."
       }
+    ],
+    "storyBadge": "Ons Verhaal",
+    "storyHeading": "Hoe Hop On Sintra Ontstond",
+    "missionBadge": "Onze Missie",
+    "missionHeading": "Wat Ons Drijft",
+    "perksBadge": "Wat Ons Bijzonder Maakt",
+    "perksHeading": "Het Hop On Sintra Verschil",
+    "perksSubtitle": "We hebben de manier waarop u Sintra verkent opnieuw bedacht—geen overvolle bussen, geen starre schema's!",
+    "perks": [
+      { "title": "Kleine Groepen", "description": "Slechts 2-6 gasten per voertuig voor een gezellige, persoonlijke ervaring" },
+      { "title": "Professionele Gidsen", "description": "Elke bestuurder is een gecertificeerde lokale expert die dol is op Sintra" },
+      { "title": "Gegarandeerde Plaatsen", "description": "Vooraf gereserveerd comfort zonder wachten of staan" },
+      { "title": "Uw Tempo", "description": "Stap de hele dag zo vaak in en uit als u wilt" }
+    ],
+    "valuesBadge": "Onze Waarden",
+    "valuesHeading": "Waar We Voor Staan",
+    "valuesSubtitle": "Elke beslissing die we nemen wordt geleid door deze principes",
+    "faqBadge": "FAQ",
+    "faqHeading": "Veelgestelde Vragen",
+    "faqSubtitle": "Alles wat u moet weten over Hop On Sintra",
+    "faq": [
+      { "q": "Wat is inbegrepen in het dagpas?", "a": "Onbeperkte ritten op alle deelnemende voertuigen (tuk-tuks, UMM-jeeps) met professionele bestuurder-gidsen voor een volledige dag. Gegarandeerde zitplaatsen in elk voertuig. Optioneel kunt u entreebiljetten voor attracties toevoegen." },
+      { "q": "Kan ik attractiebiljetten kopen met mijn pas?", "a": "Ja! Tijdens het boeken kunt u entreebiljetten toevoegen voor populaire attracties zoals het Pena Paleis, Quinta da Regaleira en meer. Dit bespaart tijd—geen wachten bij de kaartjesloketten." },
+      { "q": "Wat zijn rondleidingen?", "a": "Onze vertrekken om 10:00 en 14:00 bieden rondleidingen waar uw professionele bestuurder-gids stopt bij belangrijke attracties om deskundige toelichting te geven over de geschiedenis en verborgen schatten van Sintra." },
+      { "q": "Hoe gebruik ik mijn QR-code?", "a": "Toon gewoon uw QR-code (verzonden per e-mail) aan elke Hop On Sintra-bestuurder voordat u instapt. Ze scannen hem om uw pas te verifiëren." },
+      { "q": "Hoe vaak vertrekken de voertuigen?", "a": "Voertuigen vertrekken elke 30 minuten vanaf alle grote attracties tijdens openingsuren (9:00 - 19:00)." }
     ]
   },
   "attractions": {
@@ -754,6 +796,30 @@
       "subtitle": "Neem vandaag nog contact op om uw perfecte gepersonaliseerde rondleiding te creëren",
       "requestQuoteButton": "Offerte Aanvragen",
       "chatButton": "Chat Met Ons"
+    },
+    "loading": "Privérondleidingen laden...",
+    "noPackagesAvailable": "Geen tourpakketten beschikbaar",
+    "contactForCustomTours": "Neem contact op voor op maat gemaakte privé-tour opties die zijn afgestemd op uw behoeften",
+    "contactUs": "Neem contact op",
+    "viewDetails": "Details Bekijken",
+    "exploreMore": {
+      "title": "Andere Manieren om Sintra te Ervaren",
+      "subtitle": "Verken onze flexibele opties voor het ontdekken van Sintra's schatten",
+      "hopOnTitle": "Hop On Service",
+      "hopOnDescription": "Verken op uw eigen tempo met onbeperkte hop-on/hop-off ritten naar alle grote attracties",
+      "hopOnBadge": "Vrijheid & Flexibiliteit",
+      "attractionsTitle": "Attracties",
+      "attractionsDescription": "Ontdek UNESCO Werelderfgoed paleizen, kastelen en historische plaatsen",
+      "attractionsBadge": "11+ Locaties",
+      "travelGuideTitle": "Reisgids",
+      "travelGuideDescription": "Expertentips, fotospots en insideradviezen voor een bezoek aan Sintra",
+      "travelGuideBadge": "Lokale Expertise"
+    },
+    "customExperience": {
+      "title": "Heeft u een Aangepaste Ervaring Nodig?",
+      "subtitle": "Neem contact op om een gepersonaliseerde privérondleiding te creëren die is afgestemd op uw interesses, schema en groepsgrootte.",
+      "chatButton": "Chat Met Ons",
+      "exploreDayPass": "Dagpas Verkennen"
     }
   },
   "routeMap": {

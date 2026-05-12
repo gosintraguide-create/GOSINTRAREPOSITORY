@@ -26,7 +26,7 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { featureFlags } from "../lib/featureFlags";
-import { getTranslation, getUITranslation } from "../lib/translations";
+import { getTranslation, getUITranslation } from "../lib/translations/loader";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
 import { toast } from 'sonner';
 import {
@@ -299,20 +299,20 @@ export function PrivateToursPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {loading ? (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">Loading private tours...</p>
+              <p className="text-muted-foreground">{t.loading}</p>
             </div>
           ) : tours.length === 0 ? (
             <Card className="p-8 text-center">
               <MessageCircle className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
               <p className="text-lg font-medium mb-2">
-                No tour packages available
+                {t.noPackagesAvailable}
               </p>
               <p className="text-muted-foreground mb-4">
-                Contact us for custom private tour options tailored to your needs
+                {t.contactForCustomTours}
               </p>
               <Button onClick={() => onNavigate("live-chat")}>
                 <MessageCircle className="mr-2 h-4 w-4" />
-                Contact Us
+                {t.contactUs}
               </Button>
             </Card>
           ) : (
@@ -379,7 +379,7 @@ export function PrivateToursPage() {
 
                     {/* CTA */}
                     <div className="flex items-center justify-end gap-2 border-t border-border pt-3 text-sm text-primary">
-                      <span className="font-medium">View Details</span>
+                      <span className="font-medium">{t.viewDetails}</span>
                       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-2" />
                     </div>
                   </div>
@@ -403,10 +403,10 @@ export function PrivateToursPage() {
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="mb-12 text-center">
             <h2 className="mb-4 text-foreground">
-              Other Ways to Experience Sintra
+              {t.exploreMore.title}
             </h2>
             <p className="mx-auto max-w-2xl text-muted-foreground">
-              Explore our flexible options for discovering Sintra's treasures
+              {t.exploreMore.subtitle}
             </p>
           </div>
 
@@ -422,14 +422,14 @@ export function PrivateToursPage() {
                 </div>
               </div>
               <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
-                Hop On Service
+                {t.exploreMore.hopOnTitle}
                 <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
               </h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Explore at your own pace with unlimited hop-on/hop-off rides to all major attractions
+                {t.exploreMore.hopOnDescription}
               </p>
               <Badge className="bg-primary/10 text-primary">
-                Freedom & Flexibility
+                {t.exploreMore.hopOnBadge}
               </Badge>
             </Card>
 
@@ -444,14 +444,14 @@ export function PrivateToursPage() {
                 </div>
               </div>
               <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
-                Attractions
+                {t.exploreMore.attractionsTitle}
                 <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
               </h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Discover UNESCO World Heritage palaces, castles, and historic sites
+                {t.exploreMore.attractionsDescription}
               </p>
               <Badge className="bg-amber-500/10 text-amber-600">
-                11+ Locations
+                {t.exploreMore.attractionsBadge}
               </Badge>
             </Card>
 
@@ -466,14 +466,14 @@ export function PrivateToursPage() {
                 </div>
               </div>
               <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
-                Travel Guide
+                {t.exploreMore.travelGuideTitle}
                 <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
               </h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Expert tips, photography spots, and insider advice for visiting Sintra
+                {t.exploreMore.travelGuideDescription}
               </p>
               <Badge className="bg-blue-500/10 text-blue-600">
-                Local Expertise
+                {t.exploreMore.travelGuideBadge}
               </Badge>
             </Card>
           </div>
@@ -484,10 +484,10 @@ export function PrivateToursPage() {
       <section className="border-t border-border bg-secondary/20 py-12">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
           <h2 className="mb-4 text-foreground">
-            Need a Custom Experience?
+            {t.customExperience.title}
           </h2>
           <p className="mb-6 text-muted-foreground">
-            Contact us to create a personalized private tour tailored to your interests, schedule, and group size.
+            {t.customExperience.subtitle}
           </p>
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Button
@@ -495,14 +495,14 @@ export function PrivateToursPage() {
               onClick={() => onNavigate("live-chat")}
             >
               <MessageCircle className="mr-2 h-5 w-5" />
-              Chat With Us
+              {t.customExperience.chatButton}
             </Button>
             <Button
               variant="outline"
               size="lg"
               onClick={() => onNavigate("buy-ticket")}
             >
-              Explore Day Pass
+              {t.customExperience.exploreDayPass}
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </div>

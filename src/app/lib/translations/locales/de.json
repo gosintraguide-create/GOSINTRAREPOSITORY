@@ -170,7 +170,23 @@
     "bookingNotFoundDescription": "Wir konnten keine Buchung mit diesen Details finden. Bitte überprüfen Sie Ihre Buchungs-ID und Ihren Nachnamen.",
     "checkDetails": "Bitte überprüfen Sie:",
     "tryAgain": "Erneut Versuchen",
-    "backToSearch": "Zurück zur Suche"
+    "backToSearch": "Zurück zur Suche",
+    "loading": "Ihre Buchung wird geladen...",
+    "backToHome": "Zurück zur Startseite",
+    "lastNameHint": "Geben Sie Ihren Nachnamen so ein, wie er in Ihrer Buchungsbestätigung erscheint",
+    "dateAndTime": "Datum und Uhrzeit",
+    "contactInformation": "Kontaktinformationen",
+    "yourDayPassTickets": "Ihre Tageskarten",
+    "showTicketsDescription": "Zeigen Sie diese Tickets beim Einsteigen vor. Jeder Fahrgast benötigt sein eigenes Ticket.",
+    "downloadAllTickets": "Alle Tickets herunterladen (PDF)",
+    "pickupInformation": "Abholinformationen",
+    "pickupDescription": "Unsere Fahrzeuge fahren alle wichtigen Sehenswürdigkeiten in Sintra an. Steigen Sie an jedem Ort ein:",
+    "requestPickupNow": "Jetzt Abholung anfordern",
+    "downloadTicketsButton": "Tickets herunterladen",
+    "requestPickupButton": "Abholung anfordern",
+    "contactSupportButton": "Support kontaktieren",
+    "contactSupportTitle": "Support kontaktieren",
+    "contactSupportDescription": "Brauchen Sie Hilfe? Wir sind für Sie da! Kontaktieren Sie uns über einen dieser Kanäle."
   },
   "about": {
     "title": "Über Hop On Sintra",
@@ -194,6 +210,32 @@
         "title": "Professional Local Guides",
         "description": "All our vehicles are driven by professional local guides who know Sintra inside and out, offering insights you won't find in guidebooks."
       }
+    ],
+    "storyBadge": "Unsere Geschichte",
+    "storyHeading": "Wie Hop On Sintra Entstand",
+    "missionBadge": "Unsere Mission",
+    "missionHeading": "Was Uns Antreibt",
+    "perksBadge": "Was Uns Besonders Macht",
+    "perksHeading": "Der Hop On Sintra Unterschied",
+    "perksSubtitle": "Wir haben die Art, wie Sie Sintra erkunden, neu gedacht—keine überfüllten Busse, keine starren Fahrpläne!",
+    "perks": [
+      { "title": "Kleine Gruppen", "description": "Nur 2-6 Gäste pro Fahrzeug für ein gemütliches, persönliches Erlebnis" },
+      { "title": "Professionelle Guides", "description": "Jeder Fahrer ist ein zertifizierter lokaler Experte, der Sintra liebt" },
+      { "title": "Garantierte Plätze", "description": "Vorgereservierter Komfort ohne Warten oder Stehen" },
+      { "title": "Ihr Tempo", "description": "Steigen Sie den ganzen Tag so oft ein und aus wie Sie möchten" }
+    ],
+    "valuesBadge": "Unsere Werte",
+    "valuesHeading": "Wofür Wir Stehen",
+    "valuesSubtitle": "Jede Entscheidung, die wir treffen, wird von diesen Grundsätzen geleitet",
+    "faqBadge": "FAQ",
+    "faqHeading": "Häufig Gestellte Fragen",
+    "faqSubtitle": "Alles, was Sie über Hop On Sintra wissen müssen",
+    "faq": [
+      { "q": "Was ist im Tagespass enthalten?", "a": "Unbegrenzte Fahrten auf allen teilnehmenden Fahrzeugen (Tuk-Tuks, UMM-Jeeps) mit professionellen Fahrer-Guides für einen vollen Tag. Garantierte Sitzplätze in jedem Fahrzeug. Optional können Sie Eintrittskarten für Sehenswürdigkeiten hinzufügen." },
+      { "q": "Kann ich mit meinem Pass Eintrittskarten kaufen?", "a": "Ja! Bei der Buchung können Sie Eintrittskarten für beliebte Sehenswürdigkeiten wie den Palast Pena, Quinta da Regaleira und mehr hinzufügen. Das spart Zeit—keine Wartezeiten an den Ticketschaltern." },
+      { "q": "Was sind geführte Touren?", "a": "Unsere Abfahrten um 10:00 und 14:00 Uhr bieten geführte Touren an, bei denen Ihr professioneller Fahrer-Guide an wichtigen Sehenswürdigkeiten anhält, um Expertenwissen über die Geschichte und verborgene Schätze von Sintra zu teilen." },
+      { "q": "Wie verwende ich meinen QR-Code?", "a": "Zeigen Sie einfach Ihren QR-Code (per E-Mail gesendet) jedem Hop On Sintra-Fahrer vor dem Einsteigen. Sie scannen ihn, um Ihren Pass zu überprüfen." },
+      { "q": "Wie oft fahren die Fahrzeuge ab?", "a": "Fahrzeuge fahren alle 30 Minuten von allen großen Sehenswürdigkeiten während der Betriebszeiten (9:00 - 19:00 Uhr) ab." }
     ]
   },
   "attractions": {
@@ -754,6 +796,30 @@
       "subtitle": "Kontaktieren Sie uns heute, um Ihre perfekte personalisierte Tour zu erstellen",
       "requestQuoteButton": "Angebot Anfordern",
       "chatButton": "Chatten Sie mit Uns"
+    },
+    "loading": "Laden von privaten Touren...",
+    "noPackagesAvailable": "Keine Tour-Pakete verfügbar",
+    "contactForCustomTours": "Kontaktieren Sie uns für individuelle private Tour-Optionen, die auf Ihre Bedürfnisse zugeschnitten sind",
+    "contactUs": "Kontaktieren Sie uns",
+    "viewDetails": "Details Anzeigen",
+    "exploreMore": {
+      "title": "Weitere Möglichkeiten, Sintra zu Erleben",
+      "subtitle": "Entdecken Sie unsere flexiblen Optionen zur Erkundung der Schätze Sintras",
+      "hopOnTitle": "Hop On Service",
+      "hopOnDescription": "Erkunden Sie in Ihrem eigenen Tempo mit unbegrenzten Hop-on/Hop-off-Fahrten zu allen wichtigen Sehenswürdigkeiten",
+      "hopOnBadge": "Freiheit & Flexibilität",
+      "attractionsTitle": "Sehenswürdigkeiten",
+      "attractionsDescription": "Entdecken Sie UNESCO-Welterbe-Paläste, Burgen und historische Stätten",
+      "attractionsBadge": "11+ Standorte",
+      "travelGuideTitle": "Reiseführer",
+      "travelGuideDescription": "Expertentipps, Fotospots und Insider-Ratschläge für einen Besuch in Sintra",
+      "travelGuideBadge": "Lokales Fachwissen"
+    },
+    "customExperience": {
+      "title": "Benötigen Sie ein Individuelles Erlebnis?",
+      "subtitle": "Kontaktieren Sie uns, um eine personalisierte private Tour zu erstellen, die auf Ihre Interessen, Ihren Zeitplan und Ihre Gruppengröße zugeschnitten ist.",
+      "chatButton": "Chatten Sie mit Uns",
+      "exploreDayPass": "Tagespass Erkunden"
     }
   },
   "routeMap": {
