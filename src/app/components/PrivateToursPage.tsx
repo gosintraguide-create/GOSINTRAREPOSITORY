@@ -121,12 +121,6 @@ export function PrivateToursPage() {
     return featureFlags.privateToursEnabled;
   };
 
-  useEffect(() => {
-    if (getFeatureFlag()) {
-      loadTours();
-    }
-  }, [language]);
-
   const loadTours = async () => {
     setLoading(true);
     try {
@@ -153,6 +147,12 @@ export function PrivateToursPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (getFeatureFlag()) {
+      loadTours();
+    }
+  }, [language]);
 
   const toursStructuredData = useMemo(() => {
     if (tours.length === 0) return null;

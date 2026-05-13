@@ -100,10 +100,6 @@ export function PrivateTourDetailPage() {
   const [loading, setLoading] = useState(true);
   const [showBookingDialog, setShowBookingDialog] = useState(false);
 
-  useEffect(() => {
-    loadTour();
-  }, [slug, language]);
-
   const loadTour = async () => {
     setLoading(true);
     try {
@@ -130,6 +126,10 @@ export function PrivateTourDetailPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadTour();
+  }, [slug, language]);
 
   const tourStructuredData = useMemo(() => {
     if (!tour) return null;
