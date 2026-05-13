@@ -475,7 +475,7 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
                 {minGuests > 1 && numberOfPeople < minGuests && (
                   <div className="mt-2 flex items-start gap-1.5 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800 border border-amber-200">
                     <Info className="h-3.5 w-3.5 flex-shrink-0 mt-0.5" />
-                    <span>This tour has a minimum of {minGuests} guests — you'll be charged for {minGuests}.</span>
+                    <span>Good news, you're still welcome to join! This tour is priced for a minimum of {minGuests} guests, so that's what the price is based on.</span>
                   </div>
                 )}
               </div>
@@ -578,7 +578,7 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
           {quoteMode && (
             <Alert className="border-primary/30 bg-primary/5">
               <AlertDescription className="text-sm text-foreground">
-                We'll send you a personalised quote within 24 hours — no payment required until you confirm.
+                We'll review your request and send you a personalised quote within 24 hours. No payment needed until you're happy to confirm.
               </AlertDescription>
             </Alert>
           )}
@@ -674,7 +674,7 @@ export function TourBookingDialog({ open, onOpenChange, tour }: TourBookingDialo
       <DialogContent className="w-[95vw] sm:max-w-3xl md:max-w-5xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle>Book Your Private Tour</DialogTitle>
-          <DialogDescription>{tour.title} — complete the steps below to confirm your booking</DialogDescription>
+          <DialogDescription>Ready to book your {tour.title}? Just follow the steps below and we'll take care of the rest.</DialogDescription>
         </DialogHeader>
         <BookingForm tour={tour} onSuccess={() => onOpenChange(false)} />
       </DialogContent>
