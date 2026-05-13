@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Separator } from './ui/separator';
 import { Calendar } from './ui/calendar';
 import { Alert, AlertDescription } from './ui/alert';
-import { Loader2, CheckCircle, AlertCircle, ChevronLeft, Users, Clock, Calendar as CalendarIcon, Minus, Plus } from 'lucide-react';
+import { Loader2, CheckCircle, AlertCircle, ChevronLeft, Calendar as CalendarIcon, Minus, Plus, Info } from 'lucide-react';
 import { format } from 'date-fns';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { toast } from 'sonner';
@@ -130,14 +130,16 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
 
   const calculateTourPrice = (): number => {
     const { pricingMode, perPersonPrice, groupTiers, fixedPrice } = tour;
+    // Always charge for at least minPeople even if fewer are selected
+    const effectivePeople = Math.max(numberOfPeople, minGuests);
     if (!pricingMode) {
       const m = tour.price.replace(/,/g, '').match(/[\d.]+/);
       return m ? parseFloat(m[0]) : 0;
     }
     switch (pricingMode) {
-      case 'per-person':    return (perPersonPrice || 0) * numberOfPeople;
+      case 'per-person':    return (perPersonPrice || 0) * effectivePeople;
       case 'group-tiers': {
-        const tier = (groupTiers || []).find(t => numberOfPeople >= t.minPeople && numberOfPeople <= t.maxPeople);
+        const tier = (groupTiers || []).find(t => effectivePeople >= t.minPeople && effectivePeople <= t.maxPeople);
         return tier?.price || 0;
       }
       case 'fixed':       return fixedPrice || 0;
@@ -201,28 +203,31 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
     return false;
   };
 
-  const getAvailabilityStatus = (date: Date) => {
-    if (!availability) return null;
+  const getAvailabilityStatus = (date: Date): 'available' | 'limited' | 'full' | null => {
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    if (date < today) return null; // past — no dot
+    if (!availability) return 'available'; // data still loading — optimistically show green
     const ds = format(date, 'yyyy-MM-dd');
     const d = availability[ds];
-    if (!d) return null;
+    if (!d) return 'available'; // no bookings on this date → fully open
     if (d.isFull || d.available === 0) return 'full';
     if (d.available <= 2) return 'limited';
     return 'available';
   };
 
-  const renderDayContent = (date: Date) => {
+  // Passed as components.DayContent to react-day-picker via Calendar
+  const DayContent = ({ date }: { date: Date }) => {
     const status = getAvailabilityStatus(date);
     const disabled = isDateDisabled(date);
     return (
-      <div className="relative flex h-full w-full items-center justify-center">
+      <div className="relative flex h-full w-full flex-col items-center justify-center leading-none">
         <span>{date.getDate()}</span>
         {status && !disabled && (
-          <div className={cn(
+          <span className={cn(
             'absolute bottom-0.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full',
-            status === 'full'     ? 'bg-red-500' :
-            status === 'limited'  ? 'bg-orange-500' :
-                                    'bg-green-500'
+            status === 'full'    ? 'bg-red-500' :
+            status === 'limited' ? 'bg-amber-500' :
+                                   'bg-green-500'
           )} />
         )}
       </div>
@@ -357,7 +362,7 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
               onMonthChange={handleMonthChange}
               disabled={isDateDisabled}
               initialFocus
-              dayContent={renderDayContent}
+              components={{ DayContent }}
               classNames={{
                 months: 'w-full',
                 month: 'w-full space-y-2',
@@ -439,11 +444,11 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
                 <div className="flex items-center gap-4">
                   <button
                     type="button"
-                    onClick={() => setNumberOfPeople((n) => Math.max(minGuests, n - 1))}
-                    disabled={numberOfPeople <= minGuests}
+                    onClick={() => setNumberOfPeople((n) => Math.max(1, n - 1))}
+                    disabled={numberOfPeople <= 1}
                     className={cn(
                       'flex h-10 w-10 items-center justify-center rounded-full border-2 transition-colors',
-                      numberOfPeople <= minGuests
+                      numberOfPeople <= 1
                         ? 'border-border text-muted-foreground opacity-40 cursor-not-allowed'
                         : 'border-border hover:border-primary hover:bg-primary/5'
                     )}
@@ -467,6 +472,12 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
                     <Plus className="h-4 w-4" />
                   </button>
                 </div>
+                {minGuests > 1 && numberOfPeople < minGuests && (
+                  <div className="mt-2 flex items-start gap-1.5 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800 border border-amber-200">
+                    <Info className="h-3.5 w-3.5 flex-shrink-0 mt-0.5" />
+                    <span>This tour has a minimum of {minGuests} guests — you'll be charged for {minGuests}.</span>
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center justify-between rounded-xl bg-muted/40 px-4 py-3">
