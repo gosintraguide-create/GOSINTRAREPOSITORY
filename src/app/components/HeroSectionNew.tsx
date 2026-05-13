@@ -138,20 +138,20 @@ export function HeroSection({
               customImages={editableContent.homepage?.productCards?.daypass?.images}
             />
 
-            {/* Travel Guide Card */}
-            <InfoCard
-              onNavigate={onNavigate}
-              language={language}
-              cardType="travel-guide"
-              customImages={editableContent.homepage?.productCards?.travelGuide?.images}
-            />
-
             {/* Private Tours Card */}
             <InfoCard
               onNavigate={onNavigate}
               language={language}
               cardType="private-tours"
               customImages={editableContent.homepage?.productCards?.privateTours?.images}
+            />
+
+            {/* Travel Guide Card */}
+            <InfoCard
+              onNavigate={onNavigate}
+              language={language}
+              cardType="travel-guide"
+              customImages={editableContent.homepage?.productCards?.travelGuide?.images}
             />
           </div>
         </div>

@@ -301,9 +301,8 @@ export function InfoCard({ onNavigate, language = "en", cardType, customImages, 
         </p>
 
         {/* Divider */}
-        <div className="border-t border-border pt-3 mt-4 space-y-2">
-          {/* Orange accent CTA — only for private-tours */}
-          {cardType === "private-tours" && (t as any).bookNow && (
+        <div className="border-t border-border pt-3 mt-4">
+          {cardType === "private-tours" && (t as any).bookNow ? (
             <Button
               onClick={handleNavigate}
               className="h-11 w-full bg-accent text-white hover:bg-accent/90 shadow-md text-sm"
@@ -312,17 +311,17 @@ export function InfoCard({ onNavigate, language = "en", cardType, customImages, 
               {(t as any).bookNow}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
+          ) : (
+            <Button
+              onClick={handleNavigate}
+              variant="outline"
+              className="h-11 w-full border-primary text-primary hover:bg-primary/5 shadow-md text-sm"
+              size="lg"
+            >
+              {t.learnMore}
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
           )}
-          {/* Learn More / View All Button */}
-          <Button
-            onClick={handleNavigate}
-            variant="outline"
-            className="h-10 w-full border-primary text-primary hover:bg-primary/5 text-sm"
-            size="default"
-          >
-            {t.learnMore}
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
         </div>
       </div>
     </Card>
