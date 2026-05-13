@@ -344,9 +344,9 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
 
       {/* ── STEP 1: Date, Time & Guests ──────────────────────────────────── */}
       {step === 'datetime' && (
-        <div className="flex flex-col gap-6 md:flex-row md:gap-0">
+        <div className="flex flex-col gap-6 md:flex-row md:gap-0 md:min-h-[420px]">
           {/* Left: Calendar */}
-          <div className="flex-shrink-0 md:w-[52%] md:pr-6">
+          <div className="flex-shrink-0 md:w-[58%] md:pr-8">
             <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Select a Date
             </p>
@@ -360,23 +360,23 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
               dayContent={renderDayContent}
               classNames={{
                 months: 'w-full',
-                month: 'w-full space-y-3',
-                caption: 'flex justify-center pt-1 relative items-center',
-                caption_label: 'text-sm font-semibold',
+                month: 'w-full space-y-2',
+                caption: 'flex justify-center pt-1 pb-2 relative items-center',
+                caption_label: 'text-base font-semibold',
                 nav: 'space-x-1 flex items-center',
-                nav_button: 'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100',
+                nav_button: 'h-8 w-8 bg-transparent p-0 opacity-50 hover:opacity-100',
                 nav_button_previous: 'absolute left-1',
                 nav_button_next: 'absolute right-1',
                 table: 'w-full border-collapse',
                 head_row: 'flex w-full',
-                head_cell: 'text-muted-foreground rounded-md flex-1 font-normal text-[0.8rem] text-center',
-                row: 'flex w-full mt-2',
-                cell: 'flex-1 text-center text-sm p-0 relative',
-                day: 'h-9 w-full rounded-md p-0 font-normal aria-selected:opacity-100 hover:bg-accent hover:text-accent-foreground mx-auto',
-                day_selected: 'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground',
+                head_cell: 'text-muted-foreground rounded-md flex-1 font-medium text-xs text-center py-1',
+                row: 'flex w-full mt-1',
+                cell: 'flex-1 text-center text-sm p-0.5 relative',
+                day: 'h-10 w-full rounded-lg p-0 font-normal text-sm aria-selected:opacity-100 hover:bg-accent hover:text-accent-foreground transition-colors',
+                day_selected: 'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground font-semibold',
                 day_today: 'bg-accent text-accent-foreground font-semibold',
-                day_outside: 'text-muted-foreground opacity-50',
-                day_disabled: 'text-muted-foreground opacity-30',
+                day_outside: 'text-muted-foreground opacity-40',
+                day_disabled: 'text-muted-foreground opacity-25 cursor-not-allowed',
               }}
             />
             {loadingAvailability && (
@@ -395,24 +395,25 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
           <div className="hidden md:block w-px bg-border flex-shrink-0" />
 
           {/* Right: Time slots + Preferences */}
-          <div className="flex-1 space-y-5 md:pl-6">
+          <div className="flex flex-col gap-5 flex-1 md:pl-8">
             {/* Time slots */}
             {selectedDate ? (
-              <div>
+              <div className="flex-1">
+                <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Available Times</p>
                 <p className="mb-3 text-sm font-semibold text-foreground">
                   {format(selectedDate, 'EEEE, MMMM d')}
                 </p>
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                <div className="grid grid-cols-3 gap-2">
                   {timeSlots.map((slot) => (
                     <button
                       key={slot}
                       type="button"
                       onClick={() => setSelectedTime(slot)}
                       className={cn(
-                        'rounded-md border py-2.5 text-sm font-medium transition-colors',
+                        'rounded-lg border py-2.5 text-sm font-medium transition-colors',
                         selectedTime === slot
                           ? 'border-primary bg-primary text-primary-foreground shadow-sm'
-                          : 'border-border bg-white text-foreground hover:border-primary/50 hover:bg-primary/5'
+                          : 'border-border bg-background text-foreground hover:border-primary/50 hover:bg-primary/5'
                       )}
                     >
                       {slot}
@@ -421,29 +422,27 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
                 </div>
               </div>
             ) : (
-              <div className="flex h-28 items-center justify-center rounded-xl border border-dashed border-border bg-secondary/20">
-                <p className="text-sm text-muted-foreground flex flex-col items-center gap-2">
-                  <CalendarIcon className="h-5 w-5 opacity-50" />
-                  Pick a date to see times
-                </p>
+              <div className="flex flex-1 items-center justify-center rounded-xl border border-dashed border-border bg-muted/30 min-h-[140px]">
+                <div className="flex flex-col items-center gap-2 text-center">
+                  <CalendarIcon className="h-6 w-6 text-muted-foreground/50" />
+                  <p className="text-sm font-medium text-muted-foreground">Pick a date to see available times</p>
+                </div>
               </div>
             )}
 
             <Separator />
 
-            {/* Preferences */}
-            <div className="space-y-3">
-              <p className="text-sm font-semibold text-foreground">Preferences</p>
-
+            {/* Guests + price summary */}
+            <div className="space-y-4">
               <div>
-                <Label className="text-xs text-muted-foreground">Guests *</Label>
-                <div className="mt-1 flex items-center gap-3">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Guests</p>
+                <div className="flex items-center gap-4">
                   <button
                     type="button"
                     onClick={() => setNumberOfPeople((n) => Math.max(minGuests, n - 1))}
                     disabled={numberOfPeople <= minGuests}
                     className={cn(
-                      'flex h-9 w-9 items-center justify-center rounded-full border transition-colors',
+                      'flex h-10 w-10 items-center justify-center rounded-full border-2 transition-colors',
                       numberOfPeople <= minGuests
                         ? 'border-border text-muted-foreground opacity-40 cursor-not-allowed'
                         : 'border-border hover:border-primary hover:bg-primary/5'
@@ -451,7 +450,7 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
                   >
                     <Minus className="h-4 w-4" />
                   </button>
-                  <span className="w-20 text-center text-base font-semibold">
+                  <span className="w-24 text-center text-lg font-bold">
                     {numberOfPeople} {numberOfPeople === 1 ? 'guest' : 'guests'}
                   </span>
                   <button
@@ -459,7 +458,7 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
                     onClick={() => setNumberOfPeople((n) => Math.min(maxGuests, n + 1))}
                     disabled={numberOfPeople >= maxGuests}
                     className={cn(
-                      'flex h-9 w-9 items-center justify-center rounded-full border transition-colors',
+                      'flex h-10 w-10 items-center justify-center rounded-full border-2 transition-colors',
                       numberOfPeople >= maxGuests
                         ? 'border-border text-muted-foreground opacity-40 cursor-not-allowed'
                         : 'border-border hover:border-primary hover:bg-primary/5'
@@ -470,21 +469,21 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
                 </div>
               </div>
 
-              <div className="rounded-lg bg-secondary/30 px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Service Details</p>
-                <p className="mt-0.5 text-sm font-semibold text-foreground">{tour.title}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  {quoteMode ? 'Personalised quote' : tourPrice > 0 ? `€${tourPrice.toFixed(2)}` : tour.price}
-                </p>
+              <div className="flex items-center justify-between rounded-xl bg-muted/40 px-4 py-3">
+                <div>
+                  <p className="text-xs text-muted-foreground">Total</p>
+                  <p className="text-xl font-bold text-foreground">
+                    {quoteMode ? 'Quote on request' : tourPrice > 0 ? `€${tourPrice.toFixed(2)}` : tour.price}
+                  </p>
+                </div>
+                <Button
+                  className="h-11 px-6"
+                  disabled={!selectedDate || !selectedTime}
+                  onClick={() => setStep('details')}
+                >
+                  Next →
+                </Button>
               </div>
-
-              <Button
-                className="w-full h-11"
-                disabled={!selectedDate || !selectedTime}
-                onClick={() => setStep('details')}
-              >
-                Next
-              </Button>
             </div>
           </div>
         </div>
@@ -661,7 +660,7 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
 export function TourBookingDialog({ open, onOpenChange, tour }: TourBookingDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] max-w-5xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+      <DialogContent className="w-[95vw] sm:max-w-3xl md:max-w-5xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle>Book Your Private Tour</DialogTitle>
           <DialogDescription>{tour.title} — complete the steps below to confirm your booking</DialogDescription>
