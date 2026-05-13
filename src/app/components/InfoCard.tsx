@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowRight, ChevronLeft, ChevronRight, BookOpen, Landmark } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
@@ -7,7 +7,7 @@ import { ImageWithFallback } from "./figma/ImageWithFallback";
 interface InfoCardProps {
   onNavigate: (page: string) => void;
   language?: string;
-  cardType: "travel-guide" | "monuments";
+  cardType: "travel-guide" | "monuments" | "private-tours";
   customImages?: Array<{ src: string; alt: string }>;
   customContent?: {
     title?: string;
@@ -39,6 +39,13 @@ export function InfoCard({ onNavigate, language = "en", cardType, customImages, 
         content: "Sintra is home to some of Portugal's most spectacular palaces and gardens. From the colorful Pena Palace perched atop the hills to the mystical Quinta da Regaleira with its enchanting gardens, each monument tells a unique story.",
         learnMore: "View All Attractions",
       },
+      "private-tours": {
+        title: "Private Tours",
+        description: "Tailored experiences, just for your group",
+        content: "Explore Sintra at your own pace with a dedicated private guide. Whether you want to hit the iconic palaces, find the hidden viewpoints the crowds miss, or build something completely bespoke — we make it happen.",
+        learnMore: "View All Tours",
+        bookNow: "Book a Private Tour",
+      },
     },
     pt: {
       "travel-guide": {
@@ -52,6 +59,13 @@ export function InfoCard({ onNavigate, language = "en", cardType, customImages, 
         description: "Explore monumentos Património Mundial da UNESCO",
         content: "Sintra abriga alguns dos palácios e jardins mais espetaculares de Portugal. Do colorido Palácio da Pena no topo das colinas à mística Quinta da Regaleira com seus jardins encantadores, cada monumento conta uma história única.",
         learnMore: "Ver Todas as Atrações",
+      },
+      "private-tours": {
+        title: "Tours Privados",
+        description: "Experiências à medida, só para o seu grupo",
+        content: "Explore Sintra ao seu ritmo com um guia privado dedicado. Palácios icónicos, miradouros escondidos ou um roteiro completamente personalizado — nós tratamos de tudo.",
+        learnMore: "Ver Todos os Tours",
+        bookNow: "Reservar um Tour Privado",
       },
     },
     es: {
@@ -67,6 +81,13 @@ export function InfoCard({ onNavigate, language = "en", cardType, customImages, 
         content: "Sintra alberga algunos de los palacios y jardines más espectaculares de Portugal. Desde el colorido Palacio de Pena en la cima de las colinas hasta la mística Quinta da Regaleira con sus jardines encantadores, cada monumento cuenta una historia única.",
         learnMore: "Ver Todas las Atracciones",
       },
+      "private-tours": {
+        title: "Tours Privados",
+        description: "Experiencias a medida, solo para tu grupo",
+        content: "Explora Sintra a tu ritmo con un guía privado dedicado. Palacios icónicos, miradores escondidos o un itinerario completamente personalizado — nosotros lo hacemos realidad.",
+        learnMore: "Ver Todos los Tours",
+        bookNow: "Reservar un Tour Privado",
+      },
     },
     fr: {
       "travel-guide": {
@@ -80,6 +101,13 @@ export function InfoCard({ onNavigate, language = "en", cardType, customImages, 
         description: "Explorez les monuments du patrimoine mondial de l'UNESCO",
         content: "Sintra abrite certains des palais et jardins les plus spectaculaires du Portugal. Du coloré Palais de Pena au sommet des collines à la mystique Quinta da Regaleira avec ses jardins enchanteurs, chaque monument raconte une histoire unique.",
         learnMore: "Voir Toutes Les Attractions",
+      },
+      "private-tours": {
+        title: "Visites Privées",
+        description: "Des expériences sur mesure, rien que pour votre groupe",
+        content: "Explorez Sintra à votre rythme avec un guide privé dédié. Palais incontournables, points de vue cachés ou itinéraire entièrement personnalisé — nous nous occupons de tout.",
+        learnMore: "Voir Toutes les Visites",
+        bookNow: "Réserver une Visite Privée",
       },
     },
     de: {
@@ -95,6 +123,13 @@ export function InfoCard({ onNavigate, language = "en", cardType, customImages, 
         content: "Sintra beherbergt einige der spektakulärsten Paläste und Gärten Portugals. Vom farbenfrohen Pena-Palast auf den Hügeln bis zur mystischen Quinta da Regaleira mit ihren bezaubernden Gärten erzählt jedes Monument eine einzigartige Geschichte.",
         learnMore: "Alle Attraktionen Anzeigen",
       },
+      "private-tours": {
+        title: "Private Touren",
+        description: "Maßgeschneiderte Erlebnisse, nur für Ihre Gruppe",
+        content: "Entdecken Sie Sintra in Ihrem eigenen Tempo mit einem persönlichen Privatführer. Ikonische Paläste, versteckte Aussichtspunkte oder eine ganz individuelle Route — wir machen es möglich.",
+        learnMore: "Alle Touren Ansehen",
+        bookNow: "Eine Private Tour Buchen",
+      },
     },
     nl: {
       "travel-guide": {
@@ -109,6 +144,13 @@ export function InfoCard({ onNavigate, language = "en", cardType, customImages, 
         content: "Sintra herbergt enkele van de meest spectaculaire paleizen en tuinen van Portugal. Van het kleurrijke Pena Paleis op de heuvels tot de mystieke Quinta da Regaleira met zijn betoverende tuinen, elk monument vertelt een uniek verhaal.",
         learnMore: "Bekijk Alle Attracties",
       },
+      "private-tours": {
+        title: "Privérondleidingen",
+        description: "Op maat gemaakte ervaringen, alleen voor uw groep",
+        content: "Verken Sintra op uw eigen tempo met een persoonlijke privégids. Iconische paleizen, verborgen uitkijkpunten of een volledig op maat gemaakt programma — wij regelen het.",
+        learnMore: "Bekijk Alle Rondleidingen",
+        bookNow: "Boek een Privérondleiding",
+      },
     },
     it: {
       "travel-guide": {
@@ -122,6 +164,13 @@ export function InfoCard({ onNavigate, language = "en", cardType, customImages, 
         description: "Esplora i monumenti Patrimonio dell'Umanità UNESCO",
         content: "Sintra ospita alcuni dei palazzi e giardini più spettacolari del Portogallo. Dal colorato Palazzo Pena in cima alle colline alla mistica Quinta da Regaleira con i suoi giardini incantevoli, ogni monumento racconta una storia unica.",
         learnMore: "Visualizza Tutte Le Attrazioni",
+      },
+      "private-tours": {
+        title: "Tour Privati",
+        description: "Esperienze su misura, solo per il vostro gruppo",
+        content: "Esplora Sintra al tuo ritmo con una guida privata dedicata. Palazzi iconici, punti panoramici nascosti o un itinerario completamente personalizzato — ci pensiamo noi.",
+        learnMore: "Vedi Tutti i Tour",
+        bookNow: "Prenota un Tour Privato",
       },
     },
   };
@@ -173,6 +222,8 @@ export function InfoCard({ onNavigate, language = "en", cardType, customImages, 
   const handleNavigate = () => {
     if (cardType === "travel-guide") {
       onNavigate("blog");
+    } else if (cardType === "private-tours") {
+      onNavigate("private-tours");
     } else {
       onNavigate("attractions");
     }
@@ -250,13 +301,24 @@ export function InfoCard({ onNavigate, language = "en", cardType, customImages, 
         </p>
 
         {/* Divider */}
-        <div className="border-t border-border pt-3 mt-4">
-          {/* Learn More Button */}
+        <div className="border-t border-border pt-3 mt-4 space-y-2">
+          {/* Orange accent CTA — only for private-tours */}
+          {cardType === "private-tours" && (t as any).bookNow && (
+            <Button
+              onClick={handleNavigate}
+              className="h-11 w-full bg-accent text-white hover:bg-accent/90 shadow-md text-sm"
+              size="lg"
+            >
+              {(t as any).bookNow}
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          )}
+          {/* Learn More / View All Button */}
           <Button
             onClick={handleNavigate}
             variant="outline"
-            className="h-11 w-full border-primary text-primary hover:bg-primary/5 shadow-md text-sm"
-            size="lg"
+            className="h-10 w-full border-primary text-primary hover:bg-primary/5 text-sm"
+            size="default"
           >
             {t.learnMore}
             <ArrowRight className="ml-2 h-4 w-4" />

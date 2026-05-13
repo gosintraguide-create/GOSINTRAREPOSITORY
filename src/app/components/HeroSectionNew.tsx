@@ -146,12 +146,12 @@ export function HeroSection({
               customImages={editableContent.homepage?.productCards?.travelGuide?.images}
             />
 
-            {/* Monuments Card */}
+            {/* Private Tours Card */}
             <InfoCard
               onNavigate={onNavigate}
               language={language}
-              cardType="monuments"
-              customImages={editableContent.homepage?.productCards?.monuments?.images}
+              cardType="private-tours"
+              customImages={editableContent.homepage?.productCards?.privateTours?.images}
             />
           </div>
         </div>
