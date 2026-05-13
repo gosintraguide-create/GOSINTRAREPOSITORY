@@ -43,6 +43,8 @@ export interface PrivateTour {
   maxGroupSize?: number; // Maximum before requiring quote
   allowQuoteRequest?: boolean; // Show "Request Quote" for large groups
   availableTimeSlots?: string[]; // Which time slots to show in the booking calendar
+  translatedLanguages?: string[]; // Languages auto-translated by Claude
+  translationsUpdatedAt?: string;
   features: string[];
   badge?: string;
   badgeColor?: "primary" | "accent";
@@ -123,7 +125,10 @@ export function PrivateTourManager() {
       );
 
       if (response.ok) {
-        toast.success("Tour saved successfully");
+        const data = await response.json();
+        toast.success(data.translated
+          ? "Tour saved and translated to 6 languages!"
+          : "Tour saved successfully");
         await loadTours();
         setEditingTour(null);
         setIsCreating(false);
@@ -739,7 +744,7 @@ export function PrivateTourManager() {
                 className="flex-1"
               >
                 <Save className="mr-2 h-4 w-4" />
-                {saving ? "Saving..." : "Save Tour"}
+                {saving ? "Saving & translating…" : "Save Tour"}
               </Button>
               <Button variant="outline" onClick={cancelEditing}>
                 Cancel
@@ -807,6 +812,28 @@ export function PrivateTourManager() {
                     <span className="text-muted-foreground">
                       Features: <strong>{tour.features.length}</strong>
                     </span>
+                  </div>
+                  {/* Translation status */}
+                  <div className="mt-2 flex items-center gap-1.5">
+                    {[
+                      { lang: 'pt', flag: '🇵🇹' },
+                      { lang: 'es', flag: '🇪🇸' },
+                      { lang: 'fr', flag: '🇫🇷' },
+                      { lang: 'de', flag: '🇩🇪' },
+                      { lang: 'nl', flag: '🇳🇱' },
+                      { lang: 'it', flag: '🇮🇹' },
+                    ].map(({ lang, flag }) => (
+                      <span
+                        key={lang}
+                        title={tour.translatedLanguages?.includes(lang) ? `Translated to ${lang.toUpperCase()}` : `Not yet translated to ${lang.toUpperCase()}`}
+                        className={`text-base ${tour.translatedLanguages?.includes(lang) ? 'opacity-100' : 'opacity-20'}`}
+                      >
+                        {flag}
+                      </span>
+                    ))}
+                    {!tour.translatedLanguages?.length && (
+                      <span className="text-xs text-muted-foreground italic">No translations yet — save to translate</span>
+                    )}
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">

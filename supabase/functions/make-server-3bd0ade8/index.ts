@@ -68,9 +68,96 @@ const kvWithRetry = {
   mdel: (keys: string[]): Promise<void> => 
     withRetry(() => kv.mdel(keys), `KV mdel([${keys.length} keys])`),
   
-  getByPrefix: <T>(prefix: string): Promise<T[]> => 
+  getByPrefix: <T>(prefix: string): Promise<T[]> =>
     withRetry(() => kv.getByPrefix(prefix), `KV getByPrefix(${prefix})`),
 };
+
+// ===== AUTO-TRANSLATION (Anthropic Claude) =====
+
+const TARGET_LANGUAGES: Record<string, string> = {
+  pt: 'Portuguese', es: 'Spanish', fr: 'French',
+  de: 'German',     nl: 'Dutch',   it: 'Italian',
+};
+
+async function callClaude(prompt: string, maxTokens = 4096): Promise<string | null> {
+  const apiKey = Deno.env.get('ANTHROPIC_API_KEY');
+  if (!apiKey) {
+    console.warn('ANTHROPIC_API_KEY not set — skipping auto-translation');
+    return null;
+  }
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-3-5-haiku-20241022',
+        max_tokens: maxTokens,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+    });
+    const data = await res.json();
+    return data.content?.[0]?.text ?? null;
+  } catch (err) {
+    console.error('Anthropic API error:', err);
+    return null;
+  }
+}
+
+function extractJson(text: string): Record<string, any> | null {
+  const match = text.match(/\{[\s\S]*\}/);
+  if (!match) return null;
+  try { return JSON.parse(match[0]); } catch { return null; }
+}
+
+async function translateTourContent(tour: any): Promise<Record<string, any> | null> {
+  const fields: Record<string, any> = { title: tour.title, description: tour.description };
+  if (tour.longDescription) fields.longDescription = tour.longDescription;
+  if (tour.features?.length)  fields.features       = tour.features;
+  if (tour.badge)             fields.badge           = tour.badge;
+  if (tour.buttonText)        fields.buttonText      = tour.buttonText;
+  if (tour.priceSubtext)      fields.priceSubtext    = tour.priceSubtext;
+
+  const langList = Object.entries(TARGET_LANGUAGES).map(([k, v]) => `"${k}" (${v})`).join(', ');
+  const prompt = `Translate the following private tour content into these languages: ${langList}.
+Return a single valid JSON object whose keys are the language codes (pt, es, fr, de, nl, it). Each key maps to an object with the same fields as the input JSON below. Rules:
+- Keep proper nouns (Sintra, Pena Palace, Quinta da Regaleira, Moorish Castle, etc.) in their conventional target-language form where one exists, otherwise leave unchanged.
+- Use a warm, inviting tourism tone that matches the English original.
+- "features" must remain an array of strings.
+- Return ONLY the JSON — no markdown, no explanation.
+
+Input:
+${JSON.stringify(fields, null, 2)}`;
+
+  const text = await callClaude(prompt, 4096);
+  if (!text) return null;
+  const result = extractJson(text);
+  if (!result) { console.error('Translation: could not parse JSON from Claude response'); return null; }
+  return result;
+}
+
+async function translateBlogArticle(article: any): Promise<Record<string, any> | null> {
+  const en = article.translations?.en;
+  if (!en?.title) return null; // nothing to translate
+
+  const fields: Record<string, any> = { title: en.title };
+  if (en.excerpt) fields.excerpt = en.excerpt;
+  if (en.seo)     fields.seo     = { title: en.seo.title, description: en.seo.description };
+
+  const langList = Object.entries(TARGET_LANGUAGES).map(([k, v]) => `"${k}" (${v})`).join(', ');
+  const prompt = `Translate the following blog article metadata into: ${langList}.
+Return a single valid JSON object with keys pt, es, fr, de, nl, it. Each maps to an object with the same fields. Keep proper nouns in their conventional form. Warm, readable tone. Return ONLY the JSON.
+
+Input:
+${JSON.stringify(fields, null, 2)}`;
+
+  const text = await callClaude(prompt, 2048);
+  if (!text) return null;
+  return extractJson(text);
+}
 
 const app = new Hono();
 
@@ -1201,8 +1288,30 @@ app.delete("/make-server-3bd0ade8/images/:name", async (c) => {
 
 app.get("/make-server-3bd0ade8/private-tours", async (c) => {
   try {
-    const tours = await kvWithRetry.get("private_tours");
-    return c.json({ success: true, tours: tours || [] });
+    const lang = c.req.query('lang');
+    const raw = ((await kvWithRetry.get("private_tours")) as any[]) || [];
+
+    const tours = raw.map((tour: any) => {
+      const { translations, ...base } = tour;
+      if (lang && lang !== 'en' && translations?.[lang]) {
+        const t = translations[lang];
+        return {
+          ...base,
+          translatedLanguages: Object.keys(translations),
+          title:           t.title           ?? base.title,
+          description:     t.description     ?? base.description,
+          longDescription: t.longDescription ?? base.longDescription,
+          features:        t.features?.length ? t.features : base.features,
+          badge:           t.badge           ?? base.badge,
+          buttonText:      t.buttonText      ?? base.buttonText,
+          priceSubtext:    t.priceSubtext    ?? base.priceSubtext,
+        };
+      }
+      // Default (English / admin): strip blob, expose which langs are ready
+      return { ...base, translatedLanguages: translations ? Object.keys(translations) : [] };
+    });
+
+    return c.json({ success: true, tours });
   } catch (error) {
     return c.json({ success: false, error: String(error), tours: [] }, 500);
   }
@@ -1221,15 +1330,24 @@ app.post("/make-server-3bd0ade8/private-tours/reorder", async (c) => {
 app.post("/make-server-3bd0ade8/private-tours", async (c) => {
   try {
     const { tour } = await c.req.json();
-    const existing = (await kvWithRetry.get("private_tours") as any[]) || [];
+    const existing = ((await kvWithRetry.get("private_tours")) as any[]) || [];
+
+    // Auto-translate the tour content via Claude
+    const translations = await translateTourContent(tour);
+    const tourToSave = {
+      ...tour,
+      ...(translations && {
+        translations,
+        translationsUpdatedAt: new Date().toISOString(),
+      }),
+    };
+
     const idx = existing.findIndex((t: any) => t.id === tour.id);
-    if (idx >= 0) {
-      existing[idx] = tour;
-    } else {
-      existing.push(tour);
-    }
+    if (idx >= 0) existing[idx] = tourToSave;
+    else          existing.push(tourToSave);
+
     await kvWithRetry.set("private_tours", existing);
-    return c.json({ success: true });
+    return c.json({ success: true, translated: !!translations });
   } catch (error) {
     return c.json({ success: false, error: String(error) }, 500);
   }
@@ -1281,7 +1399,30 @@ app.get("/make-server-3bd0ade8/blog-articles", async (c) => {
 app.post("/make-server-3bd0ade8/blog-articles", async (c) => {
   try {
     const { articles } = await c.req.json();
-    await kvWithRetry.set("blog_articles", articles);
+
+    // Auto-translate any article that has English content but is missing other language translations
+    const articlesToSave = await Promise.all(
+      (articles as any[]).map(async (article: any) => {
+        const en = article.translations?.en;
+        if (!en?.title) return article; // no English content yet
+
+        const missing = Object.keys(TARGET_LANGUAGES).filter(
+          (lang) => !article.translations?.[lang]?.title
+        );
+        if (missing.length === 0) return article; // all translations present
+
+        const newTranslations = await translateBlogArticle(article);
+        if (!newTranslations) return article;
+
+        return {
+          ...article,
+          translations: { ...article.translations, ...newTranslations },
+          translationsUpdatedAt: new Date().toISOString(),
+        };
+      })
+    );
+
+    await kvWithRetry.set("blog_articles", articlesToSave);
     return c.json({ success: true });
   } catch (error) {
     return c.json({ success: false, error: String(error) }, 500);

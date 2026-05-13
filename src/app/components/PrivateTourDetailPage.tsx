@@ -102,13 +102,13 @@ export function PrivateTourDetailPage() {
 
   useEffect(() => {
     loadTour();
-  }, [slug]);
+  }, [slug, language]);
 
   const loadTour = async () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/private-tours`,
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/private-tours${language && language !== 'en' ? `?lang=${language}` : ''}`,
         {
           method: "GET",
           headers: {
