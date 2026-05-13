@@ -109,11 +109,11 @@ const DEFAULT_PRICING: PricingSettings = {
 
 const TIME_SLOTS = [
   { value: "9:00", label: "9:00 AM" },
-  { value: "10:00", label: "10:00 AM", isGuided: true },
+  { value: "10:00", label: "10:00 AM" },
   { value: "11:00", label: "11:00 AM" },
   { value: "12:00", label: "12:00 PM" },
   { value: "13:00", label: "1:00 PM" },
-  { value: "14:00", label: "2:00 PM", isGuided: true },
+  { value: "14:00", label: "2:00 PM" },
   { value: "15:00", label: "3:00 PM" },
   { value: "16:00", label: "4:00 PM" },
 ];
@@ -422,7 +422,7 @@ export function BuyTicketPage() {
     return availability[date]?.[timeSlot] ?? 50; // Default 50 seats
   };
 
-  const guidedTourTimes = ["10:00", "14:00"];
+  const guidedTourTimes: string[] = []; // Insight tours disabled
   const isGuidedTourTime = guidedTourTimes.includes(
     formData.timeSlot,
   );
@@ -981,21 +981,27 @@ export function BuyTicketPage() {
             {currentStep === 1 && (
               <Card className="border-border p-6 sm:p-8 shadow-sm">
                 <div className="space-y-8">
-                  {/* Insight Tour Info Banner */}
-                  <div className="rounded-xl border border-accent/30 bg-accent/5 p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-accent flex items-center justify-center">
-                        <Info className="h-4 w-4 text-white" />
-                      </div>
-                      <div>
-                        <h4 className="text-accent mb-1 font-semibold">
-                          {ct.buyTicketPage.insightTourInfo.title}
-                        </h4>
-                        <p className="text-sm text-muted-foreground leading-relaxed">
-                          {ct.buyTicketPage.insightTourInfo.description}
-                        </p>
-                      </div>
-                    </div>
+                  {/* Day Pass Inclusions Banner */}
+                  <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
+                    <h4 className="text-primary mb-3 font-semibold flex items-center gap-2">
+                      <Check className="h-4 w-4" />
+                      What's included in your Day Pass
+                    </h4>
+                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4">
+                      {[
+                        "Hop-on hop-off tuk tuk all day",
+                        "Unlimited stops at all attractions",
+                        "Valid from first ride until closing time",
+                        "Friendly local driver on every ride",
+                        "Flexible — explore at your own pace",
+                        "No need to book each ride in advance",
+                      ].map((item) => (
+                        <li key={item} className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <Check className="h-3.5 w-3.5 mt-0.5 flex-shrink-0 text-primary" />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
 
                   {/* Sold Out Warning when ticket purchases disabled */}
@@ -1105,11 +1111,6 @@ export function BuyTicketPage() {
 
                         return (
                           <div key={slot.value} className="relative">
-                            {slot.isGuided && !isSoldOut && (
-                              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-white text-[9px] px-3 py-1 rounded-full font-semibold uppercase tracking-wider whitespace-nowrap z-10">
-                                {ct.buyTicketPage.insightTourInfo.badge}
-                              </div>
-                            )}
                             <button
                               type="button"
                               onClick={() => {
@@ -1122,8 +1123,7 @@ export function BuyTicketPage() {
                               }}
                               disabled={!formData.date || isSoldOut || loadingAvailability}
                               className={`
-                                w-full rounded-lg transition-all
-                                ${slot.isGuided && !isSoldOut ? "h-16 border-2 border-primary flex flex-col items-center justify-center gap-1 py-2" : "h-12 flex items-center justify-center"}
+                                w-full rounded-lg transition-all h-12 flex items-center justify-center
                                 ${
                                   isSelected
                                     ? "bg-accent text-white shadow-md"
@@ -1135,13 +1135,8 @@ export function BuyTicketPage() {
                               `}
                             >
                               <span className="font-semibold">{slot.label}</span>
-                              {slot.isGuided && !isSoldOut && (
-                                <span className="text-[11px] text-primary font-semibold">
-                                  +€{guidedTourSurcharge}
-                                </span>
-                              )}
                             </button>
-                            {formData.date && !isSoldOut && isLowAvailability && !slot.isGuided && (
+                            {formData.date && !isSoldOut && isLowAvailability && (
                               <div className="absolute -top-1 -right-1 bg-accent text-white text-[10px] px-1.5 py-0.5 rounded-full font-semibold">
                                 {seats} {ct.buyTicketPage.step1.seatsLeft}
                               </div>
