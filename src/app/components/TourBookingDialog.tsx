@@ -528,7 +528,7 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
               <Label htmlFor="phone">Phone *</Label>
               <Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+351 912 345 678" className="mt-1" />
             </div>
-            <div>
+            <div className="sm:col-span-2">
               <Label>Preferred Language</Label>
               <Select value={language} onValueChange={setLanguage}>
                 <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
@@ -538,6 +538,11 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
                   ))}
                 </SelectContent>
               </Select>
+              {!['English', 'Spanish', 'Portuguese'].includes(language) && (
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  We guarantee tours in English, Spanish and Portuguese. For other languages we'll do our best to accommodate you!
+                </p>
+              )}
             </div>
           </div>
 
