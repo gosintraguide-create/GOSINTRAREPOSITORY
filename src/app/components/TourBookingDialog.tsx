@@ -474,12 +474,15 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
                     <Plus className="h-4 w-4" />
                   </button>
                 </div>
-                {minGuests > 1 && numberOfPeople < minGuests && (
-                  <div className="mt-2 flex items-start gap-1.5 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800 border border-amber-200">
-                    <Info className="h-3.5 w-3.5 flex-shrink-0 mt-0.5" />
-                    <span>Heads up! This tour has a {minGuests}-guest minimum, so that's what we'll charge for.</span>
-                  </div>
-                )}
+                {/* Fixed-height slot — always present so it never shifts surrounding layout */}
+                <div className="mt-2 h-9">
+                  {minGuests > 1 && numberOfPeople < minGuests && (
+                    <div className="flex items-center gap-1.5 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800 border border-amber-200 h-full">
+                      <Info className="h-3.5 w-3.5 flex-shrink-0" />
+                      <span>Heads up! This tour has a {minGuests}-guest minimum, so that's what we'll charge for.</span>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="flex items-center justify-between rounded-xl bg-muted/40 px-4 py-3">
