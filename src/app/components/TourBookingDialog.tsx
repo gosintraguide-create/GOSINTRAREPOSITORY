@@ -128,6 +128,10 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
 
   // ── Pricing helpers ────────────────────────────────────────────────────────
 
+  // ── Guest limits (declared first — used in calculateTourPrice below) ─────────
+  const minGuests = tour.minPeople ?? 1;
+  const maxGuests = 20;
+
   const calculateTourPrice = (): number => {
     const { pricingMode, perPersonPrice, groupTiers, fixedPrice } = tour;
     // Always charge for at least minPeople even if fewer are selected
@@ -334,10 +338,8 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
     setClientSecret(null);
   };
 
-  // ── Guest count options ────────────────────────────────────────────────────
-
-  const minGuests = tour.minPeople ?? 1;
-  const maxGuests = 20;
+  // ── Guest count ─────────────────────────────────────────────────────────────
+  // minGuests / maxGuests declared above (before calculateTourPrice)
 
   // ══════════════════════════════════════════════════════════════════════════
   // RENDER
