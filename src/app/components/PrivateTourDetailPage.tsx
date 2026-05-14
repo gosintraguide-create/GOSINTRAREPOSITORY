@@ -17,6 +17,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
+import { analytics } from "../lib/analytics";
 
 const SITE_URL = "https://www.hoponsintra.com";
 
@@ -357,7 +358,7 @@ export function PrivateTourDetailPage() {
                 <Button
                   size="lg"
                   className="w-full"
-                  onClick={() => setShowBookingDialog(true)}
+                  onClick={() => { setShowBookingDialog(true); analytics.privateTourInquiry(); }}
                 >
                   <Calendar className="mr-2 h-4 w-4" />
                   Book This Tour

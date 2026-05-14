@@ -7,6 +7,7 @@ import {
   publicAnonKey,
 } from "../utils/supabase/info";
 import { getTranslation } from "../lib/translations";
+import { analytics } from "../lib/analytics";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";
@@ -480,6 +481,7 @@ export function BuyTicketPage() {
         setPaymentClientSecret(response.data.clientSecret);
         setPaymentIntentId(response.data.paymentIntentId);
         setPaymentInitError(null);
+        analytics.checkoutStarted(totalPrice, totalQuantity);
       } else {
         throw new Error(
           response.error || ct.buyTicketPage.paymentError.message,
@@ -715,6 +717,13 @@ export function BuyTicketPage() {
           "🔄 Navigating to confirmation page with booking:",
           response.data.booking.id,
         );
+        analytics.purchaseCompleted(
+          response.data.booking.id,
+          totalPrice,
+          totalQuantity,
+          isGuidedTourTime,
+          formData.selectedAttractions.length,
+        );
         onBookingComplete(response.data.booking);
       } else {
         // Check if inner response has error
@@ -773,6 +782,7 @@ export function BuyTicketPage() {
   const handlePaymentError = (error: string) => {
     console.error("Payment error:", error);
     toast.error(error || ct.buyTicketPage.toasts.paymentFailed);
+    analytics.paymentError(error);
     setIsSubmitting(false);
   };
 

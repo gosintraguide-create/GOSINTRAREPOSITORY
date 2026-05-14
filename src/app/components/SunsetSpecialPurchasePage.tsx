@@ -29,6 +29,7 @@ import {
 } from "../utils/supabase/info";
 import { toast } from 'sonner';
 import { useEditableContent } from "../lib/useEditableContent";
+import { analytics } from "../lib/analytics";
 
 interface SunsetSpecialPurchasePageProps {
   onNavigate: (page: string) => void;
@@ -194,6 +195,7 @@ export function SunsetSpecialPurchasePage() {
         if (data.clientSecret) {
           setClientSecret(data.clientSecret);
           setShowPayment(true);
+          analytics.checkoutStarted(totalPrice, booking!.passengers.length);
         } else {
           toast.error(
             "Failed to initialize payment. Please try again.",
@@ -249,6 +251,7 @@ export function SunsetSpecialPurchasePage() {
         sessionStorage.removeItem("sunset-special-active");
 
         toast.success("Sunset special added to your booking!");
+        analytics.sunsetSpecialPurchased(booking!.id, totalPrice, booking!.passengers.length);
 
         // Navigate to confirmation or booking details
         setTimeout(() => {
