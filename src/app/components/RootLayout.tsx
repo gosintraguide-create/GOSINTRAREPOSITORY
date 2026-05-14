@@ -266,6 +266,32 @@ export function RootLayout() {
     const shouldIndex = (meta as any).index !== false;
     const canonicalUrl = `${canonicalBase}${location.pathname}`;
 
+    // ── Hreflang ─────────────────────────────────────────────────────────────
+    // Tells Google this page exists in 7 languages and where to find each one.
+    // Called for every route (including detail pages) so Google can always
+    // discover the language variants. Remove stale tags first to prevent
+    // accumulation across navigations.
+    const setHreflangTags = (path: string) => {
+      document.querySelectorAll('link[rel="alternate"][hreflang]').forEach(el => el.remove());
+      const langs = ['en', 'pt', 'es', 'fr', 'de', 'nl', 'it'];
+      langs.forEach((lang) => {
+        const link = document.createElement('link');
+        link.rel = 'alternate';
+        link.setAttribute('hreflang', lang);
+        link.href = lang === 'en'
+          ? `${canonicalBase}${path}`
+          : `${canonicalBase}${path}?lang=${lang}`;
+        document.head.appendChild(link);
+      });
+      // x-default points to the English (canonical) URL
+      const def = document.createElement('link');
+      def.rel = 'alternate';
+      def.setAttribute('hreflang', 'x-default');
+      def.href = `${canonicalBase}${path}`;
+      document.head.appendChild(def);
+    };
+    // ─────────────────────────────────────────────────────────────────────────
+
     // Detail pages (attractions/:slug, blog/:slug, private-tours/:slug) use
     // react-helmet-async <Helmet> inside the page component to set title,
     // canonical, OG, and description. If RootLayout ALSO writes those tags we
@@ -277,8 +303,9 @@ export function RootLayout() {
       (location.pathname.startsWith('/private-tours/') && location.pathname.split('/').length > 2 && location.pathname.split('/')[2]);
 
     if (isDetailPage) {
-      // Only set robots — everything else belongs to the page's <Helmet>
+      // Only set robots + hreflang — everything else belongs to the page's <Helmet>
       updateMeta("name", "robots", "index, follow");
+      setHreflangTags(location.pathname);
       return;
     }
 
@@ -303,6 +330,9 @@ export function RootLayout() {
     canonical.rel = "canonical";
     canonical.href = canonicalUrl;
     document.head.appendChild(canonical);
+
+    // Hreflang — language alternates for every page
+    setHreflangTags(location.pathname);
 
     // Open Graph
     const defaultOgImage = "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop&q=80";
