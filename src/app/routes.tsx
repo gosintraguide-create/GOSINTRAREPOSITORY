@@ -181,7 +181,7 @@ export const router = createBrowserRouter([
             description:
               "Get instant help with your Sintra day pass. Chat with our team via WhatsApp for booking assistance, questions, and travel advice.",
             keywords: "Sintra contact, Hop On Sintra support, Sintra help, WhatsApp contact",
-            index: true,
+            index: false,
           },
         },
       },

@@ -37,7 +37,6 @@ import {
   type BlogArticle,
   type BlogCategory,
 } from "../lib/blogManager";
-import { loadContentWithLanguage } from "../lib/contentManager";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
 import { SmallSpinner } from "./LoadingIndicator";
 
@@ -50,7 +49,6 @@ export function BlogPage() {
   const { language = "en", onNavigate } = useOutletContext<OutletContext>();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const content = loadContentWithLanguage(language);
   const tb = getTranslation(language).blog;
   const [articles, setArticles] = useState<BlogArticle[]>([]);
   const [categories, setCategories] = useState<BlogCategory[]>([]);
@@ -60,48 +58,9 @@ export function BlogPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
-  // Inline SEO via direct DOM manipulation (replaces SEOHead component)
-  useEffect(() => {
-    const seoTitle = content.seo?.blog?.title || "Sintra Travel Guide & Blog - Expert Tips, Guides & Itineraries";
-    const seoDescription = content.seo?.blog?.description || "Comprehensive travel guides for visiting Sintra, Portugal. Expert tips on transportation, attractions, planning your trip, and making the most of your Sintra adventure.";
-    const seoKeywords = content.seo?.blog?.keywords || "Sintra travel guide, Sintra blog, visit Sintra, Sintra tips, Pena Palace guide, Sintra itinerary, how to visit Sintra, Sintra Portugal";
-    const canonicalPath = "/blog";
-    const ogImage = "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop";
-
-    document.title = seoTitle;
-
-    const updateMetaTag = (name: string, value: string, property = false) => {
-      const attribute = property ? "property" : "name";
-      let el = document.querySelector(`meta[${attribute}="${name}"]`);
-      if (!el) {
-        el = document.createElement("meta");
-        el.setAttribute(attribute, name);
-        document.head.appendChild(el);
-      }
-      el.setAttribute("content", value);
-    };
-
-    updateMetaTag("description", seoDescription);
-    updateMetaTag("keywords", seoKeywords);
-    updateMetaTag("robots", "index, follow");
-    updateMetaTag("og:title", seoTitle, true);
-    updateMetaTag("og:description", seoDescription, true);
-    updateMetaTag("og:image", ogImage, true);
-    updateMetaTag("og:type", "website", true);
-    updateMetaTag("og:url", `https://www.hoponsintra.com${canonicalPath}`, true);
-    updateMetaTag("twitter:card", "summary_large_image");
-    updateMetaTag("twitter:title", seoTitle);
-    updateMetaTag("twitter:description", seoDescription);
-    updateMetaTag("twitter:image", ogImage);
-
-    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
-    if (!canonical) {
-      canonical = document.createElement("link");
-      canonical.rel = "canonical";
-      document.head.appendChild(canonical);
-    }
-    canonical.href = `https://www.hoponsintra.com${canonicalPath}`;
-  }, [language, content]);
+  // SEO for /blog is handled entirely by RootLayout via the route handle meta.
+  // No inline DOM manipulation needed here — a second writer would produce
+  // duplicate canonical / description tags which confuse Google.
 
   useEffect(() => {
     const loadData = async () => {
