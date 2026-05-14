@@ -17,7 +17,8 @@ import { readFileSync, writeFileSync, mkdirSync,
 import { join, extname }                           from 'path';
 import { fileURLToPath }                           from 'url';
 import { dirname }                                 from 'path';
-import puppeteer                                   from 'puppeteer';
+import chromium                                    from '@sparticuz/chromium';
+import puppeteer                                   from 'puppeteer-core';
 
 // ─── paths ───────────────────────────────────────────────────────────────────
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -178,15 +179,15 @@ async function main() {
 
   const server = await startServer();
 
+  // @sparticuz/chromium provides a statically-linked Chromium binary that
+  // works in restricted Linux environments (Vercel build, Lambda, etc.)
+  // without needing system libraries like libgbm or libnss3.
+  const executablePath = await chromium.executablePath();
   const browser = await puppeteer.launch({
-    headless: true,
-    args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-dev-shm-usage',
-      '--disable-gpu',
-      '--disable-extensions',
-    ],
+    args:            chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath,
+    headless:        chromium.headless,
   });
 
   const page = await browser.newPage();

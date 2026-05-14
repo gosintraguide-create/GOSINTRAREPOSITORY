@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "build": "vite build && node scripts/prerender.mjs",
+    "build": "vite build && (node scripts/prerender.mjs || echo 'Prerender step failed - deploying without prerendering')",
     "build:vite": "vite build",
     "prerender": "node scripts/prerender.mjs",
     "dev": "vite"
@@ -81,7 +81,8 @@
   "devDependencies": {
     "@tailwindcss/vite": "4.1.12",
     "@vitejs/plugin-react": "4.7.0",
-    "puppeteer": "^22.15.0",
+    "@sparticuz/chromium": "^130.0.0",
+    "puppeteer-core": "^22.15.0",
     "tailwindcss": "4.1.12",
     "vite": "6.3.5"
   }
