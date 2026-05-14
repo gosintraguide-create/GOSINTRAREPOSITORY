@@ -31,9 +31,10 @@ const SUPABASE_ANON_KEY =
   'eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR3aXpuYWVmZXFuZHVnbG1jaXZyIiwicm9sZSI6' +
   'ImFub24iLCJpYXQiOjE3NjAxNzc5NzYsImV4cCI6MjA3NTc1Mzk3Nn0.' +
   'cTO16eeGusYnwjVwVVt1i4M8gQZ_MtDxyv9wYFHBVLo';
-const TOURS_API =
-  'https://dwiznaefeqnduglmcivr.supabase.co/functions/v1/' +
-  'make-server-3bd0ade8/private-tours';
+const BASE_API =
+  'https://dwiznaefeqnduglmcivr.supabase.co/functions/v1/make-server-3bd0ade8';
+const TOURS_API    = `${BASE_API}/private-tours`;
+const ARTICLES_API = `${BASE_API}/blog-articles`;
 
 // ─── MIME map for the local file server ──────────────────────────────────────
 const MIME = {
@@ -95,6 +96,31 @@ async function getPrivateTourRoutes() {
   }
 }
 
+// ─── Fetch published blog article slugs from Supabase ────────────────────────
+async function getBlogArticleRoutes() {
+  try {
+    console.log('  Fetching published blog articles from Supabase…');
+    const res = await fetch(ARTICLES_API, {
+      headers: {
+        Authorization:  `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    // API may return { articles: [...] } or a plain array
+    const articles = Array.isArray(data) ? data : (data.articles || []);
+    const routes = articles
+      .filter((a) => a.isPublished !== false && a.status !== 'draft' && (a.slug || a.id))
+      .map((a) => `/blog/${a.slug || a.id}`);
+    console.log(`  → ${routes.length} blog article(s) found`);
+    return routes;
+  } catch (err) {
+    console.warn(`  ⚠  Could not fetch blog articles: ${err.message}`);
+    return [];
+  }
+}
+
 // ─── Local static file server for dist/ ──────────────────────────────────────
 function startServer() {
   const server = createServer((req, res) => {
@@ -142,8 +168,11 @@ function saveHtml(route, html) {
 async function main() {
   console.log('\n🕷  Go Sintra prerenderer starting…\n');
 
-  const tourRoutes = await getPrivateTourRoutes();
-  const allRoutes  = [...STATIC_ROUTES, ...tourRoutes];
+  const [tourRoutes, blogRoutes] = await Promise.all([
+    getPrivateTourRoutes(),
+    getBlogArticleRoutes(),
+  ]);
+  const allRoutes = [...STATIC_ROUTES, ...tourRoutes, ...blogRoutes];
 
   console.log(`\n📄 Rendering ${allRoutes.length} pages\n`);
 
@@ -179,9 +208,12 @@ async function main() {
         timeout: 30_000,
       });
 
-      // For private tour detail pages, additionally wait for the <h1>
-      // (the tour title) to appear in the DOM before capturing.
-      if (route.startsWith('/private-tours/') && route !== '/private-tours') {
+      // For Supabase-backed detail pages wait for the <h1> (title) to appear
+      // before capturing — ensures the async fetch has completed.
+      const isSupabasePage =
+        (route.startsWith('/private-tours/') && route !== '/private-tours') ||
+        (route.startsWith('/blog/')          && route !== '/blog');
+      if (isSupabasePage) {
         await page.waitForSelector('h1', { timeout: 8_000 }).catch(() => {});
       }
 
