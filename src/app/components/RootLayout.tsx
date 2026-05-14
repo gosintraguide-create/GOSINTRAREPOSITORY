@@ -263,13 +263,29 @@ export function RootLayout() {
       return null;
     };
 
-    // Get dynamic meta for detail pages or fall back to route meta
+    const shouldIndex = (meta as any).index !== false;
+    const canonicalUrl = `${canonicalBase}${location.pathname}`;
+
+    // Detail pages (attractions/:slug, blog/:slug, private-tours/:slug) use
+    // react-helmet-async <Helmet> inside the page component to set title,
+    // canonical, OG, and description. If RootLayout ALSO writes those tags we
+    // get duplicate <link rel="canonical"> elements which confuse Google.
+    // So on detail pages we only set the robots meta and exit early.
+    const isDetailPage =
+      (location.pathname.startsWith('/attractions/') && location.pathname.split('/').length > 2 && location.pathname.split('/')[2]) ||
+      (location.pathname.startsWith('/blog/') && location.pathname.split('/').length > 2 && location.pathname.split('/')[2]) ||
+      (location.pathname.startsWith('/private-tours/') && location.pathname.split('/').length > 2 && location.pathname.split('/')[2]);
+
+    if (isDetailPage) {
+      // Only set robots — everything else belongs to the page's <Helmet>
+      updateMeta("name", "robots", "index, follow");
+      return;
+    }
+
     const dynamicMeta = getDynamicMetaForDetailPage();
     const pageTitle = dynamicMeta?.title || (meta as any).title || "Hop On Sintra";
     const pageDesc = dynamicMeta?.description || (meta as any).description || "Explore Sintra with unlimited hop-on/hop-off day pass";
     const pageKeywords = dynamicMeta?.keywords || (meta as any).keywords;
-    const shouldIndex = (meta as any).index !== false;
-    const canonicalUrl = `${canonicalBase}${location.pathname}`;
 
     // Title
     document.title = pageTitle;
@@ -281,14 +297,12 @@ export function RootLayout() {
     }
     updateMeta("name", "robots", shouldIndex ? "index, follow" : "noindex, nofollow");
 
-    // Canonical
-    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
-    if (!canonical) {
-      canonical = document.createElement("link");
-      canonical.rel = "canonical";
-      document.head.appendChild(canonical);
-    }
+    // Canonical — always ensure exactly one tag exists
+    document.querySelectorAll('link[rel="canonical"]').forEach(el => el.remove());
+    const canonical = document.createElement("link");
+    canonical.rel = "canonical";
     canonical.href = canonicalUrl;
+    document.head.appendChild(canonical);
 
     // Open Graph
     const defaultOgImage = "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop&q=80";

@@ -1,10 +1,14 @@
 User-agent: *
 Allow: /
+
+# Utility / internal pages — no indexing value
 Disallow: /admin
 Disallow: /driver
+Disallow: /qr-scanner
 Disallow: /buy-ticket
-Disallow: /404
 Disallow: /manage-booking
+Disallow: /request-pickup
 Disallow: /sunset-special
+Disallow: /404
 
 Sitemap: https://www.hoponsintra.com/sitemap.xml
