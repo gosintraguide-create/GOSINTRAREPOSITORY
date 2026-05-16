@@ -69,18 +69,7 @@ export function DiagnosticsPage({
     useState(false);
   const [bookingIdLookup, setBookingIdLookup] = useState("");
   const [resetting, setResetting] = useState(false);
-  const [resetUsed, setResetUsed] = useState(false);
   const [resetResult, setResetResult] = useState<any>(null);
-
-  // Check if reset has been used before
-  useEffect(() => {
-    const hasReset = localStorage.getItem(
-      "hoponsintra_system_reset_used",
-    );
-    if (hasReset === "true") {
-      setResetUsed(true);
-    }
-  }, []);
 
   const testPDFGeneration = async () => {
     setTesting(true);
@@ -584,13 +573,6 @@ export function DiagnosticsPage({
           deletedCount: data.deletedCount,
           details: data.details,
         });
-
-        // Mark reset as used
-        localStorage.setItem(
-          "hoponsintra_system_reset_used",
-          "true",
-        );
-        setResetUsed(true);
 
         toast.success(
           `✅ System reset complete! Deleted ${data.deletedCount} items.`,
@@ -1420,17 +1402,15 @@ export function DiagnosticsPage({
           <DatabaseDiagnostics />
         </div>
 
-        {/* System Reset Card - One-time use */}
-        {!resetUsed && (
-          <Card className="mt-6 border-red-500">
+        {/* System Reset Card */}
+        <Card className="mt-6 border-red-500">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-red-600">
-                🔴 Pre-Deployment System Reset
+                🔴 System Reset
               </CardTitle>
               <CardDescription>
-                One-time use button to delete all test data
-                before going live. This button will disappear
-                after use.
+                Delete all bookings, statistics, and test data
+                to start fresh. Requires double confirmation.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -1445,7 +1425,7 @@ export function DiagnosticsPage({
                     Resetting System...
                   </>
                 ) : (
-                  <>🔴 Reset All Data (One-Time Use)</>
+                  <>🔴 Reset All Data</>
                 )}
               </Button>
 
@@ -1539,13 +1519,11 @@ export function DiagnosticsPage({
                   real customers.
                 </p>
                 <p className="mt-2 text-xs font-semibold text-blue-900">
-                  💡 The button will permanently disappear after
-                  use.
+                  💡 Use this whenever you need to clear test data and start fresh.
                 </p>
               </div>
             </CardContent>
           </Card>
-        )}
 
         {/* Debug Tools */}
         <Card className="mt-6">
