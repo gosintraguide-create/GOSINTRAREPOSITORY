@@ -30,19 +30,19 @@ export function ProductCardEditor({
   addArrayItem,
   removeArrayItem,
 }: ProductCardEditorProps) {
-  const [editingCard, setEditingCard] = useState<"daypass" | "travelGuide" | "monuments" | null>(null);
+  const [editingCard, setEditingCard] = useState<"daypass" | "travelGuide" | "privateTours" | null>(null);
 
   const cardTitles = {
     daypass: "Full Day Pass Card",
     travelGuide: "Travel Guide Card",
-    monuments: "Monuments Card",
+    privateTours: "Private Tours Card",
   };
 
-  const getCardData = (cardType: "daypass" | "travelGuide" | "monuments") => {
+  const getCardData = (cardType: "daypass" | "travelGuide" | "privateTours") => {
     return content.homepage.productCards?.[cardType];
   };
 
-  const handleEditCard = (cardType: "daypass" | "travelGuide" | "monuments") => {
+  const handleEditCard = (cardType: "daypass" | "travelGuide" | "privateTours") => {
     setEditingCard(cardType);
   };
 
@@ -85,15 +85,15 @@ export function ProductCardEditor({
             <Edit className="h-4 w-4" />
           </Button>
 
-          {/* Monuments Card Button */}
+          {/* Private Tours Card Button */}
           <Button
             variant="outline"
             className="w-full justify-between"
-            onClick={() => handleEditCard("monuments")}
+            onClick={() => handleEditCard("privateTours")}
           >
             <span className="flex items-center gap-2">
               <ImageIcon className="h-4 w-4" />
-              {cardTitles.monuments}
+              {cardTitles.privateTours}
             </span>
             <Edit className="h-4 w-4" />
           </Button>

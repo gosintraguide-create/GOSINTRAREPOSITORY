@@ -48,7 +48,7 @@ export interface ComprehensiveContent {
         content: string;
         buttonText: string;
       };
-      monuments: {
+      privateTours: {
         images: Array<{ src: string; alt: string }>;
         title: string;
         description: string;
@@ -627,12 +627,12 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
         content: "Discover the best of Sintra with our comprehensive travel guides. From the best time to visit each palace to secret viewpoints locals love, our blog shares insider knowledge to help you make the most of your Sintra adventure.",
         buttonText: "Read Travel Guides",
       },
-      monuments: {
+      privateTours: {
         images: [],
-        title: "Sintra's Top Attractions",
-        description: "Explore UNESCO World Heritage monuments",
-        content: "Sintra is home to some of Portugal's most spectacular palaces and gardens. From the colorful Pena Palace perched atop the hills to the mystical Quinta da Regaleira with its enchanting gardens, each monument tells a unique story.",
-        buttonText: "View All Attractions",
+        title: "Private Tours of Sintra",
+        description: "Personalized experiences with expert local guides",
+        content: "Experience Sintra your way with a private tour. Our expert local guides craft custom itineraries tailored to your interests, pace, and group size. From hidden gems to iconic palaces, discover the real Sintra with someone who knows it best.",
+        buttonText: "Explore Private Tours",
       },
     },
     quickLinks: {
