@@ -6,7 +6,6 @@ import { Badge } from "./ui/badge";
 import { Card } from "./ui/card";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import {
-  ArrowLeft,
   Ticket,
   Clock,
   Star,
@@ -20,6 +19,8 @@ import {
   DEFAULT_COMPREHENSIVE_CONTENT,
 } from "../lib/comprehensiveContent";
 import { getTranslation } from "../lib/translations/loader";
+import { Breadcrumbs } from "./Breadcrumbs";
+import { Link } from "react-router";
 import Slider from "react-slick";
 import "../../styles/slick-custom.css";
 
@@ -294,17 +295,14 @@ export function AttractionDetailPage() {
         />
       )}
 
-      {/* Back Button */}
+      {/* Breadcrumb + Back Button */}
       <div className="border-b border-border bg-white">
         <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-          <Button
-            variant="ghost"
-            onClick={() => onNavigate("attractions")}
-            className="gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to All Attractions
-          </Button>
+          <Breadcrumbs items={[
+            { label: "Home", href: "/" },
+            { label: "Attractions", href: "/attractions" },
+            { label: attraction.name, href: `/attractions/${attractionId}` },
+          ]} />
         </div>
       </div>
 
@@ -650,6 +648,62 @@ export function AttractionDetailPage() {
           </div>
         </div>
       </section>
+
+      {/* Other Attractions */}
+      {(() => {
+        const allAttractionIds = Object.keys(attractionAddresses);
+        const otherAttractions = allAttractionIds
+          .filter((id) => id !== attractionId)
+          .slice(0, 3)
+          .map((id) => {
+            const translated = (getTranslation(language).attractions as any)[id];
+            const comprehensive = DEFAULT_COMPREHENSIVE_CONTENT.attractions.attractionDetails[id];
+            return translated || comprehensive ? {
+              id,
+              name: translated?.name || comprehensive?.name || id,
+              description: translated?.description || comprehensive?.shortDescription || "",
+              imageUrl: comprehensive?.imageUrl || translated?.imageUrl || "",
+            } : null;
+          })
+          .filter(Boolean) as { id: string; name: string; description: string; imageUrl: string }[];
+
+        if (otherAttractions.length === 0) return null;
+
+        return (
+          <section className="border-t border-border bg-secondary/20 py-10 sm:py-14">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <h2 className="mb-6 text-xl font-semibold text-foreground sm:text-2xl">
+                Explore More Attractions
+              </h2>
+              <div className="grid gap-4 sm:grid-cols-3">
+                {otherAttractions.map((a) => (
+                  <Link
+                    key={a.id}
+                    to={`/attractions/${a.id}`}
+                    className="group overflow-hidden rounded-xl border border-border bg-white shadow-sm transition-shadow hover:shadow-md"
+                  >
+                    <div className="h-40 overflow-hidden">
+                      <img
+                        src={a.imageUrl}
+                        alt={a.name}
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="p-4">
+                      <h3 className="mb-1 font-semibold text-foreground">{a.name}</h3>
+                      <p className="line-clamp-2 text-sm text-muted-foreground">{a.description}</p>
+                      <span className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-primary">
+                        Learn more <ChevronRight className="h-3.5 w-3.5" />
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      })()}
     </div>
   );
 }

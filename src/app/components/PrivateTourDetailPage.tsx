@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
 import { analytics } from "../lib/analytics";
+import { Breadcrumbs } from "./Breadcrumbs";
+import { Link } from "react-router";
 
 const SITE_URL = "https://www.hoponsintra.com";
 
@@ -98,6 +100,7 @@ export function PrivateTourDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   
   const [tour, setTour] = useState<PrivateTour | null>(null);
+  const [otherTours, setOtherTours] = useState<PrivateTour[]>([]);
   const [loading, setLoading] = useState(true);
   const [showBookingDialog, setShowBookingDialog] = useState(false);
 
@@ -120,6 +123,7 @@ export function PrivateTourDetailPage() {
         const tours: PrivateTour[] = data.tours || [];
         const foundTour = tours.find((t) => t.id === slug);
         setTour(foundTour || null);
+        setOtherTours(tours.filter((t) => t.id !== slug && t.published).slice(0, 3));
       }
     } catch (error) {
       console.error("Error loading tour:", error);
@@ -256,17 +260,14 @@ export function PrivateTourDetailPage() {
         )}
       </Helmet>
 
-      {/* Back Button */}
+      {/* Breadcrumb */}
       <div className="border-b border-border bg-white">
         <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-          <Button
-            variant="ghost"
-            onClick={() => onNavigate("private-tours")}
-            className="gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Private Tours
-          </Button>
+          <Breadcrumbs items={[
+            { label: "Home", href: "/" },
+            { label: "Private Tours", href: "/private-tours" },
+            { label: tour.title, href: `/private-tours/${tour.id}` },
+          ]} />
         </div>
       </div>
 
@@ -390,6 +391,44 @@ export function PrivateTourDetailPage() {
             availableTimeSlots: tour.availableTimeSlots,
           }}
         />
+      )}
+
+      {/* Other Private Tours */}
+      {otherTours.length > 0 && (
+        <section className="border-t border-border bg-secondary/20 py-10 sm:py-14">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <h2 className="mb-6 text-xl font-semibold text-foreground sm:text-2xl">
+              More Private Tours
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-3">
+              {otherTours.map((t) => (
+                <Link
+                  key={t.id}
+                  to={`/private-tours/${t.id}`}
+                  className="group overflow-hidden rounded-xl border border-border bg-white shadow-sm transition-shadow hover:shadow-md"
+                >
+                  {t.heroImage && (
+                    <div className="h-40 overflow-hidden">
+                      <img
+                        src={t.heroImage}
+                        alt={t.title}
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    </div>
+                  )}
+                  <div className="p-4">
+                    <h3 className="mb-1 font-semibold text-foreground">{t.title}</h3>
+                    <p className="line-clamp-2 text-sm text-muted-foreground">{t.description}</p>
+                    <span className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-primary">
+                      View tour <ChevronRight className="h-3.5 w-3.5" />
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
       )}
     </div>
   );

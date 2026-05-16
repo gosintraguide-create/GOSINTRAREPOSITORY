@@ -332,8 +332,56 @@ export function HomePage() {
     };
   }, []);
 
+  const localBusinessSchema = {
+    "@context": "https://schema.org",
+    "@type": ["LocalBusiness", "TouristInformationCenter"],
+    "name": "Hop On Sintra",
+    "alternateName": "Go Sintra",
+    "url": "https://www.hoponsintra.com",
+    "logo": "https://www.hoponsintra.com/logo.png",
+    "image": "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop&q=80",
+    "description": "Hop-on hop-off tuk tuk day pass for Sintra's UNESCO palaces with unlimited rides and guaranteed seating. Also offering private tours of Sintra.",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Avenida Dr. Miguel Bombarda",
+      "addressLocality": "Sintra",
+      "postalCode": "2710-591",
+      "addressCountry": "PT"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 38.7978,
+      "longitude": -9.3899
+    },
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+        "opens": "09:00",
+        "closes": "19:00"
+      }
+    ],
+    "priceRange": "€€",
+    "currenciesAccepted": "EUR",
+    "paymentAccepted": "Credit Card, Cash",
+    "areaServed": {
+      "@type": "Place",
+      "name": "Sintra, Portugal"
+    },
+    "sameAs": [
+      "https://www.tripadvisor.com/Attraction_Review-g189164-d23541806-Reviews-Hop_On_Sintra-Sintra_Sintra_Municipality_Lisbon_District_Central_Portugal.html",
+      "https://www.google.com/maps/search/Hop+On+Sintra+Sintra+Portugal"
+    ]
+  };
+
   return (
     <div className="flex-1">
+      {/* LocalBusiness structured data for Google */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+      />
+
       {/* Hero Section - Visual Impact with Large Image */}
       <HeroSection
         language={language}

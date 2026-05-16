@@ -1,5 +1,6 @@
 import { Mail, MapPin, Clock, Phone } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Link } from "react-router";
 import {
   loadContent,
   syncContentFromDatabase,
@@ -66,52 +67,39 @@ export function Footer({
             </h3>
             <ul className="space-y-2 text-muted-foreground">
               <li>
-                <button
-                  className="w-full text-left py-1 transition-colors hover:text-primary"
-                  onClick={() => onNavigate?.("hop-on-service")}
-                >
+                <Link to="/hop-on-service" className="py-1 transition-colors hover:text-primary block">
                   Hop On Service
-                </button>
+                </Link>
               </li>
               <li>
-                <button
-                  className="w-full text-left py-1 transition-colors hover:text-primary"
-                  onClick={() => onNavigate?.("attractions")}
-                >
+                <Link to="/attractions" className="py-1 transition-colors hover:text-primary block">
                   {legacyContent.footer.attractions}
-                </button>
+                </Link>
               </li>
               <li>
-                <button
-                  className="w-full text-left py-1 transition-colors hover:text-primary"
-                  onClick={() => onNavigate?.("blog")}
-                >
+                <Link to="/private-tours" className="py-1 transition-colors hover:text-primary block">
+                  {legacyContent.footer.privateTours || "Private Tours"}
+                </Link>
+              </li>
+              <li>
+                <Link to="/blog" className="py-1 transition-colors hover:text-primary block">
                   {legacyContent.footer.travelGuide}
-                </button>
+                </Link>
               </li>
               <li>
-                <button
-                  className="w-full text-left py-1 transition-colors hover:text-primary"
-                  onClick={() => onNavigate?.("buy-ticket")}
-                >
+                <Link to="/buy-ticket" className="py-1 transition-colors hover:text-primary block">
                   {legacyContent.footer.buyDayPass}
-                </button>
+                </Link>
               </li>
               <li>
-                <button
-                  className="w-full text-left py-1 transition-colors hover:text-primary"
-                  onClick={() => onNavigate?.("about")}
-                >
+                <Link to="/about" className="py-1 transition-colors hover:text-primary block">
                   {t.about}
-                </button>
+                </Link>
               </li>
               <li>
-                <button
-                  className="w-full text-left py-1 transition-colors hover:text-primary"
-                  onClick={() => onNavigate?.("route-map")}
-                >
+                <Link to="/route-map" className="py-1 transition-colors hover:text-primary block">
                   {t.routeMap || "Route Map"}
-                </button>
+                </Link>
               </li>
             </ul>
           </div>
@@ -147,18 +135,18 @@ export function Footer({
             {legacyContent.footer.allRightsReserved}
           </p>
           <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
-            <button
-              onClick={() => onNavigate?.("privacy-policy")}
+            <Link
+              to="/privacy-policy"
               className="text-muted-foreground hover:text-accent transition-colors text-sm py-1"
             >
               {legacyContent.footer.privacyPolicy}
-            </button>
-            <button
-              onClick={() => onNavigate?.("terms-of-service")}
+            </Link>
+            <Link
+              to="/terms-of-service"
               className="text-muted-foreground hover:text-accent transition-colors text-sm py-1"
             >
               {legacyContent.footer.terms}
-            </button>
+            </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="text-muted-foreground hover:text-accent transition-colors text-sm py-1 min-h-[44px] min-w-[44px] px-2">

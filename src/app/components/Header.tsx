@@ -1,5 +1,6 @@
 import { Menu, X } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
+import { Link, useLocation } from "react-router";
 import { Button } from "./ui/button";
 import { LanguageSelector } from "./LanguageSelector";
 import { Logo } from "./Logo";
@@ -16,6 +17,7 @@ interface HeaderProps {
 export function Header({ currentPage, onNavigate, language, onLanguageChange }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollY, setScrollY] = useState(0);
+  const location = useLocation();
   const menuRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const t = getUITranslation(language);
@@ -101,34 +103,32 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
             </Button>
 
             {/* Logo - centered on mobile, left-aligned on desktop */}
-            <button
-              onClick={() => {
-                onNavigate("home");
-                closeMenu();
-              }}
+            <Link
+              to="/"
+              onClick={closeMenu}
               className="group absolute left-1/2 -translate-x-1/2 lg:relative lg:left-auto lg:translate-x-0 flex items-center transition-all hover:opacity-90 flex-shrink-0"
               aria-label="Hop On Sintra - Home"
             >
               <div className="h-[30px] w-auto sm:h-10">
                 <Logo />
               </div>
-            </button>
+            </Link>
 
             {/* Desktop Navigation */}
             <nav className="hidden items-center gap-2 xl:gap-4 lg:flex lg:ml-6 xl:ml-12 flex-shrink min-w-0" aria-label="Main navigation">
               {navItems.map((item) => (
-                <button
+                <Link
                   key={item.id}
-                  onClick={() => onNavigate(item.id)}
+                  to={`/${item.id}`}
                   className={`transition-all whitespace-nowrap text-sm md:text-base xl:text-lg px-3 py-2 rounded-md flex-shrink-0 ${
-                    currentPage === item.id
+                    location.pathname === `/${item.id}`
                       ? "text-primary font-medium"
                       : "text-muted-foreground hover:text-primary"
                   }`}
-                  aria-current={currentPage === item.id ? "page" : undefined}
+                  aria-current={location.pathname === `/${item.id}` ? "page" : undefined}
                 >
                   {item.label}
-                </button>
+                </Link>
               ))}
               <div className="flex-shrink-0">
                 <LanguageSelector
@@ -139,12 +139,12 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
               <div className="flex-shrink-0">
                 <UserProfile onNavigate={onNavigate} language={language} />
               </div>
-              <Button 
+              <Button
+                asChild
                 size="lg"
                 className="bg-accent hover:bg-accent/90 shadow-lg hover:shadow-xl transition-all hover:scale-105 flex-shrink-0 text-xs xl:text-base px-3 xl:px-6 py-2"
-                onClick={() => onNavigate("buy-ticket")}
               >
-                {t.buyTicket}
+                <Link to="/buy-ticket">{t.buyTicket}</Link>
               </Button>
             </nav>
 
@@ -167,75 +167,64 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
         >
           <nav className="mx-auto max-w-7xl space-y-1 px-4 py-4 sm:px-6 lg:px-8 safe-bottom">
             <Button
-              onClick={() => {
-                onNavigate("buy-ticket");
-                closeMenu();
-              }}
+              asChild
               size="lg"
               className="w-full bg-accent hover:bg-accent/90 mb-3 h-12 text-base"
             >
-              {t.buyTicket}
+              <Link to="/buy-ticket" onClick={closeMenu}>{t.buyTicket}</Link>
             </Button>
-            
+
             {navItems.map((item) => (
-              <button
+              <Link
                 key={item.id}
-                onClick={() => {
-                  onNavigate(item.id);
-                  closeMenu();
-                }}
-                className={`block w-full rounded-xl px-4 py-3.5 text-left text-base transition-colors ${
-                  currentPage === item.id
+                to={`/${item.id}`}
+                onClick={closeMenu}
+                className={`block w-full rounded-xl px-4 py-3.5 text-base transition-colors ${
+                  location.pathname === `/${item.id}`
                     ? "bg-primary/10 text-primary font-medium"
                     : "text-foreground hover:bg-secondary hover:text-primary"
                 }`}
-                aria-current={currentPage === item.id ? "page" : undefined}
+                aria-current={location.pathname === `/${item.id}` ? "page" : undefined}
               >
                 {item.label}
-              </button>
+              </Link>
             ))}
 
             {/* Mobile quick links */}
             <div className="border-t border-border pt-3 mt-3">
-              <button
-                onClick={() => {
-                  onNavigate("about");
-                  closeMenu();
-                }}
+              <Link
+                to="/about"
+                onClick={closeMenu}
                 className={`block w-full rounded-xl px-4 py-3 text-left text-sm transition-colors ${
-                  currentPage === "about"
+                  location.pathname === "/about"
                     ? "bg-primary/10 text-primary"
                     : "text-muted-foreground hover:bg-secondary hover:text-primary"
                 }`}
               >
                 {t.about}
-              </button>
-              <button
-                onClick={() => {
-                  onNavigate("live-chat");
-                  closeMenu();
-                }}
+              </Link>
+              <Link
+                to="/live-chat"
+                onClick={closeMenu}
                 className={`block w-full rounded-xl px-4 py-3 text-left text-sm transition-colors ${
-                  currentPage === "live-chat"
+                  location.pathname === "/live-chat"
                     ? "bg-primary/10 text-primary"
                     : "text-muted-foreground hover:bg-secondary hover:text-primary"
                 }`}
               >
                 {t.contactInfo || "Contact"}
-              </button>
-              <button
-                onClick={() => {
-                  onNavigate("route-map");
-                  closeMenu();
-                }}
+              </Link>
+              <Link
+                to="/route-map"
+                onClick={closeMenu}
                 className={`block w-full rounded-xl px-4 py-3 text-left text-sm transition-colors ${
-                  currentPage === "route-map"
+                  location.pathname === "/route-map"
                     ? "bg-primary/10 text-primary"
                     : "text-muted-foreground hover:bg-secondary hover:text-primary"
                 }`}
               >
                 {t.routeMap || "Route Map"}
-              </button>
+              </Link>
             </div>
 
             <div className="pt-3">

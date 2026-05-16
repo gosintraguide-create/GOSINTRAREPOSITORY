@@ -1,4 +1,5 @@
 import { useParams, useNavigate, useOutletContext } from "react-router";
+import { Breadcrumbs } from "./Breadcrumbs";
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import {
@@ -183,13 +184,14 @@ export function BlogArticlePage() {
         <meta name="robots" content="index, follow, max-image-preview:large" />
       </Helmet>
 
-      {/* Back nav */}
+      {/* Breadcrumb nav */}
       <div className="border-b border-border bg-white">
-        <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
-          <Button variant="ghost" size="sm" onClick={() => navigate("/blog")} className="gap-2">
-            <ArrowLeft className="h-4 w-4" />
-            {t.blog.backToBlog}
-          </Button>
+        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+          <Breadcrumbs items={[
+            { label: "Home", href: "/" },
+            { label: "Travel Guide", href: "/blog" },
+            { label: translation.title, href: `/blog/${article.slug || article.id}` },
+          ]} />
         </div>
       </div>
 
