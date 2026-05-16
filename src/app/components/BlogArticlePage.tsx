@@ -38,6 +38,10 @@ interface OutletContext {
   onNavigate?: (page: string, data?: unknown) => void;
 }
 
+// Module-level cache so navigating back to an article skips the API call
+let articlesCache: { articles: BlogArticle[]; categories: BlogCategory[]; ts: number } | null = null;
+const ARTICLES_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
 function renderMarkdown(content: string): string {
   const html = marked(content) as string;
   return html.replace(/<h([1-3])>([^<]+)<\/h[1-3]>/g, (_, level, text) => {
@@ -61,10 +65,20 @@ export function BlogArticlePage() {
     const load = async () => {
       setLoading(true);
       try {
-        const [arts, cats] = await Promise.all([
-          loadArticlesFromServer(projectId, publicAnonKey),
-          loadCategoriesFromServer(projectId, publicAnonKey),
-        ]);
+        let arts: BlogArticle[];
+        let cats: BlogCategory[];
+
+        if (articlesCache && Date.now() - articlesCache.ts < ARTICLES_CACHE_TTL) {
+          arts = articlesCache.articles;
+          cats = articlesCache.categories;
+        } else {
+          [arts, cats] = await Promise.all([
+            loadArticlesFromServer(projectId, publicAnonKey),
+            loadCategoriesFromServer(projectId, publicAnonKey),
+          ]);
+          articlesCache = { articles: arts, categories: cats, ts: Date.now() };
+        }
+
         const published = arts.filter((a) => a.isPublished);
         setAllArticles(published);
         setCategories(cats);

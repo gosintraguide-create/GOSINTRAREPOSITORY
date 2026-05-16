@@ -23,6 +23,10 @@ import { Link } from "react-router";
 
 const SITE_URL = "https://www.hoponsintra.com";
 
+// Module-level cache so navigating back to a tour skips the API call
+const toursCache: Record<string, { tours: PrivateTour[]; ts: number }> = {};
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
 /** Convert a human-readable duration string to ISO 8601 (e.g. "4 hours" → "PT4H") */
 function parseDuration(durationStr: string): string {
   const s = durationStr.toLowerCase();
@@ -107,24 +111,32 @@ export function PrivateTourDetailPage() {
   const loadTour = async () => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/private-tours${language && language !== 'en' ? `?lang=${language}` : ''}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${publicAnonKey}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const cacheKey = language || "en";
+      const cached = toursCache[cacheKey];
 
-      if (response.ok) {
+      let tours: PrivateTour[];
+      if (cached && Date.now() - cached.ts < CACHE_TTL) {
+        tours = cached.tours;
+      } else {
+        const response = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/private-tours${language && language !== 'en' ? `?lang=${language}` : ''}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${publicAnonKey}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
-        const tours: PrivateTour[] = data.tours || [];
-        const foundTour = tours.find((t) => t.id === slug);
-        setTour(foundTour || null);
-        setOtherTours(tours.filter((t) => t.id !== slug && t.published).slice(0, 3));
+        tours = data.tours || [];
+        toursCache[cacheKey] = { tours, ts: Date.now() };
       }
+
+      const foundTour = tours.find((t) => t.id === slug);
+      setTour(foundTour || null);
+      setOtherTours(tours.filter((t) => t.id !== slug && t.published).slice(0, 3));
     } catch (error) {
       console.error("Error loading tour:", error);
     } finally {
