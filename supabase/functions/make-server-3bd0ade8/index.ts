@@ -1552,10 +1552,10 @@ app.get("/make-server-3bd0ade8/sitemap.xml", async (c) => {
   // Static pages that never change
   const staticUrls = [
     { loc: `${BASE_URL}/`,               changefreq: "daily",   priority: "1.0", lastmod: today },
-    { loc: `${BASE_URL}/hop-on-service`, changefreq: "weekly",  priority: "0.9", lastmod: today },
+    { loc: `${BASE_URL}/hop-on-hop-off-sintra`, changefreq: "weekly",  priority: "0.9", lastmod: today },
     { loc: `${BASE_URL}/attractions`,    changefreq: "weekly",  priority: "0.9", lastmod: today },
     { loc: `${BASE_URL}/private-tours`,  changefreq: "weekly",  priority: "0.9", lastmod: today },
-    { loc: `${BASE_URL}/blog`,           changefreq: "weekly",  priority: "0.9", lastmod: today },
+    { loc: `${BASE_URL}/travel-guide`,   changefreq: "weekly",  priority: "0.9", lastmod: today },
     { loc: `${BASE_URL}/about`,          changefreq: "monthly", priority: "0.7", lastmod: today },
     { loc: `${BASE_URL}/route-map`,      changefreq: "monthly", priority: "0.7", lastmod: today },
   ];
@@ -1594,7 +1594,7 @@ app.get("/make-server-3bd0ade8/sitemap.xml", async (c) => {
       const slug = a.slug || a.id;
       if (slug) {
         dynamicUrls.push({
-          loc: `${BASE_URL}/blog/${slug}`,
+          loc: `${BASE_URL}/travel-guide/${slug}`,
           changefreq: "monthly",
           priority: "0.7",
           lastmod: a.updatedAt ? a.updatedAt.split("T")[0]

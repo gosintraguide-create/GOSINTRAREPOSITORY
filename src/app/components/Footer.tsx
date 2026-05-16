@@ -67,7 +67,7 @@ export function Footer({
             </h3>
             <ul className="space-y-2 text-muted-foreground">
               <li>
-                <Link to="/hop-on-service" className="py-1 transition-colors hover:text-primary block">
+                <Link to="/hop-on-hop-off-sintra" className="py-1 transition-colors hover:text-primary block">
                   Hop On Service
                 </Link>
               </li>
@@ -82,7 +82,7 @@ export function Footer({
                 </Link>
               </li>
               <li>
-                <Link to="/blog" className="py-1 transition-colors hover:text-primary block">
+                <Link to="/travel-guide" className="py-1 transition-colors hover:text-primary block">
                   {legacyContent.footer.travelGuide}
                 </Link>
               </li>

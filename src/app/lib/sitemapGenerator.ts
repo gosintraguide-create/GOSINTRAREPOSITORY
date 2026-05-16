@@ -48,10 +48,10 @@ export async function generateSitemap(): Promise<string> {
   // Static pages
   const staticPages = [
     { path: '/', changefreq: 'daily', priority: '1.0', lastmod: new Date().toISOString().split('T')[0] },
-    { path: '/hop-on-service', changefreq: 'weekly', priority: '0.9', lastmod: new Date().toISOString().split('T')[0] },
+    { path: '/hop-on-hop-off-sintra', changefreq: 'weekly', priority: '0.9', lastmod: new Date().toISOString().split('T')[0] },
     { path: '/attractions', changefreq: 'weekly', priority: '0.9', lastmod: new Date().toISOString().split('T')[0] },
     { path: '/private-tours', changefreq: 'weekly', priority: '0.9', lastmod: new Date().toISOString().split('T')[0] },
-    { path: '/blog', changefreq: 'weekly', priority: '0.9', lastmod: new Date().toISOString().split('T')[0] },
+    { path: '/travel-guide', changefreq: 'weekly', priority: '0.9', lastmod: new Date().toISOString().split('T')[0] },
     { path: '/about', changefreq: 'monthly', priority: '0.7', lastmod: new Date().toISOString().split('T')[0] },
     { path: '/route-map', changefreq: 'monthly', priority: '0.7', lastmod: new Date().toISOString().split('T')[0] },
     { path: '/live-chat', changefreq: 'monthly', priority: '0.6', lastmod: new Date().toISOString().split('T')[0] },
@@ -89,7 +89,7 @@ export async function generateSitemap(): Promise<string> {
   const articles = getPublishedArticles();
   articles.forEach(article => {
     urls.push({
-      loc: `${baseUrl}/blog/${article.slug}`,
+      loc: `${baseUrl}/travel-guide/${article.slug}`,
       lastmod: article.lastModified,
       changefreq: 'monthly',
       priority: '0.7',

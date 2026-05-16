@@ -178,7 +178,7 @@ export function HopOnServiceDetailPage() {
         "@type": "Offer",
         priceCurrency: "EUR",
         availability: "https://schema.org/InStock",
-        url: "https://hoponsintra.com/hop-on-service",
+        url: "https://hoponsintra.com/hop-on-hop-off-sintra",
         validFrom: new Date().toISOString(),
         priceValidUntil: new Date(
           Date.now() + 365 * 24 * 60 * 60 * 1000,
@@ -258,7 +258,7 @@ export function HopOnServiceDetailPage() {
           "@type": "ListItem",
           position: 2,
           name: "Hop On Service",
-          item: "https://hoponsintra.com/hop-on-service",
+          item: "https://hoponsintra.com/hop-on-hop-off-sintra",
         },
       ],
     };
@@ -290,7 +290,7 @@ export function HopOnServiceDetailPage() {
     updateMeta("property", "og:type", "product");
     updateMeta("property", "og:title", "Hop On Sintra Day Pass - Unlimited Access to All Attractions");
     updateMeta("property", "og:description", "Explore Sintra with unlimited hop-on/hop-off access. Guaranteed seating, 9am-7pm service. Visit all major palaces and attractions at your pace.");
-    updateMeta("property", "og:url", "https://hoponsintra.com/hop-on-service");
+    updateMeta("property", "og:url", "https://hoponsintra.com/hop-on-hop-off-sintra");
     updateMeta("property", "og:image", comprehensiveContent.content?.seo?.hopOnService?.ogImage || comprehensiveContent.content?.seo?.defaultOgImage || "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1200&h=630&fit=crop&q=80");
     updateMeta("property", "og:image:secure_url", comprehensiveContent.content?.seo?.hopOnService?.ogImage || comprehensiveContent.content?.seo?.defaultOgImage || "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1200&h=630&fit=crop&q=80");
     updateMeta("property", "og:image:width", "1200");
@@ -318,7 +318,7 @@ export function HopOnServiceDetailPage() {
       canonical.rel = "canonical";
       document.head.appendChild(canonical);
     }
-    canonical.href = "https://hoponsintra.com/hop-on-service";
+    canonical.href = "https://hoponsintra.com/hop-on-hop-off-sintra";
   }, [language, comprehensiveContent]);
 
   return (
@@ -529,7 +529,7 @@ export function HopOnServiceDetailPage() {
                   {/* Travel Guide Link */}
                   <Card
                     className="p-6 shadow-md hover:shadow-xl transition-all cursor-pointer group"
-                    onClick={() => navigate("/blog")}
+                    onClick={() => navigate("/travel-guide")}
                   >
                     <div className="flex items-start gap-4">
                       <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 group-hover:bg-blue-500/20 transition-colors">

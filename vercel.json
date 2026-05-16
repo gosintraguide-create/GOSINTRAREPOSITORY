@@ -1,4 +1,9 @@
 {
+  "redirects": [
+    { "source": "/hop-on-service", "destination": "/hop-on-hop-off-sintra", "permanent": true },
+    { "source": "/blog", "destination": "/travel-guide", "permanent": true },
+    { "source": "/blog/:slug*", "destination": "/travel-guide/:slug*", "permanent": true }
+  ],
   "rewrites": [
     {
       "source": "/sitemap.xml",

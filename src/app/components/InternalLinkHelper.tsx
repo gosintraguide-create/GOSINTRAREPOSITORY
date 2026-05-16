@@ -54,7 +54,7 @@ export function InternalLinkHelper({ onInsertLink }: InternalLinkHelperProps) {
   const staticPages = [
     { name: "Home", path: "/" },
     { name: "Attractions", path: "/attractions" },
-    { name: "Travel Guide (Blog)", path: "/blog" },
+    { name: "Travel Guide", path: "/travel-guide" },
     { name: "About Us", path: "/about" },
   ];
 
@@ -143,7 +143,7 @@ export function InternalLinkHelper({ onInsertLink }: InternalLinkHelperProps) {
                         key={article.id}
                         className="cursor-pointer p-3 transition-colors hover:bg-secondary/50"
                         onClick={() =>
-                          insertLink(translation.title, `/blog/${article.slug}`)
+                          insertLink(translation.title, `/travel-guide/${article.slug}`)
                         }
                       >
                         <div className="flex items-start justify-between gap-3">

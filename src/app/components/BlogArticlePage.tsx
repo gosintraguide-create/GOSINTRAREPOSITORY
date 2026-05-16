@@ -166,7 +166,7 @@ export function BlogArticlePage() {
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 px-4">
         <h1 className="text-2xl font-bold">{t.blog.articleNotFound}</h1>
         <p className="text-muted-foreground">{t.blog.articleNotFoundDesc}</p>
-        <Button onClick={() => navigate("/blog")}>
+        <Button onClick={() => navigate("/travel-guide")}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           {t.blog.backToBlog}
         </Button>
@@ -183,9 +183,9 @@ export function BlogArticlePage() {
         <title>{translation.title} — Hop On Sintra Blog</title>
         <meta name="description" content={translation.excerpt || translation.content.substring(0, 155)} />
         <meta name="keywords" content={article.seoKeywords || article.tags?.join(", ")} />
-        <link rel="canonical" href={`https://www.hoponsintra.com/blog/${article.slug}`} />
+        <link rel="canonical" href={`https://www.hoponsintra.com/travel-guide/${article.slug}`} />
         <meta property="og:type" content="article" />
-        <meta property="og:url" content={`https://www.hoponsintra.com/blog/${article.slug}`} />
+        <meta property="og:url" content={`https://www.hoponsintra.com/travel-guide/${article.slug}`} />
         <meta property="og:title" content={translation.title} />
         <meta property="og:description" content={translation.excerpt || translation.content.substring(0, 155)} />
         <meta property="og:image" content={article.featuredImage || article.heroImage || ""} />
@@ -203,8 +203,8 @@ export function BlogArticlePage() {
         <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
           <Breadcrumbs items={[
             { label: "Home", href: "/" },
-            { label: "Travel Guide", href: "/blog" },
-            { label: translation.title, href: `/blog/${article.slug || article.id}` },
+            { label: "Travel Guide", href: "/travel-guide" },
+            { label: translation.title, href: `/travel-guide/${article.slug || article.id}` },
           ]} />
         </div>
       </div>
@@ -301,7 +301,7 @@ export function BlogArticlePage() {
                     {article.tags.map((tag) => (
                       <button
                         key={tag}
-                        onClick={() => navigate(`/blog?tag=${encodeURIComponent(tag)}`)}
+                        onClick={() => navigate(`/travel-guide?tag=${encodeURIComponent(tag)}`)}
                         className="flex items-center gap-1 rounded-full border border-border bg-secondary/30 px-3 py-1 text-sm text-muted-foreground transition-colors hover:border-primary hover:bg-primary/5 hover:text-primary"
                       >
                         <Tag className="h-3 w-3" />
@@ -317,7 +317,7 @@ export function BlogArticlePage() {
                 <div className="mt-10 grid gap-4 border-t border-border pt-8 sm:grid-cols-2">
                   {prevArticle ? (
                     <button
-                      onClick={() => navigate(`/blog/${prevArticle.slug}`)}
+                      onClick={() => navigate(`/travel-guide/${prevArticle.slug}`)}
                       className="group flex items-start gap-3 rounded-xl border border-border bg-white p-4 text-left transition-all hover:border-primary hover:shadow-md"
                     >
                       <ChevronLeft className="mt-0.5 h-5 w-5 flex-shrink-0 text-muted-foreground group-hover:text-primary" />
@@ -332,7 +332,7 @@ export function BlogArticlePage() {
 
                   {nextArticle ? (
                     <button
-                      onClick={() => navigate(`/blog/${nextArticle.slug}`)}
+                      onClick={() => navigate(`/travel-guide/${nextArticle.slug}`)}
                       className="group flex items-start gap-3 rounded-xl border border-border bg-white p-4 text-right transition-all hover:border-primary hover:shadow-md sm:flex-row-reverse"
                     >
                       <ChevronRight className="mt-0.5 h-5 w-5 flex-shrink-0 text-muted-foreground group-hover:text-primary" />
@@ -366,7 +366,7 @@ export function BlogArticlePage() {
                         return (
                           <button
                             key={rel.slug}
-                            onClick={() => navigate(`/blog/${rel.slug}`)}
+                            onClick={() => navigate(`/travel-guide/${rel.slug}`)}
                             className="flex w-full cursor-pointer gap-3 rounded-lg border border-border bg-white p-3 text-left transition-shadow hover:shadow-md"
                           >
                             <ImageWithFallback

@@ -76,10 +76,10 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
   }, [isMenuOpen, closeMenu]);
 
   const navItems = [
-    { id: "hop-on-service", label: content.header.hopOnService || "Hop On Service" },
+    { id: "hop-on-hop-off-sintra", label: content.header.hopOnService || "Hop On Hop Off Sintra" },
     { id: "attractions", label: t.attractions },
     { id: "private-tours", label: content.header.privateTours },
-    { id: "blog", label: content.header.travelGuide },
+    { id: "travel-guide", label: content.header.travelGuide },
   ];
 
   return (

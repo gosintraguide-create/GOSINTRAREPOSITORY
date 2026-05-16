@@ -231,7 +231,7 @@ export function ProductCard({
           {/* Learn More Link - Only for daypass */}
           {productType === "daypass" && (
             <Button
-              onClick={() => onNavigate("hop-on-service")}
+              onClick={() => onNavigate("hop-on-hop-off-sintra")}
               className="h-11 w-full bg-accent text-white hover:bg-accent/90 shadow-md text-sm mb-2"
               size="lg"
             >

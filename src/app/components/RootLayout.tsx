@@ -78,10 +78,10 @@ export function RootLayout() {
     const path = location.pathname;
     if (path === "/") return "home";
     if (path === "/buy-ticket") return "buy-ticket";
-    if (path === "/hop-on-service") return "hop-on-service";
+    if (path === "/hop-on-hop-off-sintra") return "hop-on-hop-off-sintra";
     if (path.startsWith("/attractions")) return "attractions";
     if (path.startsWith("/private-tours")) return "private-tours";
-    if (path.startsWith("/blog")) return "blog";
+    if (path.startsWith("/travel-guide")) return "travel-guide";
     if (path === "/about") return "about";
     if (path === "/live-chat") return "live-chat";
     if (path === "/route-map") return "route-map";
@@ -141,8 +141,8 @@ export function RootLayout() {
       navigate("/buy-ticket", { state: data });
     } else if (page === "sunset-special-purchase") {
       navigate("/sunset-special", { state: data });
-    } else if (page === "hop-on-service") {
-      navigate("/hop-on-service");
+    } else if (page === "hop-on-hop-off-sintra") {
+      navigate("/hop-on-hop-off-sintra");
     } else if (page === "attractions") {
       navigate("/attractions");
     } else if (page === "attraction-detail") {
@@ -153,11 +153,11 @@ export function RootLayout() {
     } else if (page === "private-tour-detail") {
       const slug = data?.slug || data?.tourId;
       navigate(`/private-tours/${slug}`, { state: data });
-    } else if (page === "blog") {
-      navigate("/blog");
+    } else if (page === "travel-guide") {
+      navigate("/travel-guide");
     } else if (page === "blog-article") {
       const slug = data?.slug || data?.articleId;
-      navigate(`/blog/${slug}`, { state: data });
+      navigate(`/travel-guide/${slug}`, { state: data });
     } else if (page === "live-chat") {
       navigate("/live-chat");
     } else if (page === "about") {
@@ -242,7 +242,7 @@ export function RootLayout() {
       }
       
       // Blog article pages
-      if (path.startsWith('/blog/') && path !== '/blog/') {
+      if (path.startsWith('/travel-guide/') && path !== '/travel-guide/') {
         const slug = path.split('/')[2];
         const articles = editableContent?.blog?.articles || [];
         const article = articles.find((a: any) => {
@@ -299,7 +299,7 @@ export function RootLayout() {
     // So on detail pages we only set the robots meta and exit early.
     const isDetailPage =
       (location.pathname.startsWith('/attractions/') && location.pathname.split('/').length > 2 && location.pathname.split('/')[2]) ||
-      (location.pathname.startsWith('/blog/') && location.pathname.split('/').length > 2 && location.pathname.split('/')[2]) ||
+      (location.pathname.startsWith('/travel-guide/') && location.pathname.split('/').length > 2 && location.pathname.split('/')[2]) ||
       (location.pathname.startsWith('/private-tours/') && location.pathname.split('/').length > 2 && location.pathname.split('/')[2]);
 
     if (isDetailPage) {
@@ -416,7 +416,7 @@ export function RootLayout() {
       }
 
       // Blog article pages - Article schema
-      if (path.startsWith('/blog/') && path !== '/blog/') {
+      if (path.startsWith('/travel-guide/') && path !== '/travel-guide/') {
         const slug = path.split('/')[2];
         const articles = editableContent?.blog?.articles || [];
         const article = articles.find((a: any) => {

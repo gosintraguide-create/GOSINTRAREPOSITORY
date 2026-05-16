@@ -373,7 +373,7 @@ export function AttractionsPage() {
             {/* Hop On Service Link */}
             <Card
               className="p-6 shadow-md hover:shadow-xl transition-all cursor-pointer group"
-              onClick={() => navigate("/hop-on-service")}
+              onClick={() => navigate("/hop-on-hop-off-sintra")}
             >
               <div className="mb-4">
                 <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
@@ -417,7 +417,7 @@ export function AttractionsPage() {
             {/* Travel Guide Link */}
             <Card
               className="p-6 shadow-md hover:shadow-xl transition-all cursor-pointer group"
-              onClick={() => navigate("/blog")}
+              onClick={() => navigate("/travel-guide")}
             >
               <div className="mb-4">
                 <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 group-hover:bg-blue-500/20 transition-colors">

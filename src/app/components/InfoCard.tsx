@@ -221,7 +221,7 @@ export function InfoCard({ onNavigate, language = "en", cardType, customImages, 
 
   const handleNavigate = () => {
     if (cardType === "travel-guide") {
-      onNavigate("blog");
+      onNavigate("travel-guide");
     } else if (cardType === "private-tours") {
       onNavigate("private-tours");
     } else {

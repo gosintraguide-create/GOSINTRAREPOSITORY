@@ -58,10 +58,10 @@ const MIME = {
 // Attraction pages use bundled JSON locale data so they render instantly.
 const STATIC_ROUTES = [
   '/',
-  '/hop-on-service',
+  '/hop-on-hop-off-sintra',
   '/attractions',
   '/private-tours',
-  '/blog',
+  '/travel-guide',
   '/about',
   '/route-map',
   '/attractions/pena-palace',
@@ -113,7 +113,7 @@ async function getBlogArticleRoutes() {
     const articles = Array.isArray(data) ? data : (data.articles || []);
     const routes = articles
       .filter((a) => a.isPublished !== false && a.status !== 'draft' && (a.slug || a.id))
-      .map((a) => `/blog/${a.slug || a.id}`);
+      .map((a) => `/travel-guide/${a.slug || a.id}`);
     console.log(`  → ${routes.length} blog article(s) found`);
     return routes;
   } catch (err) {
