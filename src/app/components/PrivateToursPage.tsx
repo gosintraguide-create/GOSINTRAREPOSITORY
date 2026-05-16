@@ -29,6 +29,11 @@ import { Textarea } from "./ui/textarea";
 import { featureFlags } from "../lib/featureFlags";
 
 const SITE_URL = "https://www.hoponsintra.com";
+
+// Module-level cache so navigating back doesn't re-fetch
+const toursListCache: Record<string, { tours: PrivateTour[]; ts: number }> = {};
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
 import { getTranslation, getUITranslation } from "../lib/translations/loader";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
 import { toast } from 'sonner';
@@ -93,6 +98,7 @@ export function PrivateToursPage() {
 
   const [tours, setTours] = useState<PrivateTour[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(false);
   const [selectedTour, setSelectedTour] = useState<PrivateTour | null>(null);
   const [showRequestDialog, setShowRequestDialog] = useState(false);
   
@@ -123,29 +129,46 @@ export function PrivateToursPage() {
 
   const loadTours = async () => {
     setLoading(true);
-    try {
-      const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/private-tours${language && language !== 'en' ? `?lang=${language}` : ''}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${publicAnonKey}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+    setFetchError(false);
 
-      if (response.ok) {
-        const data = await response.json();
-        // Only show published tours
-        const publishedTours = (data.tours || []).filter((tour: PrivateTour) => tour.published);
-        setTours(publishedTours);
-      }
-    } catch (error) {
-      console.error("Error loading tours:", error);
-    } finally {
+    const cacheKey = language || "en";
+    const cached = toursListCache[cacheKey];
+    if (cached && Date.now() - cached.ts < CACHE_TTL) {
+      setTours(cached.tours);
       setLoading(false);
+      return;
     }
+
+    // Attempt up to 2 times to handle cold-start latency from Supabase
+    for (let attempt = 0; attempt <= 1; attempt++) {
+      try {
+        if (attempt > 0) await new Promise((r) => setTimeout(r, 1500));
+        const response = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/private-tours${language && language !== 'en' ? `?lang=${language}` : ''}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${publicAnonKey}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (!response.ok) continue; // retry on non-2xx
+        const data = await response.json();
+        const publishedTours = (data.tours || []).filter((tour: PrivateTour) => tour.published);
+        toursListCache[cacheKey] = { tours: publishedTours, ts: Date.now() };
+        setTours(publishedTours);
+        setLoading(false);
+        return;
+      } catch (err) {
+        if (attempt === 0) continue; // retry on network error
+        console.error("Error loading tours:", err);
+      }
+    }
+
+    // Both attempts failed — show error state with retry button
+    setFetchError(true);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -361,6 +384,16 @@ export function PrivateToursPage() {
             <div className="text-center py-12">
               <p className="text-muted-foreground">{t.loading}</p>
             </div>
+          ) : fetchError ? (
+            <Card className="p-8 text-center">
+              <p className="text-lg font-medium mb-2">Could not load tours</p>
+              <p className="text-muted-foreground mb-4">
+                There was a problem connecting to the server. Please try again.
+              </p>
+              <Button onClick={loadTours}>
+                Try Again
+              </Button>
+            </Card>
           ) : tours.length === 0 ? (
             <Card className="p-8 text-center">
               <MessageCircle className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
