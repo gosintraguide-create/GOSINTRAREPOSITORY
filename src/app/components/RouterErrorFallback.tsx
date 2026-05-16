@@ -2,10 +2,25 @@ import { useRouteError } from "react-router";
 import { AlertCircle, Home, RefreshCw } from "lucide-react";
 import { Button } from "./ui/button";
 
+// Key that prevents an infinite reload loop: only auto-reload once per session
+const RELOAD_KEY = "vite_chunk_reload_attempted";
+
 export function RouterErrorFallback() {
   const error = useRouteError() as any;
 
   console.error("🚨 Router Error:", error);
+
+  // Auto-reload when Vite can't find a lazy-loaded chunk after a new deployment
+  const isChunkError =
+    error?.message?.includes("Failed to fetch dynamically imported module") ||
+    error?.message?.includes("Importing a module script failed") ||
+    error?.message?.includes("dynamically imported module");
+
+  if (isChunkError && !sessionStorage.getItem(RELOAD_KEY)) {
+    sessionStorage.setItem(RELOAD_KEY, "1");
+    window.location.reload();
+    return null; // don't render while reloading
+  }
 
   const handleGoHome = () => {
     // Clear any corrupted state and go home
