@@ -1128,10 +1128,352 @@ app.post("/make-server-3bd0ade8/tour-requests/:id/notes", async (c) => {
   }
 });
 
-// Driver Management (Simplified for space, assuming standard kv getters)
+// ===== DRIVER MANAGEMENT =====
+
+// GET /drivers — list all drivers (admin use)
 app.get("/make-server-3bd0ade8/drivers", async (c) => {
-  const driversData = await kv.get("drivers_list");
-  return c.json({ success: true, drivers: driversData || [] });
+  const driversData = await kvWithRetry.get("drivers_list");
+  const drivers = ((driversData as any[]) || []).map((d: any) => {
+    const { password: _, ...safe } = d;
+    return safe;
+  });
+  return c.json({ success: true, drivers });
+});
+
+// POST /drivers/create — admin: add a new driver account
+app.post("/make-server-3bd0ade8/drivers/create", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { name, username, password, phoneNumber, vehicleType, licenseNumber, status } = body;
+
+    if (!name || !username || !password) {
+      return c.json({ success: false, error: "Name, username, and password are required" }, 400);
+    }
+
+    const drivers = (await kvWithRetry.get("drivers_list") as any[]) || [];
+
+    if (drivers.some((d: any) => d.username === username)) {
+      return c.json({ success: false, error: "Username already taken" }, 409);
+    }
+
+    const newDriver = {
+      id: `driver_${Date.now()}`,
+      name,
+      username,
+      password,
+      phoneNumber: phoneNumber || "",
+      vehicleType: vehicleType || "",
+      licenseNumber: licenseNumber || "",
+      status: status || "offline",
+      totalTicketsSold: 0,
+      totalRevenue: 0,
+      totalQRScans: 0,
+      createdAt: new Date().toISOString(),
+    };
+
+    drivers.push(newDriver);
+    await kvWithRetry.set("drivers_list", drivers);
+
+    const { password: _pw, ...safeDriver } = newDriver;
+    return c.json({ success: true, driver: safeDriver });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// PUT /drivers/:id — admin: update driver profile
+app.put("/make-server-3bd0ade8/drivers/:id", async (c) => {
+  try {
+    const driverId = c.req.param("id");
+    const body = await c.req.json();
+
+    const drivers = (await kvWithRetry.get("drivers_list") as any[]) || [];
+    const idx = drivers.findIndex((d: any) => d.id === driverId);
+    if (idx === -1) return c.json({ success: false, error: "Driver not found" }, 404);
+
+    // If username changed, ensure it's not taken by another driver
+    if (body.username && body.username !== drivers[idx].username) {
+      if (drivers.some((d: any, i: number) => i !== idx && d.username === body.username)) {
+        return c.json({ success: false, error: "Username already taken" }, 409);
+      }
+    }
+
+    drivers[idx] = {
+      ...drivers[idx],
+      ...body,
+      id: driverId, // prevent id change
+      updatedAt: new Date().toISOString(),
+    };
+
+    await kvWithRetry.set("drivers_list", drivers);
+
+    const { password: _pw, ...safeDriver } = drivers[idx];
+    return c.json({ success: true, driver: safeDriver });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// DELETE /drivers/:id — admin: remove a driver account
+app.delete("/make-server-3bd0ade8/drivers/:id", async (c) => {
+  try {
+    const driverId = c.req.param("id");
+    const drivers = (await kvWithRetry.get("drivers_list") as any[]) || [];
+    const filtered = drivers.filter((d: any) => d.id !== driverId);
+
+    if (filtered.length === drivers.length) {
+      return c.json({ success: false, error: "Driver not found" }, 404);
+    }
+
+    await kvWithRetry.set("drivers_list", filtered);
+    return c.json({ success: true });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// POST /drivers/login
+app.post("/make-server-3bd0ade8/drivers/login", async (c) => {
+  try {
+    const { username, password } = await c.req.json();
+
+    if (!username || !password) {
+      return c.json({ success: false, error: "Username and password required" }, 400);
+    }
+
+    const drivers = (await kvWithRetry.get("drivers_list") as any[]) || [];
+    const driverIdx = drivers.findIndex(
+      (d: any) => (d.username === username || d.email === username) && d.password === password
+    );
+
+    if (driverIdx === -1) {
+      return c.json({ success: false, error: "Invalid credentials" }, 401);
+    }
+
+    // Mark driver online
+    drivers[driverIdx] = {
+      ...drivers[driverIdx],
+      status: "online",
+      lastLoginAt: new Date().toISOString(),
+    };
+    await kvWithRetry.set("drivers_list", drivers);
+
+    // Return driver without password
+    const { password: _pw, ...driverInfo } = drivers[driverIdx];
+    const token = `drv_${driverInfo.id}_${Date.now()}`;
+
+    return c.json({ success: true, driver: driverInfo, token });
+  } catch (error) {
+    console.error("Driver login error:", error);
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// POST /drivers/logout
+app.post("/make-server-3bd0ade8/drivers/logout", async (c) => {
+  try {
+    const { driverId } = await c.req.json();
+    const drivers = (await kvWithRetry.get("drivers_list") as any[]) || [];
+    const idx = drivers.findIndex((d: any) => d.id === driverId);
+
+    if (idx !== -1) {
+      drivers[idx] = {
+        ...drivers[idx],
+        status: "offline",
+        lastLogoutAt: new Date().toISOString(),
+      };
+      await kvWithRetry.set("drivers_list", drivers);
+    }
+
+    return c.json({ success: true });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// GET /drivers/:id/metrics — daily sales/revenue/QR-scan breakdown for a date range
+app.get("/make-server-3bd0ade8/drivers/:id/metrics", async (c) => {
+  try {
+    const driverId = c.req.param("id");
+    const { startDate, endDate } = c.req.query();
+
+    const sales    = (await kvWithRetry.get(`driver_sales_${driverId}`)    as any[]) || [];
+    const activity = (await kvWithRetry.get(`driver_activity_${driverId}`) as any[]) || [];
+
+    const start = startDate ? new Date(startDate) : null;
+    const end   = endDate   ? new Date(endDate)   : null;
+
+    const metricsMap: Record<string, { date: string; ticketsSold: number; revenue: number; qrScans: number }> = {};
+
+    for (const sale of sales) {
+      const saleDate = (sale.createdAt || sale.date || "").split("T")[0];
+      if (!saleDate) continue;
+      const d = new Date(saleDate);
+      if (start && d < start) continue;
+      if (end   && d > end)   continue;
+      if (!metricsMap[saleDate]) metricsMap[saleDate] = { date: saleDate, ticketsSold: 0, revenue: 0, qrScans: 0 };
+      metricsMap[saleDate].ticketsSold += sale.numberOfPeople || 0;
+      metricsMap[saleDate].revenue     += sale.amount          || 0;
+    }
+
+    for (const item of activity) {
+      if (item.type !== "qr_scan") continue;
+      const itemDate = (item.timestamp || "").split("T")[0];
+      if (!itemDate) continue;
+      const d = new Date(itemDate);
+      if (start && d < start) continue;
+      if (end   && d > end)   continue;
+      if (!metricsMap[itemDate]) metricsMap[itemDate] = { date: itemDate, ticketsSold: 0, revenue: 0, qrScans: 0 };
+      metricsMap[itemDate].qrScans += 1;
+    }
+
+    const metrics = Object.values(metricsMap).sort((a, b) => a.date.localeCompare(b.date));
+    return c.json({ success: true, metrics });
+  } catch (error) {
+    return c.json({ success: false, error: String(error), metrics: [] }, 500);
+  }
+});
+
+// GET /drivers/:id/activity — recent activity feed for a driver
+app.get("/make-server-3bd0ade8/drivers/:id/activity", async (c) => {
+  try {
+    const driverId = c.req.param("id");
+    const limit = parseInt(c.req.query("limit") || "20");
+
+    const activity = (await kvWithRetry.get(`driver_activity_${driverId}`) as any[]) || [];
+    const sorted = [...activity]
+      .sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .slice(0, limit);
+
+    return c.json({ success: true, activity: sorted });
+  } catch (error) {
+    return c.json({ success: false, error: String(error), activity: [] }, 500);
+  }
+});
+
+// GET /pickup-requests/pending — only pending pickup requests (driver polling endpoint)
+app.get("/make-server-3bd0ade8/pickup-requests/pending", async (c) => {
+  try {
+    const all = await kv.getByPrefix("PICKUP_");
+    const pending = ((all || []) as any[])
+      .filter((r: any) => r.status === "pending")
+      .sort((a: any, b: any) => new Date(b.requestTime).getTime() - new Date(a.requestTime).getTime());
+    return c.json({ success: true, requests: pending });
+  } catch (error) {
+    console.error("Error fetching pending pickups:", error);
+    return c.json({ success: false, error: "Failed to fetch pending pickups", requests: [] }, 500);
+  }
+});
+
+// POST /driver-sales/create — sell tickets, decrement per-slot availability, log driver activity
+app.post("/make-server-3bd0ade8/driver-sales/create", async (c) => {
+  try {
+    const body = await c.req.json();
+    const {
+      driverId, numberOfPeople, firstName, lastName,
+      customerEmail, paymentMethod, amount, timeSlot,
+      pickupLocation, selectedDate,
+    } = body;
+
+    const qty = parseInt(numberOfPeople) || 1;
+    const bookingId = `DS-${Date.now()}`;
+    const now = new Date().toISOString();
+
+    const sale = {
+      id: bookingId,
+      driverId,
+      numberOfPeople: qty,
+      firstName,
+      lastName,
+      customerEmail,
+      paymentMethod,
+      amount,
+      timeSlot,
+      pickupLocation,
+      selectedDate,
+      date: selectedDate,
+      createdAt: now,
+      type: "driver_sale",
+    };
+
+    // Append to driver sales history
+    const driverSales = (await kvWithRetry.get(`driver_sales_${driverId}`) as any[]) || [];
+    driverSales.push(sale);
+    await kvWithRetry.set(`driver_sales_${driverId}`, driverSales);
+
+    // Append to driver activity log
+    const driverActivity = (await kvWithRetry.get(`driver_activity_${driverId}`) as any[]) || [];
+    driverActivity.push({
+      type: "sale",
+      timestamp: now,
+      quantity: qty,
+      amount,
+      bookingId,
+      customerName: `${firstName} ${lastName}`,
+    });
+    await kvWithRetry.set(`driver_activity_${driverId}`, driverActivity);
+
+    // Decrement per-slot availability for the date
+    const TIME_SLOTS_LIST = ["9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"];
+    const storedAvail = await kvWithRetry.get(`availability_${selectedDate}`);
+    let slotMap: Record<string, number>;
+
+    if (storedAvail && typeof storedAvail === "object" &&
+        TIME_SLOTS_LIST.some(s => s in (storedAvail as any))) {
+      // Already a per-slot map — use it directly
+      slotMap = { ...(storedAvail as Record<string, number>) };
+    } else {
+      // First sale of the day — initialise each slot to 50
+      slotMap = {};
+      TIME_SLOTS_LIST.forEach(s => { slotMap[s] = 50; });
+    }
+
+    if (timeSlot && slotMap[timeSlot] !== undefined) {
+      slotMap[timeSlot] = Math.max(0, slotMap[timeSlot] - qty);
+    }
+    await kvWithRetry.set(`availability_${selectedDate}`, slotMap);
+
+    // Send confirmation email to customer
+    const tempPassword = `${(firstName || "guest").toLowerCase()}${Math.floor(1000 + Math.random() * 9000)}`;
+    const resendApiKey = Deno.env.get("RESEND_API_KEY");
+    if (resendApiKey && customerEmail) {
+      try {
+        await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${resendApiKey}` },
+          body: JSON.stringify({
+            from: "Hop On Sintra <bookings@hoponsintra.com>",
+            to: [customerEmail],
+            subject: "Your Hop On Sintra Tickets 🎟️",
+            html: `<h2>Your tickets are confirmed!</h2>
+<p>Hello ${firstName},</p>
+<p>Your driver has registered <strong>${qty} ticket${qty > 1 ? "s" : ""}</strong> for you.</p>
+<ul>
+  <li><strong>Date:</strong> ${selectedDate}</li>
+  <li><strong>Start Time:</strong> ${timeSlot}</li>
+  <li><strong>Amount Paid:</strong> €${amount} (${paymentMethod})</li>
+  <li><strong>Booking ID:</strong> ${bookingId}</li>
+</ul>
+<p><strong>Customer Portal Login (to request pickup assistance):</strong><br>
+Email: ${customerEmail}<br>
+Password: ${tempPassword}</p>
+<p>Enjoy your Sintra experience! 🏰</p>`,
+          }),
+        });
+      } catch (emailErr) {
+        console.error("Driver sale email failed:", emailErr);
+      }
+    }
+
+    return c.json({
+      success: true,
+      booking: sale,
+      customerInfo: { email: customerEmail, temporaryPassword: tempPassword },
+    });
+  } catch (error) {
+    console.error("Driver sale error:", error);
+    return c.json({ success: false, error: String(error) }, 500);
+  }
 });
 
 // ===== CONTENT MANAGEMENT =====
