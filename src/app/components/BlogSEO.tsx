@@ -50,7 +50,7 @@ export function BlogSEO({ article, categoryName, language = 'en' }: BlogSEOProps
     updateMetaTag("og:title", translation.seo?.title || translation.title, true);
     updateMetaTag("og:description", translation.seo?.description || translation.excerpt, true);
     updateMetaTag("og:type", "article", true);
-    updateMetaTag("og:url", `https://www.hoponsintra.com/blog/${article.slug}`, true);
+    updateMetaTag("og:url", `https://www.hoponsintra.com/travel-guide/${article.slug}`, true);
     updateMetaTag("og:site_name", "Hop On Sintra Travel Guide", true);
     updateMetaTag("og:locale", "en_US", true);
     
@@ -80,7 +80,7 @@ export function BlogSEO({ article, categoryName, language = 'en' }: BlogSEOProps
       canonical.rel = "canonical";
       document.head.appendChild(canonical);
     }
-    canonical.href = `https://www.hoponsintra.com/blog/${article.slug}`;
+    canonical.href = `https://www.hoponsintra.com/travel-guide/${article.slug}`;
 
     // Add JSON-LD structured data for Article
     let structuredData = document.querySelector('script[type="application/ld+json"]');
@@ -120,7 +120,7 @@ export function BlogSEO({ article, categoryName, language = 'en' }: BlogSEOProps
       },
       "mainEntityOfPage": {
         "@type": "WebPage",
-        "@id": `https://www.hoponsintra.com/blog/${article.slug}`
+        "@id": `https://www.hoponsintra.com/travel-guide/${article.slug}`
       },
       "articleSection": categoryName,
       "keywords": article.tags.join(", "),
@@ -153,7 +153,7 @@ export function BlogSEO({ article, categoryName, language = 'en' }: BlogSEOProps
           "@type": "ListItem",
           "position": 2,
           "name": "Travel Guide",
-          "item": "https://www.hoponsintra.com/blog"
+          "item": "https://www.hoponsintra.com/travel-guide"
         },
         {
           "@type": "ListItem",
@@ -165,7 +165,7 @@ export function BlogSEO({ article, categoryName, language = 'en' }: BlogSEOProps
           "@type": "ListItem",
           "position": 4,
           "name": translation.title,
-          "item": `https://www.hoponsintra.com/blog/${article.slug}`
+          "item": `https://www.hoponsintra.com/travel-guide/${article.slug}`
         }
       ]
     };

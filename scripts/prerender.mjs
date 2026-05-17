@@ -213,7 +213,7 @@ async function main() {
       // before capturing — ensures the async fetch has completed.
       const isSupabasePage =
         (route.startsWith('/private-tours/') && route !== '/private-tours') ||
-        (route.startsWith('/blog/')          && route !== '/blog');
+        (route.startsWith('/travel-guide/')   && route !== '/travel-guide');
       if (isSupabasePage) {
         await page.waitForSelector('h1', { timeout: 8_000 }).catch(() => {});
       }

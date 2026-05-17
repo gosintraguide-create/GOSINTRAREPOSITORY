@@ -261,7 +261,7 @@ export function AttractionsPage() {
                     <button
                       key={article.id}
                       onClick={() => {
-                        navigate(`/blog/${article.slug}`);
+                        navigate(`/travel-guide/${article.slug}`);
                         setShowResults(false);
                       }}
                       className="flex w-full items-start gap-3 rounded-lg p-3 text-left transition-colors hover:bg-secondary"

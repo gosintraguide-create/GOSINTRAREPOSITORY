@@ -735,7 +735,7 @@ export function BlogEditor() {
                         placeholder="auto-generated from English title"
                       />
                       <p className="mt-1 text-sm text-muted-foreground">
-                        URL: /blog/{editingArticle.slug}
+                        URL: /travel-guide/{editingArticle.slug}
                       </p>
                     </div>
 

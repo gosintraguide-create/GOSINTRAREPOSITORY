@@ -448,7 +448,7 @@ export function HomePage() {
 
             {/* Travel Guide Link */}
             <button
-              onClick={() => onNavigate('blog')}
+              onClick={() => onNavigate('travel-guide')}
               className="group flex items-center gap-4 rounded-2xl border-2 border-white/30 bg-white/10 px-6 py-5 backdrop-blur-sm transition-all hover:scale-105 hover:border-white/60 hover:bg-white/20 hover:shadow-2xl"
             >
               <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl sm:h-20 sm:w-20">

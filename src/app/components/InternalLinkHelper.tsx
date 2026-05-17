@@ -153,7 +153,7 @@ export function InternalLinkHelper({ onInsertLink }: InternalLinkHelperProps) {
                               {translation.excerpt}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              /blog/{article.slug}
+                              /travel-guide/{article.slug}
                             </p>
                           </div>
                           <Button variant="ghost" size="sm">

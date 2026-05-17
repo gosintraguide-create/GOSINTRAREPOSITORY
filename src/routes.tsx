@@ -68,7 +68,7 @@ export const router = createBrowserRouter([
         },
       },
       {
-        path: "hop-on-service",
+        path: "hop-on-hop-off-sintra",
         element: <HopOnServiceDetailPage />,
         handle: {
           meta: {
@@ -136,7 +136,7 @@ export const router = createBrowserRouter([
         },
       },
       {
-        path: "blog",
+        path: "travel-guide",
         element: <BlogPage />,
         handle: {
           meta: {
@@ -150,7 +150,7 @@ export const router = createBrowserRouter([
         },
       },
       {
-        path: "blog/:slug",
+        path: "travel-guide/:slug",
         element: <BlogArticlePage />,
         handle: {
           meta: {

@@ -683,7 +683,7 @@ export const DEFAULT_CONTENT: WebsiteContent = {
         title: "Travel Guide",
         subtitle:
           "Expert tips, insider secrets, and everything you need for a magical Sintra adventure",
-        link: "blog",
+        link: "travel-guide",
       },
       privateTours: {
         title: "Private Tours",

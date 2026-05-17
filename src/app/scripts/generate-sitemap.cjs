@@ -9,7 +9,7 @@ const staticRoutes = [
   '',
   '/attractions',
   '/buy-ticket',
-  '/blog',
+  '/travel-guide',
   '/private-tours',
   '/sunset-special',
   '/route-map',
@@ -58,7 +58,7 @@ const generateSitemap = () => {
     } else if (route === '/buy-ticket') {
       priority = '0.9';
       changefreq = 'daily';
-    } else if (route === '/attractions' || route === '/blog' || route === '/private-tours') {
+    } else if (route === '/attractions' || route === '/travel-guide' || route === '/private-tours') {
       priority = '0.9';
       changefreq = 'weekly';
     } else if (route === '/sunset-special') {
@@ -99,7 +99,7 @@ const generateSitemap = () => {
   articles.forEach(slug => {
     xml += `
   <url>
-    <loc>${BASE_URL}/blog/${slug}</loc>
+    <loc>${BASE_URL}/travel-guide/${slug}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
