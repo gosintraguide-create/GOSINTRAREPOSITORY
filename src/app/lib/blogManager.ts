@@ -871,7 +871,7 @@ export async function loadArticlesFromServer(
   // Check cache first with a 5-minute TTL
   const cacheKey = "blog-articles-cache";
   const cacheTimestampKey = "blog-articles-cache-timestamp";
-  const cacheTTL = 5 * 60 * 1000; // 5 minutes in milliseconds
+  const cacheTTL = 60 * 60 * 1000; // 1 hour
 
   const cachedTimestamp = localStorage.getItem(
     cacheTimestampKey,
@@ -886,7 +886,6 @@ export async function loadArticlesFromServer(
     if (now - timestamp < cacheTTL) {
       try {
         const parsed = JSON.parse(cachedData);
-        console.log("Using cached blog articles");
         return parsed.map((article: any) =>
           migrateArticleToMultiLanguage(article),
         );
@@ -983,7 +982,7 @@ export async function loadCategoriesFromServer(
   // Check cache first with a 5-minute TTL
   const cacheKey = "blog-categories-cache";
   const cacheTimestampKey = "blog-categories-cache-timestamp";
-  const cacheTTL = 5 * 60 * 1000; // 5 minutes in milliseconds
+  const cacheTTL = 60 * 60 * 1000; // 1 hour
 
   const cachedTimestamp = localStorage.getItem(
     cacheTimestampKey,
@@ -998,7 +997,6 @@ export async function loadCategoriesFromServer(
     if (now - timestamp < cacheTTL) {
       try {
         const parsed = JSON.parse(cachedData);
-        console.log("Using cached blog categories");
         return parsed.map((category: any) =>
           migrateCategoryToMultiLanguage(category),
         );

@@ -50,25 +50,44 @@ export function BlogPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const tb = getTranslation(language).blog;
-  const [articles, setArticles] = useState<BlogArticle[]>([]);
-  const [categories, setCategories] = useState<BlogCategory[]>([]);
+  // Seed from localStorage immediately so the page renders without waiting for
+  // the network. The async effect below will update with fresh data if needed.
+  const [articles, setArticles] = useState<BlogArticle[]>(() => {
+    try {
+      const raw = localStorage.getItem("blog-articles-cache");
+      if (raw) {
+        const parsed: BlogArticle[] = JSON.parse(raw);
+        return parsed.filter((a: any) => a.isPublished !== false);
+      }
+    } catch (_) {}
+    return [];
+  });
+  const [categories, setCategories] = useState<BlogCategory[]>(() => {
+    try {
+      const raw = localStorage.getItem("blog-categories-cache");
+      if (raw) return JSON.parse(raw);
+    } catch (_) {}
+    return [];
+  });
   const [filteredArticles, setFilteredArticles] = useState<BlogArticle[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedTag, setSelectedTag] = useState<string>(searchParams.get("tag") || "");
   const [searchQuery, setSearchQuery] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  // Only show spinner on true first load (no cache)
+  const [isLoading, setIsLoading] = useState(
+    () => !localStorage.getItem("blog-articles-cache")
+  );
 
-  // SEO for /blog is handled entirely by RootLayout via the route handle meta.
-  // No inline DOM manipulation needed here — a second writer would produce
-  // duplicate canonical / description tags which confuse Google.
+  // SEO for /travel-guide is handled entirely by RootLayout via the route handle meta.
 
   useEffect(() => {
     const loadData = async () => {
-      setIsLoading(true);
+      // Don't reset isLoading — we already show stale data if available
       try {
-        const loadedArticles = await loadArticlesFromServer(projectId, publicAnonKey);
-        const loadedCategories = await loadCategoriesFromServer(projectId, publicAnonKey);
-
+        const [loadedArticles, loadedCategories] = await Promise.all([
+          loadArticlesFromServer(projectId, publicAnonKey),
+          loadCategoriesFromServer(projectId, publicAnonKey),
+        ]);
         const publishedArticles = loadedArticles.filter(article => article.isPublished);
         setArticles(publishedArticles);
         setCategories(loadedCategories);

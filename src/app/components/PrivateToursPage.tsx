@@ -32,7 +32,9 @@ const SITE_URL = "https://www.hoponsintra.com";
 
 // Module-level cache so navigating back doesn't re-fetch
 const toursListCache: Record<string, { tours: PrivateTour[]; ts: number }> = {};
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL = 60 * 60 * 1000; // 1 hour
+const LS_KEY = (lang: string) => `private-tours-cache-${lang}`;
+const LS_TS_KEY = (lang: string) => `private-tours-cache-ts-${lang}`;
 
 import { getTranslation, getUITranslation } from "../lib/translations/loader";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
@@ -128,23 +130,41 @@ export function PrivateToursPage() {
   };
 
   const loadTours = async () => {
-    setLoading(true);
     setFetchError(false);
-
     const cacheKey = language || "en";
-    const cached = toursListCache[cacheKey];
-    if (cached && Date.now() - cached.ts < CACHE_TTL) {
-      setTours(cached.tours);
+
+    // 1. Module-level cache — instant for same-session back navigation
+    const inMemory = toursListCache[cacheKey];
+    if (inMemory && Date.now() - inMemory.ts < CACHE_TTL) {
+      setTours(inMemory.tours);
       setLoading(false);
       return;
     }
 
-    // Attempt up to 2 times to handle cold-start latency from Supabase
+    // 2. localStorage — show immediately even if stale, then refresh silently
+    let hasStaleData = false;
+    try {
+      const lsData = localStorage.getItem(LS_KEY(cacheKey));
+      const lsTsRaw = localStorage.getItem(LS_TS_KEY(cacheKey));
+      if (lsData && lsTsRaw) {
+        const ts = parseInt(lsTsRaw, 10);
+        const parsed: PrivateTour[] = JSON.parse(lsData);
+        toursListCache[cacheKey] = { tours: parsed, ts };
+        setTours(parsed);
+        setLoading(false);
+        if (Date.now() - ts < CACHE_TTL) return; // still fresh
+        hasStaleData = true; // stale but shown — background refresh below
+      }
+    } catch (_) {}
+
+    // 3. Network fetch — foreground spinner only if nothing cached yet
+    if (!hasStaleData) setLoading(true);
+
     for (let attempt = 0; attempt <= 1; attempt++) {
       try {
         if (attempt > 0) await new Promise((r) => setTimeout(r, 1500));
         const response = await fetch(
-          `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/private-tours${language && language !== 'en' ? `?lang=${language}` : ''}`,
+          `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/private-tours${cacheKey !== 'en' ? `?lang=${cacheKey}` : ''}`,
           {
             method: "GET",
             headers: {
@@ -153,22 +173,27 @@ export function PrivateToursPage() {
             },
           }
         );
-        if (!response.ok) continue; // retry on non-2xx
+        if (!response.ok) continue;
         const data = await response.json();
         const publishedTours = (data.tours || []).filter((tour: PrivateTour) => tour.published);
+        // Persist to localStorage so next page load is instant
+        localStorage.setItem(LS_KEY(cacheKey), JSON.stringify(publishedTours));
+        localStorage.setItem(LS_TS_KEY(cacheKey), Date.now().toString());
         toursListCache[cacheKey] = { tours: publishedTours, ts: Date.now() };
         setTours(publishedTours);
         setLoading(false);
         return;
       } catch (err) {
-        if (attempt === 0) continue; // retry on network error
+        if (attempt === 0) continue;
         console.error("Error loading tours:", err);
       }
     }
 
-    // Both attempts failed — show error state with retry button
-    setFetchError(true);
-    setLoading(false);
+    // Both attempts failed
+    if (!hasStaleData) {
+      setFetchError(true);
+      setLoading(false);
+    }
   };
 
   useEffect(() => {

@@ -8,6 +8,8 @@ import { LoadingIndicator } from "./LoadingIndicator";
 import { ArrowUp } from "lucide-react";
 import { useEditableContent } from "../lib/useEditableContent";
 import { ScrollToTop } from "./ScrollToTop";
+import { loadArticlesFromServer, loadCategoriesFromServer } from "../lib/blogManager";
+import { projectId, publicAnonKey } from "../utils/supabase/info";
 
 // Lazy load LiveChatWidget to avoid initial bundle bloat
 const LiveChatWidget = lazy(() => import("./LiveChatWidget").then(m => ({ default: m.LiveChatWidget })));
@@ -30,6 +32,28 @@ export function RootLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const matches = useMatches();
+
+  // Prefetch slow-loading pages in the background on first app mount.
+  // By the time the user clicks "Private Tours" or "Travel Guide",
+  // the data is already in localStorage → instant render.
+  useEffect(() => {
+    // Blog articles + categories
+    loadArticlesFromServer(projectId, publicAnonKey).catch(() => {});
+    loadCategoriesFromServer(projectId, publicAnonKey).catch(() => {});
+    // Private tours (saves to localStorage using same keys as PrivateToursPage)
+    fetch(
+      `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/private-tours`,
+      { headers: { Authorization: `Bearer ${publicAnonKey}` } }
+    )
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => {
+        if (!data?.tours) return;
+        const published = data.tours.filter((t: any) => t.published);
+        localStorage.setItem("private-tours-cache-en", JSON.stringify(published));
+        localStorage.setItem("private-tours-cache-ts-en", Date.now().toString());
+      })
+      .catch(() => {});
+  }, []); // runs once per app session
 
   // Get content for OG images - useEditableContent returns ComprehensiveContent directly
   const editableContent = useEditableContent(language);
