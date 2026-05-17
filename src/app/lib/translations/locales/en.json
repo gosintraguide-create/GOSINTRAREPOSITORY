@@ -1458,5 +1458,50 @@
       "pleaseTryAgain": "Please try again",
       "goBack": "Go Back"
     }
+  },
+  "infoBar": {
+    "lisbon": "Lisbon",
+    "clearTraffic": "Clear Traffic",
+    "lightTraffic": "Light Traffic",
+    "mediumTraffic": "Medium Traffic",
+    "heavyTraffic": "Heavy Traffic"
+  },
+  "attractionDetail": {
+    "notFound": "Attraction not found",
+    "backToAttractions": "Back to Attractions",
+    "whatMakesItSpecial": "What Makes It Special",
+    "gallery": "Gallery",
+    "mustSee": "Must-See",
+    "openingHours": "Opening Hours",
+    "ticketInformation": "Ticket Information",
+    "entranceTicket": "Entrance Ticket",
+    "onlineBookingComingSoon": "Online Booking Coming Soon",
+    "ticketsAtEntrance": "Attraction tickets are not yet available for online purchase. You can buy tickets at the entrance.",
+    "getThereEasily": "Get There Easily!",
+    "dayPassPromo": "Book a Hop On Sintra day pass for unlimited transport between all attractions with professional driver-guides!",
+    "getDayPass": "Get Day Pass",
+    "dontMissThese": "Don't Miss These!",
+    "insiderTips": "Insider Tips",
+    "timeNeeded": "Time Needed",
+    "exploreMoreAttractions": "Explore More Attractions",
+    "learnMore": "Learn more"
+  },
+  "privateTourDetail": {
+    "loading": "Loading tour details...",
+    "notFound": "Tour not found",
+    "backToPrivateTours": "Back to Private Tours",
+    "aboutThisTour": "About This Tour",
+    "tourFeatures": "Tour Features",
+    "duration": "Duration",
+    "price": "Price",
+    "bookThisTour": "Book This Tour",
+    "morePrivateTours": "More Private Tours",
+    "viewTour": "View tour"
+  },
+  "breadcrumbs": {
+    "home": "Home",
+    "attractions": "Attractions",
+    "privateTours": "Private Tours",
+    "travelGuide": "Travel Guide"
   }
 }

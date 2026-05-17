@@ -507,7 +507,7 @@ export function RootLayout() {
         {/* Sticky wrapper keeps InfoBar + Header pinned together at the top */}
         <div className="sticky top-0 z-50">
           {!["admin", "driver-portal", "diagnostics"].includes(getCurrentPage()) && (
-            <InfoBar />
+            <InfoBar language={language} />
           )}
           <Header
             currentPage={getCurrentPage()}

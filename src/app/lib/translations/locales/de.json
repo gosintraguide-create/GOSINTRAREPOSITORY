@@ -1458,5 +1458,50 @@
       "pleaseTryAgain": "Bitte versuchen Sie es erneut",
       "goBack": "Zurück"
     }
+  },
+  "infoBar": {
+    "lisbon": "Lissabon",
+    "clearTraffic": "Freie Fahrt",
+    "lightTraffic": "Leichter Verkehr",
+    "mediumTraffic": "Mäßiger Verkehr",
+    "heavyTraffic": "Starker Verkehr"
+  },
+  "attractionDetail": {
+    "notFound": "Sehenswürdigkeit nicht gefunden",
+    "backToAttractions": "Zurück zu Sehenswürdigkeiten",
+    "whatMakesItSpecial": "Was es Besonders Macht",
+    "gallery": "Galerie",
+    "mustSee": "Muss Man Sehen",
+    "openingHours": "Öffnungszeiten",
+    "ticketInformation": "Ticket-Informationen",
+    "entranceTicket": "Eintrittskarte",
+    "onlineBookingComingSoon": "Online-Buchung Demnächst Verfügbar",
+    "ticketsAtEntrance": "Attraktionstickets sind noch nicht online erhältlich. Sie können Tickets an der Kasse kaufen.",
+    "getThereEasily": "Einfach Hinkommen!",
+    "dayPassPromo": "Buchen Sie einen Hop On Sintra Tagespass für unbegrenzte Fahrten zwischen allen Sehenswürdigkeiten mit professionellen Fahrer-Guides!",
+    "getDayPass": "Tagespass Holen",
+    "dontMissThese": "Das Nicht Verpassen!",
+    "insiderTips": "Insider-Tipps",
+    "timeNeeded": "Benötigte Zeit",
+    "exploreMoreAttractions": "Weitere Sehenswürdigkeiten Entdecken",
+    "learnMore": "Mehr erfahren"
+  },
+  "privateTourDetail": {
+    "loading": "Tourdetails werden geladen...",
+    "notFound": "Tour nicht gefunden",
+    "backToPrivateTours": "Zurück zu Privattouren",
+    "aboutThisTour": "Über Diese Tour",
+    "tourFeatures": "Tour-Merkmale",
+    "duration": "Dauer",
+    "price": "Preis",
+    "bookThisTour": "Diese Tour Buchen",
+    "morePrivateTours": "Weitere Privattouren",
+    "viewTour": "Tour ansehen"
+  },
+  "breadcrumbs": {
+    "home": "Startseite",
+    "attractions": "Sehenswürdigkeiten",
+    "privateTours": "Privattouren",
+    "travelGuide": "Reiseführer"
   }
 }

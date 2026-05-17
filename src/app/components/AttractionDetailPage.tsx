@@ -132,6 +132,9 @@ export function AttractionDetailPage() {
     content.attractions?.attractionDetails?.[attractionId] ??
     DEFAULT_COMPREHENSIVE_CONTENT.attractions.attractionDetails[attractionId];
 
+  const tAttr = getTranslation(language).attractionDetail;
+  const tBreadcrumbs = getTranslation(language).breadcrumbs;
+
   // Get translated text from JSON locale (used for multilingual text)
   const translatedAttractions = getTranslation(language).attractions;
   const translatedAttraction = (translatedAttractions as any)[attractionId];
@@ -182,10 +185,10 @@ export function AttractionDetailPage() {
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <h2 className="mb-4 text-foreground">
-            Attraction not found
+            {tAttr.notFound}
           </h2>
           <Button onClick={() => onNavigate("attractions")}>
-            Back to Attractions
+            {tAttr.backToAttractions}
           </Button>
         </div>
       </div>
@@ -323,8 +326,8 @@ export function AttractionDetailPage() {
       <div className="border-b border-border bg-white">
         <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
           <Breadcrumbs items={[
-            { label: "Home", href: "/" },
-            { label: "Attractions", href: "/attractions" },
+            { label: tBreadcrumbs.home, href: "/" },
+            { label: tBreadcrumbs.attractions, href: "/attractions" },
             { label: attraction.name, href: `/attractions/${attractionId}` },
           ]} />
         </div>
@@ -368,7 +371,7 @@ export function AttractionDetailPage() {
                 <div className="flex items-center gap-1.5 rounded-lg bg-white/15 px-3 py-1.5 backdrop-blur-md border border-white/20">
                   <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
                   <span className="text-sm font-medium text-white/90">
-                    Must-See
+                    {tAttr.mustSee}
                   </span>
                 </div>
               </div>
@@ -386,7 +389,7 @@ export function AttractionDetailPage() {
               {/* Description */}
               <div>
                 <h2 className="mb-4 sm:mb-5 text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">
-                  What Makes It Special
+                  {tAttr.whatMakesItSpecial}
                 </h2>
                 <p className="text-base sm:text-lg leading-relaxed text-muted-foreground">
                   {attraction.longDescription}
@@ -399,7 +402,7 @@ export function AttractionDetailPage() {
                   <div className="mb-6 sm:mb-8">
                     <Badge className="mb-3 sm:mb-4">
                       <Camera className="mr-1 h-3 w-3" />
-                      Gallery
+                      {tAttr.gallery}
                     </Badge>
                     <div className="w-full max-w-full overflow-hidden rounded-xl sm:rounded-2xl shadow-lg bg-gray-100">
                       <div className="w-full max-w-full">
@@ -458,7 +461,7 @@ export function AttractionDetailPage() {
                         <Clock className="h-5 w-5 text-primary" />
                       </div>
                       <h4 className="text-foreground">
-                        Opening Hours
+                        {tAttr.openingHours}
                       </h4>
                     </div>
                     <p className="text-muted-foreground">
@@ -475,13 +478,13 @@ export function AttractionDetailPage() {
                         <Ticket className="h-6 w-6 text-primary" />
                       </div>
                       <h3 className="text-foreground">
-                        Ticket Information
+                        {tAttr.ticketInformation}
                       </h3>
                     </div>
 
                     <div className="mb-6 rounded-xl bg-secondary/30 p-6 text-center">
                       <div className="mb-2 text-sm text-muted-foreground">
-                        Entrance Ticket
+                        {tAttr.entranceTicket}
                       </div>
                       <div className="mb-4 text-3xl text-foreground">
                         €
@@ -493,34 +496,29 @@ export function AttractionDetailPage() {
                         variant="outline"
                         className="text-muted-foreground"
                       >
-                        Online Booking Coming Soon
+                        {tAttr.onlineBookingComingSoon}
                       </Badge>
                     </div>
 
                     <div className="mb-6 space-y-2 rounded-xl bg-primary/5 p-4">
                       <p className="text-sm text-muted-foreground">
-                        Attraction tickets are not yet available
-                        for online purchase. You can buy tickets
-                        at the entrance.
+                        {tAttr.ticketsAtEntrance}
                       </p>
                     </div>
 
                     <div className="rounded-xl border border-accent/30 bg-accent/5 p-4">
                       <h4 className="mb-2 flex items-center gap-2 text-foreground">
-                        💡 Get There Easily!
+                        {"💡 " + tAttr.getThereEasily}
                       </h4>
                       <p className="mb-3 text-sm text-muted-foreground">
-                        Book a Hop On Sintra day pass for
-                        unlimited transport between all
-                        attractions with professional
-                        driver-guides!
+                        {tAttr.dayPassPromo}
                       </p>
                       <Button
                         size="lg"
                         className="w-full"
                         onClick={() => onNavigate("buy-ticket")}
                       >
-                        Get Day Pass
+                        {tAttr.getDayPass}
                         <ChevronRight className="ml-2 h-4 w-4" />
                       </Button>
                     </div>
@@ -531,7 +529,7 @@ export function AttractionDetailPage() {
               {/* Highlights */}
               <div>
                 <h3 className="mb-5 sm:mb-6 text-xl sm:text-2xl md:text-3xl font-bold text-foreground">
-                  Don't Miss These!
+                  {tAttr.dontMissThese}
                 </h3>
                 <div className="grid gap-4">
                   {attraction.highlights.map(
@@ -555,7 +553,7 @@ export function AttractionDetailPage() {
               {/* Visitor Tips */}
               <div>
                 <h3 className="mb-5 sm:mb-6 text-xl sm:text-2xl md:text-3xl font-bold text-foreground">
-                  Insider Tips
+                  {tAttr.insiderTips}
                 </h3>
                 <div className="grid gap-4">
                   {attraction.tips.map((tip, index) => (
@@ -582,7 +580,7 @@ export function AttractionDetailPage() {
                       <Camera className="h-5 w-5 text-accent" />
                     </div>
                     <h4 className="text-foreground">
-                      Time Needed
+                      {tAttr.timeNeeded}
                     </h4>
                   </div>
                   <p className="text-muted-foreground">
@@ -602,7 +600,7 @@ export function AttractionDetailPage() {
                       <Clock className="h-5 w-5 text-primary" />
                     </div>
                     <h4 className="text-foreground">
-                      Opening Hours
+                      {tAttr.openingHours}
                     </h4>
                   </div>
                   <p className="text-muted-foreground">
@@ -617,13 +615,13 @@ export function AttractionDetailPage() {
                       <Ticket className="h-6 w-6 text-primary" />
                     </div>
                     <h3 className="text-foreground">
-                      Ticket Information
+                      {tAttr.ticketInformation}
                     </h3>
                   </div>
 
                   <div className="mb-6 rounded-xl bg-secondary/30 p-6 text-center">
                     <div className="mb-2 text-sm text-muted-foreground">
-                      Entrance Ticket
+                      {tAttr.entranceTicket}
                     </div>
                     <div className="mb-4 text-3xl text-foreground">
                       €
@@ -635,34 +633,29 @@ export function AttractionDetailPage() {
                       variant="outline"
                       className="text-muted-foreground"
                     >
-                      Online Booking Coming Soon
+                      {tAttr.onlineBookingComingSoon}
                     </Badge>
                   </div>
 
                   <div className="mb-6 space-y-2 rounded-xl bg-primary/5 p-4">
                     <p className="text-sm text-muted-foreground">
-                      Attraction tickets are not yet available
-                      for online purchase. You can buy tickets
-                      at the entrance.
+                      {tAttr.ticketsAtEntrance}
                     </p>
                   </div>
 
                   <div className="rounded-xl border border-accent/30 bg-accent/5 p-4">
                     <h4 className="mb-2 flex items-center gap-2 text-foreground">
-                      💡 Get There Easily!
+                      {"💡 " + tAttr.getThereEasily}
                     </h4>
                     <p className="mb-3 text-sm text-muted-foreground">
-                      Book a Hop On Sintra day pass for
-                      unlimited transport between all
-                      attractions with professional
-                      driver-guides!
+                      {tAttr.dayPassPromo}
                     </p>
                     <Button
                       size="lg"
                       className="w-full"
                       onClick={() => onNavigate("buy-ticket")}
                     >
-                      Get Day Pass
+                      {tAttr.getDayPass}
                       <ChevronRight className="ml-2 h-4 w-4" />
                     </Button>
                   </div>
@@ -705,7 +698,7 @@ export function AttractionDetailPage() {
           <section className="border-t border-border bg-secondary/20 py-10 sm:py-14">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <h2 className="mb-6 text-xl font-semibold text-foreground sm:text-2xl">
-                Explore More Attractions
+                {tAttr.exploreMoreAttractions}
               </h2>
               <div className="grid gap-4 sm:grid-cols-3">
                 {otherAttractions.map((a) => (
@@ -726,7 +719,7 @@ export function AttractionDetailPage() {
                       <h3 className="mb-1 font-semibold text-foreground">{a.name}</h3>
                       <p className="line-clamp-2 text-sm text-muted-foreground">{a.description}</p>
                       <span className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-primary">
-                        Learn more <ChevronRight className="h-3.5 w-3.5" />
+                        {tAttr.learnMore} <ChevronRight className="h-3.5 w-3.5" />
                       </span>
                     </div>
                   </Link>

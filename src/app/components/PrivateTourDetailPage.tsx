@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
 import { analytics } from "../lib/analytics";
+import { getTranslation } from "../lib/translations/loader";
 import { Breadcrumbs } from "./Breadcrumbs";
 import { Link } from "react-router";
 
@@ -102,7 +103,9 @@ interface OutletContext {
 export function PrivateTourDetailPage() {
   const { language = "en", onNavigate } = useOutletContext<OutletContext>();
   const { slug } = useParams<{ slug: string }>();
-  
+  const tTour = getTranslation(language).privateTourDetail;
+  const tBreadcrumbs = getTranslation(language).breadcrumbs;
+
   const [tour, setTour] = useState<PrivateTour | null>(null);
   const [otherTours, setOtherTours] = useState<PrivateTour[]>([]);
   const [loading, setLoading] = useState(true);
@@ -224,7 +227,7 @@ export function PrivateTourDetailPage() {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <div className="text-lg text-muted-foreground">Loading tour details...</div>
+        <div className="text-lg text-muted-foreground">{tTour.loading}</div>
       </div>
     );
   }
@@ -232,10 +235,10 @@ export function PrivateTourDetailPage() {
   if (!tour) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4">
-        <div className="text-2xl font-bold">Tour not found</div>
+        <div className="text-2xl font-bold">{tTour.notFound}</div>
         <Button onClick={() => onNavigate("private-tours")} className="gap-2">
           <ArrowLeft className="h-4 w-4" />
-          Back to Private Tours
+          {tTour.backToPrivateTours}
         </Button>
       </div>
     );
@@ -276,8 +279,8 @@ export function PrivateTourDetailPage() {
       <div className="border-b border-border bg-white">
         <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
           <Breadcrumbs items={[
-            { label: "Home", href: "/" },
-            { label: "Private Tours", href: "/private-tours" },
+            { label: tBreadcrumbs.home, href: "/" },
+            { label: tBreadcrumbs.privateTours, href: "/private-tours" },
             { label: tour.title, href: `/private-tours/${tour.id}` },
           ]} />
         </div>
@@ -327,7 +330,7 @@ export function PrivateTourDetailPage() {
               {/* Long Description */}
               {tour.longDescription && (
                 <div className="mb-8">
-                  <h2 className="mb-4 text-3xl font-bold">About This Tour</h2>
+                  <h2 className="mb-4 text-3xl font-bold">{tTour.aboutThisTour}</h2>
                   <p className="whitespace-pre-wrap text-lg leading-relaxed text-muted-foreground">
                     {tour.longDescription}
                   </p>
@@ -337,7 +340,7 @@ export function PrivateTourDetailPage() {
               {/* Tour Highlights */}
               {tour.features && tour.features.length > 0 && (
                 <>
-                  <h2 className="mb-6 text-3xl font-bold">Tour Features</h2>
+                  <h2 className="mb-6 text-3xl font-bold">{tTour.tourFeatures}</h2>
                   <div className="space-y-4">
                     {tour.features.map((feature, index) => (
                       <div
@@ -359,13 +362,13 @@ export function PrivateTourDetailPage() {
                 <div className="mb-4">
                   <div className="flex items-baseline gap-2">
                     <Clock className="h-5 w-5 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">Duration:</span>
+                    <span className="text-sm text-muted-foreground">{tTour.duration}:</span>
                     <span className="font-semibold">{tour.duration}</span>
                   </div>
                 </div>
                 
                 <div className="mb-6 text-center">
-                  <div className="text-sm text-muted-foreground">Price</div>
+                  <div className="text-sm text-muted-foreground">{tTour.price}</div>
                   <div className="text-3xl font-bold">{tour.price}</div>
                   {tour.priceSubtext && (
                     <div className="text-sm text-muted-foreground">{tour.priceSubtext}</div>
@@ -378,7 +381,7 @@ export function PrivateTourDetailPage() {
                   onClick={() => { setShowBookingDialog(true); analytics.privateTourInquiry(); }}
                 >
                   <Calendar className="mr-2 h-4 w-4" />
-                  Book This Tour
+                  {tTour.bookThisTour}
                 </Button>
                 
                 
@@ -414,7 +417,7 @@ export function PrivateTourDetailPage() {
         <section className="border-t border-border bg-secondary/20 py-10 sm:py-14">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <h2 className="mb-6 text-xl font-semibold text-foreground sm:text-2xl">
-              More Private Tours
+              {tTour.morePrivateTours}
             </h2>
             <div className="grid gap-4 sm:grid-cols-3">
               {otherTours.map((t) => (
@@ -437,7 +440,7 @@ export function PrivateTourDetailPage() {
                     <h3 className="mb-1 font-semibold text-foreground">{t.title}</h3>
                     <p className="line-clamp-2 text-sm text-muted-foreground">{t.description}</p>
                     <span className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-primary">
-                      View tour <ChevronRight className="h-3.5 w-3.5" />
+                      {tTour.viewTour} <ChevronRight className="h-3.5 w-3.5" />
                     </span>
                   </div>
                 </Link>

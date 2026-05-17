@@ -1458,5 +1458,50 @@
       "pleaseTryAgain": "Probeer het opnieuw",
       "goBack": "Ga Terug"
     }
+  },
+  "infoBar": {
+    "lisbon": "Lissabon",
+    "clearTraffic": "Vrij Verkeer",
+    "lightTraffic": "Licht Verkeer",
+    "mediumTraffic": "Matig Verkeer",
+    "heavyTraffic": "Zwaar Verkeer"
+  },
+  "attractionDetail": {
+    "notFound": "Attractie niet gevonden",
+    "backToAttractions": "Terug naar Attracties",
+    "whatMakesItSpecial": "Wat het Bijzonder Maakt",
+    "gallery": "Galerij",
+    "mustSee": "Niet te Missen",
+    "openingHours": "Openingstijden",
+    "ticketInformation": "Ticket Informatie",
+    "entranceTicket": "Toegangsticket",
+    "onlineBookingComingSoon": "Online Boeking Binnenkort Beschikbaar",
+    "ticketsAtEntrance": "Attractietickets zijn nog niet online beschikbaar. U kunt tickets bij de ingang kopen.",
+    "getThereEasily": "Gemakkelijk Bereikbaar!",
+    "dayPassPromo": "Boek een Hop On Sintra dagpas voor onbeperkt vervoer tussen alle attracties met professionele chauffeur-gidsen!",
+    "getDayPass": "Dagpas Halen",
+    "dontMissThese": "Mis Dit Niet!",
+    "insiderTips": "Insider Tips",
+    "timeNeeded": "Benodigde Tijd",
+    "exploreMoreAttractions": "Meer Attracties Ontdekken",
+    "learnMore": "Meer weten"
+  },
+  "privateTourDetail": {
+    "loading": "Tourdetails laden...",
+    "notFound": "Tour niet gevonden",
+    "backToPrivateTours": "Terug naar Privétours",
+    "aboutThisTour": "Over Deze Tour",
+    "tourFeatures": "Tour Kenmerken",
+    "duration": "Duur",
+    "price": "Prijs",
+    "bookThisTour": "Deze Tour Boeken",
+    "morePrivateTours": "Meer Privétours",
+    "viewTour": "Tour bekijken"
+  },
+  "breadcrumbs": {
+    "home": "Startpagina",
+    "attractions": "Attracties",
+    "privateTours": "Privétours",
+    "travelGuide": "Reisgids"
   }
 }

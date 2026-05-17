@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Clock, Navigation } from "lucide-react";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
+import { getTranslation } from "../lib/translations/loader";
 
 const API_URL = `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/info-bar`;
 const REFETCH_INTERVAL = 10 * 60 * 1000;
@@ -24,18 +25,23 @@ function weatherEmoji(icon: string): string {
   return map[code] ?? "🌤️";
 }
 
-const TRAFFIC_CONFIG: Record<string, { label: string; bg: string; dot: string }> = {
-  clear:  { label: "Clear Traffic",  bg: "bg-green-500/90",      dot: "bg-green-300"  },
-  light:  { label: "Light Traffic",  bg: "bg-lime-500/90",       dot: "bg-lime-300"   },
-  medium: { label: "Medium Traffic", bg: "bg-amber-500/90",      dot: "bg-amber-300"  },
-  heavy:  { label: "Heavy Traffic",  bg: "bg-red-600/90",        dot: "bg-red-300"    },
+const TRAFFIC_STYLES: Record<string, { bg: string; dot: string }> = {
+  clear:  { bg: "bg-green-500/90",      dot: "bg-green-300"  },
+  light:  { bg: "bg-lime-500/90",       dot: "bg-lime-300"   },
+  medium: { bg: "bg-amber-500/90",      dot: "bg-amber-300"  },
+  heavy:  { bg: "bg-red-600/90",        dot: "bg-red-300"    },
 };
 
 function Divider() {
   return <div className="h-5 w-px bg-white/20 hidden sm:block" />;
 }
 
-export function InfoBar() {
+interface InfoBarProps {
+  language?: string;
+}
+
+export function InfoBar({ language = "en" }: InfoBarProps) {
+  const t = getTranslation(language).infoBar;
   const [time, setTime]       = useState(getLisbonTime);
   const [weather, setWeather] = useState<{ temp: number; description: string; icon: string } | null>(null);
   const [traffic, setTraffic] = useState<{ level: string } | null>(null);
@@ -72,7 +78,14 @@ export function InfoBar() {
     return () => { cancelled = true; clearInterval(id); };
   }, []);
 
-  const trafficCfg = traffic ? (TRAFFIC_CONFIG[traffic.level] ?? TRAFFIC_CONFIG.medium) : null;
+  const trafficLabels: Record<string, string> = {
+    clear: t.clearTraffic,
+    light: t.lightTraffic,
+    medium: t.mediumTraffic,
+    heavy: t.heavyTraffic,
+  };
+  const trafficStyles = traffic ? (TRAFFIC_STYLES[traffic.level] ?? TRAFFIC_STYLES.medium) : null;
+  const trafficLabel = traffic ? (trafficLabels[traffic.level] ?? trafficLabels.medium) : null;
 
   return (
     <div className="bg-[#0A4D5C] px-4 py-2 text-white">
@@ -83,7 +96,7 @@ export function InfoBar() {
           <Clock className="h-3.5 w-3.5 text-white/50 shrink-0" />
           <span className="text-base font-bold tracking-wide tabular-nums">{time}</span>
           <span className="text-[11px] font-medium text-white/45 uppercase tracking-wider hidden sm:inline">
-            Lisbon
+            {t.lisbon}
           </span>
         </div>
 
@@ -126,14 +139,14 @@ export function InfoBar() {
             <Divider />
             <div className="h-6 w-24 rounded-full bg-white/10 animate-pulse" />
           </>
-        ) : trafficCfg ? (
+        ) : trafficStyles ? (
           <>
             <Divider />
             <div className="flex items-center gap-2">
               <Navigation className="h-3.5 w-3.5 text-white/50 shrink-0" />
-              <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-0.5 text-xs font-bold tracking-wide text-white ${trafficCfg.bg}`}>
-                <span className={`h-1.5 w-1.5 rounded-full ${trafficCfg.dot} animate-pulse`} />
-                {trafficCfg.label}
+              <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-0.5 text-xs font-bold tracking-wide text-white ${trafficStyles.bg}`}>
+                <span className={`h-1.5 w-1.5 rounded-full ${trafficStyles.dot} animate-pulse`} />
+                {trafficLabel}
               </span>
             </div>
           </>
