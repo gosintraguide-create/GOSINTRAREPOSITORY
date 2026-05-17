@@ -1942,12 +1942,15 @@ app.get("/make-server-3bd0ade8/info-bar", async (c) => {
     const d = await r.json();
     const summary = d?.routes?.[0]?.summary;
     if (summary) {
-      const travelTime    = summary.travelTimeInSeconds        ?? 0;
-      const noTrafficTime = summary.noTrafficTravelTimeInSeconds ?? travelTime;
-      const delaySeconds  = Math.max(0, travelTime - noTrafficTime);
-      // Thresholds for a ~10-min drive: <2 min delay = clear, <5 min = medium, else heavy
-      const level = delaySeconds < 120 ? "clear" : delaySeconds < 300 ? "medium" : "heavy";
-      traffic = { level, delaySeconds, travelTimeSeconds: travelTime };
+      const travelTime = summary.travelTimeInSeconds ?? 0;
+      const travelMinutes = travelTime / 60;
+      // Thresholds based on absolute travel time (Train Station → Pena Palace ticket office)
+      // <17 min = clear, 17–23 min = light, 24–30 min = medium, >30 min = heavy
+      const level =
+        travelMinutes < 17 ? "clear"  :
+        travelMinutes < 24 ? "light"  :
+        travelMinutes < 31 ? "medium" : "heavy";
+      traffic = { level, travelTimeSeconds: travelTime };
     }
   } catch (e) {
     console.error("Traffic fetch failed:", e);

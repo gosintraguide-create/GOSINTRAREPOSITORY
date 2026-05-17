@@ -25,9 +25,10 @@ function weatherEmoji(icon: string): string {
 }
 
 const TRAFFIC_CONFIG: Record<string, { label: string; bg: string; dot: string }> = {
-  clear:  { label: "Clear",  bg: "bg-green-500/90",  dot: "bg-green-300" },
-  medium: { label: "Medium", bg: "bg-amber-500/90",  dot: "bg-amber-300" },
-  heavy:  { label: "Heavy",  bg: "bg-red-600/90",    dot: "bg-red-300"   },
+  clear:  { label: "Clear",  bg: "bg-green-500/90",      dot: "bg-green-300"  },
+  light:  { label: "Light",  bg: "bg-lime-500/90",       dot: "bg-lime-300"   },
+  medium: { label: "Medium", bg: "bg-amber-500/90",      dot: "bg-amber-300"  },
+  heavy:  { label: "Heavy",  bg: "bg-red-600/90",        dot: "bg-red-300"    },
 };
 
 function Divider() {
