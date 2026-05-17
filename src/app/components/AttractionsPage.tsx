@@ -187,17 +187,31 @@ export function AttractionsPage() {
       );
   }, []);
 
-  const attractions = useMemo(() => Object.entries(
-    getTranslation(language).attractions,
-  ).map(([id, attr]) => ({
-    id,
-    name: attr.name,
-    description: attr.description,
-    duration: attr.duration,
-    price: attr.price,
-    parkOnlyPrice: attr.parkOnlyPrice,
-    imageUrl: attr.imageUrl,
-  })), [language]);
+  const attractions = useMemo(() => {
+    // Prefer live CMS data from the content editor (saved to Supabase / localStorage).
+    // Fall back to the static locale file only when no CMS data is available.
+    const cmsDetails = content.attractions?.attractionDetails;
+    const hasCmsData = cmsDetails && Object.keys(cmsDetails).length > 0;
+    const source: Record<string, any> = hasCmsData
+      ? cmsDetails
+      : (getTranslation(language).attractions as Record<string, any>);
+
+    return Object.entries(source).map(([id, attr]) => ({
+      id,
+      name: attr.name,
+      // CMS stores "shortDescription"; static locale uses "description"
+      description: (attr as any).shortDescription ?? attr.description,
+      duration: attr.duration,
+      price: attr.price,
+      parkOnlyPrice: attr.parkOnlyPrice,
+      // CMS stores "cardImage" / "heroImage" / "gallery"; locale stores "imageUrl"
+      imageUrl:
+        (attr as any).cardImage ??
+        (attr as any).heroImage ??
+        attr.imageUrl ??
+        (attr as any).gallery?.[0],
+    }));
+  }, [language, content.attractions?.attractionDetails]);
 
   const handleExploreClick = (attractionId: string) => {
     const slug = generateSlug(attractionId);

@@ -18,6 +18,7 @@ import {
 import {
   DEFAULT_COMPREHENSIVE_CONTENT,
 } from "../lib/comprehensiveContent";
+import { useEditableContent } from "../lib/useEditableContent";
 import { getTranslation } from "../lib/translations/loader";
 import { Breadcrumbs } from "./Breadcrumbs";
 import { Link } from "react-router";
@@ -125,28 +126,50 @@ export function AttractionDetailPage() {
   // Map slug to attraction ID - we'll need to find the attraction by slug or ID
   const attractionId = slug || "";
 
-  // Get translated text from JSON locale
+  // Live CMS data (saved via Content Editor → Supabase)
+  const content = useEditableContent(language);
+  const cmsAttraction =
+    content.attractions?.attractionDetails?.[attractionId] ??
+    DEFAULT_COMPREHENSIVE_CONTENT.attractions.attractionDetails[attractionId];
+
+  // Get translated text from JSON locale (used for multilingual text)
   const translatedAttractions = getTranslation(language).attractions;
   const translatedAttraction = (translatedAttractions as any)[attractionId];
 
-  // Get gallery images from comprehensiveContent (not language-dependent)
-  const comprehensiveAttraction =
-    DEFAULT_COMPREHENSIVE_CONTENT.attractions.attractionDetails[attractionId];
-
-  // Merge: translated text takes precedence; gallery from comprehensiveContent
-  const attraction = translatedAttraction
+  // Merge: CMS data is the primary source for all fields; translated locale
+  // text is used for non-English languages. Gallery/images always come from CMS.
+  const attraction = cmsAttraction
     ? {
-        ...translatedAttraction,
-        // normalize field: JSON uses 'description', component used 'shortDescription'
-        shortDescription: translatedAttraction.description,
-        // gallery from comprehensive data (may be undefined for some attractions)
-        gallery: comprehensiveAttraction?.gallery,
-        heroImage: comprehensiveAttraction?.heroImage,
+        // CMS fields (name, shortDescription, price, duration, highlights, tips, etc.)
+        ...cmsAttraction,
+        // For non-English, overlay translated text if available
+        ...(language !== "en" && translatedAttraction
+          ? {
+              name: translatedAttraction.name ?? cmsAttraction.name,
+              shortDescription:
+                translatedAttraction.description ??
+                translatedAttraction.shortDescription ??
+                cmsAttraction.shortDescription,
+              longDescription:
+                translatedAttraction.longDescription ??
+                cmsAttraction.longDescription,
+            }
+          : {}),
+        // Normalize: locale JSON uses "description"; component expects "shortDescription"
+        shortDescription:
+          cmsAttraction.shortDescription ??
+          (translatedAttraction?.description),
+        // Image resolution: cardImage → heroImage → imageUrl → gallery[0]
+        imageUrl:
+          cmsAttraction.cardImage ??
+          cmsAttraction.heroImage ??
+          (cmsAttraction as any).imageUrl ??
+          cmsAttraction.gallery?.[0],
       }
-    : comprehensiveAttraction
+    : translatedAttraction
       ? {
-          ...comprehensiveAttraction,
-          imageUrl: comprehensiveAttraction.imageUrl,
+          ...translatedAttraction,
+          shortDescription: translatedAttraction.description,
         }
       : null;
 
