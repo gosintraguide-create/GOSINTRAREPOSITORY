@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { Clock, Cloud, Car } from "lucide-react";
+import { Clock, Navigation } from "lucide-react";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
 
 const API_URL = `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/info-bar`;
-const REFETCH_INTERVAL = 10 * 60 * 1000; // 10 minutes
+const REFETCH_INTERVAL = 10 * 60 * 1000;
 
 function getLisbonTime() {
   return new Intl.DateTimeFormat("en-GB", {
@@ -14,28 +14,41 @@ function getLisbonTime() {
   }).format(new Date());
 }
 
-const TRAFFIC_STYLES: Record<string, { label: string; colour: string }> = {
-  clear:  { label: "Clear",  colour: "text-green-300" },
-  medium: { label: "Medium", colour: "text-amber-300" },
-  heavy:  { label: "Heavy",  colour: "text-red-400"   },
+// Map OWM icon codes to descriptive emoji
+function weatherEmoji(icon: string): string {
+  const code = icon.replace(/[dn]$/, "");
+  const map: Record<string, string> = {
+    "01": "☀️", "02": "⛅", "03": "🌥️", "04": "☁️",
+    "09": "🌧️", "10": "🌦️", "11": "⛈️", "13": "❄️", "50": "🌫️",
+  };
+  return map[code] ?? "🌤️";
+}
+
+const TRAFFIC_CONFIG: Record<string, { label: string; bg: string; dot: string }> = {
+  clear:  { label: "Clear",  bg: "bg-green-500/90",  dot: "bg-green-300" },
+  medium: { label: "Medium", bg: "bg-amber-500/90",  dot: "bg-amber-300" },
+  heavy:  { label: "Heavy",  bg: "bg-red-600/90",    dot: "bg-red-300"   },
 };
+
+function Divider() {
+  return <div className="h-5 w-px bg-white/20 hidden sm:block" />;
+}
 
 export function InfoBar() {
   const [time, setTime]       = useState(getLisbonTime);
-  const [weather, setWeather] = useState<{ temp: number; description: string } | null>(null);
+  const [weather, setWeather] = useState<{ temp: number; description: string; icon: string } | null>(null);
   const [traffic, setTraffic] = useState<{ level: string } | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Clock — tick every 60 s
+  // Clock tick
   useEffect(() => {
     const id = setInterval(() => setTime(getLisbonTime()), 60_000);
     return () => clearInterval(id);
   }, []);
 
-  // Weather + traffic — fetch on mount then every 10 min
+  // Fetch weather + traffic
   useEffect(() => {
     let cancelled = false;
-
     async function fetchData() {
       try {
         const res = await fetch(API_URL, {
@@ -48,69 +61,88 @@ export function InfoBar() {
           if (data.traffic) setTraffic(data.traffic);
         }
       } catch (_) {
-        // silently fail — bar just shows whatever data it has
+        // silently degrade
       } finally {
         if (!cancelled) setLoading(false);
       }
     }
-
     fetchData();
     const id = setInterval(fetchData, REFETCH_INTERVAL);
     return () => { cancelled = true; clearInterval(id); };
   }, []);
 
-  // If everything is still loading and nothing to show, render nothing
-  if (loading && !weather && !traffic) {
-    return (
-      <div className="bg-[#0A4D5C] py-1.5 px-4">
-        <div className="mx-auto flex max-w-7xl items-center justify-center gap-6">
-          {[1, 2, 3].map((n) => (
-            <div key={n} className="h-3 w-20 animate-pulse rounded-full bg-white/20" />
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  const trafficStyle = traffic ? TRAFFIC_STYLES[traffic.level] ?? TRAFFIC_STYLES.medium : null;
-
-  // Capitalise first letter of weather description
-  const weatherLabel = weather
-    ? `${weather.temp}°C · ${weather.description.charAt(0).toUpperCase()}${weather.description.slice(1)}`
-    : null;
+  const trafficCfg = traffic ? (TRAFFIC_CONFIG[traffic.level] ?? TRAFFIC_CONFIG.medium) : null;
 
   return (
-    <div className="bg-[#0A4D5C] py-1.5 px-4 text-xs text-white/90">
-      <div className="mx-auto flex max-w-7xl items-center justify-center gap-1 sm:gap-5 flex-wrap">
-        {/* Time */}
-        <span className="flex items-center gap-1.5 whitespace-nowrap">
-          <Clock className="h-3 w-3 opacity-70" />
-          <span>{time}</span>
-          <span className="opacity-50 text-[10px]">Lisbon</span>
-        </span>
+    <div className="bg-[#0A4D5C] px-4 py-2 text-white">
+      <div className="mx-auto flex max-w-7xl items-center justify-center gap-4 sm:gap-6 flex-wrap">
 
-        {weatherLabel && (
+        {/* ── Time ── */}
+        <div className="flex items-center gap-2">
+          <Clock className="h-3.5 w-3.5 text-white/50 shrink-0" />
+          <span className="text-base font-bold tracking-wide tabular-nums">{time}</span>
+          <span className="text-[11px] font-medium text-white/45 uppercase tracking-wider hidden sm:inline">
+            Lisbon
+          </span>
+        </div>
+
+        {/* ── Weather ── */}
+        {loading && !weather ? (
           <>
-            <span className="opacity-30 hidden sm:inline">·</span>
-            <span className="flex items-center gap-1.5 whitespace-nowrap">
-              <Cloud className="h-3 w-3 opacity-70" />
-              <span>{weatherLabel}</span>
-            </span>
+            <Divider />
+            <div className="flex items-center gap-2">
+              <div className="h-6 w-6 rounded-full bg-white/10 animate-pulse" />
+              <div className="h-4 w-14 rounded bg-white/10 animate-pulse" />
+            </div>
           </>
-        )}
-
-        {trafficStyle && (
+        ) : weather ? (
           <>
-            <span className="opacity-30 hidden sm:inline">·</span>
-            <span className="flex items-center gap-1.5 whitespace-nowrap">
-              <Car className="h-3 w-3 opacity-70" />
-              <span>Traffic: </span>
-              <span className={`font-semibold ${trafficStyle.colour}`}>
-                {trafficStyle.label}
+            <Divider />
+            <div className="flex items-center gap-2">
+              {/* OWM icon — falls back to emoji if image fails */}
+              <img
+                src={`https://openweathermap.org/img/wn/${weather.icon}.png`}
+                alt={weather.description}
+                className="h-8 w-8 -my-1 drop-shadow-sm"
+                onError={(e) => {
+                  const span = document.createElement("span");
+                  span.textContent = weatherEmoji(weather.icon);
+                  span.className = "text-lg leading-none";
+                  (e.target as HTMLImageElement).replaceWith(span);
+                }}
+              />
+              <span className="text-xl font-extrabold leading-none">
+                {weather.temp}°
               </span>
-            </span>
+              <span className="text-xs font-medium text-white/60 capitalize hidden sm:block max-w-[120px] truncate">
+                {weather.description}
+              </span>
+            </div>
           </>
-        )}
+        ) : null}
+
+        {/* ── Traffic ── */}
+        {loading && !traffic ? (
+          <>
+            <Divider />
+            <div className="h-6 w-24 rounded-full bg-white/10 animate-pulse" />
+          </>
+        ) : trafficCfg ? (
+          <>
+            <Divider />
+            <div className="flex items-center gap-2">
+              <Navigation className="h-3.5 w-3.5 text-white/50 shrink-0" />
+              <span className="text-xs text-white/60 hidden sm:block">
+                Train Station → Pena Palace
+              </span>
+              <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-0.5 text-xs font-bold tracking-wide text-white ${trafficCfg.bg}`}>
+                <span className={`h-1.5 w-1.5 rounded-full ${trafficCfg.dot} animate-pulse`} />
+                {trafficCfg.label}
+              </span>
+            </div>
+          </>
+        ) : null}
+
       </div>
     </div>
   );

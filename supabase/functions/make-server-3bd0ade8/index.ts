@@ -1890,10 +1890,15 @@ app.post("/make-server-3bd0ade8/verify-payment", async (c) => {
 app.get("/make-server-3bd0ade8/info-bar", async (c) => {
   const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
-  // Return cached value if fresh
+  // Return cached value if fresh AND it has complete data (don't serve a
+  // cache that was built before the API keys were active)
   try {
     const cached = await kvWithRetry.get("info_bar_cache") as any;
-    if (cached && Date.now() - new Date(cached.cachedAt).getTime() < CACHE_TTL_MS) {
+    if (
+      cached &&
+      cached.weather !== null &&
+      Date.now() - new Date(cached.cachedAt).getTime() < CACHE_TTL_MS
+    ) {
       return c.json(cached);
     }
   } catch (_) { /* ignore cache read errors */ }
