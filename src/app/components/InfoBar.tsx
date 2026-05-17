@@ -86,19 +86,11 @@ export function InfoBar() {
           </span>
         </div>
 
-        {/* ── Weather ── */}
-        {loading && !weather ? (
-          <>
-            <Divider />
-            <div className="flex items-center gap-2">
-              <div className="h-6 w-6 rounded-full bg-white/10 animate-pulse" />
-              <div className="h-4 w-14 rounded bg-white/10 animate-pulse" />
-            </div>
-          </>
-        ) : weather ? (
-          <>
-            <Divider />
-            <div className="flex items-center gap-2">
+        {/* ── Weather — always visible; shows placeholder until API responds ── */}
+        <Divider />
+        <div className="flex items-center gap-2">
+          {weather ? (
+            <>
               {/* OWM icon — falls back to emoji if image fails */}
               <img
                 src={`https://openweathermap.org/img/wn/${weather.icon}.png`}
@@ -117,9 +109,15 @@ export function InfoBar() {
               <span className="text-xs font-medium text-white/60 capitalize hidden sm:block max-w-[120px] truncate">
                 {weather.description}
               </span>
-            </div>
-          </>
-        ) : null}
+            </>
+          ) : (
+            <>
+              <span className="text-lg opacity-50">🌤</span>
+              <span className="text-base font-bold text-white/40">--°</span>
+              <span className="text-xs text-white/30 hidden sm:block">Sintra</span>
+            </>
+          )}
+        </div>
 
         {/* ── Traffic ── */}
         {loading && !traffic ? (
@@ -133,7 +131,7 @@ export function InfoBar() {
             <div className="flex items-center gap-2">
               <Navigation className="h-3.5 w-3.5 text-white/50 shrink-0" />
               <span className="text-xs text-white/60 hidden sm:block">
-                Train Station → Pena Palace
+                Village roads
               </span>
               <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-0.5 text-xs font-bold tracking-wide text-white ${trafficCfg.bg}`}>
                 <span className={`h-1.5 w-1.5 rounded-full ${trafficCfg.dot} animate-pulse`} />

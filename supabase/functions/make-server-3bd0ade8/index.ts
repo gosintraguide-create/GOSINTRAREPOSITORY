@@ -1914,15 +1914,18 @@ app.get("/make-server-3bd0ade8/info-bar", async (c) => {
       `https://api.openweathermap.org/data/2.5/weather?lat=38.7979&lon=-9.3879&appid=${OWM_KEY}&units=metric`
     );
     const d = await r.json();
+    console.log("[info-bar] OWM response:", JSON.stringify(d).slice(0, 200));
     if (d.main && d.weather?.[0]) {
       weather = {
         temp: Math.round(d.main.temp),
         description: d.weather[0].description,
         icon: d.weather[0].icon,
       };
+    } else {
+      console.error("[info-bar] OWM unexpected shape — cod:", d.cod, "msg:", d.message);
     }
   } catch (e) {
-    console.error("Weather fetch failed:", e);
+    console.error("[info-bar] Weather fetch failed:", e);
   }
 
   // --- Traffic (TomTom Routing API — Sintra Train Station → Pena Palace) ---
