@@ -1066,6 +1066,22 @@
     "attractionsCtaTitle": "Klaar om Sintra te Verkennen?",
     "attractionsCtaDescription": "Uw Hop On Sintra dagpas geeft u toegang tot al deze prachtige attracties. Stap in en uit wanneer u wilt en breng zoveel tijd door als u wilt op elke locatie.",
     "attractionsCtaButton": "Boek Uw Dagpas",
+    "attractionSingular": "attractie",
+    "attractionPlural": "attracties",
+    "free": "Gratis",
+    "moreWaysTitle": "Meer manieren om Sintra te ontdekken",
+    "moreWaysSubtitle": "Ontdek onze diensten die uw Sintra-ervaring onvergetelijk maken",
+    "moreWays": {
+      "hopOnTitle": "Hop On Service",
+      "hopOnDescription": "Onbeperkte dagpas om alle attracties in uw eigen tempo te bezoeken",
+      "hopOnBadge": "9u – 19u dagelijks",
+      "privateToursTitle": "Privérondleidingen",
+      "privateToursDescription": "Gepersonaliseerde rondleidingen met ervaren lokale gidsen en op maat gemaakte routes",
+      "privateToursBadge": "Exclusieve Ervaring",
+      "travelGuideTitle": "Reisgids",
+      "travelGuideDescription": "Experttips, fotospots en insidertips voor een bezoek aan Sintra",
+      "travelGuideBadge": "Lokale Kennis"
+    },
     "homepage": {
       "quickLinks": {
         "sectionTitle": "Plan Je Bezoek",

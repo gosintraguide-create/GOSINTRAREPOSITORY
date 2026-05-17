@@ -1066,6 +1066,22 @@
     "attractionsCtaTitle": "¿Listo para Explorar Sintra?",
     "attractionsCtaDescription": "Tu pase de día de Hop On Sintra te da acceso a todas estas magníficas atracciones. Sube y baja cuando quieras, pasando el tiempo que desees en cada lugar.",
     "attractionsCtaButton": "Reserva Tu Pase de Día",
+    "attractionSingular": "atracción",
+    "attractionPlural": "atracciones",
+    "free": "Gratis",
+    "moreWaysTitle": "Más Formas de Explorar Sintra",
+    "moreWaysSubtitle": "Descubre nuestros servicios diseñados para hacer tu experiencia en Sintra inolvidable",
+    "moreWays": {
+      "hopOnTitle": "Servicio Hop On",
+      "hopOnDescription": "Pase diario ilimitado para visitar todas las atracciones a tu propio ritmo",
+      "hopOnBadge": "9h – 19h Diariamente",
+      "privateToursTitle": "Tours Privados",
+      "privateToursDescription": "Tours guiados personalizados con guías locales expertos e itinerarios a medida",
+      "privateToursBadge": "Experiencia Exclusiva",
+      "travelGuideTitle": "Guía de Viaje",
+      "travelGuideDescription": "Consejos de expertos, lugares fotográficos y asesoramiento para visitar Sintra",
+      "travelGuideBadge": "Conocimiento Local"
+    },
     "homepage": {
       "quickLinks": {
         "sectionTitle": "Planifica Tu Visita",

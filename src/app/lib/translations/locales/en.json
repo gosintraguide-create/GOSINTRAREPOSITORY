@@ -1066,6 +1066,22 @@
     "attractionsCtaTitle": "Ready to Explore Sintra?",
     "attractionsCtaDescription": "Your Hop On Sintra day pass gives you access to all these magnificent attractions. Hop on and off as you please, spending as much time as you'd like at each location.",
     "attractionsCtaButton": "Book Your Day Pass",
+    "attractionSingular": "attraction",
+    "attractionPlural": "attractions",
+    "free": "Free",
+    "moreWaysTitle": "More Ways to Explore Sintra",
+    "moreWaysSubtitle": "Discover our services designed to make your Sintra experience unforgettable",
+    "moreWays": {
+      "hopOnTitle": "Hop On Service",
+      "hopOnDescription": "Unlimited hop-on/hop-off day pass to visit all attractions at your own pace",
+      "hopOnBadge": "9am – 7pm Daily",
+      "privateToursTitle": "Private Tours",
+      "privateToursDescription": "Personalized guided tours with expert local guides and custom itineraries",
+      "privateToursBadge": "Custom Experience",
+      "travelGuideTitle": "Travel Guide",
+      "travelGuideDescription": "Insider tips, photography spots, and expert advice for visiting Sintra",
+      "travelGuideBadge": "Local Insights"
+    },
     "homepage": {
       "quickLinks": {
         "sectionTitle": "Plan Your Visit",

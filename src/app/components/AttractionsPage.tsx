@@ -307,7 +307,7 @@ export function AttractionsPage() {
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="mb-8 text-center">
             <Badge>
-              {attractions.length} {attractions.length === 1 ? "attraction" : "attractions"}
+              {attractions.length} {attractions.length === 1 ? t.attractionSingular : t.attractionPlural}
             </Badge>
           </div>
 
@@ -347,7 +347,7 @@ export function AttractionsPage() {
                       {attraction.price != null && (
                         <div className="flex items-center gap-1">
                           <Ticket className="h-4 w-4" />
-                          {attraction.price > 0 ? `€${attraction.price}` : "Free"}
+                          {attraction.price > 0 ? `€${attraction.price}` : (t.free || "Free")}
                         </div>
                       )}
                     </div>
@@ -377,10 +377,10 @@ export function AttractionsPage() {
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="mb-12 text-center">
             <h2 className="mb-4 text-foreground">
-              More Ways to Explore Sintra
+              {t.moreWaysTitle}
             </h2>
             <p className="mx-auto max-w-2xl text-muted-foreground">
-              Discover our services designed to make your Sintra experience unforgettable
+              {t.moreWaysSubtitle}
             </p>
           </div>
 
@@ -396,14 +396,14 @@ export function AttractionsPage() {
                 </div>
               </div>
               <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
-                Hop On Service
+                {t.moreWays?.hopOnTitle}
                 <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
               </h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Unlimited hop-on/hop-off day pass to visit all attractions at your own pace
+                {t.moreWays?.hopOnDescription}
               </p>
               <Badge className="bg-primary/10 text-primary">
-                9am - 7pm Daily
+                {t.moreWays?.hopOnBadge}
               </Badge>
             </Card>
 
@@ -418,14 +418,14 @@ export function AttractionsPage() {
                 </div>
               </div>
               <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
-                Private Tours
+                {t.moreWays?.privateToursTitle}
                 <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
               </h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Personalized guided tours with expert local guides and custom itineraries
+                {t.moreWays?.privateToursDescription}
               </p>
               <Badge className="bg-purple-500/10 text-purple-600">
-                Custom Experience
+                {t.moreWays?.privateToursBadge}
               </Badge>
             </Card>
 
@@ -440,14 +440,14 @@ export function AttractionsPage() {
                 </div>
               </div>
               <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
-                Travel Guide
+                {t.moreWays?.travelGuideTitle}
                 <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
               </h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Insider tips, photography spots, and expert advice for visiting Sintra
+                {t.moreWays?.travelGuideDescription}
               </p>
               <Badge className="bg-blue-500/10 text-blue-600">
-                Local Insights
+                {t.moreWays?.travelGuideBadge}
               </Badge>
             </Card>
           </div>
