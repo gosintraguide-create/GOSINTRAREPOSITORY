@@ -1239,68 +1239,45 @@ export function ContentEditor() {
           </Card>
 
           <Card className="p-6">
-            <h3 className="mb-4 text-foreground">Hero Images</h3>
+            <h3 className="mb-1 text-foreground">Hero Photo Grid</h3>
+            <p className="mb-4 text-sm text-muted-foreground">
+              Three photos displayed on the right side of the hero: one large landscape at the top, and two smaller action shots below.
+            </p>
             <Alert className="mb-4">
               <Globe className="h-4 w-4" />
               <AlertDescription>
-                Images are automatically shared across all languages. Upload once and they'll appear everywhere!
+                Images sync across all languages automatically — upload once, appears everywhere.
               </AlertDescription>
             </Alert>
-            <div className="space-y-4">
+            <div className="space-y-6">
               <ImageSelector
-                label="Main Hero Background Image"
-                description="Large hero image shown at the top (e.g., tuk tuk with palace)"
+                label="Landscape Photo (top, large)"
+                description="Wide shot of Sintra — palace, forest, or panorama. Shown full-width across both columns."
                 value={content.homepage.hero.heroImage || ""}
                 onChange={(url) => updateContent(["homepage", "hero", "heroImage"], url)}
+              />
+              <ImageSelector
+                label="Tuk Tuk Photo (bottom-left)"
+                description="Action shot of a tuk tuk in Sintra — passengers, scenery, or vehicle close-up."
+                value={(content.homepage.hero as any).tukTukImage || ""}
+                onChange={(url) => updateContent(["homepage", "hero", "tukTukImage"], url)}
+              />
+              <ImageSelector
+                label="Vintage Jeep Photo (bottom-right)"
+                description="Action shot of the vintage jeep — off-road, coastal trail, or passengers enjoying the ride."
+                value={(content.homepage.hero as any).jeepImage || ""}
+                onChange={(url) => updateContent(["homepage", "hero", "jeepImage"], url)}
               />
             </div>
           </Card>
 
+          {/* "What We Offer" card images — shown in the three cards below the hero */}
           <Card className="p-6">
-            <h3 className="mb-4 text-foreground">Benefit Pills</h3>
-            <div className="space-y-4">
-              {mainContent.homepage.hero.benefitPills.map((pill, index) => (
-                <div key={index} className="flex gap-2">
-                  <div className="flex-1">
-                    <Label>Icon Name (Lucide)</Label>
-                    <Input
-                      value={pill.icon}
-                      onChange={(e) => 
-                        updateArrayItem(["homepage", "hero", "benefitPills"], index, "icon", e.target.value)
-                      }
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <Label>Text</Label>
-                    <Input
-                      value={pill.text}
-                      onChange={(e) => 
-                        updateArrayItem(["homepage", "hero", "benefitPills"], index, "text", e.target.value)
-                      }
-                    />
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="mt-6"
-                    onClick={() => removeArrayItem(["homepage", "hero", "benefitPills"], index)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
-              <Button
-                variant="outline"
-                onClick={() => 
-                  addArrayItem(["homepage", "hero", "benefitPills"], { icon: "Star", text: "New Benefit" })
-                }
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Add Benefit Pill
-              </Button>
-            </div>
+            <h3 className="mb-1 text-foreground">"What We Offer" Card Images</h3>
+            <p className="mb-4 text-sm text-muted-foreground">
+              Cover photos for the three cards shown below the hero: Full Day Pass, Private Tours, and Travel Guide.
+            </p>
           </Card>
-
           <ProductCardEditor
             content={content}
             updateContent={updateContent}
@@ -1358,82 +1335,22 @@ export function ContentEditor() {
           </Card>
 
           <Card className="p-6">
-            <h3 className="mb-4 text-foreground">Quick Links Section</h3>
-            <p className="mb-4 text-sm text-muted-foreground">Links to Attractions, Travel Guide, and Private Tours</p>
+            <h3 className="mb-1 text-foreground">Quick Links Section</h3>
+            <p className="mb-4 text-sm text-muted-foreground">
+              The teal gradient section below the hero with buttons linking to Attractions, Travel Guide, and Private Tours.
+            </p>
             <div className="space-y-4">
               <div><Label>Section Title</Label><Input value={content.homepage.quickLinks?.title || ""} onChange={(e) => updateContent(["homepage", "quickLinks", "title"], e.target.value)} /></div>
               <div><Label>Section Subtitle</Label><Input value={content.homepage.quickLinks?.subtitle || ""} onChange={(e) => updateContent(["homepage", "quickLinks", "subtitle"], e.target.value)} /></div>
-              {["attractions", "travelGuide", "privateTours"].map((linkKey) => (
+              {(["attractions", "travelGuide", "privateTours"] as const).map((linkKey) => (
                 <div key={linkKey} className="border-t pt-4">
                   <h4 className="mb-3 font-medium capitalize">{linkKey.replace(/([A-Z])/g, ' $1').trim()}</h4>
-                  <div className="space-y-4">
-                    <ImageSelector
-                      label="Card Image"
-                      description={`Image for ${linkKey.replace(/([A-Z])/g, ' $1').trim()} card`}
-                      value={(content.homepage.quickLinks as any)?.[linkKey]?.image || ""}
-                      onChange={(url) => updateContent(["homepage", "quickLinks", linkKey, "image"], url)}
-                    />
-                    <div className="grid gap-4 md:grid-cols-2">
-                      <div><Label>Title</Label><Input value={(content.homepage.quickLinks as any)?.[linkKey]?.title || ""} onChange={(e) => updateContent(["homepage", "quickLinks", linkKey, "title"], e.target.value)} /></div>
-                      <div><Label>Subtitle</Label><Input value={(content.homepage.quickLinks as any)?.[linkKey]?.subtitle || ""} onChange={(e) => updateContent(["homepage", "quickLinks", linkKey, "subtitle"], e.target.value)} /></div>
-                    </div>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div><Label>Title</Label><Input value={(content.homepage.quickLinks as any)?.[linkKey]?.title || ""} onChange={(e) => updateContent(["homepage", "quickLinks", linkKey, "title"], e.target.value)} /></div>
+                    <div><Label>Subtitle</Label><Input value={(content.homepage.quickLinks as any)?.[linkKey]?.subtitle || ""} onChange={(e) => updateContent(["homepage", "quickLinks", linkKey, "subtitle"], e.target.value)} /></div>
                   </div>
                 </div>
               ))}
-            </div>
-          </Card>
-
-          <Card className="p-6">
-            <h3 className="mb-4 text-foreground">Why Choose Us / Features</h3>
-            <div className="space-y-4">
-              <div><Label>Section Title</Label><Input value={content.homepage.whyChoose?.title || ""} onChange={(e) => updateContent(["homepage", "whyChoose", "title"], e.target.value)} /></div>
-              <div><Label>Section Subtitle</Label><Input value={content.homepage.whyChoose?.subtitle || ""} onChange={(e) => updateContent(["homepage", "whyChoose", "subtitle"], e.target.value)} /></div>
-            </div>
-            <div className="mt-6"><h4 className="mb-4">Feature Cards</h4>
-              <Accordion type="single" collapsible className="w-full">
-                {(content.homepage.features || []).map((feature, index) => (
-                  <AccordionItem key={index} value={`feat-${index}`}>
-                    <AccordionTrigger>{feature.title}</AccordionTrigger>
-                    <AccordionContent><div className="space-y-4 pt-4">
-                      <div><Label>Icon</Label><Input value={feature.icon} onChange={(e) => updateArrayItem(["homepage", "features"], index, "icon", e.target.value)} /></div>
-                      <div><Label>Title</Label><Input value={feature.title} onChange={(e) => updateArrayItem(["homepage", "features"], index, "title", e.target.value)} /></div>
-                      <div><Label>Description</Label><Textarea value={feature.description} onChange={(e) => updateArrayItem(["homepage", "features"], index, "description", e.target.value)} rows={2} /></div>
-                      <Button variant="destructive" size="sm" onClick={() => removeArrayItem(["homepage", "features"], index)}><Trash2 className="mr-2 h-4 w-4" /> Remove</Button>
-                    </div></AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-              <Button variant="outline" className="mt-4" onClick={() => addArrayItem(["homepage", "features"], { title: "New Feature", description: "Description", icon: "Star" })}><Plus className="mr-2 h-4 w-4" /> Add Feature</Button>
-            </div>
-          </Card>
-
-          <Card className="p-6">
-            <h3 className="mb-4 text-foreground">Service Highlights</h3>
-            <div className="space-y-4">
-              <div><Label>Section Title</Label><Input value={content.homepage.serviceHighlights?.title || ""} onChange={(e) => updateContent(["homepage", "serviceHighlights", "title"], e.target.value)} /></div>
-            </div>
-            <Accordion type="single" collapsible className="mt-4 w-full">
-              {(content.homepage.serviceHighlights?.items || []).map((item, index) => (
-                <AccordionItem key={index} value={`sh-${index}`}>
-                  <AccordionTrigger>{item.title}</AccordionTrigger>
-                  <AccordionContent><div className="space-y-4 pt-4">
-                    <div><Label>Icon</Label><Input value={item.icon} onChange={(e) => updateArrayItem(["homepage", "serviceHighlights", "items"], index, "icon", e.target.value)} /></div>
-                    <div><Label>Title</Label><Input value={item.title} onChange={(e) => updateArrayItem(["homepage", "serviceHighlights", "items"], index, "title", e.target.value)} /></div>
-                    <div><Label>Description</Label><Textarea value={item.description} onChange={(e) => updateArrayItem(["homepage", "serviceHighlights", "items"], index, "description", e.target.value)} rows={2} /></div>
-                    <Button variant="destructive" size="sm" onClick={() => removeArrayItem(["homepage", "serviceHighlights", "items"], index)}><Trash2 className="mr-2 h-4 w-4" /> Remove</Button>
-                  </div></AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-            <Button variant="outline" className="mt-4" onClick={() => addArrayItem(["homepage", "serviceHighlights", "items"], { title: "New", description: "Description", icon: "Star" })}><Plus className="mr-2 h-4 w-4" /> Add</Button>
-          </Card>
-
-          <Card className="p-6">
-            <h3 className="mb-4 text-foreground">Homepage Call to Action</h3>
-            <div className="space-y-4">
-              <div><Label>Title</Label><Input value={content.homepage.callToAction?.title || ""} onChange={(e) => updateContent(["homepage", "callToAction", "title"], e.target.value)} /></div>
-              <div><Label>Description</Label><Textarea value={content.homepage.callToAction?.description || ""} onChange={(e) => updateContent(["homepage", "callToAction", "description"], e.target.value)} rows={2} /></div>
-              <div><Label>Button Text</Label><Input value={content.homepage.callToAction?.buttonText || ""} onChange={(e) => updateContent(["homepage", "callToAction", "buttonText"], e.target.value)} /></div>
             </div>
           </Card>
 

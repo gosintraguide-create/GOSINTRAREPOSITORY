@@ -88,15 +88,13 @@ export function HeroSection({
   const travelGuideTitle = getTranslation(language).homepage.quickLinks.travelGuide.title;
 
   // ── Hero images ────────────────────────────────────────────────────────────
-  // Slot 0 (large): main hero / landscape photo
-  // Slot 1 (bottom-left): tuk tuk in action
-  // Slot 2 (bottom-right): vintage jeep in action
-  const heroImages: Array<{ src: string; alt: string }> =
-    editableContent?.homepage?.hero?.heroImages ?? [];
-
-  const mainImage = heroImages[0]?.src ?? editableContent?.homepage?.hero?.heroImage ?? DEFAULT_HERO_IMAGE;
-  const tukTukImage = heroImages[1]?.src ?? null;
-  const jeepImage = heroImages[2]?.src ?? null;
+  // Three named CMS fields — set via Content Editor → Home Page → Hero Images
+  const mainImage =
+    editableContent?.homepage?.hero?.heroImage ?? DEFAULT_HERO_IMAGE;
+  const tukTukImage: string | null =
+    editableContent?.homepage?.hero?.tukTukImage ?? null;
+  const jeepImage: string | null =
+    editableContent?.homepage?.hero?.jeepImage ?? null;
 
   // ── "What We Offer" card images ────────────────────────────────────────────
   const daypassImg =
