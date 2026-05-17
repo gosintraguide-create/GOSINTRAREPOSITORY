@@ -65,37 +65,6 @@ export function HeroSection({
                     {heroSubtitle}
                   </p>
 
-                  {/* Key Benefits */}
-                  <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-6">
-                    {heroBenefitPills
-                      .filter(benefit => !benefit.text.toLowerCase().includes('10') && !benefit.text.toLowerCase().includes('15'))
-                      .map(
-                      (benefit, index) => {
-                        const IconComponent =
-                          benefit.icon === "Users"
-                            ? Users
-                            : benefit.icon === "Clock"
-                              ? Clock
-                              : benefit.icon === "MapPin"
-                                ? MapPin
-                                : benefit.icon === "Smartphone"
-                                  ? Smartphone
-                                  : Shield;
-
-                        return (
-                          <div
-                            key={index}
-                            className="flex items-center gap-1.5 border border-white/20 bg-white/5 backdrop-blur-sm rounded-md px-2.5 py-1.5 sm:px-3 sm:py-2"
-                          >
-                            <IconComponent className="h-3.5 w-3.5 text-white/90 sm:h-4 sm:w-4" />
-                            <span className="text-xs text-white/90 sm:text-sm">
-                              {benefit.text}
-                            </span>
-                          </div>
-                        );
-                      },
-                    )}
-                  </div>
 
                   {/* CTA Button */}
                   <div className="flex flex-col items-center gap-3 sm:gap-4">
