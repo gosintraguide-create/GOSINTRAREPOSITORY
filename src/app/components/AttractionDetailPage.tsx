@@ -139,29 +139,26 @@ export function AttractionDetailPage() {
   const translatedAttractions = getTranslation(language).attractions;
   const translatedAttraction = (translatedAttractions as any)[attractionId];
 
-  // Merge: CMS data is the primary source for all fields; translated locale
-  // text is used for non-English languages. Gallery/images always come from CMS.
+  // Merge: locale translations always win for text in non-English languages.
+  // Images always come from CMS when available.
   const attraction = cmsAttraction
     ? {
-        // CMS fields (name, shortDescription, price, duration, highlights, tips, etc.)
         ...cmsAttraction,
-        // For non-English, overlay translated text if available
-        ...(language !== "en" && translatedAttraction
-          ? {
-              name: translatedAttraction.name ?? cmsAttraction.name,
-              shortDescription:
-                translatedAttraction.description ??
-                translatedAttraction.shortDescription ??
-                cmsAttraction.shortDescription,
-              longDescription:
-                translatedAttraction.longDescription ??
-                cmsAttraction.longDescription,
-            }
-          : {}),
-        // Normalize: locale JSON uses "description"; component expects "shortDescription"
+        // Text: locale translation takes priority for non-English; fall back to CMS
+        name:
+          (language !== "en" && translatedAttraction?.name) ||
+          cmsAttraction.name,
         shortDescription:
-          cmsAttraction.shortDescription ??
-          (translatedAttraction?.description),
+          (language !== "en" &&
+            (translatedAttraction?.description ??
+              translatedAttraction?.shortDescription)) ||
+          cmsAttraction.shortDescription ||
+          translatedAttraction?.description ||
+          "",
+        longDescription:
+          (language !== "en" && translatedAttraction?.longDescription) ||
+          cmsAttraction.longDescription ||
+          "",
         // Image resolution: cardImage → heroImage → gallery[0] → imageUrl
         imageUrl:
           cmsAttraction.cardImage ||
