@@ -85,7 +85,7 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
   return (
     <>
       {/* Desktop Header */}
-      <header className="sticky top-0 z-50 border-b border-border bg-white/95 backdrop-blur-md shadow-sm" role="banner">
+      <header className="border-b border-border bg-white/95 backdrop-blur-md shadow-sm" role="banner">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
           <div className="flex h-16 sm:h-20 items-center justify-between lg:justify-between relative">
             {/* Mobile: Menu Button (top left) */}

@@ -1,6 +1,7 @@
 import { useEffect, useState, Suspense, lazy, useRef } from "react";
 import { Outlet, useLocation, useNavigate, useMatches } from "react-router";
 import { Header } from "./Header";
+import { InfoBar } from "./InfoBar";
 import { Footer } from "./Footer";
 import { Toaster } from "./ui/sonner";
 import { LoadingIndicator } from "./LoadingIndicator";
@@ -479,12 +480,18 @@ export function RootLayout() {
       </a>
 
       <div className="flex min-h-screen flex-col bg-background">
-        <Header
-          currentPage={getCurrentPage()}
-          language={language}
-          onLanguageChange={handleLanguageChange}
-          onNavigate={handleNavigate}
-        />
+        {/* Sticky wrapper keeps InfoBar + Header pinned together at the top */}
+        <div className="sticky top-0 z-50">
+          {!["admin", "driver-portal", "diagnostics"].includes(getCurrentPage()) && (
+            <InfoBar />
+          )}
+          <Header
+            currentPage={getCurrentPage()}
+            language={language}
+            onLanguageChange={handleLanguageChange}
+            onNavigate={handleNavigate}
+          />
+        </div>
         <main id="main-content" className="flex-1">
           <Suspense fallback={<div className="flex h-[50vh] w-full items-center justify-center"><LoadingIndicator type="spinner" fullScreen={false} /></div>}>
             <Outlet context={{ language, onNavigate: handleNavigate }} />

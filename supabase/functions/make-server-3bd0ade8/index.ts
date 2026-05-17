@@ -1885,6 +1885,70 @@ app.post("/make-server-3bd0ade8/verify-payment", async (c) => {
   }
 });
 
+// ===== INFO BAR (time / weather / traffic) =====
+
+app.get("/make-server-3bd0ade8/info-bar", async (c) => {
+  const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
+
+  // Return cached value if fresh
+  try {
+    const cached = await kvWithRetry.get("info_bar_cache") as any;
+    if (cached && Date.now() - new Date(cached.cachedAt).getTime() < CACHE_TTL_MS) {
+      return c.json(cached);
+    }
+  } catch (_) { /* ignore cache read errors */ }
+
+  // API keys — prefer Supabase secret, fall back to embedded key
+  const OWM_KEY = Deno.env.get("OPENWEATHER_API_KEY") || "a0f8f13623406a57d14632870784a548";
+  const TT_KEY  = Deno.env.get("TOMTOM_API_KEY")      || "Rngab0Ztt57iFON47bgFei5BIEBnzoze";
+
+  // --- Weather (OpenWeatherMap) ---
+  let weather: { temp: number; description: string; icon: string } | null = null;
+  try {
+    const r = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?lat=38.7979&lon=-9.3879&appid=${OWM_KEY}&units=metric`
+    );
+    const d = await r.json();
+    if (d.main && d.weather?.[0]) {
+      weather = {
+        temp: Math.round(d.main.temp),
+        description: d.weather[0].description,
+        icon: d.weather[0].icon,
+      };
+    }
+  } catch (e) {
+    console.error("Weather fetch failed:", e);
+  }
+
+  // --- Traffic (TomTom Flow Segment Data) ---
+  // Point: IC19/N249 near Sintra — main approach road from Lisbon
+  let traffic: { level: string; currentSpeed: number; freeFlowSpeed: number } | null = null;
+  try {
+    const r = await fetch(
+      `https://api.tomtom.com/traffic/services/4/flowSegmentData/absolute/10/json?point=38.8020%2C-9.3850&key=${TT_KEY}`
+    );
+    const d = await r.json();
+    const seg = d?.flowSegmentData;
+    if (seg?.currentSpeed && seg?.freeFlowSpeed) {
+      const ratio = seg.currentSpeed / seg.freeFlowSpeed;
+      traffic = {
+        level: ratio > 0.75 ? "clear" : ratio > 0.45 ? "medium" : "heavy",
+        currentSpeed: seg.currentSpeed,
+        freeFlowSpeed: seg.freeFlowSpeed,
+      };
+    }
+  } catch (e) {
+    console.error("Traffic fetch failed:", e);
+  }
+
+  const result = { success: true, weather, traffic, cachedAt: new Date().toISOString() };
+
+  // Cache result (ignore write errors)
+  try { await kvWithRetry.set("info_bar_cache", result); } catch (_) {}
+
+  return c.json(result);
+});
+
 // ===== SITEMAP =====
 
 app.get("/make-server-3bd0ade8/sitemap.xml", async (c) => {
