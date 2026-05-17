@@ -25,10 +25,10 @@ function weatherEmoji(icon: string): string {
 }
 
 const TRAFFIC_CONFIG: Record<string, { label: string; bg: string; dot: string }> = {
-  clear:  { label: "Clear",  bg: "bg-green-500/90",      dot: "bg-green-300"  },
-  light:  { label: "Light",  bg: "bg-lime-500/90",       dot: "bg-lime-300"   },
-  medium: { label: "Medium", bg: "bg-amber-500/90",      dot: "bg-amber-300"  },
-  heavy:  { label: "Heavy",  bg: "bg-red-600/90",        dot: "bg-red-300"    },
+  clear:  { label: "Clear Traffic",  bg: "bg-green-500/90",      dot: "bg-green-300"  },
+  light:  { label: "Light Traffic",  bg: "bg-lime-500/90",       dot: "bg-lime-300"   },
+  medium: { label: "Medium Traffic", bg: "bg-amber-500/90",      dot: "bg-amber-300"  },
+  heavy:  { label: "Heavy Traffic",  bg: "bg-red-600/90",        dot: "bg-red-300"    },
 };
 
 function Divider() {
@@ -132,7 +132,7 @@ export function InfoBar() {
             <div className="flex items-center gap-2">
               <Navigation className="h-3.5 w-3.5 text-white/50 shrink-0" />
               <span className="text-xs text-white/60 hidden sm:block">
-                Village traffic
+                Village
               </span>
               <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-0.5 text-xs font-bold tracking-wide text-white ${trafficCfg.bg}`}>
                 <span className={`h-1.5 w-1.5 rounded-full ${trafficCfg.dot} animate-pulse`} />
