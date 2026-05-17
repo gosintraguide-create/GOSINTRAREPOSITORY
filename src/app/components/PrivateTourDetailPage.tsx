@@ -335,18 +335,22 @@ export function PrivateTourDetailPage() {
               )}
 
               {/* Tour Highlights */}
-              <h2 className="mb-6 text-3xl font-bold">Tour Features</h2>
-              <div className="space-y-4">
-                {tour.features.map((feature, index) => (
-                  <div
-                    key={index}
-                    className="flex items-start gap-3 rounded-lg border p-4"
-                  >
-                    <Check className="h-5 w-5 flex-shrink-0 text-primary" />
-                    <span className="text-lg">{feature}</span>
+              {tour.features && tour.features.length > 0 && (
+                <>
+                  <h2 className="mb-6 text-3xl font-bold">Tour Features</h2>
+                  <div className="space-y-4">
+                    {tour.features.map((feature, index) => (
+                      <div
+                        key={index}
+                        className="flex items-start gap-3 rounded-lg border p-4"
+                      >
+                        <Check className="h-5 w-5 flex-shrink-0 text-primary" />
+                        <span className="text-lg">{feature}</span>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </>
+              )}
             </div>
 
             {/* Booking Card */}
