@@ -159,12 +159,13 @@ export function AttractionDetailPage() {
         shortDescription:
           cmsAttraction.shortDescription ??
           (translatedAttraction?.description),
-        // Image resolution: cardImage → heroImage → imageUrl → gallery[0]
+        // Image resolution: cardImage → heroImage → gallery[0] → imageUrl
         imageUrl:
-          cmsAttraction.cardImage ??
-          cmsAttraction.heroImage ??
-          (cmsAttraction as any).imageUrl ??
-          cmsAttraction.gallery?.[0],
+          cmsAttraction.cardImage ||
+          cmsAttraction.heroImage ||
+          cmsAttraction.gallery?.[0] ||
+          (cmsAttraction as any).imageUrl ||
+          "",
       }
     : translatedAttraction
       ? {
@@ -680,12 +681,20 @@ export function AttractionDetailPage() {
           .slice(0, 3)
           .map((id) => {
             const translated = (getTranslation(language).attractions as any)[id];
-            const comprehensive = DEFAULT_COMPREHENSIVE_CONTENT.attractions.attractionDetails[id];
+            // Prefer live CMS data; fall back to hardcoded defaults
+            const cms = content.attractions?.attractionDetails?.[id];
+            const comprehensive = cms ?? DEFAULT_COMPREHENSIVE_CONTENT.attractions.attractionDetails[id];
             return translated || comprehensive ? {
               id,
-              name: translated?.name || comprehensive?.name || id,
-              description: translated?.description || comprehensive?.shortDescription || "",
-              imageUrl: comprehensive?.imageUrl || translated?.imageUrl || "",
+              name: comprehensive?.name || translated?.name || id,
+              description: comprehensive?.shortDescription || translated?.description || "",
+              // Correct field priority: cardImage → heroImage → gallery[0] → locale imageUrl
+              imageUrl:
+                comprehensive?.cardImage ||
+                comprehensive?.heroImage ||
+                comprehensive?.gallery?.[0] ||
+                translated?.imageUrl ||
+                "",
             } : null;
           })
           .filter(Boolean) as { id: string; name: string; description: string; imageUrl: string }[];

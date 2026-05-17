@@ -206,10 +206,11 @@ export function AttractionsPage() {
       parkOnlyPrice: attr.parkOnlyPrice,
       // CMS stores "cardImage" / "heroImage" / "gallery"; locale stores "imageUrl"
       imageUrl:
-        (attr as any).cardImage ??
-        (attr as any).heroImage ??
-        attr.imageUrl ??
-        (attr as any).gallery?.[0],
+        (attr as any).cardImage ||
+        (attr as any).heroImage ||
+        (attr as any).gallery?.[0] ||
+        attr.imageUrl ||
+        "",
     }));
   }, [language, content.attractions?.attractionDetails]);
 
