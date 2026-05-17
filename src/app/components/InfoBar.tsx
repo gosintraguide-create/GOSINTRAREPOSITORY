@@ -131,9 +131,6 @@ export function InfoBar() {
             <Divider />
             <div className="flex items-center gap-2">
               <Navigation className="h-3.5 w-3.5 text-white/50 shrink-0" />
-              <span className="text-xs text-white/60 hidden sm:block">
-                Village
-              </span>
               <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-0.5 text-xs font-bold tracking-wide text-white ${trafficCfg.bg}`}>
                 <span className={`h-1.5 w-1.5 rounded-full ${trafficCfg.dot} animate-pulse`} />
                 {trafficCfg.label}
