@@ -20,20 +20,11 @@ export function useEditableContent(language: string = "en"): ComprehensiveConten
     setContent(loadComprehensiveContentForLanguage(language));
   }, [language]);
 
-  // Sync from database on mount
+  // Sync from database on mount (deduplicated + TTL-gated inside syncComprehensiveContentFromDatabase)
   useEffect(() => {
-    async function syncFromDatabase() {
-      try {
-        await syncComprehensiveContentFromDatabase();
-        setContent(loadComprehensiveContentForLanguage(language));
-        console.log("Synced comprehensive content from database on mount");
-      } catch (error) {
-        console.log("Using local comprehensive content (backend unavailable)");
-      }
-    }
-
-    const timer = setTimeout(syncFromDatabase, 100);
-    return () => clearTimeout(timer);
+    syncComprehensiveContentFromDatabase()
+      .then(() => setContent(loadComprehensiveContentForLanguage(language)))
+      .catch(() => { /* fall through to localStorage/defaults */ });
   }, [language]);
 
   useEffect(() => {

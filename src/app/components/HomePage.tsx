@@ -109,7 +109,23 @@ export function HomePage() {
   const content = useEditableContent(language);
 
   useEffect(() => {
+    const PRICING_TTL_MS = 60 * 60 * 1000; // 1 hour
+
     async function loadPricingFromDB() {
+      // Use cached pricing if it was fetched less than 1 hour ago — no network needed
+      try {
+        const ts = localStorage.getItem("admin-pricing-synced-at");
+        if (ts && Date.now() - parseInt(ts, 10) < PRICING_TTL_MS) {
+          const savedPricing = localStorage.getItem("admin-pricing");
+          if (savedPricing) {
+            const pricing = JSON.parse(savedPricing);
+            if (pricing.basePrice) setBasePrice(pricing.basePrice);
+          }
+          setPriceLoaded(true);
+          return;
+        }
+      } catch (_) {}
+
       try {
         const { projectId, publicAnonKey } = await import(
           "../utils/supabase/info"
@@ -133,10 +149,8 @@ export function HomePage() {
             } else if (data.pricing.dayPass?.adult) {
               setBasePrice(data.pricing.dayPass.adult);
             }
-            localStorage.setItem(
-              "admin-pricing",
-              JSON.stringify(data.pricing),
-            );
+            localStorage.setItem("admin-pricing", JSON.stringify(data.pricing));
+            localStorage.setItem("admin-pricing-synced-at", String(Date.now()));
             setPriceLoaded(true);
             return;
           }
@@ -146,20 +160,14 @@ export function HomePage() {
       }
 
       // Fallback to localStorage
-      const savedPricing =
-        localStorage.getItem("admin-pricing");
+      const savedPricing = localStorage.getItem("admin-pricing");
       if (savedPricing) {
         try {
           const pricing = JSON.parse(savedPricing);
-          if (pricing.basePrice) {
-            setBasePrice(pricing.basePrice);
-          }
-        } catch (e) {
-          // Use default basePrice (25)
-        }
+          if (pricing.basePrice) setBasePrice(pricing.basePrice);
+        } catch (_) {}
       }
 
-      // Mark as loaded even if we used default
       setPriceLoaded(true);
     }
 

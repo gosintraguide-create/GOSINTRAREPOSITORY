@@ -12,7 +12,7 @@ export function ImageWithFallback({
   src,
   alt,
   fallbackSrc,
-  unsplashQuery,
+  unsplashQuery: _unsplashQuery, // kept in props signature for back-compat but no longer fetched
   loading = "lazy",
   ...props
 }: ImageWithFallbackProps) {
@@ -21,31 +21,18 @@ export function ImageWithFallback({
 
   useEffect(() => {
     setHasError(false);
-    if (!src && unsplashQuery) {
-      fetch(
-        `https://source.unsplash.com/1600x900/?${encodeURIComponent(unsplashQuery)}`,
-      )
-        .then((response) => {
-          setImgSrc(response.url);
-        })
-        .catch(() => {
-          setHasError(true);
-        });
-    } else {
-      setImgSrc(src);
-    }
-  }, [src, unsplashQuery]);
+    setImgSrc(src);
+  }, [src]);
 
   const handleError = () => {
     if (fallbackSrc && imgSrc !== fallbackSrc) {
-      // Try the fallback image before giving up
       setImgSrc(fallbackSrc);
     } else {
       setHasError(true);
     }
   };
 
-  if (hasError) {
+  if (hasError || !imgSrc) {
     return (
       <div
         className={props.className}
@@ -60,6 +47,7 @@ export function ImageWithFallback({
       src={imgSrc}
       alt={alt}
       loading={loading}
+      decoding="async"
       onError={handleError}
     />
   );

@@ -1739,22 +1739,41 @@ export function loadComprehensiveContent(): ComprehensiveContent {
 }
 
 // Async function to sync content from database
+// Module-level deduplication — if multiple components mount at the same time
+// and all call syncComprehensiveContentFromDatabase(), only ONE network request
+// is made. All callers share the same promise.
+let _syncInFlight: Promise<ComprehensiveContent> | null = null;
+const SYNC_TTL_MS = 60 * 60 * 1000; // 1 hour — skip re-fetch if content is fresh
+
 export async function syncComprehensiveContentFromDatabase(): Promise<ComprehensiveContent> {
+  // Skip fetch if we synced recently (< 1 hour ago)
   try {
-    const content = await getComprehensiveContentFromAPI();
-    if (content) {
-      // Save to localStorage for offline access
-      localStorage.setItem("comprehensive-content", JSON.stringify(content));
-      console.log('✅ Synced comprehensive content from database to localStorage');
-      return deepMerge(DEFAULT_COMPREHENSIVE_CONTENT, content);
-    } else {
-      console.log('ℹ️ No comprehensive content in database yet, using defaults or localStorage');
+    const lastSync = localStorage.getItem("comprehensive-content-synced-at");
+    if (lastSync && Date.now() - parseInt(lastSync, 10) < SYNC_TTL_MS) {
+      return loadComprehensiveContent();
     }
-  } catch (error) {
-    // Silently handle errors - backend may not be ready yet
-    // Don't log errors to avoid confusing users
-  }
-  return loadComprehensiveContent();
+  } catch (_) {}
+
+  // Return existing in-flight promise instead of firing a duplicate request
+  if (_syncInFlight) return _syncInFlight;
+
+  _syncInFlight = (async (): Promise<ComprehensiveContent> => {
+    try {
+      const content = await getComprehensiveContentFromAPI();
+      if (content) {
+        localStorage.setItem("comprehensive-content", JSON.stringify(content));
+        localStorage.setItem("comprehensive-content-synced-at", String(Date.now()));
+        return deepMerge(DEFAULT_COMPREHENSIVE_CONTENT, content);
+      }
+    } catch (_) {
+      // Backend unavailable — silently use cached/default content
+    }
+    return loadComprehensiveContent();
+  })().finally(() => {
+    _syncInFlight = null;
+  });
+
+  return _syncInFlight;
 }
 
 // Deep merge utility to ensure all default fields exist
