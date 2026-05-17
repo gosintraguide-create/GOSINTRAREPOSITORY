@@ -1920,22 +1920,26 @@ app.get("/make-server-3bd0ade8/info-bar", async (c) => {
     console.error("Weather fetch failed:", e);
   }
 
-  // --- Traffic (TomTom Flow Segment Data) ---
-  // Point: IC19/N249 near Sintra — main approach road from Lisbon
-  let traffic: { level: string; currentSpeed: number; freeFlowSpeed: number } | null = null;
+  // --- Traffic (TomTom Routing API — Sintra Train Station → Pena Palace) ---
+  // Compares current travel time with free-flow time to classify congestion.
+  // Origin: Sintra Train Station (38.8011,-9.3873)
+  // Destination: Pena Palace (38.7879,-9.3902)
+  let traffic: { level: string; delaySeconds: number; travelTimeSeconds: number } | null = null;
   try {
+    const origin = "38.8011,-9.3873";
+    const dest   = "38.7879,-9.3902";
     const r = await fetch(
-      `https://api.tomtom.com/traffic/services/4/flowSegmentData/absolute/10/json?point=38.8020%2C-9.3850&key=${TT_KEY}`
+      `https://api.tomtom.com/routing/1/calculateRoute/${origin}:${dest}/json?key=${TT_KEY}&traffic=true&travelMode=car&computeTravelTimeFor=all`
     );
     const d = await r.json();
-    const seg = d?.flowSegmentData;
-    if (seg?.currentSpeed && seg?.freeFlowSpeed) {
-      const ratio = seg.currentSpeed / seg.freeFlowSpeed;
-      traffic = {
-        level: ratio > 0.75 ? "clear" : ratio > 0.45 ? "medium" : "heavy",
-        currentSpeed: seg.currentSpeed,
-        freeFlowSpeed: seg.freeFlowSpeed,
-      };
+    const summary = d?.routes?.[0]?.summary;
+    if (summary) {
+      const travelTime    = summary.travelTimeInSeconds        ?? 0;
+      const noTrafficTime = summary.noTrafficTravelTimeInSeconds ?? travelTime;
+      const delaySeconds  = Math.max(0, travelTime - noTrafficTime);
+      // Thresholds for a ~10-min drive: <2 min delay = clear, <5 min = medium, else heavy
+      const level = delaySeconds < 120 ? "clear" : delaySeconds < 300 ? "medium" : "heavy";
+      traffic = { level, delaySeconds, travelTimeSeconds: travelTime };
     }
   } catch (e) {
     console.error("Traffic fetch failed:", e);
