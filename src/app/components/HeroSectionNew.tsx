@@ -1,10 +1,6 @@
-import { ArrowRight, Users, MapPin, Clock, Shield, Smartphone, Check } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "./ui/button";
-import { ImageWithFallback } from "./figma/ImageWithFallback";
-import { ProductCard } from "./ProductCard";
-import { InfoCard } from "./InfoCard";
 import type { WebsiteContent } from "../lib/contentManager";
-import { useEditableContent } from "../lib/useEditableContent";
 import { getTranslation } from "../lib/translations/loader";
 
 interface HeroSectionProps {
@@ -13,116 +9,249 @@ interface HeroSectionProps {
   priceLoaded: boolean;
   language?: string;
   legacyContent: WebsiteContent;
-  content?: any; // Optional content parameter
+  content?: any;
 }
 
+const DEFAULT_HERO_IMAGE =
+  "https://dwiznaefeqnduglmcivr.supabase.co/storage/v1/object/sign/make-3bd0ade8-images/1762977905581_pena-palace-3.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmFjMWMyYy1lNjZlLTQwYWEtYjcwNS1kNTcwYzA5NGZmYzMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtYWtlLTNiZDBhZGU4LWltYWdlcy8xNzYyOTc3OTA1NTgxX3BlbmEtcGFsYWNlLTMuanBnIiwiaWF0IjoxNzYyOTc3OTA1LCJleHAiOjIwNzgzMzc5MDV9.yMxtg8g3UvVUzf-xdAwUmGyjRATPWQwdvRlpIa8D7eY";
+
+// ── Image placeholder for cards / secondary hero slots ──────────────────────
+function ImagePlaceholder({ label }: { label: string }) {
+  return (
+    <div className="flex h-full w-full flex-col items-center justify-center bg-stone-200 text-center">
+      <span className="text-xs text-stone-400 leading-snug px-2">{label}</span>
+    </div>
+  );
+}
+
+// ── "What We Offer" card ─────────────────────────────────────────────────────
+interface OfferCardProps {
+  imageUrl?: string;
+  imagePlaceholderLabel?: string;
+  title: string;
+  description: string;
+  ctaLabel: string;
+  onClick: () => void;
+}
+
+function OfferCard({
+  imageUrl,
+  imagePlaceholderLabel,
+  title,
+  description,
+  ctaLabel,
+  onClick,
+}: OfferCardProps) {
+  return (
+    <div
+      className="group cursor-pointer overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm transition-shadow hover:shadow-md"
+      onClick={onClick}
+    >
+      {/* Image */}
+      <div className="aspect-[4/3] overflow-hidden bg-stone-100">
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={title}
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            loading="lazy"
+          />
+        ) : (
+          <ImagePlaceholder label={imagePlaceholderLabel ?? title} />
+        )}
+      </div>
+
+      {/* Text */}
+      <div className="p-5">
+        <h3 className="mb-1.5 text-base font-bold text-foreground">{title}</h3>
+        <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
+          {description}
+        </p>
+        <span className="inline-flex items-center gap-1 text-sm font-semibold text-accent transition-gap group-hover:gap-2">
+          {ctaLabel}
+          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+        </span>
+      </div>
+    </div>
+  );
+}
+
+// ── Main HeroSection ─────────────────────────────────────────────────────────
 export function HeroSection({
   onNavigate,
-  basePrice,
-  priceLoaded,
   language = "en",
   legacyContent,
   content,
 }: HeroSectionProps) {
   const editableContent = content || legacyContent;
-  const t = getTranslation(language).homepage.hero;
+  const t = getTranslation(language).homepage;
+  const travelGuideTitle = getTranslation(language).homepage.quickLinks.travelGuide.title;
 
-  const heroTitle = t.title;
-  const heroSubtitle = t.subtitle;
-  const heroCtaButton = t.ctaButton;
-  const heroBenefitPills = t.benefitPills || [];
-  
-  // Use the Pena Palace image as the default hero image - no fallback to prevent flashing
-  const defaultHeroImage = "https://dwiznaefeqnduglmcivr.supabase.co/storage/v1/object/sign/make-3bd0ade8-images/1762977905581_pena-palace-3.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmFjMWMyYy1lNjZlLTQwYWEtYjcwNS1kNTcwYzA5NGZmYzMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtYWtlLTNiZDBhZGU4LWltYWdlcy8xNzYyOTc3OTA1NTgxX3BlbmEtcGFsYWNlLTMuanBnIiwiaWF0IjoxNzYyOTc3OTA1LCJleHAiOjIwNzgzMzc5MDV9.yMxtg8g3UvVUzf-xdAwUmGyjRATPWQwdvRlpIa8D7eY";
-  const heroImage = editableContent?.homepage?.hero?.heroImage || defaultHeroImage;
-  
+  // ── Hero images ────────────────────────────────────────────────────────────
+  // Slot 0 (large): main hero / landscape photo
+  // Slot 1 (bottom-left): tuk tuk in action
+  // Slot 2 (bottom-right): vintage jeep in action
+  const heroImages: Array<{ src: string; alt: string }> =
+    editableContent?.homepage?.hero?.heroImages ?? [];
+
+  const mainImage = heroImages[0]?.src ?? editableContent?.homepage?.hero?.heroImage ?? DEFAULT_HERO_IMAGE;
+  const tukTukImage = heroImages[1]?.src ?? null;
+  const jeepImage = heroImages[2]?.src ?? null;
+
+  // ── "What We Offer" card images ────────────────────────────────────────────
+  const daypassImg =
+    editableContent?.homepage?.productCards?.daypass?.images?.[0]?.src ?? null;
+  const privateToursImg =
+    editableContent?.homepage?.productCards?.privateTours?.images?.[0]?.src ?? null;
+  const travelGuideImg =
+    editableContent?.homepage?.productCards?.travelGuide?.images?.[0]?.src ?? null;
+
+  // ── "What We Offer" cards ─────────────────────────────────────────────────
+  const offerCards = [
+    {
+      key: "daypass",
+      imageUrl: daypassImg,
+      imagePlaceholderLabel: "People in tuk tuk\nreal photo",
+      title: "Full day pass",
+      description:
+        "Unlimited rides across all Sintra attractions. Local guide on every vehicle.",
+      ctaLabel: "See what's included",
+      onClick: () => onNavigate("hop-on-hop-off-sintra"),
+    },
+    {
+      key: "private-tours",
+      imageUrl: privateToursImg,
+      imagePlaceholderLabel: "People in jeep\nreal photo",
+      title: "Private tours",
+      description:
+        "Full day experiences tailored to your group. Hidden gems, coastline, monuments.",
+      ctaLabel: "See private tours",
+      onClick: () => onNavigate("private-tours"),
+    },
+    {
+      key: "travel-guide",
+      imageUrl: travelGuideImg,
+      imagePlaceholderLabel: "Sintra palace\neditorial photo",
+      title: travelGuideTitle,
+      description:
+        "Local insights, hidden spots, and practical advice for planning your day in Sintra.",
+      ctaLabel: "Read the guide",
+      onClick: () => onNavigate("travel-guide"),
+    },
+  ];
+
   return (
-    <section className="relative overflow-hidden">
-      <div className="relative">
-        {/* Hero Image with Overlay */}
-        <div className="relative min-h-[500px] sm:min-h-[550px] lg:min-h-[650px]">
-          <div className="absolute inset-0">
-            <ImageWithFallback
-              src={heroImage}
-              alt="Tuk tuk sightseeing in Sintra with colorful Pena Palace"
-              className="h-full w-full object-cover object-center"
-              loading="eager"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/60" />
+    <section className="bg-[#F5EFE3]">
+      {/* ── Top: Split hero ──────────────────────────────────────────────── */}
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+          {/* Left column — text */}
+          <div className="flex flex-col">
+            {/* Eyebrow */}
+            <div className="mb-6 flex items-center gap-3">
+              <div className="h-px w-8 shrink-0 bg-primary" />
+              <span className="text-xs font-semibold uppercase tracking-widest text-primary">
+                Sintra, Portugal
+              </span>
+            </div>
+
+            {/* Heading */}
+            <h1 className="mb-5 text-4xl font-bold leading-[1.15] tracking-tight text-foreground sm:text-5xl lg:text-[3rem] xl:text-[3.25rem]">
+              Sintra deserves more than a rushed afternoon. Explore it in a{" "}
+              <em className="not-italic text-accent">tuk tuk</em> or{" "}
+              <em className="italic text-accent">vintage jeep</em>, at your own
+              pace.
+            </h1>
+
+            {/* Subtitle */}
+            <p className="mb-8 max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg">
+              Hop on and off as many times as you want, with a local guide on
+              every vehicle and rides always available. Private full-day tours
+              also available.
+            </p>
+
+            {/* CTAs */}
+            <div className="flex flex-wrap gap-3">
+              <Button
+                size="lg"
+                className="h-11 border border-foreground/20 bg-foreground px-6 text-sm text-background hover:bg-foreground/90"
+                onClick={() => onNavigate("buy-ticket")}
+              >
+                {t.hero.ctaButton}
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="h-11 border border-foreground/30 bg-transparent px-6 text-sm text-foreground hover:bg-foreground/5"
+                onClick={() => onNavigate("private-tours")}
+              >
+                Private tours
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
           </div>
 
-          {/* Hero Content */}
-          <div className="absolute inset-0 flex flex-col justify-center px-4 py-8 sm:py-12 sm:px-6 lg:px-8">
-            <div className="mx-auto w-full max-w-7xl">
-              <div className="flex flex-col items-center text-center">
-                {/* Hero Text */}
-                <div className="max-w-4xl">
-                  <h1 className="mb-3 sm:mb-4 text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold tracking-tight drop-shadow-[0_8px_32px_rgba(0,0,0,1)] sm:mb-5">
-                    {heroTitle}
-                  </h1>
+          {/* Right column — photo grid */}
+          <div className="grid grid-cols-2 gap-3">
+            {/* Large landscape image — spans both columns */}
+            <div className="col-span-2 overflow-hidden rounded-2xl bg-stone-200" style={{ aspectRatio: "16/9" }}>
+              <img
+                src={mainImage}
+                alt="Wide landscape of Sintra forest and palace"
+                className="h-full w-full object-cover"
+                loading="eager"
+              />
+            </div>
 
-                  <p className="mb-4 sm:mb-6 text-sm sm:text-base md:text-lg lg:text-xl text-white/95 drop-shadow-[0_6px_20px_rgba(0,0,0,1)] sm:mb-7 max-w-2xl mx-auto">
-                    {heroSubtitle}
-                  </p>
+            {/* Tuk tuk */}
+            <div className="overflow-hidden rounded-2xl bg-stone-200" style={{ aspectRatio: "4/3" }}>
+              {tukTukImage ? (
+                <img
+                  src={tukTukImage}
+                  alt="Tuk tuk in action in Sintra"
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                />
+              ) : (
+                <ImagePlaceholder label={"Tuk tuk\nin action"} />
+              )}
+            </div>
 
-
-                  {/* CTA Button */}
-                  <div className="flex flex-col items-center gap-3 sm:gap-4">
-                    <Button
-                      size="lg"
-                      className="h-12 sm:h-14 w-full max-w-xs sm:max-w-sm border-2 border-white/90 bg-accent px-8 sm:px-10 text-base sm:text-lg shadow-2xl hover:scale-105 hover:bg-accent/90"
-                      onClick={() => onNavigate("buy-ticket")}
-                    >
-                      {heroCtaButton}
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </Button>
-                    
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      className="h-12 sm:h-14 w-full max-w-xs sm:max-w-sm border-2 border-white/90 bg-white/10 backdrop-blur-sm px-8 sm:px-10 text-base sm:text-lg text-white shadow-2xl hover:scale-105 hover:bg-white/20"
-                      onClick={() => onNavigate("private-tours")}
-                    >
-                      Check our Private Tours
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
+            {/* Vintage jeep */}
+            <div className="overflow-hidden rounded-2xl bg-stone-200" style={{ aspectRatio: "4/3" }}>
+              {jeepImage ? (
+                <img
+                  src={jeepImage}
+                  alt="Vintage jeep in action in Sintra"
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                />
+              ) : (
+                <ImagePlaceholder label={"Vintage jeep\nin action"} />
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Product Card Section - Underneath Hero */}
-      <div className="relative bg-secondary/20 py-8 sm:py-12">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-6 sm:gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {/* Day Pass Card */}
-            <ProductCard
-              onNavigate={onNavigate}
-              basePrice={basePrice}
-              language={language}
-              productType="daypass"
-              customImages={editableContent.homepage?.productCards?.daypass?.images}
-            />
+      {/* Divider */}
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="border-t border-stone-300/60" />
+      </div>
 
-            {/* Private Tours Card */}
-            <InfoCard
-              onNavigate={onNavigate}
-              language={language}
-              cardType="private-tours"
-              customImages={editableContent.homepage?.productCards?.privateTours?.images}
-            />
+      {/* ── Bottom: "What We Offer" ──────────────────────────────────────── */}
+      <div className="mx-auto max-w-7xl px-4 pb-12 pt-10 sm:px-6 sm:pb-16 sm:pt-12 lg:px-8">
+        {/* Section eyebrow */}
+        <p className="mb-6 text-xs font-semibold uppercase tracking-widest text-primary">
+          What we offer
+        </p>
 
-            {/* Travel Guide Card */}
-            <InfoCard
-              onNavigate={onNavigate}
-              language={language}
-              cardType="travel-guide"
-              customImages={editableContent.homepage?.productCards?.travelGuide?.images}
-            />
-          </div>
+        {/* Cards */}
+        <div className="grid gap-5 sm:grid-cols-3">
+          {offerCards.map((card) => (
+            <OfferCard key={card.key} {...card} />
+          ))}
         </div>
       </div>
     </section>
