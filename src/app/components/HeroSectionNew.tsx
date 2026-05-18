@@ -51,7 +51,7 @@ function OfferCard({
       onClick={onClick}
     >
       {/* Image */}
-      <div className="relative aspect-[4/3] overflow-hidden bg-stone-100">
+      <div className="aspect-[4/3] overflow-hidden bg-stone-100">
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -62,12 +62,6 @@ function OfferCard({
         ) : (
           <ImagePlaceholder label={imagePlaceholderLabel ?? title} />
         )}
-        {fromPrice != null && (
-          <div className="absolute bottom-3 right-3 rounded-xl bg-white/95 px-3 py-1.5 shadow-md backdrop-blur-sm">
-            <span className="text-[11px] font-semibold uppercase tracking-wide text-stone-400">From</span>
-            <p className="text-xl font-extrabold leading-none text-primary">€{fromPrice}</p>
-          </div>
-        )}
       </div>
 
       {/* Text */}
@@ -76,10 +70,18 @@ function OfferCard({
         <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
           {description}
         </p>
-        <span className="inline-flex items-center gap-1 text-sm font-semibold text-accent transition-gap group-hover:gap-2">
-          {ctaLabel}
-          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-        </span>
+        <div className="flex items-end justify-between gap-2">
+          <span className="inline-flex items-center gap-1 text-sm font-semibold text-accent transition-gap group-hover:gap-2">
+            {ctaLabel}
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </span>
+          {fromPrice != null && (
+            <div className="flex items-baseline gap-1 text-right">
+              <span className="text-xs font-medium text-stone-400">From</span>
+              <span className="text-2xl font-extrabold leading-none text-foreground">€{fromPrice}</span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
