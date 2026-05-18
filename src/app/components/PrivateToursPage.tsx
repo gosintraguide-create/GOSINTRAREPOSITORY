@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { useOutletContext } from "react-router";
 // Force rebuild - all fields required - Build 2025-02-10
@@ -19,6 +19,7 @@ import {
   Landmark,
   BookOpen,
   ChevronRight,
+  Ticket,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
@@ -91,6 +92,47 @@ interface OutletContext {
   onNavigate: (page: string, data?: any) => void;
 }
 
+function MobileStickyBar({ lowestPrice, onBook }: { lowestPrice: number | null; onBook: () => void }) {
+  const [headerHeight, setHeaderHeight] = useState(0);
+
+  useEffect(() => {
+    const el = document.querySelector("[data-site-header]") ?? document.querySelector("header");
+    if (!el) return;
+    const ro = new ResizeObserver(() => {
+      setHeaderHeight((el as HTMLElement).offsetHeight);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  return (
+    <div
+      className="lg:hidden sticky z-40 bg-white border-b border-stone-200 shadow-sm"
+      style={{ top: headerHeight }}
+    >
+      <div className="flex items-center justify-between gap-4 px-4 py-3">
+        <div>
+          {lowestPrice != null ? (
+            <>
+              <p className="text-[11px] font-medium uppercase tracking-wide text-stone-400 leading-none mb-0.5">From</p>
+              <p className="text-2xl font-extrabold leading-none text-primary">
+                €{lowestPrice}
+                <span className="ml-1 text-xs font-medium text-muted-foreground">/ person</span>
+              </p>
+            </>
+          ) : (
+            <p className="text-sm font-semibold text-foreground">Private Tours</p>
+          )}
+        </div>
+        <Button onClick={onBook} className="h-10 shrink-0 px-5 text-sm font-semibold">
+          <Ticket className="mr-1.5 h-4 w-4" />
+          View tours
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 export function PrivateToursPage() {
   const { language = "en", onNavigate } = useOutletContext<OutletContext>();
   
@@ -100,6 +142,17 @@ export function PrivateToursPage() {
 
   const [tours, setTours] = useState<PrivateTour[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const lowestTourPrice = useMemo<number | null>(() => {
+    const prices = tours
+      .filter((t) => t.published)
+      .map((t) => {
+        const raw = t.price?.toString().replace(/[^0-9.]/g, "");
+        return raw ? parseFloat(raw) : NaN;
+      })
+      .filter((p) => !isNaN(p) && p > 0);
+    return prices.length > 0 ? Math.min(...prices) : null;
+  }, [tours]);
   const [fetchError, setFetchError] = useState(false);
   const [selectedTour, setSelectedTour] = useState<PrivateTour | null>(null);
   const [showRequestDialog, setShowRequestDialog] = useState(false);
@@ -402,8 +455,16 @@ export function PrivateToursPage() {
         </div>
       </section>
 
+      {/* Mobile sticky CTA */}
+      <MobileStickyBar
+        lowestPrice={lowestTourPrice}
+        onBook={() => {
+          document.querySelector("#tours-grid")?.scrollIntoView({ behavior: "smooth" });
+        }}
+      />
+
       {/* Tours Grid - Similar to Attractions grid */}
-      <section className="py-12 sm:py-16">
+      <section id="tours-grid" className="py-12 sm:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {loading ? (
             <div className="text-center py-12">
