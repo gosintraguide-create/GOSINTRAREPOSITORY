@@ -365,9 +365,9 @@ export function PrivateTourDetailPage() {
         </div>
       </section>
 
-      {/* ── Desktop hero — title + image/card side by side ───────────── */}
+      {/* ── Desktop layout — persistent two-column ──────────────────── */}
       <div className="hidden lg:block bg-background">
-        <div className="mx-auto max-w-7xl px-6 pb-4 pt-8 lg:px-8">
+        <div className="mx-auto max-w-7xl px-6 py-8 lg:px-8">
           {/* Page title */}
           <div className="mb-6 flex items-center gap-3">
             <h1 className="text-4xl font-bold text-foreground xl:text-5xl">
@@ -385,10 +385,11 @@ export function PrivateTourDetailPage() {
             )}
           </div>
 
-          {/* Two-column: image left, booking card right */}
-          <div className="grid grid-cols-3 items-start gap-8">
-            {/* Image + description */}
-            <div className="col-span-2">
+          {/* Two-column grid — spans entire page body */}
+          <div className="grid grid-cols-3 gap-8">
+            {/* ── Left column: image → description → about → features ── */}
+            <div className="col-span-2 space-y-8">
+              {/* Hero image */}
               <div className="overflow-hidden rounded-2xl" style={{ aspectRatio: "16/9" }}>
                 <ImageWithFallback
                   src={tourImage}
@@ -396,13 +397,44 @@ export function PrivateTourDetailPage() {
                   className="h-full w-full object-cover"
                 />
               </div>
-              <p className="mt-5 text-base leading-relaxed text-muted-foreground">
+
+              {/* Short description */}
+              <p className="text-base leading-relaxed text-muted-foreground">
                 {tour.description}
               </p>
+
+              {/* About This Tour */}
+              {tour.longDescription && (
+                <div>
+                  <h2 className="mb-4 text-2xl font-bold">{tTour.aboutThisTour}</h2>
+                  <p className="whitespace-pre-wrap text-base leading-relaxed text-muted-foreground">
+                    {tour.longDescription}
+                  </p>
+                </div>
+              )}
+
+              {/* Features / Highlights */}
+              {tour.features && tour.features.length > 0 && (
+                <div className="pb-12">
+                  <h2 className="mb-4 text-2xl font-bold">{tTour.tourFeatures}</h2>
+                  <div className="space-y-3">
+                    {tour.features.map((feature, index) => (
+                      <div
+                        key={index}
+                        className="flex items-start gap-3 rounded-lg border p-4"
+                      >
+                        <Check className="h-5 w-5 flex-shrink-0 text-primary" />
+                        <span>{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Booking card */}
+            {/* ── Right column: booking card + other tours ─────────── */}
             <div className="col-span-1">
+              {/* Booking card — sticks while left column scrolls */}
               <Card className="sticky top-24 p-6">
                 <div className="mb-4 flex items-center gap-2">
                   <Clock className="h-4 w-4 shrink-0 text-muted-foreground" />
@@ -424,6 +456,41 @@ export function PrivateTourDetailPage() {
                   <Calendar className="mr-2 h-4 w-4" />
                   {tTour.bookThisTour}
                 </Button>
+
+                {/* Other tours — inside the sticky card, below the CTA */}
+                {otherTours.length > 0 && (
+                  <div className="mt-6 border-t border-border pt-5">
+                    <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      {tTour.morePrivateTours}
+                    </p>
+                    <div className="space-y-3">
+                      {otherTours.map((t) => (
+                        <Link
+                          key={t.id}
+                          to={`/private-tours/${t.id}`}
+                          className="group flex items-start gap-3 overflow-hidden rounded-lg border border-border bg-secondary/20 p-3 transition-colors hover:bg-secondary/40"
+                        >
+                          {t.heroImage && (
+                            <div className="h-14 w-16 shrink-0 overflow-hidden rounded-md">
+                              <img
+                                src={t.heroImage}
+                                alt={t.title}
+                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                loading="lazy"
+                              />
+                            </div>
+                          )}
+                          <div className="min-w-0">
+                            <p className="text-xs font-semibold leading-snug text-foreground line-clamp-2">{t.title}</p>
+                            <span className="mt-1 inline-flex items-center gap-0.5 text-xs font-medium text-primary">
+                              {tTour.viewTour} <ChevronRight className="h-3 w-3" />
+                            </span>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </Card>
             </div>
           </div>
@@ -446,8 +513,8 @@ export function PrivateTourDetailPage() {
         </div>
       </div>
 
-      {/* Main Content — About + Features */}
-      <section className="py-12 md:py-16">
+      {/* Main Content — About + Features (mobile only; desktop uses the two-column layout above) */}
+      <section className="lg:hidden py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl">
             {/* Long Description */}
@@ -502,9 +569,9 @@ export function PrivateTourDetailPage() {
         />
       )}
 
-      {/* Other Private Tours */}
+      {/* Other Private Tours — mobile only; desktop shows them in the right column */}
       {otherTours.length > 0 && (
-        <section className="border-t border-border bg-secondary/20 py-10 sm:py-14">
+        <section className="lg:hidden border-t border-border bg-secondary/20 py-10 sm:py-14">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <h2 className="mb-6 text-xl font-semibold text-foreground sm:text-2xl">
               {tTour.morePrivateTours}
