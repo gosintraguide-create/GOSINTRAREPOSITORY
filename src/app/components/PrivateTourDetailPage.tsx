@@ -534,8 +534,6 @@ export function PrivateTourDetailPage() {
                 </div>
               </Card>
 
-              </Card>
-
               {/* Other tours — below the sticky card */}
               {otherTours.length > 0 && (
                 <div className="mt-6">
