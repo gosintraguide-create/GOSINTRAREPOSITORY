@@ -602,19 +602,19 @@ export function PrivateTourDetailPage() {
                             <p className="text-sm font-semibold leading-snug text-foreground line-clamp-2">
                               {t.title}
                             </p>
-                            <div className="mt-2 flex items-center gap-3 text-sm">
+                            <div className="mt-2 flex items-center gap-2 text-sm">
                               {lowestOtherPrice != null && (
-                                <span className="font-bold text-primary">
+                                <span className="shrink-0 whitespace-nowrap font-bold text-primary">
                                   {tTour.fromPrice} €{lowestOtherPrice}
                                 </span>
                               )}
                               {t.duration && (
-                                <span className="flex items-center gap-1 text-muted-foreground">
+                                <span className="flex min-w-0 items-center gap-1 text-muted-foreground">
                                   <Clock className="h-3.5 w-3.5 shrink-0" />
-                                  {t.duration}
+                                  <span className="truncate">{t.duration}</span>
                                 </span>
                               )}
-                              <span className="ml-auto inline-flex items-center gap-0.5 font-medium text-primary">
+                              <span className="ml-auto shrink-0 whitespace-nowrap inline-flex items-center gap-0.5 font-medium text-primary">
                                 {tTour.viewTour} <ChevronRight className="h-3.5 w-3.5" />
                               </span>
                             </div>
