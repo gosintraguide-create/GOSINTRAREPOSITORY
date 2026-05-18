@@ -4,8 +4,11 @@ import { Helmet } from "react-helmet-async";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Card } from "./ui/card";
+import { Calendar as CalendarPicker } from "./ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { TourBookingDialog } from "./TourBookingDialog";
+import { format } from "date-fns";
 import {
   ArrowLeft,
   Users,
@@ -14,7 +17,7 @@ import {
   CheckCircle,
   Euro,
   MapPin,
-  Calendar,
+  Calendar as CalendarIcon,
   ChevronRight,
   ChevronDown,
   Ticket,
@@ -487,22 +490,28 @@ export function PrivateTourDetailPage() {
                       <ChevronDown className="pointer-events-none absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     </div>
 
-                    {/* Date input */}
-                    <div className="relative">
-                      <Calendar className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                      <input
-                        type="date"
-                        min={new Date().toISOString().split("T")[0]}
-                        value={cardDate ? `${cardDate.getFullYear()}-${String(cardDate.getMonth() + 1).padStart(2, "0")}-${String(cardDate.getDate()).padStart(2, "0")}` : ""}
-                        onChange={(e) => {
-                          if (!e.target.value) { setCardDate(undefined); return; }
-                          const [y, m, d] = e.target.value.split("-").map(Number);
-                          setCardDate(new Date(y, m - 1, d));
-                        }}
-                        className="w-full rounded-xl border border-input bg-background py-3 pl-10 pr-4 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                        placeholder="Select date"
-                      />
-                    </div>
+                    {/* Date dropdown */}
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button className="flex w-full items-center gap-2.5 rounded-xl border border-input bg-background py-3 pl-3.5 pr-3.5 text-left text-sm font-medium transition-colors hover:bg-secondary/40 focus:outline-none focus:ring-2 focus:ring-ring">
+                          <CalendarIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
+                          <span className={`flex-1 ${cardDate ? "text-foreground" : "text-muted-foreground"}`}>
+                            {cardDate ? format(cardDate, "MMM d, yyyy") : "Select date"}
+                          </span>
+                          <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start" sideOffset={4}>
+                        <CalendarPicker
+                          mode="single"
+                          selected={cardDate}
+                          onSelect={setCardDate}
+                          numberOfMonths={2}
+                          disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </div>
 
                   {/* CTA */}
