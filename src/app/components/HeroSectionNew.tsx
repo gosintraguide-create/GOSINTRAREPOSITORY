@@ -78,7 +78,7 @@ function OfferCard({
           {fromPrice != null && (
             <div className="flex items-baseline gap-1 text-right">
               <span className="text-xs font-medium text-stone-400">From</span>
-              <span className="text-2xl font-extrabold leading-none text-foreground">€{fromPrice}</span>
+              <span className="text-2xl font-extrabold leading-none text-primary">€{fromPrice}</span>
             </div>
           )}
         </div>
