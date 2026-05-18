@@ -14,6 +14,7 @@ import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { toast } from 'sonner';
 import { StripePaymentForm } from './StripePaymentForm';
 import { cn } from './ui/utils';
+import { getTranslation } from '../lib/translations/loader';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -55,15 +56,16 @@ interface TourBookingDialogProps {
   };
   initialDate?: Date;
   initialPeople?: number;
+  language?: string;
 }
 
 // ─── Step indicator ───────────────────────────────────────────────────────────
 
-function StepIndicator({ current }: { current: Step }) {
+function StepIndicator({ current, labels }: { current: Step; labels: { datetime: string; details: string; payment: string } }) {
   const steps: { key: Step; label: string }[] = [
-    { key: 'datetime', label: 'Date & Time' },
-    { key: 'details',  label: 'Your Details' },
-    { key: 'payment',  label: 'Payment' },
+    { key: 'datetime', label: labels.datetime },
+    { key: 'details',  label: labels.details },
+    { key: 'payment',  label: labels.payment },
   ];
   const idx = steps.findIndex((s) => s.key === current);
 
@@ -97,7 +99,8 @@ function StepIndicator({ current }: { current: Step }) {
 
 // ─── Main booking form ────────────────────────────────────────────────────────
 
-function BookingForm({ tour, onSuccess, initialDate, initialPeople }: { tour: TourBookingDialogProps['tour']; onSuccess: () => void; initialDate?: Date; initialPeople?: number }) {
+function BookingForm({ tour, onSuccess, initialDate, initialPeople, language = 'en' }: { tour: TourBookingDialogProps['tour']; onSuccess: () => void; initialDate?: Date; initialPeople?: number; language?: string }) {
+  const tDialog = getTranslation(language).tourBookingDialog;
   // Steps
   const [step, setStep] = useState<Step>('datetime');
 
@@ -113,7 +116,7 @@ function BookingForm({ tour, onSuccess, initialDate, initialPeople }: { tour: To
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [language, setLanguage] = useState('English');
+  const [tourLanguage, setTourLanguage] = useState('English');
   const [specialRequests, setSpecialRequests] = useState('');
 
   // Step 3 / payment state
@@ -265,7 +268,7 @@ function BookingForm({ tour, onSuccess, initialDate, initialPeople }: { tour: To
               tourId: tour.id,
               tourTitle: tour.title,
               tourDate: buildTourDate(),
-              customerInfo: { name, email, phone, numberOfPeople, language, specialRequests },
+              customerInfo: { name, email, phone, numberOfPeople, language: tourLanguage, specialRequests },
             }),
           }
         );
@@ -319,7 +322,7 @@ function BookingForm({ tour, onSuccess, initialDate, initialPeople }: { tour: To
             tourId: tour.id,
             tourTitle: tour.title,
             tourDate: buildTourDate(),
-            customerInfo: { name, email, phone, numberOfPeople, language, specialRequests },
+            customerInfo: { name, email, phone, numberOfPeople, language: tourLanguage, specialRequests },
             paymentIntentId,
             amount: tourPrice,
           }),
@@ -349,7 +352,7 @@ function BookingForm({ tour, onSuccess, initialDate, initialPeople }: { tour: To
 
   return (
     <div className="space-y-4">
-      <StepIndicator current={step} />
+      <StepIndicator current={step} labels={{ datetime: tDialog.stepDateTime, details: tDialog.stepDetails, payment: tDialog.stepPayment }} />
 
       {/* ── STEP 1: Date, Time & Guests ──────────────────────────────────── */}
       {step === 'datetime' && (
@@ -358,7 +361,7 @@ function BookingForm({ tour, onSuccess, initialDate, initialPeople }: { tour: To
           {/* ── Left: Calendar ─────────────────────────────────────────────── */}
           <div className="flex-shrink-0 md:w-[55%] md:pr-8">
             <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-              Select a Date
+              {tDialog.selectDate}
             </p>
             <Calendar
               mode="single"
@@ -391,13 +394,13 @@ function BookingForm({ tour, onSuccess, initialDate, initialPeople }: { tour: To
             />
             {loadingAvailability && (
               <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
-                <Loader2 className="h-3 w-3 animate-spin" /> Checking availability…
+                <Loader2 className="h-3 w-3 animate-spin" /> {tDialog.checkingAvailability}
               </p>
             )}
             <div className="mt-4 flex flex-wrap gap-4 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-green-500 inline-block" /> Available</span>
-              <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-amber-500 inline-block" /> Limited</span>
-              <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-red-500 inline-block" /> Full</span>
+              <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-green-500 inline-block" /> {tDialog.legendAvailable}</span>
+              <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-amber-500 inline-block" /> {tDialog.legendLimited}</span>
+              <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-red-500 inline-block" /> {tDialog.legendFull}</span>
             </div>
           </div>
 
@@ -410,7 +413,7 @@ function BookingForm({ tour, onSuccess, initialDate, initialPeople }: { tour: To
             {/* Time slots */}
             <div>
               <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                Available Times
+                {tDialog.availableTimes}
               </p>
               {selectedDate ? (
                 <>
@@ -437,14 +440,14 @@ function BookingForm({ tour, onSuccess, initialDate, initialPeople }: { tour: To
                 </>
               ) : (
                 <div className="flex min-h-[100px] items-center justify-center rounded-2xl border-2 border-dashed border-stone-300 bg-white/60">
-                  <p className="text-sm text-muted-foreground">Pick a date to see available times</p>
+                  <p className="text-sm text-muted-foreground">{tDialog.pickDatePrompt}</p>
                 </div>
               )}
             </div>
 
             {/* Guests */}
             <div>
-              <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">Guests</p>
+              <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">{tDialog.guests}</p>
               <div className="flex items-center gap-4">
                 <button
                   type="button"
@@ -460,7 +463,7 @@ function BookingForm({ tour, onSuccess, initialDate, initialPeople }: { tour: To
                   <Minus className="h-4 w-4" />
                 </button>
                 <span className="min-w-[6rem] text-center text-lg font-bold text-foreground">
-                  {numberOfPeople} {numberOfPeople === 1 ? 'guest' : 'guests'}
+                  {numberOfPeople} {numberOfPeople === 1 ? tDialog.guest : tDialog.guestsPlural}
                 </span>
                 <button
                   type="button"
@@ -480,7 +483,7 @@ function BookingForm({ tour, onSuccess, initialDate, initialPeople }: { tour: To
                 {minGuests > 1 && numberOfPeople < minGuests && (
                   <div className="flex items-center gap-1.5 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800 border border-amber-200 h-full">
                     <Info className="h-3.5 w-3.5 flex-shrink-0" />
-                    <span>This tour has a {minGuests}-guest minimum — that's what we'll charge for.</span>
+                    <span>{tDialog.minimumGuestsNotice.replace('{min}', String(minGuests))}</span>
                   </div>
                 )}
               </div>
@@ -489,9 +492,9 @@ function BookingForm({ tour, onSuccess, initialDate, initialPeople }: { tour: To
             {/* Total + Next */}
             <div className="mt-auto flex items-center justify-between rounded-2xl bg-white px-5 py-4 shadow-sm">
               <div>
-                <p className="text-xs font-medium text-muted-foreground">Total</p>
+                <p className="text-xs font-medium text-muted-foreground">{tDialog.total}</p>
                 <p className="text-2xl font-extrabold text-foreground">
-                  {quoteMode ? 'Quote on request' : tourPrice > 0 ? `€${tourPrice.toFixed(2)}` : tour.price}
+                  {quoteMode ? tDialog.quoteOnRequest : tourPrice > 0 ? `€${tourPrice.toFixed(2)}` : tour.price}
                 </p>
               </div>
               <Button
@@ -500,7 +503,7 @@ function BookingForm({ tour, onSuccess, initialDate, initialPeople }: { tour: To
                 disabled={!selectedDate || !selectedTime}
                 onClick={() => setStep('details')}
               >
-                Next →
+                {tDialog.next}
               </Button>
             </div>
           </div>
@@ -519,20 +522,20 @@ function BookingForm({ tour, onSuccess, initialDate, initialPeople }: { tour: To
 
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <Label htmlFor="name">Full Name *</Label>
+              <Label htmlFor="name">{tDialog.fullName} *</Label>
               <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="John Doe" className="mt-1" />
             </div>
             <div>
-              <Label htmlFor="email">Email *</Label>
+              <Label htmlFor="email">{tDialog.email} *</Label>
               <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="john@example.com" className="mt-1" />
             </div>
             <div>
-              <Label htmlFor="phone">Phone *</Label>
+              <Label htmlFor="phone">{tDialog.phone} *</Label>
               <Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+351 912 345 678" className="mt-1" />
             </div>
             <div className="sm:col-span-2">
-              <Label>Preferred Language</Label>
-              <Select value={language} onValueChange={setLanguage}>
+              <Label>{tDialog.preferredLanguage}</Label>
+              <Select value={tourLanguage} onValueChange={setTourLanguage}>
                 <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {LANGUAGES.map((l) => (
@@ -540,21 +543,21 @@ function BookingForm({ tour, onSuccess, initialDate, initialPeople }: { tour: To
                   ))}
                 </SelectContent>
               </Select>
-              {!['English', 'Spanish', 'Portuguese'].includes(language) && (
+              {!['English', 'Spanish', 'Portuguese'].includes(tourLanguage) && (
                 <p className="mt-1.5 text-xs text-muted-foreground">
-                  We guarantee tours in English, Spanish and Portuguese. For other languages we'll do our best to accommodate you!
+                  {tDialog.languageNote}
                 </p>
               )}
             </div>
           </div>
 
           <div>
-            <Label htmlFor="requests">Special Requests <span className="text-muted-foreground">(optional)</span></Label>
+            <Label htmlFor="requests">{tDialog.specialRequests} <span className="text-muted-foreground">{tDialog.specialRequestsOptional}</span></Label>
             <Textarea
               id="requests"
               value={specialRequests}
               onChange={(e) => setSpecialRequests(e.target.value)}
-              placeholder="Accessibility needs, dietary requirements, specific sites you'd love to visit…"
+              placeholder={tDialog.specialRequestsPlaceholder}
               rows={3}
               className="mt-1"
             />
@@ -563,26 +566,26 @@ function BookingForm({ tour, onSuccess, initialDate, initialPeople }: { tour: To
           {/* Summary card */}
           <div className="rounded-lg border border-border bg-secondary/20 p-4 text-sm space-y-1.5">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Tour</span>
+              <span className="text-muted-foreground">{tDialog.summaryTour}</span>
               <span className="font-medium">{tour.title}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Date</span>
+              <span className="text-muted-foreground">{tDialog.summaryDate}</span>
               <span className="font-medium">{selectedDate ? format(selectedDate, 'dd MMM yyyy') : '—'}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Time</span>
+              <span className="text-muted-foreground">{tDialog.summaryTime}</span>
               <span className="font-medium">{selectedTime || '—'}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Guests</span>
+              <span className="text-muted-foreground">{tDialog.summaryGuests}</span>
               <span className="font-medium">{numberOfPeople}</span>
             </div>
             <Separator className="my-1" />
             <div className="flex justify-between font-semibold text-base">
-              <span>{quoteMode ? 'Pricing' : 'Total'}</span>
+              <span>{tDialog.total}</span>
               <span className="text-primary">
-                {quoteMode ? 'Personalised quote' : `€${tourPrice.toFixed(2)}`}
+                {quoteMode ? tDialog.quoteOnRequest : `€${tourPrice.toFixed(2)}`}
               </span>
             </div>
           </div>
@@ -590,14 +593,14 @@ function BookingForm({ tour, onSuccess, initialDate, initialPeople }: { tour: To
           {quoteMode && (
             <Alert className="border-primary/30 bg-primary/5">
               <AlertDescription className="text-sm text-foreground">
-                We'll review your request and send you a personalised quote within 24 hours. No payment needed until you're happy to confirm.
+                {tDialog.quoteInfo}
               </AlertDescription>
             </Alert>
           )}
 
           <div className="flex gap-2">
             <Button variant="ghost" onClick={() => setStep('datetime')} className="gap-1">
-              <ChevronLeft className="h-4 w-4" /> Back
+              <ChevronLeft className="h-4 w-4" /> {tDialog.back}
             </Button>
             <Button
               className="flex-1"
@@ -605,9 +608,9 @@ function BookingForm({ tour, onSuccess, initialDate, initialPeople }: { tour: To
               onClick={handleContinueToPayment}
             >
               {processing ? (
-                <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{quoteMode ? 'Submitting…' : 'Setting up payment…'}</>
+                <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{quoteMode ? tDialog.submitting : tDialog.settingUpPayment}</>
               ) : (
-                quoteMode ? 'Request Personalised Quote' : 'Continue to Payment'
+                quoteMode ? tDialog.requestQuote : tDialog.continuePayment
               )}
             </Button>
           </div>
@@ -624,21 +627,21 @@ function BookingForm({ tour, onSuccess, initialDate, initialPeople }: { tour: To
                 <CheckCircle className="h-8 w-8 text-primary" />
               </div>
               <div>
-                <p className="text-lg font-semibold text-foreground">Quote Request Sent!</p>
+                <p className="text-lg font-semibold text-foreground">{tDialog.quoteSuccess}</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  We'll review your request and email you a personalised quote within 24 hours.
+                  {tDialog.quoteSuccessMsg}
                 </p>
               </div>
               <div className="rounded-lg border border-border bg-secondary/20 p-4 text-sm w-full text-left space-y-1">
-                <div className="flex justify-between"><span className="text-muted-foreground">Tour</span><span className="font-medium">{tour.title}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Date</span><span className="font-medium">{selectedDate ? format(selectedDate, 'dd MMM yyyy') : '—'}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Time</span><span className="font-medium">{selectedTime}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Guests</span><span className="font-medium">{numberOfPeople}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">{tDialog.summaryTour}</span><span className="font-medium">{tour.title}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">{tDialog.summaryDate}</span><span className="font-medium">{selectedDate ? format(selectedDate, 'dd MMM yyyy') : '—'}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">{tDialog.summaryTime}</span><span className="font-medium">{selectedTime}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">{tDialog.summaryGuests}</span><span className="font-medium">{numberOfPeople}</span></div>
               </div>
               <p className="text-xs text-muted-foreground">
-                Confirmation sent to <strong>{email}</strong>
+                {tDialog.confirmationSentTo} <strong>{email}</strong>
               </p>
-              <Button className="w-full" onClick={onSuccess}>Done</Button>
+              <Button className="w-full" onClick={onSuccess}>{tDialog.done}</Button>
             </div>
           )}
 
@@ -651,7 +654,7 @@ function BookingForm({ tour, onSuccess, initialDate, initialPeople }: { tour: To
                   <div className="flex-1 space-y-0.5">
                     <p className="font-semibold text-foreground">{tour.title}</p>
                     <p className="text-muted-foreground">
-                      {selectedDate ? format(selectedDate, 'dd MMM yyyy') : ''} · {selectedTime} · {numberOfPeople} {numberOfPeople === 1 ? 'guest' : 'guests'}
+                      {selectedDate ? format(selectedDate, 'dd MMM yyyy') : ''} · {selectedTime} · {numberOfPeople} {numberOfPeople === 1 ? tDialog.guest : tDialog.guestsPlural}
                     </p>
                   </div>
                   <p className="text-base font-bold text-primary">€{tourPrice.toFixed(2)}</p>
@@ -668,7 +671,7 @@ function BookingForm({ tour, onSuccess, initialDate, initialPeople }: { tour: To
               />
 
               <Button variant="ghost" size="sm" className="w-full gap-1" onClick={() => { setStep('details'); setClientSecret(null); }}>
-                <ChevronLeft className="h-4 w-4" /> Back to details
+                <ChevronLeft className="h-4 w-4" /> {tDialog.backToDetails}
               </Button>
             </div>
           )}
@@ -680,15 +683,16 @@ function BookingForm({ tour, onSuccess, initialDate, initialPeople }: { tour: To
 
 // ─── Dialog wrapper ───────────────────────────────────────────────────────────
 
-export function TourBookingDialog({ open, onOpenChange, tour, initialDate, initialPeople }: TourBookingDialogProps) {
+export function TourBookingDialog({ open, onOpenChange, tour, initialDate, initialPeople, language = 'en' }: TourBookingDialogProps) {
+  const tDialog = getTranslation(language).tourBookingDialog;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[95vw] sm:max-w-3xl md:max-w-5xl max-h-[90vh] overflow-y-auto bg-[#F9F6F1] p-5 sm:p-7">
         <DialogHeader className="mb-1">
-          <DialogTitle className="text-xl font-bold">Book Your Private Tour</DialogTitle>
+          <DialogTitle className="text-xl font-bold">{tDialog.title}</DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground">Ready to book your {tour.title}? Just follow the steps below and we'll take care of the rest.</DialogDescription>
         </DialogHeader>
-        <BookingForm tour={tour} onSuccess={() => onOpenChange(false)} initialDate={initialDate} initialPeople={initialPeople} />
+        <BookingForm tour={tour} onSuccess={() => onOpenChange(false)} initialDate={initialDate} initialPeople={initialPeople} language={language} />
       </DialogContent>
     </Dialog>
   );

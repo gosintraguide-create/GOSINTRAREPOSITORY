@@ -71,7 +71,8 @@ function getLowestPrice(tour: PrivateTour): number | null {
   return m ? parseInt(m[0]) : null;
 }
 
-function MobileStickyBar({ price, duration, onBook }: { price: number | null; duration?: string; onBook: () => void }) {
+function MobileStickyBar({ price, duration, onBook, language = "en" }: { price: number | null; duration?: string; onBook: () => void; language?: string }) {
+  const tBar = getTranslation(language).privateTourDetail;
   const [headerHeight, setHeaderHeight] = useState(0);
 
   useEffect(() => {
@@ -93,14 +94,14 @@ function MobileStickyBar({ price, duration, onBook }: { price: number | null; du
         <div>
           {price != null ? (
             <>
-              <p className="text-[11px] font-medium uppercase tracking-wide text-stone-400 leading-none mb-0.5">From</p>
+              <p className="text-[11px] font-medium uppercase tracking-wide text-stone-400 leading-none mb-0.5">{tBar.fromPrice}</p>
               <p className="text-2xl font-extrabold leading-none text-primary">
                 €{price}
-                <span className="ml-1 text-xs font-medium text-muted-foreground">/ person</span>
+                <span className="ml-1 text-xs font-medium text-muted-foreground">{tBar.perPerson}</span>
               </p>
             </>
           ) : (
-            <p className="text-sm font-semibold text-foreground">Private Tour</p>
+            <p className="text-sm font-semibold text-foreground">{tBar.privateTourFallback}</p>
           )}
         </div>
         {duration && (
@@ -111,7 +112,7 @@ function MobileStickyBar({ price, duration, onBook }: { price: number | null; du
         )}
         <Button onClick={onBook} className="h-10 shrink-0 px-5 text-sm font-semibold">
           <Ticket className="mr-1.5 h-4 w-4" />
-          Book this tour
+          {tBar.bookThisTour}
         </Button>
       </div>
     </div>
@@ -490,10 +491,10 @@ export function PrivateTourDetailPage() {
                   {/* Price */}
                   {tour.pricingMode !== "quote-only" && getLowestPrice(tour) != null && (
                     <div className="mb-5">
-                      <p className="text-sm text-muted-foreground">From</p>
+                      <p className="text-sm text-muted-foreground">{tTour.fromPrice}</p>
                       <div className="flex items-baseline gap-1.5">
                         <span className="text-3xl font-extrabold text-foreground">€{getLowestPrice(tour)}</span>
-                        <span className="text-sm text-muted-foreground">per person</span>
+                        <span className="text-sm text-muted-foreground">{tTour.perPerson}</span>
                       </div>
                     </div>
                   )}
@@ -525,7 +526,7 @@ export function PrivateTourDetailPage() {
                         <button className="flex w-full items-center gap-2.5 rounded-xl border border-input bg-background py-3 pl-3.5 pr-3.5 text-left text-sm font-medium transition-colors hover:bg-secondary/40 focus:outline-none focus:ring-2 focus:ring-ring">
                           <CalendarIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
                           <span className={`flex-1 ${cardDate ? "text-foreground" : "text-muted-foreground"}`}>
-                            {cardDate ? format(cardDate, "MMM d, yyyy") : "Select date"}
+                            {cardDate ? format(cardDate, "MMM d, yyyy") : tTour.selectDate}
                           </span>
                           <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
                         </button>
@@ -549,7 +550,7 @@ export function PrivateTourDetailPage() {
                     className="mb-5 w-full"
                     onClick={() => { setShowBookingDialog(true); analytics.privateTourInquiry(); }}
                   >
-                    Check availability
+                    {tTour.checkAvailability}
                   </Button>
 
                   {/* Trust signals */}
@@ -557,15 +558,15 @@ export function PrivateTourDetailPage() {
                     <div className="flex gap-2.5">
                       <CheckCircle className="mt-0.5 h-5 w-5 shrink-0 text-green-500" />
                       <div>
-                        <p className="text-sm font-semibold text-foreground">Free cancellation</p>
-                        <p className="text-xs text-muted-foreground">Cancel up to 24 hours in advance for a full refund</p>
+                        <p className="text-sm font-semibold text-foreground">{tTour.freeCancellation}</p>
+                        <p className="text-xs text-muted-foreground">{tTour.freeCancellationDesc}</p>
                       </div>
                     </div>
                     <div className="flex gap-2.5">
                       <CheckCircle className="mt-0.5 h-5 w-5 shrink-0 text-green-500" />
                       <div>
-                        <p className="text-sm font-semibold text-foreground">100% private tour</p>
-                        <p className="text-xs text-muted-foreground">Exclusively for your group — no shared buses or strangers</p>
+                        <p className="text-sm font-semibold text-foreground">{tTour.privateExclusive}</p>
+                        <p className="text-xs text-muted-foreground">{tTour.privateExclusiveDesc}</p>
                       </div>
                     </div>
                   </div>
@@ -576,7 +577,7 @@ export function PrivateTourDetailPage() {
               {otherTours.length > 0 && (
                 <div className="mt-6">
                   <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Other tours you might like
+                    {tTour.otherToursTitle}
                   </p>
                   <div className="space-y-3">
                     {otherTours.map((t) => {
@@ -604,7 +605,7 @@ export function PrivateTourDetailPage() {
                             <div className="mt-2 flex items-center gap-3 text-sm">
                               {lowestOtherPrice != null && (
                                 <span className="font-bold text-primary">
-                                  From €{lowestOtherPrice}
+                                  {tTour.fromPrice} €{lowestOtherPrice}
                                 </span>
                               )}
                               {t.duration && (
@@ -629,7 +630,7 @@ export function PrivateTourDetailPage() {
               {suggestedArticles.length > 0 && (
                 <div className="mt-6">
                   <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Check our free guides
+                    {tTour.freeGuidesTitle}
                   </p>
                   <div className="space-y-3">
                     {suggestedArticles.map((a) => (
@@ -660,7 +661,7 @@ export function PrivateTourDetailPage() {
                               </span>
                             )}
                             <span className="ml-auto inline-flex items-center gap-0.5 font-medium text-primary">
-                              Read <ChevronRight className="h-3.5 w-3.5" />
+                              {tTour.readArticle} <ChevronRight className="h-3.5 w-3.5" />
                             </span>
                           </div>
                         </div>
@@ -679,6 +680,7 @@ export function PrivateTourDetailPage() {
         price={getLowestPrice(tour)}
         duration={tour.duration}
         onBook={() => setShowBookingDialog(true)}
+        language={language}
       />
 
       {/* Tour description summary card — mobile only */}
@@ -732,6 +734,7 @@ export function PrivateTourDetailPage() {
           onOpenChange={setShowBookingDialog}
           initialDate={cardDate}
           initialPeople={cardPeople}
+          language={language}
           tour={{
             id: tour.id,
             title: tour.title,
