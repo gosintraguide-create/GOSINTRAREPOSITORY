@@ -76,14 +76,15 @@ function MobileStickyBar({ basePrice, onBook }: { basePrice: number; onBook: () 
   const [headerHeight, setHeaderHeight] = useState(0);
 
   useEffect(() => {
-    const measure = () => {
-      // Measure the full sticky wrapper (InfoBar + Header combined)
-      const header = document.querySelector("[data-site-header]") ?? document.querySelector("header");
-      if (header) setHeaderHeight(header.getBoundingClientRect().height);
-    };
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
+    const el = document.querySelector("[data-site-header]") ?? document.querySelector("header");
+    if (!el) return;
+    // ResizeObserver fires whenever the element's size changes (initial paint,
+    // font load, viewport resize, URL-bar collapse on mobile, etc.)
+    const ro = new ResizeObserver(() => {
+      setHeaderHeight((el as HTMLElement).offsetHeight);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
   }, []);
 
   return (
