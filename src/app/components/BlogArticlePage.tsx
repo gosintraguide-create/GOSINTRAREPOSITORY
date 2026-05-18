@@ -363,26 +363,46 @@ export function BlogArticlePage() {
                         const relT = getArticleTranslation(rel, lang);
                         const relCat = categories.find((c) => c.id === rel.category || c.slug === rel.category);
                         const relCatName = relCat ? getCategoryTranslation(relCat, lang).name : rel.category;
+                        const relImage = rel.thumbnailImage || rel.featuredImage || rel.heroImage;
                         return (
                           <button
                             key={rel.slug}
                             onClick={() => navigate(`/travel-guide/${rel.slug}`)}
-                            className="flex w-full cursor-pointer gap-3 rounded-lg border border-border bg-white p-3 text-left transition-shadow hover:shadow-md"
+                            className="group flex w-full cursor-pointer overflow-hidden rounded-xl border border-border bg-white text-left shadow-sm transition-shadow hover:shadow-md"
                           >
-                            <ImageWithFallback
-                              src={rel.thumbnailImage || rel.featuredImage || rel.heroImage || ""}
-                              alt={relT.title}
-                              className="h-16 w-16 flex-shrink-0 rounded-md object-cover"
-                            />
-                            <div className="min-w-0 flex-1">
-                              <p className="mb-1 line-clamp-2 text-sm font-medium leading-snug text-foreground">
-                                {relT.title}
-                              </p>
-                              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                                <Clock className="h-3 w-3" />
-                                {rel.readTimeMinutes} {t.blog.minRead}
-                                <span className="text-border">•</span>
-                                {relCatName}
+                            {relImage && (
+                              <div className="w-28 shrink-0 overflow-hidden">
+                                <ImageWithFallback
+                                  src={relImage}
+                                  alt={relT.title}
+                                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                />
+                              </div>
+                            )}
+                            <div className="flex min-w-0 flex-1 flex-col justify-between p-3">
+                              <div>
+                                <p className="text-sm font-semibold leading-snug text-foreground line-clamp-2">
+                                  {relT.title}
+                                </p>
+                                {relT.excerpt && (
+                                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground line-clamp-2">
+                                    {relT.excerpt}
+                                  </p>
+                                )}
+                              </div>
+                              <div className="mt-2.5 flex items-center gap-2 text-sm">
+                                {rel.readTimeMinutes && (
+                                  <span className="flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
+                                    <Clock className="h-3.5 w-3.5 shrink-0" />
+                                    {rel.readTimeMinutes} min
+                                  </span>
+                                )}
+                                {relCatName && (
+                                  <span className="truncate text-xs text-muted-foreground">· {relCatName}</span>
+                                )}
+                                <span className="ml-auto shrink-0 whitespace-nowrap inline-flex items-center gap-0.5 text-sm font-medium text-primary">
+                                  {t.blog.readGuide} <ChevronRight className="h-3.5 w-3.5" />
+                                </span>
                               </div>
                             </div>
                           </button>
