@@ -576,7 +576,7 @@ export function PrivateTourDetailPage() {
               {otherTours.length > 0 && (
                 <div className="mt-6">
                   <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    {tTour.morePrivateTours}
+                    Other tours you might like
                   </p>
                   <div className="space-y-3">
                     {otherTours.map((t) => {
@@ -629,7 +629,7 @@ export function PrivateTourDetailPage() {
               {suggestedArticles.length > 0 && (
                 <div className="mt-6">
                   <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    From the Travel Guide
+                    Check our free guides
                   </p>
                   <div className="space-y-3">
                     {suggestedArticles.map((a) => (
