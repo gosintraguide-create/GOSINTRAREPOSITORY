@@ -2011,13 +2011,15 @@ app.get("/make-server-3bd0ade8/sitemap.xml", async (c) => {
   try {
     const articles = (await kvWithRetry.get("blog_articles") as any[]) || [];
     for (const a of articles) {
-      if (a.published === false || a.status === "draft") continue;
+      // Support both field names: isPublished (frontend) and published (legacy)
+      const isPublished = a.isPublished !== false && a.published !== false && a.status !== "draft";
+      if (!isPublished) continue;
       const slug = a.slug || a.id;
       if (slug) {
         dynamicUrls.push({
           loc: `${BASE_URL}/travel-guide/${slug}`,
           changefreq: "monthly",
-          priority: "0.7",
+          priority: "0.8",
           lastmod: a.updatedAt ? a.updatedAt.split("T")[0]
                  : a.publishedAt ? a.publishedAt.split("T")[0]
                  : today,
