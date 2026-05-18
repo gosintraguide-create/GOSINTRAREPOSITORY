@@ -76,6 +76,27 @@ export function HopOnServiceDetailPage() {
   // Use the hook that auto-updates when content changes
   const comprehensiveContent = useEditableContent(language);
 
+  // Day pass price — read from localStorage (set by admin pricing sync)
+  const [basePrice, setBasePrice] = useState<number>(() => {
+    try {
+      const saved = localStorage.getItem("admin-pricing");
+      if (saved) {
+        const p = JSON.parse(saved);
+        return p.basePrice || 25;
+      }
+    } catch (_) {}
+    return 25;
+  });
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("admin-pricing");
+      if (saved) {
+        const p = JSON.parse(saved);
+        if (p.basePrice) setBasePrice(p.basePrice);
+      }
+    } catch (_) {}
+  }, []);
+
   // Gallery images for the service - from editable content
   const galleryImages =
     comprehensiveContent.hopOnService.galleryImages || [];
@@ -624,6 +645,12 @@ export function HopOnServiceDetailPage() {
                       <MapPin className="h-4 w-4 text-primary" />
                       <span>Multiple pickup locations</span>
                     </div>
+                  </div>
+
+                  <div className="mb-4 text-center">
+                    <span className="text-xs font-medium text-stone-400">From</span>
+                    <p className="text-4xl font-extrabold leading-none text-primary">€{basePrice}</p>
+                    <span className="text-xs text-muted-foreground">per person</span>
                   </div>
 
                   <Button
