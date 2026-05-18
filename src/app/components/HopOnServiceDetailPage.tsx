@@ -77,7 +77,8 @@ function MobileStickyBar({ basePrice, onBook }: { basePrice: number; onBook: () 
 
   useEffect(() => {
     const measure = () => {
-      const header = document.querySelector("header");
+      // Measure the full sticky wrapper (InfoBar + Header combined)
+      const header = document.querySelector("[data-site-header]") ?? document.querySelector("header");
       if (header) setHeaderHeight(header.getBoundingClientRect().height);
     };
     measure();

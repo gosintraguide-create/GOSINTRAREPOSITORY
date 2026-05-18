@@ -507,7 +507,7 @@ export function RootLayout() {
 
       <div className="flex min-h-screen flex-col bg-background">
         {/* Sticky wrapper keeps InfoBar + Header pinned together at the top */}
-        <div className="sticky top-0 z-50">
+        <div className="sticky top-0 z-50" data-site-header>
           {!["admin", "driver-portal", "diagnostics"].includes(getCurrentPage()) && (
             <InfoBar language={language} />
           )}
