@@ -484,18 +484,26 @@ export function PrivateTourDetailPage() {
                               />
                             </div>
                           )}
-                          <div className="min-w-0 flex-1 p-3">
+                          <div className="flex min-w-0 flex-1 flex-col justify-between p-3">
                             <p className="text-sm font-semibold leading-snug text-foreground line-clamp-2">
                               {t.title}
                             </p>
-                            {lowestOtherPrice != null && (
-                              <p className="mt-1 text-xs font-semibold text-primary">
-                                From €{lowestOtherPrice}
-                              </p>
-                            )}
-                            <span className="mt-1 inline-flex items-center gap-0.5 text-xs font-medium text-primary">
-                              {tTour.viewTour} <ChevronRight className="h-3 w-3" />
-                            </span>
+                            <div className="mt-2 flex items-center gap-3 text-sm">
+                              {lowestOtherPrice != null && (
+                                <span className="font-bold text-primary">
+                                  From €{lowestOtherPrice}
+                                </span>
+                              )}
+                              {t.duration && (
+                                <span className="flex items-center gap-1 text-muted-foreground">
+                                  <Clock className="h-3.5 w-3.5 shrink-0" />
+                                  {t.duration}
+                                </span>
+                              )}
+                              <span className="ml-auto inline-flex items-center gap-0.5 font-medium text-primary">
+                                {tTour.viewTour} <ChevronRight className="h-3.5 w-3.5" />
+                              </span>
+                            </div>
                           </div>
                         </Link>
                       );
