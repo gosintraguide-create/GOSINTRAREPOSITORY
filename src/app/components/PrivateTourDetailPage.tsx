@@ -16,6 +16,8 @@ import {
   Calendar,
   ChevronRight,
   Ticket,
+  Minus,
+  Plus,
 } from "lucide-react";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
 import { analytics } from "../lib/analytics";
@@ -159,6 +161,10 @@ export function PrivateTourDetailPage() {
   const [loading, setLoading] = useState(true);
   const [showBookingDialog, setShowBookingDialog] = useState(false);
 
+  // Desktop booking card pre-fill state
+  const [cardDate, setCardDate] = useState<Date | undefined>(undefined);
+  const [cardPeople, setCardPeople] = useState(1);
+
   const loadTour = async () => {
     setLoading(true);
     try {
@@ -198,6 +204,11 @@ export function PrivateTourDetailPage() {
   useEffect(() => {
     loadTour();
   }, [slug, language]);
+
+  // Sync people count with tour minimum when tour loads
+  useEffect(() => {
+    if (tour?.minPeople) setCardPeople(tour.minPeople);
+  }, [tour?.id]);
 
   const tourStructuredData = useMemo(() => {
     if (!tour) return null;
@@ -436,25 +447,69 @@ export function PrivateTourDetailPage() {
             <div className="col-span-1">
               {/* Booking card */}
               <Card className="p-6">
-                <div className="mb-4 flex items-center gap-2">
+                {/* Duration */}
+                <div className="mb-5 flex items-center gap-2">
                   <Clock className="h-4 w-4 shrink-0 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">{tTour.duration}:</span>
                   <span className="text-sm font-semibold">{tour.duration}</span>
                 </div>
-                <div className="mb-6 text-center">
+
+                <div className="mb-5 space-y-4">
+                  {/* Date picker */}
+                  <div>
+                    <label className="mb-1.5 block text-sm font-medium text-foreground">Date</label>
+                    <input
+                      type="date"
+                      min={new Date().toISOString().split("T")[0]}
+                      value={cardDate ? `${cardDate.getFullYear()}-${String(cardDate.getMonth() + 1).padStart(2, "0")}-${String(cardDate.getDate()).padStart(2, "0")}` : ""}
+                      onChange={(e) => {
+                        if (!e.target.value) { setCardDate(undefined); return; }
+                        const [y, m, d] = e.target.value.split("-").map(Number);
+                        setCardDate(new Date(y, m - 1, d));
+                      }}
+                      className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                    />
+                  </div>
+
+                  {/* People counter */}
+                  <div>
+                    <label className="mb-1.5 block text-sm font-medium text-foreground">Guests</label>
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setCardPeople(Math.max(tour.minPeople ?? 1, cardPeople - 1))}
+                        className="flex h-9 w-9 items-center justify-center rounded-lg border border-input bg-background text-foreground transition-colors hover:bg-secondary"
+                      >
+                        <Minus className="h-3.5 w-3.5" />
+                      </button>
+                      <span className="min-w-[2rem] text-center text-base font-semibold">{cardPeople}</span>
+                      <button
+                        type="button"
+                        onClick={() => setCardPeople(Math.min(tour.maxGroupSize ?? 20, cardPeople + 1))}
+                        className="flex h-9 w-9 items-center justify-center rounded-lg border border-input bg-background text-foreground transition-colors hover:bg-secondary"
+                      >
+                        <Plus className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Price */}
+                <div className="mb-5 text-center">
                   <div className="text-sm text-muted-foreground">{tTour.price}</div>
                   <div className="text-3xl font-bold">{tour.price}</div>
                   {tour.priceSubtext && (
                     <div className="text-sm text-muted-foreground">{tour.priceSubtext}</div>
                   )}
                 </div>
+
                 <Button
                   size="lg"
                   className="w-full"
                   onClick={() => { setShowBookingDialog(true); analytics.privateTourInquiry(); }}
                 >
                   <Calendar className="mr-2 h-4 w-4" />
-                  {tTour.bookThisTour}
+                  Check availability
                 </Button>
 
               </Card>
@@ -572,6 +627,8 @@ export function PrivateTourDetailPage() {
         <TourBookingDialog
           open={showBookingDialog}
           onOpenChange={setShowBookingDialog}
+          initialDate={cardDate}
+          initialPeople={cardPeople}
           tour={{
             id: tour.id,
             title: tour.title,

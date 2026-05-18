@@ -53,6 +53,8 @@ interface TourBookingDialogProps {
     allowQuoteRequest?: boolean;
     availableTimeSlots?: string[];
   };
+  initialDate?: Date;
+  initialPeople?: number;
 }
 
 // ─── Step indicator ───────────────────────────────────────────────────────────
@@ -95,15 +97,15 @@ function StepIndicator({ current }: { current: Step }) {
 
 // ─── Main booking form ────────────────────────────────────────────────────────
 
-function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']; onSuccess: () => void }) {
+function BookingForm({ tour, onSuccess, initialDate, initialPeople }: { tour: TourBookingDialogProps['tour']; onSuccess: () => void; initialDate?: Date; initialPeople?: number }) {
   // Steps
   const [step, setStep] = useState<Step>('datetime');
 
-  // Step 1 state
-  const [selectedDate, setSelectedDate] = useState<Date>();
+  // Step 1 state — pre-filled from booking card if provided
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(initialDate);
   const [selectedTime, setSelectedTime] = useState('');
-  const [numberOfPeople, setNumberOfPeople] = useState(tour.minPeople ?? 1);
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [numberOfPeople, setNumberOfPeople] = useState(initialPeople ?? tour.minPeople ?? 1);
+  const [currentMonth, setCurrentMonth] = useState(initialDate ?? new Date());
   const [availability, setAvailability] = useState<any>(null);
   const [loadingAvailability, setLoadingAvailability] = useState(false);
 
@@ -678,7 +680,7 @@ function BookingForm({ tour, onSuccess }: { tour: TourBookingDialogProps['tour']
 
 // ─── Dialog wrapper ───────────────────────────────────────────────────────────
 
-export function TourBookingDialog({ open, onOpenChange, tour }: TourBookingDialogProps) {
+export function TourBookingDialog({ open, onOpenChange, tour, initialDate, initialPeople }: TourBookingDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[95vw] sm:max-w-3xl md:max-w-5xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
@@ -686,7 +688,7 @@ export function TourBookingDialog({ open, onOpenChange, tour }: TourBookingDialo
           <DialogTitle>Book Your Private Tour</DialogTitle>
           <DialogDescription>Ready to book your {tour.title}? Just follow the steps below and we'll take care of the rest.</DialogDescription>
         </DialogHeader>
-        <BookingForm tour={tour} onSuccess={() => onOpenChange(false)} />
+        <BookingForm tour={tour} onSuccess={() => onOpenChange(false)} initialDate={initialDate} initialPeople={initialPeople} />
       </DialogContent>
     </Dialog>
   );
