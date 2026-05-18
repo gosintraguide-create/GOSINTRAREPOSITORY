@@ -208,9 +208,18 @@ export function StripePaymentForm({ amount, clientSecret, onSuccess, onError, cu
       try {
         // Try to get from window first (cached)
         const cachedKey = (window as any).STRIPE_PUBLISHABLE_KEY;
-        
+
         if (cachedKey) {
           stripePromiseRef.current = loadStripe(cachedKey);
+          setIsLoadingStripe(false);
+          return;
+        }
+
+        // Try build-time env variable (set via Vercel environment variables)
+        const envKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string | undefined;
+        if (envKey) {
+          (window as any).STRIPE_PUBLISHABLE_KEY = envKey;
+          stripePromiseRef.current = loadStripe(envKey);
           setIsLoadingStripe(false);
           return;
         }
