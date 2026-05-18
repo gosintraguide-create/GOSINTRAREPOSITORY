@@ -110,20 +110,18 @@ export function HeroSection({
       key: "daypass",
       imageUrl: daypassImg,
       imagePlaceholderLabel: "People in tuk tuk\nreal photo",
-      title: "Full day pass",
-      description:
-        "Unlimited rides across all Sintra attractions. Local guide on every vehicle.",
-      ctaLabel: "See what's included",
+      title: t.hero.daypassTitle,
+      description: t.hero.daypassDescription,
+      ctaLabel: t.hero.daypassCta,
       onClick: () => onNavigate("hop-on-hop-off-sintra"),
     },
     {
       key: "private-tours",
       imageUrl: privateToursImg,
       imagePlaceholderLabel: "People in jeep\nreal photo",
-      title: "Private tours",
-      description:
-        "Full day experiences tailored to your group. Hidden gems, coastline, monuments.",
-      ctaLabel: "See private tours",
+      title: t.hero.privateToursTitle,
+      description: t.hero.privateToursDescription,
+      ctaLabel: t.hero.privateToursCta,
       onClick: () => onNavigate("private-tours"),
     },
     {
@@ -131,9 +129,8 @@ export function HeroSection({
       imageUrl: travelGuideImg,
       imagePlaceholderLabel: "Sintra palace\neditorial photo",
       title: travelGuideTitle,
-      description:
-        "Local insights, hidden spots, and practical advice for planning your day in Sintra.",
-      ctaLabel: "Read the guide",
+      description: t.hero.travelGuideDescription,
+      ctaLabel: t.hero.travelGuideCta,
       onClick: () => onNavigate("travel-guide"),
     },
   ];
@@ -149,23 +146,22 @@ export function HeroSection({
             <div className="mb-6 flex items-center gap-3">
               <div className="h-px w-8 shrink-0 bg-primary" />
               <span className="text-xs font-semibold uppercase tracking-widest text-primary">
-                Sintra, Portugal
+                {t.hero.heroEyebrow}
               </span>
             </div>
 
             {/* Heading */}
             <h1 className="mb-5 text-4xl font-bold leading-[1.15] tracking-tight text-foreground sm:text-5xl lg:text-[3rem] xl:text-[3.25rem]">
-              Sintra deserves more than a rushed afternoon. Explore it in a{" "}
-              <em className="not-italic text-accent">tuk tuk</em> or{" "}
-              <em className="italic text-accent">vintage jeep</em>, at your own
-              pace.
+              {t.hero.heroHeadingPre}{" "}
+              <em className="not-italic text-accent">{t.hero.heroTukTuk}</em>{" "}
+              {t.hero.heroHeadingMid}{" "}
+              <em className="italic text-accent">{t.hero.heroVintageJeep}</em>
+              {t.hero.heroHeadingPost}
             </h1>
 
             {/* Subtitle */}
             <p className="mb-8 max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg">
-              Hop on and off as many times as you want, with a local guide on
-              every vehicle and rides always available. Private full-day tours
-              also available.
+              {t.hero.heroSubtitleNew}
             </p>
 
             {/* CTAs */}
@@ -184,7 +180,7 @@ export function HeroSection({
                 className="h-11 border border-foreground/30 bg-transparent px-6 text-sm text-foreground hover:bg-foreground/5"
                 onClick={() => onNavigate("private-tours")}
               >
-                Private tours
+                {t.hero.privateToursButton}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
@@ -242,7 +238,7 @@ export function HeroSection({
       <div className="mx-auto max-w-7xl px-4 pb-12 pt-10 sm:px-6 sm:pb-16 sm:pt-12 lg:px-8">
         {/* Section eyebrow */}
         <p className="mb-6 text-xs font-semibold uppercase tracking-widest text-primary">
-          What we offer
+          {t.hero.whatWeOffer}
         </p>
 
         {/* Cards */}
