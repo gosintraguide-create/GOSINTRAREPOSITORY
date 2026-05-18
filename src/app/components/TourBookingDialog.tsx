@@ -353,10 +353,11 @@ function BookingForm({ tour, onSuccess, initialDate, initialPeople }: { tour: To
 
       {/* ── STEP 1: Date, Time & Guests ──────────────────────────────────── */}
       {step === 'datetime' && (
-        <div className="flex flex-col gap-6 md:flex-row md:gap-0 md:min-h-[420px]">
-          {/* Left: Calendar */}
-          <div className="flex-shrink-0 md:w-[58%] md:pr-8">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        <div className="flex flex-col gap-6 md:flex-row md:gap-0 md:min-h-[460px]">
+
+          {/* ── Left: Calendar ─────────────────────────────────────────────── */}
+          <div className="flex-shrink-0 md:w-[55%] md:pr-8">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
               Select a Date
             </p>
             <Calendar
@@ -369,139 +370,138 @@ function BookingForm({ tour, onSuccess, initialDate, initialPeople }: { tour: To
               components={{ DayContent }}
               classNames={{
                 months: 'w-full',
-                month: 'w-full space-y-2',
-                caption: 'flex justify-center pt-1 pb-2 relative items-center',
-                caption_label: 'text-base font-semibold',
-                nav: 'space-x-1 flex items-center',
-                nav_button: 'h-8 w-8 bg-transparent p-0 opacity-50 hover:opacity-100',
-                nav_button_previous: 'absolute left-1',
-                nav_button_next: 'absolute right-1',
+                month: 'w-full',
+                caption: 'flex justify-center pb-3 relative items-center',
+                caption_label: 'text-base font-bold text-foreground',
+                nav: 'flex items-center',
+                nav_button: 'h-8 w-8 bg-white rounded-full border border-border shadow-sm flex items-center justify-center opacity-70 hover:opacity-100 transition-opacity',
+                nav_button_previous: 'absolute left-0',
+                nav_button_next: 'absolute right-0',
                 table: 'w-full border-collapse',
-                head_row: 'flex w-full',
-                head_cell: 'text-muted-foreground rounded-md flex-1 font-medium text-xs text-center py-1',
-                row: 'flex w-full mt-1',
-                cell: 'flex-1 text-center text-sm p-0.5 relative',
-                day: 'h-10 w-full rounded-lg p-0 font-normal text-sm aria-selected:opacity-100 hover:bg-accent hover:text-accent-foreground transition-colors',
-                day_selected: 'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground font-semibold',
-                day_today: 'bg-accent text-accent-foreground font-semibold',
-                day_outside: 'text-muted-foreground opacity-40',
-                day_disabled: 'text-muted-foreground opacity-25 cursor-not-allowed',
+                head_row: 'flex w-full mb-1',
+                head_cell: 'text-muted-foreground flex-1 text-xs font-semibold text-center py-1.5 uppercase tracking-wide',
+                row: 'flex w-full',
+                cell: 'flex-1 text-center p-0.5 relative',
+                day: 'h-10 w-full rounded-full font-normal text-sm aria-selected:opacity-100 hover:bg-stone-200 transition-colors',
+                day_selected: 'bg-foreground text-background hover:bg-foreground hover:text-background focus:bg-foreground focus:text-background font-bold rounded-full',
+                day_today: 'font-bold text-primary',
+                day_outside: 'text-muted-foreground opacity-30',
+                day_disabled: 'text-muted-foreground opacity-20 cursor-not-allowed',
               }}
             />
             {loadingAvailability && (
-              <p className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
+              <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
                 <Loader2 className="h-3 w-3 animate-spin" /> Checking availability…
               </p>
             )}
-            <div className="mt-3 flex flex-wrap gap-4 text-xs text-muted-foreground">
+            <div className="mt-4 flex flex-wrap gap-4 text-xs text-muted-foreground">
               <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-green-500 inline-block" /> Available</span>
-              <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-orange-500 inline-block" /> Limited</span>
+              <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-amber-500 inline-block" /> Limited</span>
               <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-red-500 inline-block" /> Full</span>
             </div>
           </div>
 
           {/* Divider */}
-          <div className="hidden md:block w-px bg-border flex-shrink-0" />
+          <div className="hidden md:block w-px bg-stone-200 flex-shrink-0" />
 
-          {/* Right: Time slots + Preferences */}
-          <div className="flex flex-col gap-5 flex-1 md:pl-8">
+          {/* ── Right: Times + Guests + Total ──────────────────────────────── */}
+          <div className="flex flex-col gap-6 flex-1 md:pl-8">
+
             {/* Time slots */}
-            {selectedDate ? (
-              <div className="flex-1">
-                <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Available Times</p>
-                <p className="mb-3 text-sm font-semibold text-foreground">
-                  {format(selectedDate, 'EEEE, MMMM d')}
-                </p>
-                <div className="grid grid-cols-3 gap-2">
-                  {timeSlots.map((slot) => (
-                    <button
-                      key={slot}
-                      type="button"
-                      onClick={() => setSelectedTime(slot)}
-                      className={cn(
-                        'rounded-lg border py-2.5 text-sm font-medium transition-colors',
-                        selectedTime === slot
-                          ? 'border-primary bg-primary text-primary-foreground shadow-sm'
-                          : 'border-border bg-background text-foreground hover:border-primary/50 hover:bg-primary/5'
-                      )}
-                    >
-                      {slot}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-1 items-center justify-center rounded-xl border border-dashed border-border bg-muted/30 min-h-[140px]">
-                <div className="flex flex-col items-center gap-2 text-center">
-                  <CalendarIcon className="h-6 w-6 text-muted-foreground/50" />
-                  <p className="text-sm font-medium text-muted-foreground">Pick a date to see available times</p>
-                </div>
-              </div>
-            )}
-
-            <Separator />
-
-            {/* Guests + price summary */}
-            <div className="space-y-4">
-              <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Guests</p>
-                <div className="flex items-center gap-4">
-                  <button
-                    type="button"
-                    onClick={() => setNumberOfPeople((n) => Math.max(1, n - 1))}
-                    disabled={numberOfPeople <= 1}
-                    className={cn(
-                      'flex h-10 w-10 items-center justify-center rounded-full border-2 transition-colors',
-                      numberOfPeople <= 1
-                        ? 'border-border text-muted-foreground opacity-40 cursor-not-allowed'
-                        : 'border-border hover:border-primary hover:bg-primary/5'
-                    )}
-                  >
-                    <Minus className="h-4 w-4" />
-                  </button>
-                  <span className="w-24 text-center text-lg font-bold">
-                    {numberOfPeople} {numberOfPeople === 1 ? 'guest' : 'guests'}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setNumberOfPeople((n) => Math.min(maxGuests, n + 1))}
-                    disabled={numberOfPeople >= maxGuests}
-                    className={cn(
-                      'flex h-10 w-10 items-center justify-center rounded-full border-2 transition-colors',
-                      numberOfPeople >= maxGuests
-                        ? 'border-border text-muted-foreground opacity-40 cursor-not-allowed'
-                        : 'border-border hover:border-primary hover:bg-primary/5'
-                    )}
-                  >
-                    <Plus className="h-4 w-4" />
-                  </button>
-                </div>
-                {/* Fixed-height slot — always present so it never shifts surrounding layout */}
-                <div className="mt-2 h-9">
-                  {minGuests > 1 && numberOfPeople < minGuests && (
-                    <div className="flex items-center gap-1.5 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800 border border-amber-200 h-full">
-                      <Info className="h-3.5 w-3.5 flex-shrink-0" />
-                      <span>Heads up! This tour has a {minGuests}-guest minimum, so that's what we'll charge for.</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between rounded-xl bg-muted/40 px-4 py-3">
-                <div>
-                  <p className="text-xs text-muted-foreground">Total</p>
-                  <p className="text-xl font-bold text-foreground">
-                    {quoteMode ? 'Quote on request' : tourPrice > 0 ? `€${tourPrice.toFixed(2)}` : tour.price}
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                Available Times
+              </p>
+              {selectedDate ? (
+                <>
+                  <p className="mb-3 text-sm font-semibold text-foreground">
+                    {format(selectedDate, 'EEEE, MMMM d')}
                   </p>
+                  <div className="grid grid-cols-3 gap-2">
+                    {timeSlots.map((slot) => (
+                      <button
+                        key={slot}
+                        type="button"
+                        onClick={() => setSelectedTime(slot)}
+                        className={cn(
+                          'rounded-full border-2 py-2.5 text-sm font-semibold transition-colors',
+                          selectedTime === slot
+                            ? 'border-foreground bg-foreground text-background'
+                            : 'border-stone-300 bg-white text-foreground hover:border-foreground/50'
+                        )}
+                      >
+                        {slot}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <div className="flex min-h-[100px] items-center justify-center rounded-2xl border-2 border-dashed border-stone-300 bg-white/60">
+                  <p className="text-sm text-muted-foreground">Pick a date to see available times</p>
                 </div>
-                <Button
-                  className="h-11 px-6"
-                  disabled={!selectedDate || !selectedTime}
-                  onClick={() => setStep('details')}
+              )}
+            </div>
+
+            {/* Guests */}
+            <div>
+              <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">Guests</p>
+              <div className="flex items-center gap-4">
+                <button
+                  type="button"
+                  onClick={() => setNumberOfPeople((n) => Math.max(1, n - 1))}
+                  disabled={numberOfPeople <= 1}
+                  className={cn(
+                    'flex h-10 w-10 items-center justify-center rounded-full border-2 bg-white transition-colors',
+                    numberOfPeople <= 1
+                      ? 'border-stone-200 text-muted-foreground opacity-40 cursor-not-allowed'
+                      : 'border-stone-300 hover:border-foreground'
+                  )}
                 >
-                  Next →
-                </Button>
+                  <Minus className="h-4 w-4" />
+                </button>
+                <span className="min-w-[6rem] text-center text-lg font-bold text-foreground">
+                  {numberOfPeople} {numberOfPeople === 1 ? 'guest' : 'guests'}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setNumberOfPeople((n) => Math.min(maxGuests, n + 1))}
+                  disabled={numberOfPeople >= maxGuests}
+                  className={cn(
+                    'flex h-10 w-10 items-center justify-center rounded-full border-2 bg-white transition-colors',
+                    numberOfPeople >= maxGuests
+                      ? 'border-stone-200 text-muted-foreground opacity-40 cursor-not-allowed'
+                      : 'border-stone-300 hover:border-foreground'
+                  )}
+                >
+                  <Plus className="h-4 w-4" />
+                </button>
               </div>
+              <div className="mt-2 h-9">
+                {minGuests > 1 && numberOfPeople < minGuests && (
+                  <div className="flex items-center gap-1.5 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800 border border-amber-200 h-full">
+                    <Info className="h-3.5 w-3.5 flex-shrink-0" />
+                    <span>This tour has a {minGuests}-guest minimum — that's what we'll charge for.</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Total + Next */}
+            <div className="mt-auto flex items-center justify-between rounded-2xl bg-white px-5 py-4 shadow-sm">
+              <div>
+                <p className="text-xs font-medium text-muted-foreground">Total</p>
+                <p className="text-2xl font-extrabold text-foreground">
+                  {quoteMode ? 'Quote on request' : tourPrice > 0 ? `€${tourPrice.toFixed(2)}` : tour.price}
+                </p>
+              </div>
+              <Button
+                size="lg"
+                className="h-11 px-7 text-sm font-semibold"
+                disabled={!selectedDate || !selectedTime}
+                onClick={() => setStep('details')}
+              >
+                Next →
+              </Button>
             </div>
           </div>
         </div>
@@ -683,10 +683,10 @@ function BookingForm({ tour, onSuccess, initialDate, initialPeople }: { tour: To
 export function TourBookingDialog({ open, onOpenChange, tour, initialDate, initialPeople }: TourBookingDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] sm:max-w-3xl md:max-w-5xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
-        <DialogHeader>
-          <DialogTitle>Book Your Private Tour</DialogTitle>
-          <DialogDescription>Ready to book your {tour.title}? Just follow the steps below and we'll take care of the rest.</DialogDescription>
+      <DialogContent className="w-[95vw] sm:max-w-3xl md:max-w-5xl max-h-[90vh] overflow-y-auto bg-[#F9F6F1] p-5 sm:p-7">
+        <DialogHeader className="mb-1">
+          <DialogTitle className="text-xl font-bold">Book Your Private Tour</DialogTitle>
+          <DialogDescription className="text-sm text-muted-foreground">Ready to book your {tour.title}? Just follow the steps below and we'll take care of the rest.</DialogDescription>
         </DialogHeader>
         <BookingForm tour={tour} onSuccess={() => onOpenChange(false)} initialDate={initialDate} initialPeople={initialPeople} />
       </DialogContent>
