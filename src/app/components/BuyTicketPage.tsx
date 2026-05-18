@@ -40,6 +40,7 @@ import {
   Mail,
   CreditCard,
   Check,
+  CheckCircle,
   ArrowRight,
   ChevronLeft,
   ChevronDown,
@@ -127,8 +128,9 @@ export function BuyTicketPage() {
   
   // Handle booking complete callback
   const onBookingComplete = (booking: any) => {
-    // Store booking in session storage for potential future confirmation page
     sessionStorage.setItem("lastBooking", JSON.stringify(booking));
+    setCompletedBooking(booking);
+    setBookingComplete(true);
   };
 
   const PICKUP_LOCATIONS = [
@@ -166,6 +168,7 @@ export function BuyTicketPage() {
 
   const [currentStep, setCurrentStep] = useState(1);
   const [bookingComplete, setBookingComplete] = useState(false);
+  const [completedBooking, setCompletedBooking] = useState<any>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [pricing, setPricing] =
     useState<PricingSettings>(DEFAULT_PRICING);
@@ -796,6 +799,132 @@ export function BuyTicketPage() {
     formData.confirmEmail &&
     formData.email === formData.confirmEmail &&
     formData.phoneNumber.length >= 7;
+
+  // ── Booking confirmed screen ────────────────────────────────────────────────
+  if (bookingComplete && completedBooking) {
+    const bookingRef = (completedBooking.id || "").replace(/^booking_/, "").toUpperCase();
+    const passengerCount = completedBooking.passengers?.length ?? formData.adultQuantity + formData.childQuantity;
+    const pickupName = (() => {
+      const map: Record<string, string> = {
+        "sintra-train-station": "Sintra Train Station",
+        "sintra-town-center": "Sintra Town Center",
+        "pena-palace": "Pena Palace",
+        "moorish-castle": "Moorish Castle",
+        "sintra-palace": "Sintra National Palace",
+        "other": "Will decide on the day",
+      };
+      return map[formData.pickupLocation] || formData.pickupLocation;
+    })();
+
+    return (
+      <div className="flex-1 bg-[#f0f2f4]">
+        <div className="mx-auto max-w-lg px-4 py-16 sm:py-24">
+
+          {/* Checkmark */}
+          <div className="mb-8 flex justify-center">
+            <div className="relative flex h-24 w-24 items-center justify-center">
+              <div className="absolute inset-0 animate-ping rounded-full bg-green-100 opacity-50" style={{ animationDuration: "1.2s", animationIterationCount: "1" } as any} />
+              <div className="flex h-24 w-24 items-center justify-center rounded-full bg-green-100">
+                <CheckCircle className="h-12 w-12 text-green-600" strokeWidth={1.5} />
+              </div>
+            </div>
+          </div>
+
+          {/* Heading */}
+          <div className="mb-8 text-center">
+            <h1 className="text-3xl font-bold text-foreground">Booking Confirmed!</h1>
+            <p className="mt-2 text-muted-foreground">Your passes are on their way to <strong>{formData.email}</strong></p>
+          </div>
+
+          {/* Summary card */}
+          <div className="rounded-2xl border border-border bg-white p-6 shadow-sm space-y-3 mb-4">
+            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">Your booking</p>
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Booking ref</span>
+              <span className="font-semibold">#{bookingRef}</span>
+            </div>
+            <div className="border-t border-border/50" />
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Date</span>
+              <span className="font-semibold">{formData.date}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Start time</span>
+              <span className="font-semibold">{formData.timeSlot || "9:00 AM"}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Passes</span>
+              <span className="font-semibold">{passengerCount} {passengerCount === 1 ? "person" : "people"}</span>
+            </div>
+            <div className="border-t border-border/50" />
+            <div className="flex justify-between text-base">
+              <span className="font-bold text-foreground">Total paid</span>
+              <span className="font-bold text-primary text-lg">€{totalPrice.toFixed(2)}</span>
+            </div>
+          </div>
+
+          {/* First pickup highlight */}
+          <div className="rounded-2xl bg-[#0A4D5C] p-5 mb-4 text-white">
+            <p className="text-xs font-bold uppercase tracking-widest text-white/60 mb-1">📍 Your first boarding point</p>
+            <p className="text-xl font-bold">{pickupName}</p>
+            <p className="text-sm text-white/75 mt-1">Show the QR code from the attached PDF when you board</p>
+          </div>
+
+          {/* What's next */}
+          <div className="rounded-2xl border border-border bg-white p-6 shadow-sm mb-8 space-y-4">
+            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">What happens next</p>
+            <div className="flex items-start gap-3">
+              <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                <Mail className="h-3.5 w-3.5 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">Check your inbox</p>
+                <p className="text-xs text-muted-foreground">A PDF with your QR code passes has been sent to your email.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                <Ticket className="h-3.5 w-3.5 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">Board at your stop</p>
+                <p className="text-xs text-muted-foreground">Head to <strong>{pickupName}</strong> and show the QR code to the driver. Vehicles run every 30 min from 9 AM.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                <Car className="h-3.5 w-3.5 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">Hop on, hop off all day</p>
+                <p className="text-xs text-muted-foreground">Unlimited rides until 7 PM — leave and re-join the route as many times as you like.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* CTA buttons */}
+          <div className="flex flex-col gap-3">
+            <Button
+              size="lg"
+              className="w-full"
+              onClick={() => onNavigate("hop-on-hop-off-sintra")}
+            >
+              Back to Hop-On Sintra
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-full"
+              onClick={() => onNavigate("")}
+            >
+              Go to Homepage
+            </Button>
+          </div>
+
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 bg-white">
