@@ -1842,6 +1842,15 @@ app.get("/make-server-3bd0ade8/sunset-special/availability/:date", async (c) => 
 
 // ===== PAYMENTS =====
 
+// GET /stripe-config — returns the publishable key so the frontend can initialise Stripe.js
+app.get("/make-server-3bd0ade8/stripe-config", (c) => {
+  const publishableKey = Deno.env.get("STRIPE_PUBLISHABLE_KEY");
+  if (!publishableKey) {
+    return c.json({ success: false, error: "Stripe publishable key not configured" }, 503);
+  }
+  return c.json({ success: true, publishableKey });
+});
+
 app.post("/make-server-3bd0ade8/create-payment-intent", async (c) => {
   if (!stripe) return c.json({ success: false, error: "Payment processing not configured" }, 503);
   try {
