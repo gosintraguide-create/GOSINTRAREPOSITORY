@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useOutletContext, useParams } from "react-router";
 import { Helmet } from "react-helmet-async";
 import { Button } from "./ui/button";
@@ -15,6 +15,7 @@ import {
   MapPin,
   Calendar,
   ChevronRight,
+  Ticket,
 } from "lucide-react";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
 import { analytics } from "../lib/analytics";
@@ -63,6 +64,47 @@ function getLowestPrice(tour: PrivateTour): number | null {
   // Parse from price string like "€150" or "From €75 per person"
   const m = tour.price.replace(/,/g, "").match(/\d+/);
   return m ? parseInt(m[0]) : null;
+}
+
+function MobileStickyBar({ price, onBook }: { price: number | null; onBook: () => void }) {
+  const [headerHeight, setHeaderHeight] = useState(0);
+
+  useEffect(() => {
+    const el = document.querySelector("[data-site-header]") ?? document.querySelector("header");
+    if (!el) return;
+    const ro = new ResizeObserver(() => {
+      setHeaderHeight((el as HTMLElement).offsetHeight);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  return (
+    <div
+      className="lg:hidden sticky z-40 bg-white border-b border-stone-200 shadow-sm"
+      style={{ top: headerHeight }}
+    >
+      <div className="flex items-center justify-between gap-4 px-4 py-3">
+        <div>
+          {price != null ? (
+            <>
+              <p className="text-[11px] font-medium uppercase tracking-wide text-stone-400 leading-none mb-0.5">From</p>
+              <p className="text-2xl font-extrabold leading-none text-primary">
+                €{price}
+                <span className="ml-1 text-xs font-medium text-muted-foreground">/ person</span>
+              </p>
+            </>
+          ) : (
+            <p className="text-sm font-semibold text-foreground">Private Tour</p>
+          )}
+        </div>
+        <Button onClick={onBook} className="h-10 shrink-0 px-5 text-sm font-semibold">
+          <Ticket className="mr-1.5 h-4 w-4" />
+          Book this tour
+        </Button>
+      </div>
+    </div>
+  );
 }
 
 interface PrivateTour {
@@ -320,6 +362,12 @@ export function PrivateTourDetailPage() {
           </div>
         </div>
       </section>
+
+      {/* Mobile sticky CTA */}
+      <MobileStickyBar
+        price={getLowestPrice(tour)}
+        onBook={() => setShowBookingDialog(true)}
+      />
 
       {/* Main Content */}
       <section className="py-12 md:py-16">
