@@ -457,21 +457,25 @@ export function PrivateTourDetailPage() {
                   {tTour.bookThisTour}
                 </Button>
 
-                {/* Other tours — inside the sticky card, below the CTA */}
-                {otherTours.length > 0 && (
-                  <div className="mt-6 border-t border-border pt-5">
-                    <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                      {tTour.morePrivateTours}
-                    </p>
-                    <div className="space-y-3">
-                      {otherTours.map((t) => (
+              </Card>
+
+              {/* Other tours — below the sticky card */}
+              {otherTours.length > 0 && (
+                <div className="mt-6">
+                  <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    {tTour.morePrivateTours}
+                  </p>
+                  <div className="space-y-4">
+                    {otherTours.map((t) => {
+                      const lowestOtherPrice = getLowestPrice(t);
+                      return (
                         <Link
                           key={t.id}
                           to={`/private-tours/${t.id}`}
-                          className="group flex items-start gap-3 overflow-hidden rounded-lg border border-border bg-secondary/20 p-3 transition-colors hover:bg-secondary/40"
+                          className="group block overflow-hidden rounded-xl border border-border bg-white shadow-sm transition-shadow hover:shadow-md"
                         >
                           {t.heroImage && (
-                            <div className="h-14 w-16 shrink-0 overflow-hidden rounded-md">
+                            <div className="aspect-[16/9] overflow-hidden">
                               <img
                                 src={t.heroImage}
                                 alt={t.title}
@@ -480,18 +484,31 @@ export function PrivateTourDetailPage() {
                               />
                             </div>
                           )}
-                          <div className="min-w-0">
-                            <p className="text-xs font-semibold leading-snug text-foreground line-clamp-2">{t.title}</p>
-                            <span className="mt-1 inline-flex items-center gap-0.5 text-xs font-medium text-primary">
-                              {tTour.viewTour} <ChevronRight className="h-3 w-3" />
-                            </span>
+                          <div className="p-4">
+                            <h4 className="mb-1 text-sm font-bold leading-snug text-foreground">
+                              {t.title}
+                            </h4>
+                            <p className="mb-3 line-clamp-2 text-sm text-muted-foreground">
+                              {t.description}
+                            </p>
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="inline-flex items-center gap-1 text-sm font-semibold text-primary">
+                                {tTour.viewTour}
+                                <ChevronRight className="h-3.5 w-3.5" />
+                              </span>
+                              {lowestOtherPrice != null && (
+                                <span className="text-sm font-bold text-primary">
+                                  From €{lowestOtherPrice}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </Link>
-                      ))}
-                    </div>
+                      );
+                    })}
                   </div>
-                )}
-              </Card>
+                </div>
+              )}
             </div>
           </div>
         </div>
