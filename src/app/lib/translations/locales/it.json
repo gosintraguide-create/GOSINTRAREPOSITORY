@@ -1586,7 +1586,18 @@
     "quoteSuccessMsg": "Esamineremo la tua richiesta e ti invieremo un preventivo personalizzato via e-mail entro 24 ore.",
     "confirmationSentTo": "Conferma inviata a",
     "done": "Fine",
-    "backToDetails": "Torna ai dettagli"
+    "backToDetails": "Torna ai dettagli",
+    "bookingConfirmed": "Prenotazione Confermata!",
+    "bookingConfirmedSubtitle": "La tua avventura è assicurata. Non vediamo l'ora di mostrarti Sintra!",
+    "summaryAmountPaid": "Totale Pagato",
+    "whatHappensNext": "Cosa succede ora?",
+    "nextStep1Title": "Email di conferma",
+    "nextStep1Body": "Un riepilogo completo è stato inviato alla tua casella di posta.",
+    "nextStep2Title": "Contatto della guida",
+    "nextStep2Body": "La tua guida ti contatterà 24 ore prima del tour con i dettagli del punto d'incontro.",
+    "nextStep3Title": "Goditi il tour!",
+    "nextStep3Body": "Presentati e pensiamo a tutto noi.",
+    "closeBooking": "Chiudi"
   },
   "breadcrumbs": {
     "home": "Home",

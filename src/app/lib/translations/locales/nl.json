@@ -1586,7 +1586,18 @@
     "quoteSuccessMsg": "We bekijken uw aanvraag en sturen u binnen 24 uur een persoonlijke offerte per e-mail.",
     "confirmationSentTo": "Bevestiging verzonden naar",
     "done": "Klaar",
-    "backToDetails": "Terug naar details"
+    "backToDetails": "Terug naar details",
+    "bookingConfirmed": "Boeking Bevestigd!",
+    "bookingConfirmedSubtitle": "Uw avontuur is zeker. We kunnen niet wachten om u Sintra te laten zien!",
+    "summaryAmountPaid": "Totaal Betaald",
+    "whatHappensNext": "Wat gebeurt er nu?",
+    "nextStep1Title": "Bevestigings-e-mail",
+    "nextStep1Body": "Een volledig overzicht is naar uw inbox verzonden.",
+    "nextStep2Title": "Contact met gids",
+    "nextStep2Body": "Uw gids neemt 24 uur voor de tour contact met u op met details over het afgesproken punt.",
+    "nextStep3Title": "Geniet ervan!",
+    "nextStep3Body": "Kom gewoon opdagen en wij regelen de rest.",
+    "closeBooking": "Sluiten"
   },
   "breadcrumbs": {
     "home": "Startpagina",

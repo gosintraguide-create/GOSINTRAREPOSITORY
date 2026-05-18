@@ -1586,7 +1586,18 @@
     "quoteSuccessMsg": "Wir prüfen Ihre Anfrage und senden Ihnen innerhalb von 24 Stunden ein persönliches Angebot per E-Mail.",
     "confirmationSentTo": "Bestätigung gesendet an",
     "done": "Fertig",
-    "backToDetails": "Zurück zu den Details"
+    "backToDetails": "Zurück zu den Details",
+    "bookingConfirmed": "Buchung Bestätigt!",
+    "bookingConfirmedSubtitle": "Ihr Abenteuer ist gesichert. Wir freuen uns darauf, Ihnen Sintra zu zeigen!",
+    "summaryAmountPaid": "Gesamt Bezahlt",
+    "whatHappensNext": "Was passiert als nächstes?",
+    "nextStep1Title": "Bestätigungs-E-Mail",
+    "nextStep1Body": "Eine vollständige Zusammenfassung wurde an Ihr Postfach gesendet.",
+    "nextStep2Title": "Kontakt zum Reiseführer",
+    "nextStep2Body": "Ihr Reiseführer meldet sich 24 Stunden vor der Tour mit den Details zum Treffpunkt.",
+    "nextStep3Title": "Genießen Sie!",
+    "nextStep3Body": "Erscheinen Sie einfach und wir kümmern uns um den Rest.",
+    "closeBooking": "Schließen"
   },
   "breadcrumbs": {
     "home": "Startseite",

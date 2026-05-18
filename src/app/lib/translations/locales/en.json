@@ -1586,7 +1586,18 @@
     "quoteSuccessMsg": "We'll review your request and email you a personalised quote within 24 hours.",
     "confirmationSentTo": "Confirmation sent to",
     "done": "Done",
-    "backToDetails": "Back to details"
+    "backToDetails": "Back to details",
+    "bookingConfirmed": "Booking Confirmed!",
+    "bookingConfirmedSubtitle": "Your adventure is locked in. We can't wait to show you Sintra!",
+    "summaryAmountPaid": "Total Paid",
+    "whatHappensNext": "What happens next",
+    "nextStep1Title": "Confirmation email",
+    "nextStep1Body": "A full summary has been sent to your inbox.",
+    "nextStep2Title": "Guide contact",
+    "nextStep2Body": "Your guide will reach out 24 hours before the tour with meeting point details.",
+    "nextStep3Title": "Enjoy!",
+    "nextStep3Body": "Just show up and let us take care of the rest.",
+    "closeBooking": "Close"
   },
   "breadcrumbs": {
     "home": "Home",

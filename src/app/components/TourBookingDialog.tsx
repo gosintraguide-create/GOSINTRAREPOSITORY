@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Separator } from './ui/separator';
 import { Calendar } from './ui/calendar';
 import { Alert, AlertDescription } from './ui/alert';
-import { Loader2, CheckCircle, AlertCircle, ChevronLeft, Calendar as CalendarIcon, Minus, Plus, Info } from 'lucide-react';
+import { Loader2, CheckCircle, AlertCircle, ChevronLeft, Calendar as CalendarIcon, Minus, Plus, Info, Mail, Phone, MapPin } from 'lucide-react';
 import { format } from 'date-fns';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { toast } from 'sonner';
@@ -36,7 +36,7 @@ function to24h(slot: string): string {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type Step = 'datetime' | 'details' | 'payment';
+type Step = 'datetime' | 'details' | 'payment' | 'confirmed';
 
 interface TourBookingDialogProps {
   open: boolean;
@@ -62,6 +62,7 @@ interface TourBookingDialogProps {
 // ─── Step indicator ───────────────────────────────────────────────────────────
 
 function StepIndicator({ current, labels }: { current: Step; labels: { datetime: string; details: string; payment: string } }) {
+  if (current === 'confirmed') return null;
   const steps: { key: Step; label: string }[] = [
     { key: 'datetime', label: labels.datetime },
     { key: 'details',  label: labels.details },
@@ -99,7 +100,7 @@ function StepIndicator({ current, labels }: { current: Step; labels: { datetime:
 
 // ─── Main booking form ────────────────────────────────────────────────────────
 
-function BookingForm({ tour, onSuccess, initialDate, initialPeople, language = 'en' }: { tour: TourBookingDialogProps['tour']; onSuccess: () => void; initialDate?: Date; initialPeople?: number; language?: string }) {
+function BookingForm({ tour, onSuccess, onConfirmed, initialDate, initialPeople, language = 'en' }: { tour: TourBookingDialogProps['tour']; onSuccess: () => void; onConfirmed?: () => void; initialDate?: Date; initialPeople?: number; language?: string }) {
   const tDialog = getTranslation(language).tourBookingDialog;
   // Steps
   const [step, setStep] = useState<Step>('datetime');
@@ -330,8 +331,8 @@ function BookingForm({ tour, onSuccess, initialDate, initialPeople, language = '
       );
       const data = await res.json();
       if (!data.success) throw new Error(data.error || 'Failed to create booking');
-      toast.success('Booking confirmed! Check your email for details.');
-      onSuccess();
+      setStep('confirmed');
+      onConfirmed?.();
     } catch (err: any) {
       toast.error(err.message || 'Booking failed. Please contact support with your payment confirmation.');
     }
@@ -677,6 +678,95 @@ function BookingForm({ tour, onSuccess, initialDate, initialPeople, language = '
           )}
         </div>
       )}
+
+      {/* ── STEP 4: Booking Confirmed ─────────────────────────────────────── */}
+      {step === 'confirmed' && (
+        <div className="flex flex-col items-center gap-6 py-4 text-center">
+          {/* Animated checkmark */}
+          <div className="relative flex h-24 w-24 items-center justify-center">
+            <div className="absolute inset-0 animate-ping rounded-full bg-green-100 opacity-60" style={{ animationDuration: '1.2s', animationIterationCount: 1 }} />
+            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-green-100">
+              <CheckCircle className="h-12 w-12 text-green-600" strokeWidth={1.5} />
+            </div>
+          </div>
+
+          {/* Heading */}
+          <div>
+            <h2 className="text-2xl font-bold text-foreground">{tDialog.bookingConfirmed}</h2>
+            <p className="mt-1.5 text-sm text-muted-foreground">{tDialog.bookingConfirmedSubtitle}</p>
+          </div>
+
+          {/* Booking summary card */}
+          <div className="w-full rounded-xl border border-border bg-secondary/30 p-4 text-sm text-left space-y-2">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">{tDialog.summaryTour}</span>
+              <span className="font-semibold text-foreground text-right max-w-[60%]">{tour.title}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">{tDialog.summaryDate}</span>
+              <span className="font-semibold text-foreground">{selectedDate ? format(selectedDate, 'dd MMM yyyy') : '—'}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">{tDialog.summaryTime}</span>
+              <span className="font-semibold text-foreground">{selectedTime}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">{tDialog.summaryGuests}</span>
+              <span className="font-semibold text-foreground">{numberOfPeople}</span>
+            </div>
+            <div className="border-t border-border pt-2 flex justify-between">
+              <span className="text-muted-foreground">{tDialog.summaryAmountPaid}</span>
+              <span className="font-bold text-primary text-base">€{tourPrice.toFixed(2)}</span>
+            </div>
+          </div>
+
+          {/* What happens next */}
+          <div className="w-full text-left">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+              {tDialog.whatHappensNext}
+            </p>
+            <div className="space-y-3">
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                  <Mail className="h-3.5 w-3.5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">{tDialog.nextStep1Title}</p>
+                  <p className="text-xs text-muted-foreground">{tDialog.nextStep1Body}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                  <Phone className="h-3.5 w-3.5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">{tDialog.nextStep2Title}</p>
+                  <p className="text-xs text-muted-foreground">{tDialog.nextStep2Body}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                  <MapPin className="h-3.5 w-3.5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">{tDialog.nextStep3Title}</p>
+                  <p className="text-xs text-muted-foreground">{tDialog.nextStep3Body}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Email note */}
+          <p className="text-xs text-muted-foreground">
+            {tDialog.confirmationSentTo} <strong>{email}</strong>
+          </p>
+
+          {/* Close button */}
+          <Button className="w-full" size="lg" onClick={onSuccess}>
+            {tDialog.closeBooking}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
@@ -685,14 +775,34 @@ function BookingForm({ tour, onSuccess, initialDate, initialPeople, language = '
 
 export function TourBookingDialog({ open, onOpenChange, tour, initialDate, initialPeople, language = 'en' }: TourBookingDialogProps) {
   const tDialog = getTranslation(language).tourBookingDialog;
+  const [confirmed, setConfirmed] = useState(false);
+
+  // Reset confirmed state whenever the dialog opens fresh
+  const handleOpenChange = (o: boolean) => {
+    if (!o) setConfirmed(false);
+    onOpenChange(o);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="w-[95vw] sm:max-w-3xl md:max-w-5xl max-h-[90vh] overflow-y-auto bg-[#F9F6F1] p-5 sm:p-7">
-        <DialogHeader className="mb-1">
-          <DialogTitle className="text-xl font-bold">{tDialog.title}</DialogTitle>
-          <DialogDescription className="text-sm text-muted-foreground">Ready to book your {tour.title}? Just follow the steps below and we'll take care of the rest.</DialogDescription>
-        </DialogHeader>
-        <BookingForm tour={tour} onSuccess={() => onOpenChange(false)} initialDate={initialDate} initialPeople={initialPeople} language={language} />
+        {/* Header is hidden once the booking is confirmed — the confirmation screen has its own heading */}
+        {!confirmed && (
+          <DialogHeader className="mb-1">
+            <DialogTitle className="text-xl font-bold">{tDialog.title}</DialogTitle>
+            <DialogDescription className="text-sm text-muted-foreground">Ready to book your {tour.title}? Just follow the steps below and we'll take care of the rest.</DialogDescription>
+          </DialogHeader>
+        )}
+        {/* sr-only title required by dialog for a11y even when header is hidden */}
+        {confirmed && <DialogTitle className="sr-only">{tDialog.bookingConfirmed}</DialogTitle>}
+        <BookingForm
+          tour={tour}
+          onSuccess={() => handleOpenChange(false)}
+          onConfirmed={() => setConfirmed(true)}
+          initialDate={initialDate}
+          initialPeople={initialPeople}
+          language={language}
+        />
       </DialogContent>
     </Dialog>
   );
