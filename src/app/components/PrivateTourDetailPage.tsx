@@ -153,6 +153,14 @@ interface OutletContext {
   onNavigate: (page: string, data?: any) => void;
 }
 
+interface SuggestedArticle {
+  slug: string;
+  title: string;
+  excerpt: string;
+  image?: string;
+  readTimeMinutes?: number;
+}
+
 export function PrivateTourDetailPage() {
   const { language = "en", onNavigate } = useOutletContext<OutletContext>();
   const { slug } = useParams<{ slug: string }>();
@@ -167,6 +175,27 @@ export function PrivateTourDetailPage() {
   // Desktop booking card pre-fill state
   const [cardDate, setCardDate] = useState<Date | undefined>(undefined);
   const [cardPeople, setCardPeople] = useState(1);
+
+  // Suggested blog posts from localStorage cache
+  const [suggestedArticles, setSuggestedArticles] = useState<SuggestedArticle[]>([]);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("blog-articles-cache");
+      if (!raw) return;
+      const all: any[] = JSON.parse(raw);
+      const published = all.filter((a) => a.isPublished !== false);
+      // Shuffle and pick 3
+      const shuffled = published.sort(() => Math.random() - 0.5).slice(0, 3);
+      setSuggestedArticles(shuffled.map((a) => ({
+        slug: a.slug,
+        title: a.translations?.[language]?.title || a.translations?.en?.title || a.title || "",
+        excerpt: a.translations?.[language]?.excerpt || a.translations?.en?.excerpt || a.excerpt || "",
+        image: a.featuredImage || a.heroImage || a.thumbnailImage,
+        readTimeMinutes: a.readTimeMinutes,
+      })));
+    } catch (_) {}
+  }, [language]);
 
   const loadTour = async () => {
     setLoading(true);
@@ -592,6 +621,51 @@ export function PrivateTourDetailPage() {
                         </Link>
                       );
                     })}
+                  </div>
+                </div>
+              )}
+
+              {/* Suggested blog posts */}
+              {suggestedArticles.length > 0 && (
+                <div className="mt-6">
+                  <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    From the Travel Guide
+                  </p>
+                  <div className="space-y-3">
+                    {suggestedArticles.map((a) => (
+                      <Link
+                        key={a.slug}
+                        to={`/travel-guide/${a.slug}`}
+                        className="group flex overflow-hidden rounded-xl border border-border bg-white shadow-sm transition-shadow hover:shadow-md"
+                      >
+                        {a.image && (
+                          <div className="w-28 shrink-0 overflow-hidden">
+                            <img
+                              src={a.image}
+                              alt={a.title}
+                              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                              loading="lazy"
+                            />
+                          </div>
+                        )}
+                        <div className="flex min-w-0 flex-1 flex-col justify-between p-3">
+                          <p className="text-sm font-semibold leading-snug text-foreground line-clamp-2">
+                            {a.title}
+                          </p>
+                          <div className="mt-2 flex items-center gap-3 text-sm">
+                            {a.readTimeMinutes && (
+                              <span className="flex items-center gap-1 text-muted-foreground">
+                                <Clock className="h-3.5 w-3.5 shrink-0" />
+                                {a.readTimeMinutes} min read
+                              </span>
+                            )}
+                            <span className="ml-auto inline-flex items-center gap-0.5 font-medium text-primary">
+                              Read <ChevronRight className="h-3.5 w-3.5" />
+                            </span>
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
                   </div>
                 </div>
               )}
