@@ -465,17 +465,17 @@ export function PrivateTourDetailPage() {
                   <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     {tTour.morePrivateTours}
                   </p>
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {otherTours.map((t) => {
                       const lowestOtherPrice = getLowestPrice(t);
                       return (
                         <Link
                           key={t.id}
                           to={`/private-tours/${t.id}`}
-                          className="group block overflow-hidden rounded-xl border border-border bg-white shadow-sm transition-shadow hover:shadow-md"
+                          className="group flex items-center gap-3 overflow-hidden rounded-xl border border-border bg-white p-3 shadow-sm transition-shadow hover:shadow-md"
                         >
                           {t.heroImage && (
-                            <div className="aspect-[16/9] overflow-hidden">
+                            <div className="h-16 w-20 shrink-0 overflow-hidden rounded-lg">
                               <img
                                 src={t.heroImage}
                                 alt={t.title}
@@ -484,24 +484,18 @@ export function PrivateTourDetailPage() {
                               />
                             </div>
                           )}
-                          <div className="p-4">
-                            <h4 className="mb-1 text-sm font-bold leading-snug text-foreground">
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-semibold leading-snug text-foreground line-clamp-2">
                               {t.title}
-                            </h4>
-                            <p className="mb-3 line-clamp-2 text-sm text-muted-foreground">
-                              {t.description}
                             </p>
-                            <div className="flex items-center justify-between gap-2">
-                              <span className="inline-flex items-center gap-1 text-sm font-semibold text-primary">
-                                {tTour.viewTour}
-                                <ChevronRight className="h-3.5 w-3.5" />
-                              </span>
-                              {lowestOtherPrice != null && (
-                                <span className="text-sm font-bold text-primary">
-                                  From €{lowestOtherPrice}
-                                </span>
-                              )}
-                            </div>
+                            {lowestOtherPrice != null && (
+                              <p className="mt-0.5 text-xs font-semibold text-primary">
+                                From €{lowestOtherPrice}
+                              </p>
+                            )}
+                            <span className="mt-1 inline-flex items-center gap-0.5 text-xs font-medium text-primary">
+                              {tTour.viewTour} <ChevronRight className="h-3 w-3" />
+                            </span>
                           </div>
                         </Link>
                       );
