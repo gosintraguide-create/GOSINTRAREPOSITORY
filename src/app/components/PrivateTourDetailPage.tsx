@@ -434,8 +434,8 @@ export function PrivateTourDetailPage() {
 
             {/* ── Right column: booking card + other tours ─────────── */}
             <div className="col-span-1">
-              {/* Booking card — sticks while left column scrolls */}
-              <Card className="sticky top-24 p-6">
+              {/* Booking card */}
+              <Card className="p-6">
                 <div className="mb-4 flex items-center gap-2">
                   <Clock className="h-4 w-4 shrink-0 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">{tTour.duration}:</span>
@@ -472,10 +472,10 @@ export function PrivateTourDetailPage() {
                         <Link
                           key={t.id}
                           to={`/private-tours/${t.id}`}
-                          className="group flex items-center gap-3 overflow-hidden rounded-xl border border-border bg-white p-3 shadow-sm transition-shadow hover:shadow-md"
+                          className="group flex overflow-hidden rounded-xl border border-border bg-white shadow-sm transition-shadow hover:shadow-md"
                         >
                           {t.heroImage && (
-                            <div className="h-16 w-20 shrink-0 overflow-hidden rounded-lg">
+                            <div className="w-28 shrink-0 overflow-hidden">
                               <img
                                 src={t.heroImage}
                                 alt={t.title}
@@ -484,12 +484,12 @@ export function PrivateTourDetailPage() {
                               />
                             </div>
                           )}
-                          <div className="min-w-0 flex-1">
+                          <div className="min-w-0 flex-1 p-3">
                             <p className="text-sm font-semibold leading-snug text-foreground line-clamp-2">
                               {t.title}
                             </p>
                             {lowestOtherPrice != null && (
-                              <p className="mt-0.5 text-xs font-semibold text-primary">
+                              <p className="mt-1 text-xs font-semibold text-primary">
                                 From €{lowestOtherPrice}
                               </p>
                             )}
