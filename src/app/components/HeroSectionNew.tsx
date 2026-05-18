@@ -10,6 +10,7 @@ interface HeroSectionProps {
   language?: string;
   legacyContent: WebsiteContent;
   content?: any;
+  lowestTourPrice?: number | null;
 }
 
 const DEFAULT_HERO_IMAGE =
@@ -32,6 +33,7 @@ interface OfferCardProps {
   description: string;
   ctaLabel: string;
   onClick: () => void;
+  fromPrice?: number | null;
 }
 
 function OfferCard({
@@ -41,6 +43,7 @@ function OfferCard({
   description,
   ctaLabel,
   onClick,
+  fromPrice,
 }: OfferCardProps) {
   return (
     <div
@@ -63,7 +66,14 @@ function OfferCard({
 
       {/* Text */}
       <div className="p-5">
-        <h3 className="mb-1.5 text-base font-bold text-foreground">{title}</h3>
+        <div className="mb-1.5 flex items-baseline justify-between gap-2">
+          <h3 className="text-base font-bold text-foreground">{title}</h3>
+          {fromPrice != null && (
+            <span className="shrink-0 text-sm font-semibold text-primary">
+              From €{fromPrice}
+            </span>
+          )}
+        </div>
         <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
           {description}
         </p>
@@ -82,6 +92,9 @@ export function HeroSection({
   language = "en",
   legacyContent,
   content,
+  basePrice,
+  priceLoaded,
+  lowestTourPrice,
 }: HeroSectionProps) {
   const editableContent = content || legacyContent;
   const t = getTranslation(language).homepage;
@@ -114,6 +127,7 @@ export function HeroSection({
       description: t.hero.daypassDescription,
       ctaLabel: t.hero.daypassCta,
       onClick: () => onNavigate("hop-on-hop-off-sintra"),
+      fromPrice: priceLoaded && basePrice ? basePrice : null,
     },
     {
       key: "private-tours",
@@ -123,6 +137,7 @@ export function HeroSection({
       description: t.hero.privateToursDescription,
       ctaLabel: t.hero.privateToursCta,
       onClick: () => onNavigate("private-tours"),
+      fromPrice: lowestTourPrice ?? null,
     },
     {
       key: "travel-guide",

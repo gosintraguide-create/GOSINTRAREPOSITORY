@@ -93,8 +93,28 @@ export function HomePage() {
     return 25;
   };
 
+  // Lowest published private tour price (read from localStorage cache set by RootLayout prefetch)
+  const getLowestTourPrice = (): number | null => {
+    try {
+      const cached = localStorage.getItem("private-tours-cache-en");
+      if (cached) {
+        const tours = JSON.parse(cached);
+        const prices = tours
+          .filter((t: any) => t.published)
+          .map((t: any) => {
+            const raw = t.price?.toString().replace(/[^0-9.]/g, "");
+            return raw ? parseFloat(raw) : NaN;
+          })
+          .filter((p: number) => !isNaN(p) && p > 0);
+        if (prices.length > 0) return Math.min(...prices);
+      }
+    } catch (_) {}
+    return null;
+  };
+
   const [basePrice, setBasePrice] = useState(getInitialPrice);
   const [priceLoaded, setPriceLoaded] = useState(false);
+  const [lowestTourPrice] = useState<number | null>(getLowestTourPrice);
   const [legacyContent, setLegacyContent] =
     useState<WebsiteContent>(() => loadContentWithLanguage(language));
   const [deferredPrompt, setDeferredPrompt] =
@@ -398,6 +418,7 @@ export function HomePage() {
         priceLoaded={priceLoaded}
         legacyContent={legacyContent}
         content={content}
+        lowestTourPrice={lowestTourPrice}
       />
 
       {/* Today's Special: Sunset Drive Carousel */}
