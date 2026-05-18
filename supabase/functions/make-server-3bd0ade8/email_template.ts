@@ -1,3 +1,148 @@
+// ─── Shared helpers ────────────────────────────────────────────────────────────
+
+function formatDate(dateStr: string): string {
+  try {
+    return new Date(dateStr).toLocaleDateString("en-GB", {
+      weekday: "long", year: "numeric", month: "long", day: "numeric",
+    });
+  } catch (_) {
+    return dateStr;
+  }
+}
+
+function formatTime(dateStr: string): string {
+  try {
+    const d = new Date(dateStr);
+    // If the ISO string has a non-midnight time component, format it
+    if (d.getUTCHours() !== 0 || d.getUTCMinutes() !== 0) {
+      return d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: true });
+    }
+    // Fall back to the raw "HH:MM" part of the string if present
+    const match = dateStr.match(/T(\d{2}:\d{2})/);
+    if (match) {
+      const [h, m] = match[1].split(":").map(Number);
+      const suffix = h >= 12 ? "PM" : "AM";
+      const h12 = h % 12 || 12;
+      return `${h12}:${String(m).padStart(2, "0")} ${suffix}`;
+    }
+    return "";
+  } catch (_) {
+    return "";
+  }
+}
+
+const PICKUP_LABELS: Record<string, string> = {
+  "sintra-train-station": "Sintra Train Station",
+  "sintra-town-center": "Sintra Town Center",
+  "pena-palace": "Pena Palace",
+  "moorish-castle": "Moorish Castle",
+  "sintra-palace": "Sintra National Palace",
+  "other": "Will decide on the day",
+};
+
+function pickupLabel(value: string): string {
+  return PICKUP_LABELS[value] || value;
+}
+
+// ─── Shared CSS / layout helpers ────────────────────────────────────────────────
+
+const BASE_STYLE = `
+  margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  background-color:#f0f2f4;color:#1a1f2e;
+`;
+
+function wrapper(inner: string): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+</head>
+<body style="${BASE_STYLE}">
+  <div style="max-width:620px;margin:32px auto 48px;padding:0 16px;">
+    ${inner}
+  </div>
+</body>
+</html>`.trim();
+}
+
+function header(title: string, subtitle: string): string {
+  return `
+    <div style="background:linear-gradient(160deg,#0A4D5C 0%,#0d6175 100%);border-radius:16px 16px 0 0;padding:44px 36px 36px;text-align:center;">
+      <p style="margin:0 0 20px;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.6);">Go Sintra</p>
+      <h1 style="margin:0 0 10px;color:#ffffff;font-size:30px;font-weight:800;line-height:1.2;">${title}</h1>
+      <p style="margin:0;color:rgba(255,255,255,0.8);font-size:15px;line-height:1.5;">${subtitle}</p>
+      <div style="margin-top:24px;height:3px;background:linear-gradient(90deg,transparent,#D97843,transparent);border-radius:2px;"></div>
+    </div>`;
+}
+
+function card(inner: string, extra = ""): string {
+  return `<div style="background:#ffffff;border-radius:12px;padding:24px 28px;margin:12px 0;box-shadow:0 1px 4px rgba(0,0,0,0.06);border:1px solid #e8eaed;${extra}">${inner}</div>`;
+}
+
+function sectionLabel(text: string): string {
+  return `<p style="margin:0 0 16px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#0A4D5C;">${text}</p>`;
+}
+
+function detailRow(label: string, value: string, last = false): string {
+  return `
+    <tr>
+      <td style="padding:10px 0 ${last ? "0" : "10px"};border-bottom:${last ? "none" : "1px solid #f0f2f4"};color:#6b7280;font-size:14px;width:45%;vertical-align:top;">${label}</td>
+      <td style="padding:10px 0 ${last ? "0" : "10px"};border-bottom:${last ? "none" : "1px solid #f0f2f4"};color:#1a1f2e;font-size:14px;font-weight:600;text-align:right;vertical-align:top;">${value}</td>
+    </tr>`;
+}
+
+function totalRow(label: string, value: string): string {
+  return `
+    <tr>
+      <td colspan="2" style="padding-top:16px;"><div style="height:1px;background:#D97843;opacity:0.4;margin-bottom:16px;"></div></td>
+    </tr>
+    <tr>
+      <td style="color:#0A4D5C;font-size:15px;font-weight:700;">${label}</td>
+      <td style="color:#0A4D5C;font-size:22px;font-weight:800;text-align:right;">${value}</td>
+    </tr>`;
+}
+
+function stepItem(icon: string, title: string, body: string): string {
+  return `
+    <div style="display:flex;align-items:flex-start;gap:16px;padding:14px 0;border-bottom:1px solid #f0f2f4;">
+      <div style="flex-shrink:0;width:38px;height:38px;border-radius:50%;background:#f0f7f9;display:flex;align-items:center;justify-content:center;font-size:18px;text-align:center;line-height:38px;">${icon}</div>
+      <div>
+        <p style="margin:0 0 3px;font-size:14px;font-weight:700;color:#1a1f2e;">${title}</p>
+        <p style="margin:0;font-size:13px;color:#6b7280;line-height:1.5;">${body}</p>
+      </div>
+    </div>`;
+}
+
+function contactCard(): string {
+  return card(`
+    ${sectionLabel("Need help?")}
+    <table style="width:100%;border-collapse:collapse;">
+      <tr>
+        <td style="vertical-align:top;padding-right:12px;">
+          <p style="margin:0 0 4px;font-size:13px;color:#6b7280;">WhatsApp</p>
+          <p style="margin:0;font-size:14px;font-weight:700;color:#1a1f2e;">+351 919 495 826</p>
+        </td>
+        <td style="vertical-align:top;">
+          <p style="margin:0 0 4px;font-size:13px;color:#6b7280;">Email</p>
+          <p style="margin:0;font-size:14px;font-weight:700;color:#1a1f2e;">info@hoponsintra.com</p>
+        </td>
+      </tr>
+    </table>
+  `, "border-left:4px solid #D97843;");
+}
+
+function footer(): string {
+  return `
+    <div style="background:#0A4D5C;border-radius:0 0 16px 16px;padding:28px 36px;text-align:center;">
+      <p style="margin:0 0 4px;font-size:18px;font-weight:800;color:#ffffff;">Go Sintra</p>
+      <p style="margin:0 0 16px;font-size:12px;color:#D97843;font-weight:600;letter-spacing:1px;text-transform:uppercase;">Private Tours &amp; Hop-On Service</p>
+      <p style="margin:0;font-size:12px;color:rgba(255,255,255,0.55);">info@hoponsintra.com &nbsp;·&nbsp; +351 932 967 279 &nbsp;·&nbsp; Sintra, Portugal</p>
+    </div>`;
+}
+
+
 // ===== TOUR BOOKING CONFIRMATION =====
 
 export function generateTourBookingConfirmationHTML(data: {
@@ -11,109 +156,43 @@ export function generateTourBookingConfirmationHTML(data: {
 }): string {
   const { customerName, bookingId, tourTitle, tourDate, numberOfPeople, totalPrice, specialRequests } = data;
 
-  const formattedDate = (() => {
-    try {
-      return new Date(tourDate).toLocaleDateString("en-GB", {
-        weekday: "long", year: "numeric", month: "long", day: "numeric",
-      });
-    } catch (_) {
-      return tourDate;
-    }
-  })();
+  const formattedDate = formatDate(tourDate);
+  const tourTime = formatTime(tourDate);
+  const bookingRef = bookingId.replace(/^TB-/, "").slice(-8).toUpperCase();
 
-  return `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your Private Tour is Confirmed – Go Sintra</title>
-</head>
-<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8f9fa; color: #2d3436;">
-  <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+  const detailsCard = card(`
+    ${sectionLabel("Booking details")}
+    <table style="width:100%;border-collapse:collapse;">
+      ${detailRow("Reference", `#${bookingRef}`)}
+      ${detailRow("Tour", tourTitle)}
+      ${detailRow("Date", formattedDate)}
+      ${tourTime ? detailRow("Start time", tourTime) : ""}
+      ${detailRow("Guests", `${numberOfPeople} ${numberOfPeople === 1 ? "person" : "people"}`)}
+      ${specialRequests ? detailRow("Special requests", specialRequests) : ""}
+      ${totalRow("Total paid", `€${totalPrice.toFixed(2)}`)}
+    </table>
+  `);
 
-    <!-- Header -->
-    <div style="background: linear-gradient(135deg, #0A4D5C 0%, #0d5f70 100%); padding: 40px 20px; text-align: center; border-bottom: 4px solid #D97843;">
-      <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">🎉 Your Private Tour is Confirmed!</h1>
-      <p style="margin: 10px 0 0 0; color: #ffffff; opacity: 0.95; font-size: 16px;">Go Sintra – Private Tours</p>
+  const nextStepsCard = card(`
+    ${sectionLabel("What happens next")}
+    ${stepItem("📧", "Confirmation saved", "This email is your booking record — no need to print anything.")}
+    ${stepItem("📱", "Guide contacts you", "Your dedicated guide will WhatsApp or call you 24 hours before the tour with the exact meeting point.")}
+    ${stepItem("☀️", "Enjoy!", "Your guide is exclusively yours for the day — just turn up and let us take care of the rest.")}
+  `);
+
+  const body = `
+    ${header("Your private tour<br>is confirmed! 🎉", `We can't wait to show you Sintra, ${customerName}.`)}
+    <div style="background:#ffffff;border-left:1px solid #e8eaed;border-right:1px solid #e8eaed;padding:0 8px;">
+      ${detailsCard}
+      ${nextStepsCard}
+      ${contactCard()}
     </div>
+    ${footer()}
+  `;
 
-    <!-- Content -->
-    <div style="padding: 40px 30px;">
-      <p style="font-size: 18px; margin-bottom: 10px; color: #2d3436;">Dear ${customerName},</p>
-      <p style="margin-bottom: 30px; color: #2d3436; line-height: 1.6;">
-        Thank you for booking a private tour with Go Sintra! Your booking is confirmed and we can't wait to show you the magic of Sintra. Please keep this email as your booking reference.
-      </p>
-
-      <!-- Booking Details -->
-      <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 25px 0;">
-        <h2 style="margin: 0 0 15px 0; font-size: 18px; color: #0A4D5C;">Booking Details</h2>
-        <table style="width: 100%; border-collapse: collapse;">
-          <tr>
-            <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Booking ID:</td>
-            <td style="padding: 8px 0; color: #2d3436; font-weight: 600; text-align: right; font-size: 14px;">${bookingId}</td>
-          </tr>
-          <tr>
-            <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Tour:</td>
-            <td style="padding: 8px 0; color: #2d3436; font-weight: 600; text-align: right; font-size: 14px;">${tourTitle}</td>
-          </tr>
-          <tr>
-            <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Date:</td>
-            <td style="padding: 8px 0; color: #2d3436; font-weight: 600; text-align: right; font-size: 14px;">${formattedDate}</td>
-          </tr>
-          <tr>
-            <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Guests:</td>
-            <td style="padding: 8px 0; color: #2d3436; font-weight: 600; text-align: right; font-size: 14px;">${numberOfPeople} ${numberOfPeople === 1 ? "person" : "people"}</td>
-          </tr>
-          ${specialRequests ? `
-          <tr>
-            <td style="padding: 8px 0; color: #6b7280; font-size: 14px; vertical-align: top;">Special Requests:</td>
-            <td style="padding: 8px 0; color: #2d3436; font-weight: 600; text-align: right; font-size: 14px;">${specialRequests}</td>
-          </tr>` : ""}
-          <tr style="border-top: 2px solid #D97843;">
-            <td style="padding: 15px 0 0 0; color: #0A4D5C; font-weight: 700; font-size: 16px;">Total Paid:</td>
-            <td style="padding: 15px 0 0 0; color: #0A4D5C; font-weight: 700; text-align: right; font-size: 18px;">€${totalPrice.toFixed(2)}</td>
-          </tr>
-        </table>
-      </div>
-
-      <!-- What's Next -->
-      <div style="background-color: #f0f9ff; border: 1px solid #bae6fd; padding: 20px; border-radius: 8px; margin: 25px 0;">
-        <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #0A4D5C;">✨ What Happens Next</h3>
-        <ul style="margin: 0; padding-left: 20px; color: #2d3436; font-size: 14px; line-height: 1.8;">
-          <li>Our team will reach out within 24 hours to confirm your meeting point</li>
-          <li>Your private guide will be exclusively dedicated to your group</li>
-          <li>The tour runs rain or shine — we know all the best covered spots!</li>
-          <li>Feel free to WhatsApp us with any questions</li>
-        </ul>
-      </div>
-
-      <!-- Contact -->
-      <div style="background-color: #fef3e7; border: 1px solid #D97843; padding: 20px; border-radius: 8px; margin: 25px 0;">
-        <h3 style="margin: 0 0 8px 0; font-size: 16px; color: #0A4D5C;">📱 Need to reach us?</h3>
-        <p style="margin: 0; color: #2d3436; font-size: 14px; line-height: 1.8;">
-          WhatsApp: <strong>+351 919 495 826</strong><br/>
-          Email: <strong>info@hoponsintra.com</strong>
-        </p>
-      </div>
-
-      <p style="margin-top: 30px; color: #2d3436;">We look forward to an unforgettable day with you in Sintra!</p>
-      <p style="margin: 5px 0; color: #2d3436;"><strong>The Go Sintra Team</strong></p>
-    </div>
-
-    <!-- Footer -->
-    <div style="background-color: #0A4D5C; color: #ffffff; padding: 25px; text-align: center;">
-      <p style="margin: 0 0 5px 0; font-size: 18px; font-weight: 700;">Go Sintra</p>
-      <p style="margin: 0 0 15px 0; color: #D97843; font-size: 13px;">Private Tours &amp; Hop-On Service</p>
-      <p style="margin: 5px 0; font-size: 13px;">📧 info@hoponsintra.com</p>
-      <p style="margin: 5px 0; font-size: 13px;">📱 WhatsApp: +351 919 495 826</p>
-      <p style="margin: 15px 0 0 0; font-size: 12px; opacity: 0.8;">Sintra, Portugal</p>
-    </div>
-  </div>
-</body>
-</html>
-  `.trim();
+  return wrapper(body);
 }
+
 
 // ===== TOUR QUOTE REQUEST ACKNOWLEDGEMENT =====
 
@@ -127,216 +206,116 @@ export function generateTourQuoteRequestHTML(data: {
 }): string {
   const { customerName, requestId, tourTitle, tourDate, numberOfPeople, specialRequests } = data;
 
-  const formattedDate = (() => {
-    try {
-      return new Date(tourDate).toLocaleDateString("en-GB", {
-        weekday: "long", year: "numeric", month: "long", day: "numeric",
-      });
-    } catch (_) {
-      return tourDate;
-    }
-  })();
+  const formattedDate = formatDate(tourDate);
+  const refId = requestId.replace(/^QR-/, "").slice(-8).toUpperCase();
 
-  return `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quote Request Received – Go Sintra</title>
-</head>
-<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8f9fa; color: #2d3436;">
-  <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+  const detailsCard = card(`
+    ${sectionLabel("Your request")}
+    <table style="width:100%;border-collapse:collapse;">
+      ${detailRow("Reference", `#${refId}`)}
+      ${detailRow("Tour", tourTitle)}
+      ${detailRow("Preferred date", formattedDate)}
+      ${detailRow("Group size", `${numberOfPeople} ${numberOfPeople === 1 ? "person" : "people"}`, !specialRequests)}
+      ${specialRequests ? detailRow("Special requests", specialRequests, true) : ""}
+    </table>
+  `);
 
-    <!-- Header -->
-    <div style="background: linear-gradient(135deg, #0A4D5C 0%, #0d5f70 100%); padding: 40px 20px; text-align: center; border-bottom: 4px solid #D97843;">
-      <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">✉️ Quote Request Received</h1>
-      <p style="margin: 10px 0 0 0; color: #ffffff; opacity: 0.95; font-size: 16px;">Go Sintra – Private Tours</p>
+  const nextStepsCard = card(`
+    ${sectionLabel("What happens next")}
+    ${stepItem("🔍", "We review your request", "Our team will put together a personalised quote tailored to your group and preferences.")}
+    ${stepItem("📩", "Quote within 24 hours", "We'll email you a detailed proposal — no payment until you're happy to confirm.")}
+    ${stepItem("✅", "Confirm when ready", "Reply to the quote email or WhatsApp us to lock in your tour. That's it!")}
+  `);
+
+  const body = `
+    ${header("Quote request received ✉️", `Thanks ${customerName} — we'll be in touch within 24 hours.`)}
+    <div style="background:#ffffff;border-left:1px solid #e8eaed;border-right:1px solid #e8eaed;padding:0 8px;">
+      ${detailsCard}
+      ${nextStepsCard}
+      ${contactCard()}
     </div>
+    ${footer()}
+  `;
 
-    <!-- Content -->
-    <div style="padding: 40px 30px;">
-      <p style="font-size: 18px; margin-bottom: 10px; color: #2d3436;">Dear ${customerName},</p>
-      <p style="margin-bottom: 30px; color: #2d3436; line-height: 1.6;">
-        Thank you for your interest in a private tour with Go Sintra! We've received your request and will send you a personalised quote within <strong>24 hours</strong>.
-      </p>
-
-      <!-- Request Details -->
-      <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 25px 0;">
-        <h2 style="margin: 0 0 15px 0; font-size: 18px; color: #0A4D5C;">Your Request</h2>
-        <table style="width: 100%; border-collapse: collapse;">
-          <tr>
-            <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Reference:</td>
-            <td style="padding: 8px 0; color: #2d3436; font-weight: 600; text-align: right; font-size: 14px;">${requestId}</td>
-          </tr>
-          <tr>
-            <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Tour:</td>
-            <td style="padding: 8px 0; color: #2d3436; font-weight: 600; text-align: right; font-size: 14px;">${tourTitle}</td>
-          </tr>
-          <tr>
-            <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Preferred Date:</td>
-            <td style="padding: 8px 0; color: #2d3436; font-weight: 600; text-align: right; font-size: 14px;">${formattedDate}</td>
-          </tr>
-          <tr>
-            <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Group Size:</td>
-            <td style="padding: 8px 0; color: #2d3436; font-weight: 600; text-align: right; font-size: 14px;">${numberOfPeople} ${numberOfPeople === 1 ? "person" : "people"}</td>
-          </tr>
-          ${specialRequests ? `
-          <tr>
-            <td style="padding: 8px 0; color: #6b7280; font-size: 14px; vertical-align: top;">Special Requests:</td>
-            <td style="padding: 8px 0; color: #2d3436; font-weight: 600; text-align: right; font-size: 14px;">${specialRequests}</td>
-          </tr>` : ""}
-        </table>
-      </div>
-
-      <!-- What happens next -->
-      <div style="background-color: #f0f9ff; border: 1px solid #bae6fd; padding: 20px; border-radius: 8px; margin: 25px 0;">
-        <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #0A4D5C;">⏱ What Happens Next</h3>
-        <ul style="margin: 0; padding-left: 20px; color: #2d3436; font-size: 14px; line-height: 1.8;">
-          <li>We'll review your request and prepare a tailored quote</li>
-          <li>You'll hear back from us within 24 hours</li>
-          <li>No payment is required until you confirm the booking</li>
-        </ul>
-      </div>
-
-      <!-- Contact -->
-      <div style="background-color: #fef3e7; border: 1px solid #D97843; padding: 20px; border-radius: 8px; margin: 25px 0;">
-        <h3 style="margin: 0 0 8px 0; font-size: 16px; color: #0A4D5C;">📱 Can't wait? Reach us directly</h3>
-        <p style="margin: 0; color: #2d3436; font-size: 14px; line-height: 1.8;">
-          WhatsApp: <strong>+351 919 495 826</strong><br/>
-          Email: <strong>info@hoponsintra.com</strong>
-        </p>
-      </div>
-
-      <p style="margin-top: 30px; color: #2d3436;">We look forward to creating an unforgettable experience for you!</p>
-      <p style="margin: 5px 0; color: #2d3436;"><strong>The Go Sintra Team</strong></p>
-    </div>
-
-    <!-- Footer -->
-    <div style="background-color: #0A4D5C; color: #ffffff; padding: 25px; text-align: center;">
-      <p style="margin: 0 0 5px 0; font-size: 18px; font-weight: 700;">Go Sintra</p>
-      <p style="margin: 0 0 15px 0; color: #D97843; font-size: 13px;">Private Tours &amp; Hop-On Service</p>
-      <p style="margin: 5px 0; font-size: 13px;">📧 info@hoponsintra.com</p>
-      <p style="margin: 5px 0; font-size: 13px;">📱 WhatsApp: +351 919 495 826</p>
-      <p style="margin: 15px 0 0 0; font-size: 12px; opacity: 0.8;">Sintra, Portugal</p>
-    </div>
-  </div>
-</body>
-</html>
-  `.trim();
+  return wrapper(body);
 }
+
 
 // ===== HOP-ON DAY PASS CONFIRMATION =====
 
-// Email confirmation template
-export function generateBookingConfirmationHTML(data: any): string {
-  const {
-    customerName,
-    bookingId,
-    formattedDate,
-    totalPrice,
-    dayPassCount,
-  } = data;
+export function generateBookingConfirmationHTML(data: {
+  customerName: string;
+  bookingId: string;
+  formattedDate: string;
+  totalPrice: number;
+  dayPassCount: number;
+  pickupLocation?: string;
+  timeSlot?: string;
+  [key: string]: any;
+}): string {
+  const { customerName, bookingId, formattedDate, totalPrice, dayPassCount, pickupLocation, timeSlot } = data;
 
-  const bookingIdShort = bookingId.split("_")[1] || bookingId;
+  const bookingRef = (bookingId.split("_")[1] || bookingId).toUpperCase();
+  const pickup = pickupLocation ? pickupLabel(pickupLocation) : null;
 
-  return `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your Hop On Sintra Pass Confirmation</title>
-</head>
-<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8f9fa; color: #2d3436;">
-  <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
-    
-    <!-- Header -->
-    <div style="background: linear-gradient(135deg, #0A4D5C 0%, #0d5f70 100%); padding: 40px 20px; text-align: center; border-bottom: 4px solid #D97843;">
-      <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">🎉 Your Day Pass is Ready!</h1>
-      <p style="margin: 10px 0 0 0; color: #ffffff; opacity: 0.95; font-size: 16px;">Hop On Sintra</p>
+  // Prominent pickup card — most important info for the customer
+  const pickupCard = pickup ? `
+    <div style="background:linear-gradient(135deg,#0A4D5C 0%,#0d6175 100%);border-radius:12px;padding:22px 24px;margin:12px 0;color:#ffffff;">
+      <p style="margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.65);">📍 Your first boarding point</p>
+      <p style="margin:0 0 4px;font-size:22px;font-weight:800;">${pickup}</p>
+      ${timeSlot ? `<p style="margin:0;font-size:14px;color:rgba(255,255,255,0.8);">First departure at <strong>${timeSlot}</strong> — just show your QR code to board</p>` : `<p style="margin:0;font-size:14px;color:rgba(255,255,255,0.8);">Show your QR code to board at any stop from 9:00 AM</p>`}
     </div>
+  ` : "";
 
-    <!-- Content -->
-    <div style="padding: 40px 30px;">
-      <p style="font-size: 18px; margin-bottom: 10px; color: #2d3436;">Dear ${customerName},</p>
-      <p style="margin-bottom: 30px; color: #2d3436; line-height: 1.6;">Thank you for choosing Hop On Sintra! Your day pass is confirmed and ready to use. Enjoy unlimited rides on our professional-guided tuk tuks and UMM jeeps throughout Sintra's most enchanting destinations.</p>
-      
-      <!-- PDF Attachment Notice -->
-      <div style="background-color: #fff4ed; border-left: 4px solid #D97843; padding: 20px; margin: 25px 0; border-radius: 8px;">
-        <p style="margin: 0 0 10px 0; color: #0A4D5C; font-weight: 700; font-size: 16px;">📎 Your Passes (PDF Attached)</p>
-        <p style="margin: 0; color: #2d3436; font-size: 14px; line-height: 1.6;">We've attached a PDF with ${dayPassCount} pass${dayPassCount === 1 ? '' : 'es'}. Save it to your phone and show the QR code when boarding any of our vehicles.</p>
-      </div>
-      
-      <!-- Booking Details -->
-      <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 25px 0;">
-        <h2 style="margin: 0 0 15px 0; font-size: 18px; color: #0A4D5C;">Pass Details</h2>
-        <table style="width: 100%; border-collapse: collapse;">
-          <tr>
-            <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Booking ID:</td>
-            <td style="padding: 8px 0; color: #2d3436; font-weight: 600; text-align: right; font-size: 14px;">${bookingIdShort}</td>
-          </tr>
-          <tr>
-            <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Contact Name:</td>
-            <td style="padding: 8px 0; color: #2d3436; font-weight: 600; text-align: right; font-size: 14px;">${customerName}</td>
-          </tr>
-          <tr>
-            <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Valid Date:</td>
-            <td style="padding: 8px 0; color: #2d3436; font-weight: 600; text-align: right; font-size: 14px;">${formattedDate}</td>
-          </tr>
-          <tr>
-            <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Service Hours:</td>
-            <td style="padding: 8px 0; color: #2d3436; font-weight: 600; text-align: right; font-size: 14px;">9:00 AM - 7:00 PM</td>
-          </tr>
-          <tr>
-            <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Guests:</td>
-            <td style="padding: 8px 0; color: #2d3436; font-weight: 600; text-align: right; font-size: 14px;">${dayPassCount}</td>
-          </tr>
-          <tr style="border-top: 2px solid #D97843;">
-            <td style="padding: 15px 0 0 0; color: #0A4D5C; font-weight: 700; font-size: 16px;">Total Paid:</td>
-            <td style="padding: 15px 0 0 0; color: #0A4D5C; font-weight: 700; text-align: right; font-size: 18px;">€${totalPrice.toFixed(2)}</td>
-          </tr>
-        </table>
-      </div>
+  const qrCard = card(`
+    ${sectionLabel("📎 Your passes (PDF attached)")}
+    <p style="margin:0;font-size:14px;color:#4b5563;line-height:1.6;">
+      We've attached a PDF with <strong>${dayPassCount} ${dayPassCount === 1 ? "pass" : "passes"}</strong>.
+      Save it to your phone and show the QR code when boarding any of our vehicles — one QR per person.
+    </p>
+  `, "border-left:4px solid #D97843;");
 
-      <!-- How to Use -->
-      <div style="background-color: #f0f9ff; border: 1px solid #bae6fd; padding: 20px; border-radius: 8px; margin: 25px 0;">
-        <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #0A4D5C;">✨ How to Use Your Day Pass</h3>
-        <ul style="margin: 0; padding-left: 20px; color: #2d3436; font-size: 14px; line-height: 1.8;">
-          <li>Show your QR code to the driver when boarding</li>
-          <li>Unlimited rides all day (9am - 7pm)</li>
-          <li>Service every 30 minutes at all stops</li>
-          <li>Professional guides on every vehicle</li>
-          <li>Guaranteed seating - no overcrowding</li>
-        </ul>
-      </div>
+  const detailsCard = card(`
+    ${sectionLabel("Pass details")}
+    <table style="width:100%;border-collapse:collapse;">
+      ${detailRow("Booking ref", `#${bookingRef}`)}
+      ${detailRow("Name", customerName)}
+      ${detailRow("Valid for", formattedDate)}
+      ${detailRow("Service hours", "9:00 AM – 7:00 PM")}
+      ${detailRow("Passes", `${dayPassCount} ${dayPassCount === 1 ? "person" : "people"}`)}
+      ${totalRow("Total paid", `€${totalPrice.toFixed(2)}`)}
+    </table>
+  `);
 
-      <!-- What to Expect -->
-      <div style="background-color: #fef3e7; border: 1px solid #D97843; padding: 20px; border-radius: 8px; margin: 25px 0;">
-        <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #0A4D5C;">🚙 What to Expect</h3>
-        <p style="margin: 0; color: #2d3436; font-size: 14px; line-height: 1.8;">Your pass includes rides on our fleet of tuk tuks, UMM jeeps, and other comfortable vehicles - all driven by professional guides who know Sintra's history and hidden gems. Hop on, hop off as many times as you like at any of our designated stops.</p>
-      </div>
+  const howItWorksCard = card(`
+    ${sectionLabel("How it works")}
+    ${stepItem("🎟️", "Show your QR code", "When you board any of our vehicles, open the PDF and show your personal QR code to the driver.")}
+    ${stepItem("🔄", "Hop on, hop off", "Unlimited rides all day across all stops — leave and re-join the route as many times as you like.")}
+    ${stepItem("🕐", "Departures every 30 min", "Vehicles run continuously from 9 AM to 7 PM. No need to book a seat — just wait at any stop.")}
+    ${stepItem("🎙️", "Professional guides", "Every vehicle has a certified local guide sharing stories and history along the way.")}
+  `);
 
-      <!-- Manage Booking -->
-      <div style="text-align: center; margin: 30px 0;">
-        <a href="https://hoponsintra.com/manage-booking?id=${bookingId}" style="display: inline-block; background-color: #D97843; color: #ffffff; padding: 14px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px; box-shadow: 0 2px 8px rgba(217, 120, 67, 0.3);">Manage My Pass</a>
-      </div>
-
-      <p style="margin-top: 30px; color: #6b7280; font-size: 14px;">Questions? We're here to help via WhatsApp or email.</p>
-      <p style="margin-top: 20px; color: #2d3436;">We look forward to showing you the magic of Sintra!</p>
-      <p style="margin: 5px 0; color: #2d3436;"><strong>The Hop On Sintra Team</strong></p>
+  const manageButton = `
+    <div style="text-align:center;padding:20px 0;">
+      <a href="https://www.hoponsintra.com/manage-booking?id=${bookingId}"
+         style="display:inline-block;background:#D97843;color:#ffffff;padding:14px 32px;border-radius:10px;text-decoration:none;font-weight:700;font-size:15px;letter-spacing:0.3px;">
+        View / Manage My Pass →
+      </a>
     </div>
+  `;
 
-    <!-- Footer -->
-    <div style="background-color: #0A4D5C; color: #ffffff; padding: 25px; text-align: center;">
-      <p style="margin: 0 0 5px 0; font-size: 18px; font-weight: 700;">Hop On Sintra</p>
-      <p style="margin: 0 0 15px 0; color: #D97843; font-size: 13px;">Professional Hop-On/Hop-Off Day Pass Service</p>
-      <p style="margin: 5px 0; font-size: 13px;">📧 info@hoponsintra.com</p>
-      <p style="margin: 5px 0; font-size: 13px;">📱 WhatsApp: +351 932 967 279</p>
-      <p style="margin: 15px 0 0 0; font-size: 12px; opacity: 0.8;">Daily Service: 9:00 AM - 7:00 PM | Sintra, Portugal</p>
+  const body = `
+    ${header("Your day pass is ready! 🎉", `Excited to have you on board, ${customerName}.`)}
+    <div style="background:#ffffff;border-left:1px solid #e8eaed;border-right:1px solid #e8eaed;padding:8px 8px 0;">
+      ${qrCard}
+      ${pickupCard}
+      ${detailsCard}
+      ${howItWorksCard}
+      ${contactCard()}
+      ${manageButton}
     </div>
-  </div>
-</body>
-</html>
-  `.trim();
+    ${footer()}
+  `;
+
+  return wrapper(body);
 }

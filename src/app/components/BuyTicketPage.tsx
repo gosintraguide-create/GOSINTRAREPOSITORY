@@ -145,16 +145,8 @@ export function BuyTicketPage() {
       label: t.buyTicket.pickupLocations.penaPalace,
     },
     {
-      value: "quinta-regaleira",
-      label: t.buyTicket.pickupLocations.quintaRegaleira,
-    },
-    {
       value: "moorish-castle",
       label: t.buyTicket.pickupLocations.moorishCastle,
-    },
-    {
-      value: "monserrate-palace",
-      label: t.buyTicket.pickupLocations.monserratePalace,
     },
     {
       value: "sintra-palace",

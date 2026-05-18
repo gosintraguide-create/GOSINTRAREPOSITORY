@@ -441,6 +441,8 @@ async function sendBookingEmail(booking: any, qrCodes: string[]) {
       dayPassCount: booking.passengers.length,
       guidedTour: booking.guidedTour,
       attractions: booking.selectedAttractions,
+      pickupLocation: booking.pickupLocation,
+      timeSlot: booking.timeSlot,
     });
 
     const recipientEmail = booking.contactInfo?.email || booking.email;
