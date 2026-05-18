@@ -692,9 +692,18 @@ export function AttractionDetailPage() {
             const comprehensive = cms ?? DEFAULT_COMPREHENSIVE_CONTENT.attractions.attractionDetails[id];
             return translated || comprehensive ? {
               id,
-              name: comprehensive?.name || translated?.name || id,
-              description: comprehensive?.shortDescription || translated?.description || "",
-              // Correct field priority: cardImage → heroImage → gallery[0] → locale imageUrl
+              // Locale text always wins for non-English; CMS as fallback
+              name:
+                (language !== "en" && translated?.name) ||
+                comprehensive?.name ||
+                translated?.name ||
+                id,
+              description:
+                (language !== "en" && translated?.description) ||
+                comprehensive?.shortDescription ||
+                translated?.description ||
+                "",
+              // Images: CMS first, then locale
               imageUrl:
                 comprehensive?.cardImage ||
                 comprehensive?.heroImage ||
