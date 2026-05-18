@@ -69,55 +69,46 @@ interface OutletContext {
 }
 
 // ── Mobile sticky booking bar ─────────────────────────────────────────────────
-// Rendered below the hero on mobile. Sticks to the top once the user scrolls
-// past it so the buy CTA is always reachable. Hidden on desktop (lg+).
+// Rendered below the hero on mobile. Uses position:sticky so it stays in the
+// normal document flow (no page-shift on stick) and lands flush under the
+// header. Hidden on desktop (lg+).
 function MobileStickyBar({ basePrice, onBook }: { basePrice: number; onBook: () => void }) {
-  const barRef = useRef<HTMLDivElement>(null);
-  const [stuck, setStuck] = useState(false);
+  const [headerHeight, setHeaderHeight] = useState(0);
 
   useEffect(() => {
-    const el = barRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => setStuck(!entry.isIntersecting),
-      { threshold: 0, rootMargin: "-1px 0px 0px 0px" }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
+    const measure = () => {
+      const header = document.querySelector("header");
+      if (header) setHeaderHeight(header.getBoundingClientRect().height);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
   }, []);
 
   return (
-    <>
-      {/* Sentinel — sits at the natural position; when it leaves the viewport the bar sticks */}
-      <div ref={barRef} className="lg:hidden" aria-hidden="true" />
-
-      <div
-        className={`lg:hidden z-40 transition-shadow ${
-          stuck
-            ? "fixed top-[var(--header-height,56px)] left-0 right-0 shadow-lg"
-            : "relative"
-        }`}
-      >
-        <div className="flex items-center justify-between gap-4 bg-white border-b border-stone-200 px-4 py-3">
-          <div>
-            <p className="text-[11px] font-medium uppercase tracking-wide text-stone-400 leading-none mb-0.5">
-              From
-            </p>
-            <p className="text-2xl font-extrabold leading-none text-primary">
-              €{basePrice}
-              <span className="ml-1 text-xs font-medium text-muted-foreground">/ person</span>
-            </p>
-          </div>
-          <Button
-            onClick={onBook}
-            className="h-10 shrink-0 px-5 text-sm font-semibold"
-          >
-            <Ticket className="mr-1.5 h-4 w-4" />
-            Get your pass
-          </Button>
+    <div
+      className="lg:hidden sticky z-40 bg-white border-b border-stone-200 shadow-sm"
+      style={{ top: headerHeight }}
+    >
+      <div className="flex items-center justify-between gap-4 px-4 py-3">
+        <div>
+          <p className="text-[11px] font-medium uppercase tracking-wide text-stone-400 leading-none mb-0.5">
+            From
+          </p>
+          <p className="text-2xl font-extrabold leading-none text-primary">
+            €{basePrice}
+            <span className="ml-1 text-xs font-medium text-muted-foreground">/ person</span>
+          </p>
         </div>
+        <Button
+          onClick={onBook}
+          className="h-10 shrink-0 px-5 text-sm font-semibold"
+        >
+          <Ticket className="mr-1.5 h-4 w-4" />
+          Get your pass
+        </Button>
       </div>
-    </>
+    </div>
   );
 }
 
