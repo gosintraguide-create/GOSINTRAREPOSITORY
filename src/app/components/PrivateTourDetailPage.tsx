@@ -27,7 +27,7 @@ const SITE_URL = "https://www.hoponsintra.com";
 
 // Module-level cache so navigating back to a tour skips the API call
 const toursCache: Record<string, { tours: PrivateTour[]; ts: number }> = {};
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL = 2 * 60 * 1000; // 2 minutes
 
 /** Convert a human-readable duration string to ISO 8601 (e.g. "4 hours" → "PT4H") */
 function parseDuration(durationStr: string): string {

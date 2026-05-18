@@ -32,7 +32,7 @@ const SITE_URL = "https://www.hoponsintra.com";
 
 // Module-level cache so navigating back doesn't re-fetch
 const toursListCache: Record<string, { tours: PrivateTour[]; ts: number }> = {};
-const CACHE_TTL = 60 * 60 * 1000; // 1 hour
+const CACHE_TTL = 30 * 1000; // 30 s — only for back-navigation within a session
 const LS_KEY = (lang: string) => `private-tours-cache-${lang}`;
 const LS_TS_KEY = (lang: string) => `private-tours-cache-ts-${lang}`;
 
@@ -142,19 +142,16 @@ export function PrivateToursPage() {
       return;
     }
 
-    // 2. localStorage — show immediately even if stale, then refresh silently
+    // 2. localStorage — show immediately, always fetch fresh data in background
     let hasStaleData = false;
     try {
       const lsData = localStorage.getItem(LS_KEY(cacheKey));
-      const lsTsRaw = localStorage.getItem(LS_TS_KEY(cacheKey));
-      if (lsData && lsTsRaw) {
-        const ts = parseInt(lsTsRaw, 10);
+      if (lsData) {
         const parsed: PrivateTour[] = JSON.parse(lsData);
-        toursListCache[cacheKey] = { tours: parsed, ts };
+        toursListCache[cacheKey] = { tours: parsed, ts: Date.now() };
         setTours(parsed);
         setLoading(false);
-        if (Date.now() - ts < CACHE_TTL) return; // still fresh
-        hasStaleData = true; // stale but shown — background refresh below
+        hasStaleData = true; // shown instantly — always revalidate below
       }
     } catch (_) {}
 
