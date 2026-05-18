@@ -51,7 +51,7 @@ function OfferCard({
       onClick={onClick}
     >
       {/* Image */}
-      <div className="aspect-[4/3] overflow-hidden bg-stone-100">
+      <div className="relative aspect-[4/3] overflow-hidden bg-stone-100">
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -62,18 +62,17 @@ function OfferCard({
         ) : (
           <ImagePlaceholder label={imagePlaceholderLabel ?? title} />
         )}
+        {fromPrice != null && (
+          <div className="absolute bottom-3 right-3 rounded-xl bg-white/95 px-3 py-1.5 shadow-md backdrop-blur-sm">
+            <span className="text-[11px] font-semibold uppercase tracking-wide text-stone-400">From</span>
+            <p className="text-xl font-extrabold leading-none text-primary">€{fromPrice}</p>
+          </div>
+        )}
       </div>
 
       {/* Text */}
       <div className="p-5">
-        <div className="mb-1.5 flex items-baseline justify-between gap-2">
-          <h3 className="text-base font-bold text-foreground">{title}</h3>
-          {fromPrice != null && (
-            <span className="shrink-0 text-sm font-semibold text-primary">
-              From €{fromPrice}
-            </span>
-          )}
-        </div>
+        <h3 className="mb-1.5 text-base font-bold text-foreground">{title}</h3>
         <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
           {description}
         </p>
