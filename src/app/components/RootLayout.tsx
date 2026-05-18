@@ -298,21 +298,23 @@ export function RootLayout() {
     // accumulation across navigations.
     const setHreflangTags = (path: string) => {
       document.querySelectorAll('link[rel="alternate"][hreflang]').forEach(el => el.remove());
+      // All language variants share the same URL — the app detects the user's
+      // language from their browser preference and localStorage. Each hreflang
+      // entry tells Google this page serves that language, and x-default is the
+      // fallback for browsers/regions with no explicit match.
+      const canonicalUrl = `${canonicalBase}${path}`;
       const langs = ['en', 'pt', 'es', 'fr', 'de', 'nl', 'it'];
       langs.forEach((lang) => {
         const link = document.createElement('link');
         link.rel = 'alternate';
         link.setAttribute('hreflang', lang);
-        link.href = lang === 'en'
-          ? `${canonicalBase}${path}`
-          : `${canonicalBase}${path}?lang=${lang}`;
+        link.href = canonicalUrl;
         document.head.appendChild(link);
       });
-      // x-default points to the English (canonical) URL
       const def = document.createElement('link');
       def.rel = 'alternate';
       def.setAttribute('hreflang', 'x-default');
-      def.href = `${canonicalBase}${path}`;
+      def.href = canonicalUrl;
       document.head.appendChild(def);
     };
     // ─────────────────────────────────────────────────────────────────────────
