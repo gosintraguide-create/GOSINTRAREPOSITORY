@@ -159,6 +159,22 @@ export function AttractionDetailPage() {
           (language !== "en" && translatedAttraction?.longDescription) ||
           cmsAttraction.longDescription ||
           "",
+        highlights:
+          (language !== "en" && translatedAttraction?.highlights?.length
+            ? translatedAttraction.highlights
+            : null) ??
+          cmsAttraction.highlights ??
+          [],
+        tips:
+          (language !== "en" && translatedAttraction?.tips?.length
+            ? translatedAttraction.tips
+            : null) ??
+          cmsAttraction.tips ??
+          [],
+        hours:
+          (language !== "en" && translatedAttraction?.hours) ||
+          cmsAttraction.hours ||
+          "",
         // Image resolution: cardImage → heroImage → gallery[0] → imageUrl
         imageUrl:
           cmsAttraction.cardImage ||
