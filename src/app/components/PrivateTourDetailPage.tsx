@@ -417,8 +417,8 @@ export function PrivateTourDetailPage() {
               )}
             </div>
 
-            {/* Booking Card */}
-            <div className="lg:col-span-1">
+            {/* Booking Card — desktop only (mobile uses sticky bar) */}
+            <div className="hidden lg:block lg:col-span-1">
               <Card className="sticky top-24 p-6">
                 <div className="mb-4">
                   <div className="flex items-baseline gap-2">
