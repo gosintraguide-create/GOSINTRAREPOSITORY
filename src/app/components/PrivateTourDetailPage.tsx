@@ -599,10 +599,22 @@ export function PrivateTourDetailPage() {
                             </div>
                           )}
                           <div className="flex min-w-0 flex-1 flex-col justify-between p-3">
-                            <p className="text-sm font-semibold leading-snug text-foreground line-clamp-2">
-                              {t.title}
-                            </p>
-                            <div className="mt-2 flex items-center gap-2 text-sm">
+                            <div>
+                              {t.badge && (
+                                <span className="mb-1.5 inline-block rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                                  {t.badge}
+                                </span>
+                              )}
+                              <p className="text-sm font-semibold leading-snug text-foreground line-clamp-2">
+                                {t.title}
+                              </p>
+                              {t.description && (
+                                <p className="mt-1 text-xs leading-relaxed text-muted-foreground line-clamp-2">
+                                  {t.description}
+                                </p>
+                              )}
+                            </div>
+                            <div className="mt-2.5 flex items-center gap-2 text-sm">
                               {lowestOtherPrice != null && (
                                 <span className="shrink-0 whitespace-nowrap font-bold text-primary">
                                   {tTour.fromPrice} €{lowestOtherPrice}
@@ -650,17 +662,24 @@ export function PrivateTourDetailPage() {
                           </div>
                         )}
                         <div className="flex min-w-0 flex-1 flex-col justify-between p-3">
-                          <p className="text-sm font-semibold leading-snug text-foreground line-clamp-2">
-                            {a.title}
-                          </p>
-                          <div className="mt-2 flex items-center gap-3 text-sm">
+                          <div>
+                            <p className="text-sm font-semibold leading-snug text-foreground line-clamp-2">
+                              {a.title}
+                            </p>
+                            {a.excerpt && (
+                              <p className="mt-1 text-xs leading-relaxed text-muted-foreground line-clamp-2">
+                                {a.excerpt}
+                              </p>
+                            )}
+                          </div>
+                          <div className="mt-2.5 flex items-center gap-2 text-sm">
                             {a.readTimeMinutes && (
-                              <span className="flex items-center gap-1 text-muted-foreground">
+                              <span className="flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
                                 <Clock className="h-3.5 w-3.5 shrink-0" />
-                                {a.readTimeMinutes} min read
+                                {a.readTimeMinutes} min
                               </span>
                             )}
-                            <span className="ml-auto inline-flex items-center gap-0.5 font-medium text-primary">
+                            <span className="ml-auto shrink-0 whitespace-nowrap inline-flex items-center gap-0.5 font-medium text-primary text-sm">
                               {tTour.readArticle} <ChevronRight className="h-3.5 w-3.5" />
                             </span>
                           </div>
