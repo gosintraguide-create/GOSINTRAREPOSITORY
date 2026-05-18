@@ -334,20 +334,19 @@ export function PrivateTourDetailPage() {
         </div>
       </div>
 
-      {/* Hero Section */}
-      <section className="relative h-[50vh] min-h-[400px] overflow-hidden">
+      {/* ── Mobile hero — image with title overlay ──────────────────── */}
+      <section className="relative h-[50vh] min-h-[400px] overflow-hidden lg:hidden">
         <ImageWithFallback
           src={tour.heroImage || "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1920"}
           alt={tour.title}
           className="h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-
         <div className="absolute inset-0 flex items-end">
-          <div className="w-full pb-12 md:pb-16">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="w-full pb-12">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6">
               <div className="flex items-center gap-3">
-                <h1 className="text-4xl font-bold text-white sm:text-5xl md:text-6xl">
+                <h1 className="text-4xl font-bold text-white sm:text-5xl">
                   {tour.title}
                 </h1>
                 {tour.badge && (
@@ -366,68 +365,50 @@ export function PrivateTourDetailPage() {
         </div>
       </section>
 
-      {/* Mobile sticky CTA */}
-      <MobileStickyBar
-        price={getLowestPrice(tour)}
-        duration={tour.duration}
-        onBook={() => setShowBookingDialog(true)}
-      />
+      {/* ── Desktop hero — title + image/card side by side ───────────── */}
+      <div className="hidden lg:block bg-background">
+        <div className="mx-auto max-w-7xl px-6 pb-4 pt-8 lg:px-8">
+          {/* Page title */}
+          <div className="mb-6 flex items-center gap-3">
+            <h1 className="text-4xl font-bold text-foreground xl:text-5xl">
+              {tour.title}
+            </h1>
+            {tour.badge && (
+              <Badge
+                variant={tour.badgeColor === "accent" ? "default" : "secondary"}
+                className={
+                  tour.badgeColor === "accent" ? "bg-accent text-accent-foreground" : "bg-primary text-primary-foreground"
+                }
+              >
+                {tour.badge}
+              </Badge>
+            )}
+          </div>
 
-      {/* Tour description summary card */}
-      <div className="bg-background px-4 py-5 sm:px-6">
-        <div className="mx-auto max-w-3xl rounded-xl border border-border bg-secondary/30 px-5 py-4 shadow-sm">
-          <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-            {tour.description}
-          </p>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <section className="py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-8 lg:grid-cols-3">
-            {/* Details */}
-            <div className="lg:col-span-2">
-              {/* Long Description */}
-              {tour.longDescription && (
-                <div className="mb-8">
-                  <h2 className="mb-4 text-3xl font-bold">{tTour.aboutThisTour}</h2>
-                  <p className="whitespace-pre-wrap text-lg leading-relaxed text-muted-foreground">
-                    {tour.longDescription}
-                  </p>
-                </div>
-              )}
-
-              {/* Tour Highlights */}
-              {tour.features && tour.features.length > 0 && (
-                <>
-                  <h2 className="mb-6 text-3xl font-bold">{tTour.tourFeatures}</h2>
-                  <div className="space-y-4">
-                    {tour.features.map((feature, index) => (
-                      <div
-                        key={index}
-                        className="flex items-start gap-3 rounded-lg border p-4"
-                      >
-                        <Check className="h-5 w-5 flex-shrink-0 text-primary" />
-                        <span className="text-lg">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
+          {/* Two-column: image left, booking card right */}
+          <div className="grid grid-cols-3 items-start gap-8">
+            {/* Image + description */}
+            <div className="col-span-2">
+              <div className="overflow-hidden rounded-2xl" style={{ aspectRatio: "16/9" }}>
+                <ImageWithFallback
+                  src={tourImage}
+                  alt={tour.title}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <p className="mt-5 text-base leading-relaxed text-muted-foreground">
+                {tour.description}
+              </p>
             </div>
 
-            {/* Booking Card — desktop only (mobile uses sticky bar) */}
-            <div className="hidden lg:block lg:col-span-1">
+            {/* Booking card */}
+            <div className="col-span-1">
               <Card className="sticky top-24 p-6">
-                <div className="mb-4">
-                  <div className="flex items-baseline gap-2">
-                    <Clock className="h-5 w-5 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">{tTour.duration}:</span>
-                    <span className="font-semibold">{tour.duration}</span>
-                  </div>
+                <div className="mb-4 flex items-center gap-2">
+                  <Clock className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">{tTour.duration}:</span>
+                  <span className="text-sm font-semibold">{tour.duration}</span>
                 </div>
-                
                 <div className="mb-6 text-center">
                   <div className="text-sm text-muted-foreground">{tTour.price}</div>
                   <div className="text-3xl font-bold">{tour.price}</div>
@@ -435,7 +416,6 @@ export function PrivateTourDetailPage() {
                     <div className="text-sm text-muted-foreground">{tour.priceSubtext}</div>
                   )}
                 </div>
-                
                 <Button
                   size="lg"
                   className="w-full"
@@ -444,10 +424,59 @@ export function PrivateTourDetailPage() {
                   <Calendar className="mr-2 h-4 w-4" />
                   {tTour.bookThisTour}
                 </Button>
-                
-                
               </Card>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile sticky CTA */}
+      <MobileStickyBar
+        price={getLowestPrice(tour)}
+        duration={tour.duration}
+        onBook={() => setShowBookingDialog(true)}
+      />
+
+      {/* Tour description summary card — mobile only */}
+      <div className="lg:hidden bg-background px-4 py-5 sm:px-6">
+        <div className="mx-auto max-w-3xl rounded-xl border border-border bg-secondary/30 px-5 py-4 shadow-sm">
+          <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
+            {tour.description}
+          </p>
+        </div>
+      </div>
+
+      {/* Main Content — About + Features */}
+      <section className="py-12 md:py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-3xl">
+            {/* Long Description */}
+            {tour.longDescription && (
+              <div className="mb-8">
+                <h2 className="mb-4 text-3xl font-bold">{tTour.aboutThisTour}</h2>
+                <p className="whitespace-pre-wrap text-lg leading-relaxed text-muted-foreground">
+                  {tour.longDescription}
+                </p>
+              </div>
+            )}
+
+            {/* Tour Highlights */}
+            {tour.features && tour.features.length > 0 && (
+              <>
+                <h2 className="mb-6 text-3xl font-bold">{tTour.tourFeatures}</h2>
+                <div className="space-y-4">
+                  {tour.features.map((feature, index) => (
+                    <div
+                      key={index}
+                      className="flex items-start gap-3 rounded-lg border p-4"
+                    >
+                      <Check className="h-5 w-5 flex-shrink-0 text-primary" />
+                      <span className="text-lg">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         </div>
       </section>
