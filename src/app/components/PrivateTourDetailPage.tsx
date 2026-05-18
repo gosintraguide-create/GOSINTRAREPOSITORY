@@ -66,7 +66,7 @@ function getLowestPrice(tour: PrivateTour): number | null {
   return m ? parseInt(m[0]) : null;
 }
 
-function MobileStickyBar({ price, onBook }: { price: number | null; onBook: () => void }) {
+function MobileStickyBar({ price, duration, onBook }: { price: number | null; duration?: string; onBook: () => void }) {
   const [headerHeight, setHeaderHeight] = useState(0);
 
   useEffect(() => {
@@ -98,6 +98,12 @@ function MobileStickyBar({ price, onBook }: { price: number | null; onBook: () =
             <p className="text-sm font-semibold text-foreground">Private Tour</p>
           )}
         </div>
+        {duration && (
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <Clock className="h-3.5 w-3.5 shrink-0" />
+            <span>{duration}</span>
+          </div>
+        )}
         <Button onClick={onBook} className="h-10 shrink-0 px-5 text-sm font-semibold">
           <Ticket className="mr-1.5 h-4 w-4" />
           Book this tour
@@ -335,12 +341,12 @@ export function PrivateTourDetailPage() {
           alt={tour.title}
           className="h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
 
         <div className="absolute inset-0 flex items-end">
           <div className="w-full pb-12 md:pb-16">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <div className="mb-4 flex items-center gap-3">
+              <div className="flex items-center gap-3">
                 <h1 className="text-4xl font-bold text-white sm:text-5xl md:text-6xl">
                   {tour.title}
                 </h1>
@@ -355,9 +361,6 @@ export function PrivateTourDetailPage() {
                   </Badge>
                 )}
               </div>
-              <p className="max-w-2xl text-lg text-white/90 sm:text-xl">
-                {tour.description}
-              </p>
             </div>
           </div>
         </div>
@@ -366,8 +369,18 @@ export function PrivateTourDetailPage() {
       {/* Mobile sticky CTA */}
       <MobileStickyBar
         price={getLowestPrice(tour)}
+        duration={tour.duration}
         onBook={() => setShowBookingDialog(true)}
       />
+
+      {/* Tour description summary card */}
+      <div className="bg-background px-4 py-5 sm:px-6">
+        <div className="mx-auto max-w-3xl rounded-xl border border-border bg-secondary/30 px-5 py-4 shadow-sm">
+          <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
+            {tour.description}
+          </p>
+        </div>
+      </div>
 
       {/* Main Content */}
       <section className="py-12 md:py-16">
