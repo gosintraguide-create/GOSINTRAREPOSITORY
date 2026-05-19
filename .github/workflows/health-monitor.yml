@@ -1,0 +1,51 @@
+name: Backend Health Monitor
+
+on:
+  schedule:
+    # Every 10 minutes
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check edge function health
+        id: check
+        run: |
+          HTTP_STATUS=$(curl -s -o /tmp/health_response.txt -w "%{http_code}" \
+            --max-time 30 \
+            -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR3aXpuYWVmZXFuZHVnbG1jaXZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxNzc5NzYsImV4cCI6MjA3NTc1Mzk3Nn0.cTO16eeGusYnwjVwVVt1i4M8gQZ_MtDxyv9wYFHBVLo" \
+            "https://dwiznaefeqnduglmcivr.supabase.co/functions/v1/make-server-3bd0ade8/health")
+
+          RESPONSE=$(cat /tmp/health_response.txt)
+          echo "HTTP Status: $HTTP_STATUS"
+          echo "Response: $RESPONSE"
+          echo "http_status=$HTTP_STATUS" >> $GITHUB_OUTPUT
+          echo "response=$RESPONSE" >> $GITHUB_OUTPUT
+
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "::error::Backend returned HTTP $HTTP_STATUS — edge function may be down"
+            exit 1
+          fi
+
+          echo "✅ Backend is healthy (HTTP 200)"
+
+      - name: Send alert email via Resend
+        if: failure()
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+        run: |
+          TIMESTAMP=$(date -u "+%Y-%m-%d %H:%M UTC")
+          STATUS="${{ steps.check.outputs.http_status }}"
+          RESPONSE="${{ steps.check.outputs.response }}"
+
+          curl -s -X POST https://api.resend.com/emails \
+            -H "Authorization: Bearer $RESEND_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"from\": \"Go Sintra Monitor <bookings@hoponsintra.com>\",
+              \"to\": [\"vascotimm@gmail.com\"],
+              \"subject\": \"⚠️ Go Sintra backend is DOWN — $TIMESTAMP\",
+              \"html\": \"<div style='font-family:sans-serif;max-width:520px'><h2 style='color:#b91c1c'>⚠️ Backend Health Alert</h2><p>The Go Sintra edge function failed its health check.</p><table style='width:100%;border-collapse:collapse;font-size:14px'><tr><td style='padding:8px;color:#6b7280;border-bottom:1px solid #e5e7eb'>Time</td><td style='padding:8px;font-weight:600;border-bottom:1px solid #e5e7eb'>$TIMESTAMP</td></tr><tr><td style='padding:8px;color:#6b7280;border-bottom:1px solid #e5e7eb'>HTTP status</td><td style='padding:8px;font-weight:600;border-bottom:1px solid #e5e7eb'>$STATUS</td></tr><tr><td style='padding:8px;color:#6b7280'>Response</td><td style='padding:8px;font-weight:600;font-family:monospace'>$RESPONSE</td></tr></table><p style='margin-top:20px'>Check the <a href='https://supabase.com/dashboard/project/dwiznaefeqnduglmcivr/functions'>Supabase dashboard</a> for edge function logs.</p><p style='color:#6b7280;font-size:12px'>This alert is sent automatically every time the health check fails. It will stop once the backend recovers.</p></div>\"
+            }"

@@ -5,7 +5,6 @@ import { MicrosoftClarity } from "@/components/MicrosoftClarity";
 import { CookieConsent } from "@/components/CookieConsent";
 import { InstallPrompt } from "@/components/InstallPrompt";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
-import { BackendStatusIndicator } from "@/components/BackendStatusIndicator";
 import { DynamicManifest } from "@/components/DynamicManifest";
 import { DynamicFavicon } from "@/components/DynamicFavicon";
 import { HelmetProvider } from "react-helmet-async";
@@ -26,7 +25,6 @@ function App() {
       <DynamicFavicon />
       <InstallPrompt />
       <OfflineIndicator />
-      <BackendStatusIndicator />
       <CookieConsent />
       <RouterProvider router={router} />
     </HelmetProvider>
