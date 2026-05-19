@@ -13,7 +13,7 @@ export const en: WebsiteContent = {
     // Hero Section
     hero: {
       title: "Discover Sintra Your Way",
-      subtitle: "Hop-on/hop-off day pass with guaranteed seats and professional driver-guides. Unlimited rides in small tuk tuks and vintage jeeps. New departure every 30 minutes.",
+      subtitle: "Hop-on/hop-off day pass with guaranteed seats and professional driver-guides. Unlimited rides in small tuk tuks and vintage jeeps.",
       ctaButton: "Book Your Day Pass",
       benefitPills: [
         { icon: "Users", text: "Small Groups (2-6)" },
@@ -30,7 +30,7 @@ export const en: WebsiteContent = {
       privateTours: { title: "Prefer a Private Tour?", subtitle: "Exclusive personalized experience" },
     },
     heroTitle: "Discover Sintra Your Way",
-    heroSubtitle: "Hop-on, hop-off day pass with guaranteed seating and professional local guides. Unlimited rides in small tuk tuks and vintage jeeps. New departure every 30 minutes.",
+    heroSubtitle: "Hop-on, hop-off day pass with guaranteed seating and professional local guides. Unlimited rides in small tuk tuks and vintage jeeps.",
     heroCallToAction: "Book Your Day Pass",
     benefitPills: [
       { icon: "Users", text: "Small Groups (2-6)" },
@@ -43,14 +43,14 @@ export const en: WebsiteContent = {
     // What Is Hop On Sintra Section
     hopOnHopOffDayPass: "Hop-On/Hop-Off Day Pass",
     unlimitedAdventureTitle: "Your Unlimited Sintra Adventure",
-    serviceDescription: "Hop On Sintra is a flexible hop-on/hop-off day pass service using small, intimate vehicles like tuk tuks and vintage UMM jeeps. With service every 30 minutes from 9am-7pm, you get guaranteed seating and unlimited rides to all major attractions.",
+    serviceDescription: "Hop On Sintra is a flexible hop-on/hop-off day pass service using small, intimate vehicles like tuk tuks and vintage UMM jeeps. You get guaranteed seating and unlimited rides to all major attractions from 9am-7pm.",
     serviceDescription2: "Unlike crowded tour buses, our small groups (2-6 passengers) with professional local guides give you the freedom to explore Sintra at your own pace while enjoying personalized attention.",
     
     // Feature benefits
     unlimitedRidesTitle: "Unlimited Rides All Day",
     unlimitedRidesSubtitle: "One pass, all attractions",
-    frequentServiceTitle: "Every 30 Minutes",
-    frequentServiceSubtitle: "Never wait long",
+    frequentServiceTitle: "Consistent Service",
+    frequentServiceSubtitle: "All day availability",
     smallGroupsTitle: "Small Intimate Groups",
     smallGroupsSubtitle: "2-6 passengers max",
     professionalGuidesTitle: "Professional Guides",
@@ -169,7 +169,7 @@ export const en: WebsiteContent = {
     totalPaid: "Total Paid",
     importantInformation: "Important Information",
     serviceHours: "Service Hours",
-    serviceHoursDescription: "Vehicles run every 30 minutes from 9 AM to 7 PM. Your day pass is valid for unlimited rides all day.",
+    serviceHoursDescription: "Vehicles operate from 9 AM to 7 PM. Your day pass is valid for unlimited rides all day.",
     digitalTickets: "Digital Tickets",
     digitalTicketsDescription: "Show your QR code to board any vehicle. All passengers must have their own QR code ready.",
     guaranteedSeating: "Guaranteed Seating",
@@ -190,7 +190,7 @@ export const en: WebsiteContent = {
     story: [
       "Hop On Sintra was born from a simple observation: visitors to this UNESCO World Heritage site deserved better than crowded buses and rigid schedules.",
       "We created a flexible, premium day pass service that combines the intimacy of small vehicles driven by professional local guides with the freedom of hop-on/hop-off convenience.",
-      "Today, thousands of visitors choose Hop On Sintra for guaranteed seating, professional driver-guides, regular departures every 30 minutes, and an authentic, intimate way to explore this magical destination.",
+      "Today, thousands of visitors choose Hop On Sintra for guaranteed seating, professional driver-guides, reliable service throughout the day, and an authentic, intimate way to explore this magical destination.",
     ],
     mission: "Our mission is to provide the most convenient, comfortable, and authentic way to explore Sintra's palaces, castles, and gardens with professional local guides.",
     values: [
@@ -319,7 +319,7 @@ export const en: WebsiteContent = {
   seo: {
     home: {
       title: "Go Sintra - Premium Hop-On/Hop-Off Day Pass | Small Vehicle Tours",
-      description: "Explore Sintra's UNESCO World Heritage sites with guaranteed seating in small vehicles. Unlimited rides every 30 minutes. Book your flexible day pass online now.",
+      description: "Explore Sintra's UNESCO World Heritage sites with guaranteed seating in small vehicles. Unlimited rides all day. Book your flexible day pass online now.",
       keywords: "Sintra tours, hop on hop off Sintra, Sintra transport, small group tours Sintra, Pena Palace tours, Sintra day pass",
     },
     attractions: {
@@ -521,7 +521,7 @@ export const en: WebsiteContent = {
     routeMap: {
       bothRoutesLabel: "Both routes",
       pickupLabel: "Pickup",
-      frequencyLabel: "Every 30 min • 9 AM - 7 PM",
+      frequencyLabel: "9 AM - 7 PM",
       infoHeader: "Two circular routes • Click any stop to select",
       yourPickupLocation: "Your Pickup Location",
       route1Label: "Route 1",

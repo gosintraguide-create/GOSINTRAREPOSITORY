@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs -I {} basename {})",
+      "Bash(grep -E \"\\\\.tsx$\")",
+      "Bash(grep -E \"\\\\.json$|\\\\.yaml$|\\\\.yml$\")",
+      "Bash(dir src\\\\app\\\\components /b /s)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "PowerShell(Get-Command gh -ErrorAction SilentlyContinue)",
+      "Bash(supabase --version)",
+      "Bash(npx supabase *)",
+      "Bash(ls \"C:\\\\Users\\\\vasco\\\\Desktop\\\\GOSINTRAREPOSITORY\" 2>&1 | head -20)",
+      "Bash(gh pr *)",
+      "PowerShell(Get-ChildItem \"C:\\\\Program Files\\\\GitHub CLI\\\\\" -ErrorAction SilentlyContinue; Get-ChildItem \"$env:LOCALAPPDATA\\\\Programs\\\\GitHub CLI\\\\\" -ErrorAction SilentlyContinue)",
+      "Bash(git credential *)",
+      "Bash(dir /s \"C:\\\\Users\\\\vasco\\\\Desktop\\\\GOSINTRAREPOSITORY\\\\.claude\\\\worktrees\\\\ecstatic-diffie-39d6e7\\\\src\")",
+      "Bash(xargs grep -l \"language\\\\|lang\")",
+      "Bash(node -e \"const f = require\\('C:/Users/vasco/Desktop/GOSINTRAREPOSITORY/.claude/worktrees/ecstatic-diffie-39d6e7/src/app/lib/translations/locales/en.json'\\); console.log\\('Valid JSON. Top-level keys:', Object.keys\\(f\\).length\\); console.log\\(Object.keys\\(f\\).join\\(', '\\)\\);\")",
+      "PowerShell($content = Get-Content \"C:\\\\Users\\\\vasco\\\\Desktop\\\\GOSINTRAREPOSITORY\\\\.claude\\\\worktrees\\\\ecstatic-diffie-39d6e7\\\\src\\\\app\\\\lib\\\\translations\\\\locales\\\\en.json\" -Raw; $obj = $content | ConvertFrom-Json; $keys = $obj.PSObject.Properties.Name; Write-Host \"Valid JSON. Top-level key count: $\\($keys.Count\\)\"; Write-Host \"Keys: $\\($keys -join ', '\\)\")",
+      "Bash(git commit *)",
+      "Bash(npx tsc *)",
+      "Bash(node_modules/.bin/tsc --noEmit)",
+      "Bash(npm run *)",
+      "Bash(which node *)",
+      "Bash(cd /C/Users/vasco/Desktop/GOSINTRAREPOSITORY/.claude/worktrees/ecstatic-diffie-39d6e7 && find . -type f \\\\\\( -name \"*.ts\" -o -name \"*.tsx\" -o -name \"*.js\" -o -name \"*.jsx\" \\\\\\) | head -50)",
+      "Bash(where node *)",
+      "Bash(where npm *)",
+      "PowerShell(Get-ChildItem \"C:\\\\Program Files\\\\nodejs\\\\\" -ErrorAction SilentlyContinue; Get-ChildItem \"$env:LOCALAPPDATA\\\\nvm\" -ErrorAction SilentlyContinue | Select-Object -First 10; Get-ChildItem \"C:\\\\nvm\" -ErrorAction SilentlyContinue | Select-Object -First 5; $env:PATH -split \";\" | Where-Object { $_ -match \"node|nvm\" })",
+      "Bash(powershell -command \"Get-Content src/app/lib/translations/locales/en.json | Select-String -Pattern '\\\\\"homepage\\\\\"' -Context 0,50\")",
+      "WebFetch(domain:api.github.com)",
+      "WebFetch(domain:github.com)",
+      "Bash(where gh *)",
+      "Bash(powershell -Command \"Get-Command gh -ErrorAction SilentlyContinue\")",
+      "Bash(git pull *)",
+      "Bash(node -e \"const t = require\\('./src/app/lib/translations/locales/en.json'\\); console.log\\(JSON.stringify\\(t.tourBookingDialog, null, 2\\)\\)\")",
+      "Bash(dir \"C:\\\\Users\\\\vasco\\\\Desktop\\\\GOSINTRAREPOSITORY\\\\.claude\\\\worktrees\\\\ecstatic-diffie-39d6e7\\\\src\\\\FullCode.txt\")",
+      "Bash(powershell -Command 'Select-String -Path '\\\\''src\\\\**\\\\*.ts'\\\\'','\\\\''src\\\\**\\\\*.tsx'\\\\'','\\\\''src\\\\**\\\\*.json'\\\\'' -Pattern '\\\\''every \\\\d+\\(-\\\\d+\\)? min|every \\\\d+ minutes|Every \\\\d+\\(-\\\\d+\\)? Min|departures every \\\\d|Vehicles every \\\\d|runs every \\\\d|departure every \\\\d|New departure every|New vehicles depart every|vehicles depart every|Vehicles Every \\\\d|Service every \\\\d'\\\\'' -Recurse -Include '\\\\''*.ts'\\\\'','\\\\''*.tsx'\\\\'','\\\\''*.json'\\\\'' | Where-Object { $_.Filename -notmatch '\\\\''terms|blogManager|FullCode'\\\\'' } | Select-Object Filename, LineNumber, Line')"
+    ]
+  }
+}

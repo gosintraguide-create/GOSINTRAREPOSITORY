@@ -405,7 +405,7 @@ export function generateBookingConfirmationEmail(data: BookingEmailData): string
         <ul>
           <li><strong>Show Your QR Code</strong> to board at any stop</li>
           <li><strong>Unlimited Rides</strong> from 9 AM to 7 PM with professional guides</li>
-          <li><strong>Vehicles Every 30 Minutes</strong> at all major attractions</li>
+          <li><strong>Just Show Up</strong> at any stop — service runs all day</li>
         </ul>
       </div>
 
@@ -523,7 +523,7 @@ HOW IT WORKS
 ============
 1. Show your QR code to board at any stop
 2. Unlimited rides from 9 AM to 7 PM with professional guides
-3. Vehicles every 30 minutes at all major attractions
+3. Just show up at any stop — service runs all day
 
 Need help? Contact us:
 Email: info@hoponsintra.com

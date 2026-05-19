@@ -49,8 +49,8 @@ export const nl: WebsiteContent = {
     // Feature benefits
     unlimitedRidesTitle: "Onbeperkte Ritten De Hele Dag",
     unlimitedRidesSubtitle: "Eén pas, alle attracties",
-    frequentServiceTitle: "Elke 30 Minuten",
-    frequentServiceSubtitle: "Wacht nooit lang",
+    frequentServiceTitle: "Betrouwbare Service",
+    frequentServiceSubtitle: "De hele dag beschikbaar",
     smallGroupsTitle: "Kleine Intieme Groepen",
     smallGroupsSubtitle: "Maximaal 2-6 passagiers",
     professionalGuidesTitle: "Professionele Gidsen",

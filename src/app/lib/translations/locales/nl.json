@@ -10,7 +10,7 @@
   "homepage": {
     "hero": {
       "title": "Ontdek Sintra op Jouw Manier",
-      "subtitle": "Hop-on/hop-off dagpas met gegarandeerde zitplaatsen en professionele chauffeur-gidsen. Onbeperkte ritten in kleine tuk tuks en vintage jeeps. Nieuwe vertrek elke 30 minuten.",
+      "subtitle": "Hop-on/hop-off dagpas met gegarandeerde zitplaatsen en professionele chauffeur-gidsen. Onbeperkte ritten in kleine tuk tuks en vintage jeeps.",
       "ctaButton": "Boek Je Dagpas",
       "heroEyebrow": "Sintra, Portugal",
       "heroHeadingPre": "Sintra verdient meer dan een gehaaste middag. Verken het in een",
@@ -43,7 +43,7 @@
       "privateTours": { "title": "Voorkeur voor een Privétour?", "subtitle": "Exclusieve gepersonaliseerde ervaring" }
     },
     "heroTitle": "Ontdek Sintra op Jouw Manier",
-    "heroSubtitle": "Hop-on/hop-off dagpas met gegarandeerde zitplaatsen en professionele chauffeur-gidsen. Onbeperkte ritten in kleine tuk tuks en vintage jeeps. Nieuwe vertrek elke 30 minuten.",
+    "heroSubtitle": "Hop-on/hop-off dagpas met gegarandeerde zitplaatsen en professionele chauffeur-gidsen. Onbeperkte ritten in kleine tuk tuks en vintage jeeps.",
     "heroCallToAction": "Boek Je Dagpas",
     "benefitPills": [
       { "icon": "Users", "text": "Kleine Groepen (2-6)" },
@@ -54,12 +54,12 @@
     "sectionOneDescription": "Vermijd drukke toerbussen en ervaar Sintra zoals het bedoeld is—met professionele lokale gidsen",
     "hopOnHopOffDayPass": "Hop-On/Hop-Off-Dagpas",
     "unlimitedAdventureTitle": "Jouw Onbeperkte Sintra Avontuur",
-    "serviceDescription": "Hop On Sintra is een flexibele hop-on/hop-off dagpas-service met kleine, intieme voertuigen zoals tuk tuks en vintage UMM jeeps. Met service elke 30 minuten van 9 tot 19 uur krijg je gegarandeerde zitplaatsen en onbeperkte ritten naar alle belangrijke attracties.",
+    "serviceDescription": "Hop On Sintra is een flexibele hop-on/hop-off dagpas-service met kleine, intieme voertuigen zoals tuk tuks en vintage UMM jeeps. Van 9 tot 19 uur krijg je gegarandeerde zitplaatsen en onbeperkte ritten naar alle belangrijke attracties.",
     "serviceDescription2": "In tegenstelling tot drukke toerbussen, geven onze kleine groepen (2-6 passagiers) met professionele lokale gidsen je de vrijheid om Sintra in je eigen tempo te verkennen terwijl je geniet van persoonlijke aandacht.",
     "unlimitedRidesTitle": "Onbeperkte Ritten De Hele Dag",
     "unlimitedRidesSubtitle": "Eén pas, alle attracties",
-    "frequentServiceTitle": "Elke 30 Minuten",
-    "frequentServiceSubtitle": "Wacht nooit lang",
+    "frequentServiceTitle": "Betrouwbare Service",
+    "frequentServiceSubtitle": "De hele dag beschikbaar",
     "smallGroupsTitle": "Kleine Intieme Groepen",
     "smallGroupsSubtitle": "Maximaal 2-6 passagiers",
     "professionalGuidesTitle": "Professionele Gidsen",
@@ -174,7 +174,7 @@
     "totalPaid": "Totaal Betaald",
     "importantInformation": "Belangrijke Informatie",
     "serviceHours": "Service Uren",
-    "serviceHoursDescription": "Voertuigen rijden om de 30 minuten van 9 tot 19 uur. Uw dagpas is geldig voor onbeperkte ritten de hele dag.",
+    "serviceHoursDescription": "Voertuigen rijden van 9 tot 19 uur. Uw dagpas is geldig voor onbeperkte ritten de hele dag.",
     "digitalTickets": "Digitale Tickets",
     "digitalTicketsDescription": "Toon uw QR-code om in elk voertuig te stappen. Alle passagiers moeten hun eigen QR-code klaar hebben.",
     "guaranteedSeating": "Gegarandeerde Zitplaatsen",
@@ -211,7 +211,7 @@
     "story": [
       "Hop On Sintra was born from a simple observation: visitors to this UNESCO World Heritage site deserved better than crowded buses and rigid schedules.",
       "We created a flexible, premium day pass service that combines the intimacy of small vehicles driven by professional local guides with the freedom of hop-on/hop-off convenience.",
-      "Today, thousands of visitors choose Hop On Sintra for guaranteed seating, professional driver-guides, regular departures every 30 minutes, and an authentic, intimate way to explore this magical destination."
+      "Today, thousands of visitors choose Hop On Sintra for guaranteed seating, professional driver-guides, reliable service throughout the day, and an authentic, intimate way to explore this magical destination."
     ],
     "mission": "Our mission is to provide the most convenient, comfortable, and authentic way to explore Sintra's palaces, castles, and gardens with professional local guides.",
     "values": [
@@ -252,7 +252,7 @@
       { "q": "Kan ik attractiebiljetten kopen met mijn pas?", "a": "Ja! Tijdens het boeken kunt u entreebiljetten toevoegen voor populaire attracties zoals het Pena Paleis, Quinta da Regaleira en meer. Dit bespaart tijd—geen wachten bij de kaartjesloketten." },
       { "q": "Wat zijn rondleidingen?", "a": "Onze vertrekken om 10:00 en 14:00 bieden rondleidingen waar uw professionele bestuurder-gids stopt bij belangrijke attracties om deskundige toelichting te geven over de geschiedenis en verborgen schatten van Sintra." },
       { "q": "Hoe gebruik ik mijn QR-code?", "a": "Toon gewoon uw QR-code (verzonden per e-mail) aan elke Hop On Sintra-bestuurder voordat u instapt. Ze scannen hem om uw pas te verifiëren." },
-      { "q": "Hoe vaak vertrekken de voertuigen?", "a": "Voertuigen vertrekken elke 30 minuten vanaf alle grote attracties tijdens openingsuren (9:00 - 19:00)." }
+      { "q": "Hoe vaak vertrekken de voertuigen?", "a": "We bieden doorlopende service van alle grote attracties tijdens openingsuren (9:00 - 19:00). Meld je gewoon aan bij een halte." }
     ]
   },
   "attractions": {
@@ -503,7 +503,7 @@
   "seo": {
     "home": {
       "title": "Hop On Sintra - Premium Dagpas Hop-On/Hop-Off | Professionele Lokale Gidsen",
-      "description": "Verken Sintra's UNESCO Werelderfgoedlocaties met gegarandeerde zitplaatsen in kleine voertuigen bestuurd door professionele lokale gidsen. Onbeperkte ritten elke 30 minuten. Boek nu je flexibele dagpas online.",
+      "description": "Verken Sintra's UNESCO Werelderfgoedlocaties met gegarandeerde zitplaatsen in kleine voertuigen bestuurd door professionele lokale gidsen. Onbeperkte ritten de hele dag. Boek nu je flexibele dagpas online.",
       "keywords": "dagpas Sintra, hop on hop off Sintra, transport Sintra, kleine groep tours Sintra, Pena Paleis tours, begeleide tours Sintra, professionele gidsen Sintra"
     },
     "attractions": {
@@ -523,7 +523,7 @@
     },
     "about": {
       "title": "Over Hop On Sintra - Premium Dagpas Service met Professionele Gidsen",
-      "description": "Hop On Sintra biedt premium dagpas service hop-on/hop-off met gegarandeerde zitplaatsen in kleine voertuigen bestuurd door professionele lokale gidsen. Regelmatige vertrekken elke 30 minuten door heel Sintra.",
+      "description": "Hop On Sintra biedt premium dagpas service hop-on/hop-off met gegarandeerde zitplaatsen in kleine voertuigen bestuurd door professionele lokale gidsen. Doorlopende service door heel Sintra.",
       "keywords": "over Hop On Sintra, dagpas bedrijf Sintra, premium tours Sintra, kleine groep Sintra, professionele gidsen"
     },
     "blog": {
@@ -710,7 +710,7 @@
     "routeMap": {
       "bothRoutesLabel": "Beide routes",
       "pickupLabel": "Ophalen",
-      "frequencyLabel": "Elke 30 min • 9u - 19u",
+      "frequencyLabel": "9u - 19u",
       "infoHeader": "Twee rondritten • Klik op een halte om te selecteren",
       "yourPickupLocation": "Jouw Ophaallocatie",
       "route1Label": "Route 1",
@@ -1047,7 +1047,7 @@
     "step2Description": "Je smartphone wordt je ticket naar Sintra! Bewaar je QR-code en je bent klaar om in te stappen bij een van onze stops. Zo simpel is het.",
     "step2Badge": "📱 Werkt ook offline!",
     "step3Title": "Stap In en Ontdek!",
-    "step3Description": "Zie je een tuk tuk bij de stop? Laat je code aan je professionele chauffeur-gids zien en stap in! Met ritten elke 10-15 minuten van 9.00 tot 20.00 uur wacht je nooit lang. Verken op je eigen tempo—onze gidsen begeleiden je de hele dag.",
+    "step3Description": "Zie je een tuk tuk bij de stop? Laat je code aan je professionele chauffeur-gids zien en stap in! De service rijdt van 9 tot 19 uur. Verken op je eigen tempo—onze gidsen begeleiden je de hele dag.",
     "step3Badge": "🎉 Onbeperkte ritten met professionele gidsen",
     "step4Title": "Geen Voertuig bij de Stop?",
     "step4Description": "Als je geen wachtend voertuig ziet wanneer je bij een stop aankomt, kun je een ophaalverzoek doen! Dit laat ons weten dat je wacht en helpt ons om je sneller te bereiken. Je verzoek helpt ons onze service te optimaliseren en wachttijden voor iedereen te verminderen.",
@@ -1227,7 +1227,7 @@
       "unlimitedRides": "Onbeperkte Ritten",
       "unlimitedRidesDesc": "Gebruik uw pas voor onbeperkte hop-on/hop-off ritten tot 20:00 uur",
       "regularService": "Regelmatige Service",
-      "regularServiceDesc": "Nieuwe voertuigen vertrekken elke 30 minuten van alle belangrijke attracties",
+      "regularServiceDesc": "Doorlopende service van alle belangrijke attracties gedurende de hele dag",
       "flexibleSchedule": "Flexibel Schema",
       "flexibleScheduleDesc": "Besteed zoveel tijd als u wilt bij elke attractie",
       "thankYou": "Bedankt voor het Kiezen van Hop On Sintra!",

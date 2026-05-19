@@ -633,7 +633,7 @@ export function RequestPickupPage() {
                   <span>Service Hours</span>
                 </div>
                 <p className="text-muted-foreground">
-                  Our vehicles run every 30 minutes from 9:00 AM to 7:00 PM daily.
+                  Our vehicles are available from 9:00 AM to 7:00 PM daily.
                 </p>
               </div>
 

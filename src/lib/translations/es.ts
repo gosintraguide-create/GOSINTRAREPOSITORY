@@ -49,8 +49,8 @@ export const es: WebsiteContent = {
     // Feature benefits
     unlimitedRidesTitle: "Viajes Ilimitados Todo el Día",
     unlimitedRidesSubtitle: "Un pase, todas las atracciones",
-    frequentServiceTitle: "Cada 30 Minutos",
-    frequentServiceSubtitle: "Nunca esperes mucho",
+    frequentServiceTitle: "Servicio Constante",
+    frequentServiceSubtitle: "Disponible todo el día",
     smallGroupsTitle: "Grupos Pequeños Íntimos",
     smallGroupsSubtitle: "Máximo 2-6 pasajeros",
     professionalGuidesTitle: "Guías Profesionales",

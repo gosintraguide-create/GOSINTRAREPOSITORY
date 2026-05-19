@@ -594,11 +594,11 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
   homepage: {
     hero: {
       title: "Discover Sintra Your Way",
-      subtitle: "Hop-on, hop-off day pass with guaranteed seats. Unlimited rides in small tuk tuks and vintage jeeps. New departure every 10-15 minutes.",
+      subtitle: "Hop-on, hop-off day pass with guaranteed seats. Unlimited rides in small tuk tuks and vintage jeeps.",
       ctaButton: "Book Your Day Pass",
       benefitPills: [
         { icon: "Users", text: "Small Groups (2-6)" },
-        { icon: "Clock", text: "Every 10-15 Min" },
+        { icon: "Clock", text: "All Day Service" },
         { icon: "MapPin", text: "All Attractions" },
         { icon: "Smartphone", text: "Request Pickups" },
       ],
@@ -666,7 +666,7 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
       },
       {
         title: "Ultimate Flexibility",
-        description: "Hop off at any attraction, explore at your own pace, then catch the next ride in 10-15 minutes. Your schedule, your adventure.",
+        description: "Hop off at any attraction, explore at your own pace, then catch the next ride. Your schedule, your adventure.",
         icon: "RefreshCw",
       },
       {
@@ -681,7 +681,7 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
       },
       {
         title: "Regular Departures",
-        description: "New vehicles depart every 10-15 minutes throughout the day. No rigid schedules, just consistent service when you need it.",
+        description: "Consistent service throughout the day. No rigid schedules — just show up at any stop.",
         icon: "Calendar",
       },
       {
@@ -744,7 +744,7 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
         number: 3,
         icon: "Car",
         title: "Start Your Adventure",
-        description: "Show your QR code to board at any stop. With service every 10-15 minutes, you're always moments away from discovering Sintra's next treasure.",
+        description: "Show your QR code to board at any stop. Consistent service all day means you're always moments away from discovering Sintra's next treasure.",
       },
     ],
     whatMakesUsSpecial: {
@@ -758,7 +758,7 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
         },
         {
           title: "Frequent Departures",
-          description: "New vehicles every 10-15 minutes from 9 AM to 8 PM. Never wait long, never feel rushed. Total flexibility.",
+          description: "Consistent service from 9 AM to 8 PM. Never feel rushed. Total flexibility.",
           icon: "Clock",
         },
         {
@@ -793,7 +793,7 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
         },
         {
           question: "How often do vehicles depart?",
-          answer: "We have new departures every 10-15 minutes during operating hours. This means you'll never wait long to catch your next ride to a different attraction.",
+          answer: "We maintain consistent service throughout operating hours. You'll never wait long to catch your next ride to a different attraction.",
         },
         {
           question: "How many people fit in each vehicle?",
@@ -1352,7 +1352,7 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
       paragraphs: [
         "Hop On Sintra was born from a simple observation: visitors to this UNESCO World Heritage site deserved better than crowded buses and rigid schedules.",
         "We created a flexible, premium alternative that combines the intimacy of small vehicles with the freedom of hop-on/hop-off convenience.",
-        "Today, thousands of visitors choose Hop On Sintra for guaranteed seating, regular departures every 30 minutes, and an authentic, intimate way to explore this magical destination.",
+        "Today, thousands of visitors choose Hop On Sintra for guaranteed seating, reliable service throughout the day, and an authentic, intimate way to explore this magical destination.",
       ],
     },
     mission: {
@@ -1639,7 +1639,7 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
     defaultOgImage: "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop&q=80",
     home: {
       title: "Hop On Sintra - Premium Hop-On/Hop-Off Day Pass | Small Vehicle Tours",
-      description: "Explore Sintra's UNESCO World Heritage sites with guaranteed seating in small vehicles. Unlimited rides every 30 minutes. Book your flexible day pass online now.",
+      description: "Explore Sintra's UNESCO World Heritage sites with guaranteed seating in small vehicles. Unlimited rides all day. Book your flexible day pass online now.",
       keywords: "Sintra tours, hop on hop off Sintra, Sintra transport, small group tours Sintra, Pena Palace tours, Sintra day pass",
       ogImage: "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop&q=80",
     },
@@ -1660,7 +1660,7 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
     },
     about: {
       title: "About Hop On Sintra - Premium Small Vehicle Tour Service",
-      description: "Hop On Sintra offers premium hop-on/hop-off service with guaranteed seating in small vehicles. Regular departures every 30 minutes throughout Sintra.",
+      description: "Hop On Sintra offers premium hop-on/hop-off service with guaranteed seating in small vehicles. Consistent service throughout the day across Sintra.",
       keywords: "about Hop On Sintra, Sintra tour company, premium Sintra tours, small group Sintra",
     },
     hopOnService: {

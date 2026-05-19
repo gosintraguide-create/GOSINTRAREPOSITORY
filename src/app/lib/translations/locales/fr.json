@@ -10,7 +10,7 @@
   "homepage": {
     "hero": {
       "title": "Découvrez Sintra à Votre Façon",
-      "subtitle": "Pass journée hop-on/hop-off avec sièges garantis et chauffeurs-guides professionnels. Trajets illimités dans de petits tuk tuks et jeeps vintage. Nouveau départ toutes les 30 minutes.",
+      "subtitle": "Pass journée hop-on/hop-off avec sièges garantis et chauffeurs-guides professionnels. Trajets illimités dans de petits tuk tuks et jeeps vintage.",
       "ctaButton": "Réserver Votre Pass Journée",
       "heroEyebrow": "Sintra, Portugal",
       "heroHeadingPre": "Sintra mérite mieux qu'un après-midi pressé. Explorez-la en",
@@ -43,7 +43,7 @@
       "privateTours": { "title": "Préférez un Tour Privé?", "subtitle": "Expérience personnalisée exclusive" }
     },
     "heroTitle": "Découvrez Sintra à Votre Façon",
-    "heroSubtitle": "Pass journée hop-on, hop-off avec places garanties et guides locaux professionnels. Trajets illimités dans de petits tuk tuks et jeeps vintage. Nouveau départ toutes les 30 minutes.",
+    "heroSubtitle": "Pass journée hop-on, hop-off avec places garanties et guides locaux professionnels. Trajets illimités dans de petits tuk tuks et jeeps vintage.",
     "heroCallToAction": "Réservez Votre Pass Journée",
     "benefitPills": [
       { "icon": "Users", "text": "Petits Groupes (2-6)" },
@@ -54,12 +54,12 @@
     "sectionOneDescription": "Évitez les bus bondés et découvrez Sintra comme elle doit l'être—avec des guides locaux professionnels",
     "hopOnHopOffDayPass": "Pass Journée Hop-On/Hop-Off",
     "unlimitedAdventureTitle": "Votre Aventure Illimitée à Sintra",
-    "serviceDescription": "Hop On Sintra est un service flexible de pass journée hop-on/hop-off utilisant de petits véhicules intimistes comme des tuk tuks et des jeeps vintage UMM. Avec un service toutes les 30 minutes de 9h à 19h, vous obtenez des places garanties et des trajets illimités vers toutes les principales attractions.",
+    "serviceDescription": "Hop On Sintra est un service flexible de pass journée hop-on/hop-off utilisant de petits véhicules intimistes comme des tuk tuks et des jeeps vintage UMM. De 9h à 19h, vous obtenez des places garanties et des trajets illimités vers toutes les principales attractions.",
     "serviceDescription2": "Contrairement aux bus touristiques bondés, nos petits groupes (2-6 passagers) avec des guides locaux professionnels vous donnent la liberté d'explorer Sintra à votre rythme tout en profitant d'une attention personnalisée.",
     "unlimitedRidesTitle": "Trajets Illimités Toute la Journée",
     "unlimitedRidesSubtitle": "Un pass, toutes les attractions",
-    "frequentServiceTitle": "Toutes les 30 Minutes",
-    "frequentServiceSubtitle": "N'attendez jamais longtemps",
+    "frequentServiceTitle": "Service Constant",
+    "frequentServiceSubtitle": "Disponible toute la journée",
     "smallGroupsTitle": "Petits Groupes Intimistes",
     "smallGroupsSubtitle": "Maximum 2-6 passagers",
     "professionalGuidesTitle": "Guides Professionnels",
@@ -174,7 +174,7 @@
     "totalPaid": "Total Payé",
     "importantInformation": "Informations Importantes",
     "serviceHours": "Heures de Service",
-    "serviceHoursDescription": "Les véhicules circulent toutes les 30 minutes de 9h à 19h. Votre pass journée est valide pour des trajets illimités toute la journée.",
+    "serviceHoursDescription": "Les véhicules circulent de 9h à 19h. Votre pass journée est valide pour des trajets illimités toute la journée.",
     "digitalTickets": "Billets Numériques",
     "digitalTicketsDescription": "Montrez votre code QR pour monter dans n'importe quel véhicule. Tous les passagers doivent avoir leur propre code QR prêt.",
     "guaranteedSeating": "Places Garanties",
@@ -211,7 +211,7 @@
     "story": [
       "Hop On Sintra was born from a simple observation: visitors to this UNESCO World Heritage site deserved better than crowded buses and rigid schedules.",
       "We created a flexible, premium day pass service that combines the intimacy of small vehicles driven by professional local guides with the freedom of hop-on/hop-off convenience.",
-      "Today, thousands of visitors choose Hop On Sintra for guaranteed seating, professional driver-guides, regular departures every 30 minutes, and an authentic, intimate way to explore this magical destination."
+      "Today, thousands of visitors choose Hop On Sintra for guaranteed seating, professional driver-guides, reliable service throughout the day, and an authentic, intimate way to explore this magical destination."
     ],
     "mission": "Our mission is to provide the most convenient, comfortable, and authentic way to explore Sintra's palaces, castles, and gardens with professional local guides.",
     "values": [
@@ -252,7 +252,7 @@
       { "q": "Puis-je acheter des billets d'attraction avec mon pass ?", "a": "Oui ! Lors de la réservation, vous pouvez ajouter des billets d'entrée aux attractions populaires comme le Palais de Pena, la Quinta da Regaleira et bien d'autres. Cela vous fait gagner du temps—plus d'attente aux guichets." },
       { "q": "Que sont les visites guidées ?", "a": "Nos départs de 10h et 14h proposent des visites guidées où votre conducteur-guide professionnel s'arrête aux principales attractions pour partager des commentaires d'experts sur l'histoire et les joyaux cachés de Sintra." },
       { "q": "Comment utiliser mon code QR ?", "a": "Montrez simplement votre code QR (envoyé par e-mail) à n'importe quel conducteur Hop On Sintra avant de monter. Il le scannera pour vérifier votre pass." },
-      { "q": "À quelle fréquence les véhicules partent-ils ?", "a": "Les véhicules partent toutes les 30 minutes depuis toutes les principales attractions pendant les heures d'exploitation (9h00 - 19h00)." }
+      { "q": "À quelle fréquence les véhicules partent-ils ?", "a": "Nous assurons un service continu depuis toutes les principales attractions pendant les heures d'exploitation (9h00 - 19h00). Présentez-vous simplement à n'importe quel arrêt." }
     ]
   },
   "attractions": {
@@ -503,7 +503,7 @@
   "seo": {
     "home": {
       "title": "Hop On Sintra - Pass Journée Premium Hop-On/Hop-Off | Guides Locaux Professionnels",
-      "description": "Explorez les sites du Patrimoine Mondial de l'UNESCO de Sintra avec places garanties dans de petits véhicules conduits par des guides locaux professionnels. Trajets illimités toutes les 30 minutes. Réservez votre pass journée flexible en ligne maintenant.",
+      "description": "Explorez les sites du Patrimoine Mondial de l'UNESCO de Sintra avec places garanties dans de petits véhicules conduits par des guides locaux professionnels. Trajets illimités toute la journée. Réservez votre pass journée flexible en ligne maintenant.",
       "keywords": "pass journée Sintra, hop on hop off Sintra, transport Sintra, tours petits groupes Sintra, tours Palais de Pena, tours guidés Sintra, guides professionnels Sintra"
     },
     "attractions": {
@@ -523,7 +523,7 @@
     },
     "about": {
       "title": "À Propos de Hop On Sintra - Service Premium de Pass Journée avec Guides Professionnels",
-      "description": "Hop On Sintra offre un service premium de pass journée hop-on/hop-off avec places garanties dans de petits véhicules conduits par des guides locaux professionnels. Départs réguliers toutes les 30 minutes dans tout Sintra.",
+      "description": "Hop On Sintra offre un service premium de pass journée hop-on/hop-off avec places garanties dans de petits véhicules conduits par des guides locaux professionnels. Service continu dans tout Sintra.",
       "keywords": "à propos Hop On Sintra, entreprise pass journée Sintra, tours premium Sintra, petit groupe Sintra, guides professionnels"
     },
     "blog": {
@@ -710,7 +710,7 @@
     "routeMap": {
       "bothRoutesLabel": "Les deux itinéraires",
       "pickupLabel": "Prise en charge",
-      "frequencyLabel": "Toutes les 30 min • 9h - 19h",
+      "frequencyLabel": "9h - 19h",
       "infoHeader": "Deux itinéraires circulaires • Cliquez sur n'importe quel arrêt pour sélectionner",
       "yourPickupLocation": "Votre Point de Prise en Charge",
       "route1Label": "Itinéraire 1",
@@ -1047,7 +1047,7 @@
     "step2Description": "Votre smartphone devient votre billet pour Sintra! Enregistrez votre code QR et vous êtes prêt à monter à n'importe lequel de nos arrêts. C'est aussi simple que ça.",
     "step2Badge": "📱 Fonctionne hors ligne aussi!",
     "step3Title": "Montez et Explorez!",
-    "step3Description": "Vous voyez un tuk tuk à l'arrêt? Montrez votre code à votre chauffeur-guide professionnel et montez! Avec des trajets toutes les 30 minutes de 9h à 19h, vous n'attendrez jamais longtemps. Explorez à votre rythme—nos guides vous accompagnent toute la journée.",
+    "step3Description": "Vous voyez un tuk tuk à l'arrêt? Montrez votre code à votre chauffeur-guide professionnel et montez! Le service fonctionne de 9h à 19h. Explorez à votre rythme—nos guides vous accompagnent toute la journée.",
     "step3Badge": "🎉 Trajets illimités avec des guides professionnels",
     "step4Title": "Pas de Véhicule à l'Arrêt?",
     "step4Description": "Si vous ne voyez aucun véhicule en attente lorsque vous arrivez à un arrêt, vous pouvez demander un ramassage! Cela nous permet de savoir que vous attendez et nous aide à vous rejoindre plus rapidement. Votre demande nous aide à optimiser notre service et à réduire les temps d'attente pour tous.",
@@ -1227,7 +1227,7 @@
       "unlimitedRides": "Trajets Illimités",
       "unlimitedRidesDesc": "Utilisez votre pass pour des trajets illimités hop-on/hop-off jusqu'à 20h00",
       "regularService": "Service Régulier",
-      "regularServiceDesc": "De nouveaux véhicules partent toutes les 30 minutes de toutes les principales attractions",
+      "regularServiceDesc": "Service continu depuis toutes les principales attractions tout au long de la journée",
       "flexibleSchedule": "Horaire Flexible",
       "flexibleScheduleDesc": "Passez autant de temps que vous le souhaitez à chaque attraction",
       "thankYou": "Merci d'Avoir Choisi Hop On Sintra!",

@@ -49,8 +49,8 @@ export const de: WebsiteContent = {
     // Feature benefits
     unlimitedRidesTitle: "Unbegrenzte Fahrten Den Ganzen Tag",
     unlimitedRidesSubtitle: "Ein Pass, alle Sehenswürdigkeiten",
-    frequentServiceTitle: "Alle 30 Minuten",
-    frequentServiceSubtitle: "Warten Sie nie lange",
+    frequentServiceTitle: "Zuverlässiger Service",
+    frequentServiceSubtitle: "Den ganzen Tag verfügbar",
     smallGroupsTitle: "Kleine Intime Gruppen",
     smallGroupsSubtitle: "Maximum 2-6 Passagiere",
     professionalGuidesTitle: "Professionelle Guides",

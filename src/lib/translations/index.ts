@@ -357,7 +357,7 @@ export const uiTranslations: { [key: string]: UITranslations } = {
     step2Description: "Your smartphone becomes your ticket to Sintra! Save your QR code and you're ready to hop on at any of our stops. It's that simple.",
     step2Badge: "📱 Works offline too!",
     step3Title: "Hop On & Explore!",
-    step3Description: "See a tuk tuk at the stop? Flash your code to your professional driver-guide and jump in! With rides every 30 minutes from 9am to 7pm, you'll never wait long. Explore at your own pace—our guides have you covered all day long.",
+    step3Description: "See a tuk tuk at the stop? Flash your code to your professional driver-guide and jump in! Service runs from 9am to 7pm. Explore at your own pace—our guides have you covered all day long.",
     step3Badge: "🎉 Unlimited rides with professional guides",
     step4Title: "No Vehicle at the Stop?",
     step4Description: "If you don't see any vehicles waiting when you arrive at a stop, you can request a pickup! This lets us know you're waiting and helps us get to you faster. Your request helps us optimize our service and reduce wait times for everyone.",

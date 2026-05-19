@@ -872,7 +872,7 @@ export function BuyTicketPage() {
               </div>
               <div>
                 <p className="text-sm font-semibold text-foreground">Board at your stop</p>
-                <p className="text-xs text-muted-foreground">Head to <strong>{pickupName}</strong> and show the QR code to the driver. Vehicles run every 30 min from 9 AM.</p>
+                <p className="text-xs text-muted-foreground">Head to <strong>{pickupName}</strong> and show the QR code to the driver. Service runs daily from 9 AM to 7 PM.</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
