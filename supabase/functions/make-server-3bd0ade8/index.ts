@@ -2046,11 +2046,11 @@ app.get("/make-server-3bd0ade8/info-bar", async (c) => {
       const travelTime = summary.travelTimeInSeconds ?? 0;
       const travelMinutes = travelTime / 60;
       // Thresholds based on absolute travel time (Train Station → Pena Palace ticket office)
-      // <17 min = clear, 17–23 min = light, 24–30 min = medium, >30 min = heavy
+      // <23 min = clear, 23–29 min = light, 30–36 min = medium, >36 min = heavy
       const level =
-        travelMinutes < 17 ? "clear"  :
-        travelMinutes < 24 ? "light"  :
-        travelMinutes < 31 ? "medium" : "heavy";
+        travelMinutes < 23 ? "clear"  :
+        travelMinutes < 30 ? "light"  :
+        travelMinutes < 37 ? "medium" : "heavy";
       traffic = { level, travelTimeSeconds: travelTime };
     }
   } catch (e) {
