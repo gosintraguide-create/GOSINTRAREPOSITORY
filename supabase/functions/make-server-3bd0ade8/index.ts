@@ -311,101 +311,190 @@ async function generateQRCode(bookingId: string, passengerIndex: number): Promis
 
 // Generate PDF
 async function generateBookingPDF(booking: any, qrCodes: string[]): Promise<string> {
+  // Human-readable pickup location labels
+  const PICKUP_LABELS: Record<string, string> = {
+    "sintra-train-station": "Sintra Train Station",
+    "sintra-town-center": "Sintra Town Center",
+    "pena-palace": "Pena Palace",
+    "moorish-castle": "Moorish Castle",
+    "sintra-palace": "Sintra National Palace",
+    "other": "Decide on the day",
+  };
+
   try {
     console.log(`🔧 Starting PDF generation for booking ${booking.id}`);
     const pdfDoc = await PDFDocument.create();
-    
-    const formattedDate = new Date(booking.selectedDate).toLocaleDateString("en-US", {
-      weekday: "long", year: "numeric", month: "long", day: "numeric",
+
+    const shortDate = new Date(booking.selectedDate).toLocaleDateString("en-GB", {
+      day: "numeric", month: "long", year: "numeric",
     });
-    const shortDate = new Date(booking.selectedDate).toLocaleDateString("en-US", {
-      month: "short", day: "numeric", year: "numeric",
-    });
-    const bookingIdShort = booking.id.split("_")[1] || booking.id;
+    const bookingRef = (booking.id.split("_")[1] || booking.id).toUpperCase();
+    const pickupLabel = booking.pickupLocation ? (PICKUP_LABELS[booking.pickupLocation] || booking.pickupLocation) : null;
+    const timeSlot = booking.timeSlot || null;
+
+    // ── Colours ────────────────────────────────────────────────────────────
+    const teal      = rgb(0.039, 0.302, 0.361);   // #0A4D5C
+    const orange    = rgb(0.851, 0.471, 0.263);   // #D97843
+    const white     = rgb(1, 1, 1);
+    const offWhite  = rgb(0.969, 0.969, 0.969);   // light rule
+    const textDark  = rgb(0.102, 0.122, 0.18);    // #1a1f2e
+    const textGray  = rgb(0.42, 0.447, 0.533);
+    const tealLight = rgb(0.922, 0.953, 0.961);   // teal/10 for pickup bg
 
     for (let i = 0; i < booking.passengers.length; i++) {
       const passenger = booking.passengers[i];
       const qrCode = qrCodes[i];
-      const page = pdfDoc.addPage([595, 842]); 
+      const page = pdfDoc.addPage([595, 842]);
       const { width, height } = page.getSize();
 
-      page.drawRectangle({ x: 0, y: 0, width, height, color: rgb(1, 0.957, 0.929) });
-      page.drawRectangle({ x: 0, y: height - 140, width, height: 140, color: rgb(0.039, 0.302, 0.361) });
-      page.drawRectangle({ x: 0, y: height - 145, width, height: 5, color: rgb(0.851, 0.471, 0.263) });
+      // ── Background ───────────────────────────────────────────────────────
+      page.drawRectangle({ x: 0, y: 0, width, height, color: white });
 
-      page.drawText("GO SINTRA", { x: width / 2 - 90, y: height - 55, size: 36, color: rgb(1, 1, 1) });
-      page.drawText("DAY PASS", { x: width / 2 - 44, y: height - 85, size: 20, color: rgb(0.851, 0.471, 0.263) });
+      // ── Header band ──────────────────────────────────────────────────────
+      const headerH = 115;
+      page.drawRectangle({ x: 0, y: height - headerH, width, height: headerH, color: teal });
+      // Orange accent bar
+      page.drawRectangle({ x: 0, y: height - headerH - 4, width, height: 4, color: orange });
 
+      // "GO SINTRA" centred
+      const brandText = "GO SINTRA";
+      page.drawText(brandText, {
+        x: width / 2 - brandText.length * 10.5,
+        y: height - 52, size: 32, color: white,
+      });
+      // "HOP-ON DAY PASS" subtitle
+      const subText = "HOP-ON DAY PASS";
+      page.drawText(subText, {
+        x: width / 2 - subText.length * 5.4,
+        y: height - 82, size: 14, color: orange,
+      });
+      // Passenger counter badge (only when multiple passes)
       if (booking.passengers.length > 1) {
-        const badgeText = `${i + 1} / ${booking.passengers.length}`;
-        const badgeWidth = badgeText.length * 7;
-        page.drawText(badgeText, { x: width / 2 - badgeWidth / 2, y: height - 115, size: 14, color: rgb(0.941, 0.914, 0.894) });
+        const badge = `PASS ${i + 1} OF ${booking.passengers.length}`;
+        page.drawText(badge, {
+          x: width / 2 - badge.length * 3.5,
+          y: height - 105, size: 9,
+          color: rgb(0.941, 0.914, 0.894),
+        });
       }
 
-      let yPos = height - 200;
-      page.drawText("SCAN TO BOARD", { x: width / 2 - 58, y: yPos, size: 16, color: rgb(0.039, 0.302, 0.361) });
-      yPos -= 40;
+      // ── Passenger name ───────────────────────────────────────────────────
+      const passengerName = (passenger.name || passenger.fullName || `Passenger ${i + 1}`).toUpperCase();
+      page.drawText("PASSENGER", {
+        x: width / 2 - "PASSENGER".length * 3.5,
+        y: height - 148, size: 9, color: textGray,
+      });
+      // Scale font size so long names still fit
+      const nameSize = passengerName.length > 18 ? 18 : 22;
+      page.drawText(passengerName, {
+        x: width / 2 - passengerName.length * (nameSize * 0.55),
+        y: height - 172, size: nameSize, color: teal,
+      });
+
+      // ── QR code ──────────────────────────────────────────────────────────
+      const qrSize = 240;
+      const qrX = (width - qrSize) / 2;
+      const qrTop = height - 200; // top of QR area
+      const qrBottom = qrTop - qrSize;
+
+      // QR border card (white + teal border)
+      page.drawRectangle({
+        x: qrX - 14, y: qrBottom - 14,
+        width: qrSize + 28, height: qrSize + 28,
+        color: white,
+        borderColor: teal, borderWidth: 3,
+        borderOpacity: 0.25,
+      });
 
       if (qrCode) {
         try {
           const qrBase64 = qrCode.replace(/^data:image\/png;base64,/, "");
           const qrImageBytes = Uint8Array.from(atob(qrBase64), (c) => c.charCodeAt(0));
           const qrImage = await pdfDoc.embedPng(qrImageBytes);
-          const qrSize = 220;
-          const qrX = (width - qrSize) / 2;
-
-          page.drawRectangle({
-            x: qrX - 12, y: yPos - qrSize - 12, width: qrSize + 24, height: qrSize + 24,
-            color: rgb(1, 1, 1), borderColor: rgb(0.039, 0.302, 0.361), borderWidth: 4,
-          });
-          page.drawImage(qrImage, { x: qrX, y: yPos - qrSize, width: qrSize, height: qrSize });
-          yPos -= qrSize + 30;
+          page.drawImage(qrImage, { x: qrX, y: qrBottom, width: qrSize, height: qrSize });
         } catch (err) {
           console.error(`Error adding QR code`, err);
         }
       }
 
-      page.drawText("PASSENGER", { x: width / 2 - 27, y: yPos, size: 11, color: rgb(0.42, 0.447, 0.533) });
-      yPos -= 25;
-      const passengerName = (passenger.name || passenger.fullName || `Passenger ${i + 1}`).toUpperCase();
-      const nameWidth = passengerName.length * 13;
-      page.drawText(passengerName, { x: (width - nameWidth) / 2, y: yPos, size: 22, color: rgb(0.039, 0.302, 0.361) });
-      yPos -= 50;
+      // "SCAN TO BOARD" label below QR
+      const scanLabel = "SCAN TO BOARD";
+      page.drawText(scanLabel, {
+        x: width / 2 - scanLabel.length * 4,
+        y: qrBottom - 26, size: 11, color: textGray,
+      });
 
-      const leftCol = 100;
-      const rightCol = width / 2 + 50;
+      // ── Pickup location card ──────────────────────────────────────────────
+      let detailsY = qrBottom - 60;
 
-      page.drawText("DATE", { x: leftCol, y: yPos, size: 10, color: rgb(0.42, 0.447, 0.533) });
-      page.drawText(shortDate, { x: leftCol, y: yPos - 20, size: 14, color: rgb(0.039, 0.302, 0.361) });
+      if (pickupLabel) {
+        const cardX = 55;
+        const cardW = width - 110;
+        const cardH = 56;
+        page.drawRectangle({ x: cardX, y: detailsY - cardH, width: cardW, height: cardH, color: tealLight });
+        // Left orange accent stripe
+        page.drawRectangle({ x: cardX, y: detailsY - cardH, width: 4, height: cardH, color: orange });
 
-      page.drawText("TYPE", { x: rightCol, y: yPos, size: 10, color: rgb(0.42, 0.447, 0.533) });
-      page.drawText(passenger.type || 'Adult', { x: rightCol, y: yPos - 20, size: 14, color: rgb(0.039, 0.302, 0.361) });
-      yPos -= 70;
+        page.drawText("FIRST BOARDING POINT", {
+          x: cardX + 16, y: detailsY - 16, size: 8, color: textGray,
+        });
+        const plSize = pickupLabel.length > 22 ? 13 : 15;
+        page.drawText(pickupLabel, {
+          x: cardX + 16, y: detailsY - 36, size: plSize, color: teal,
+        });
+        if (timeSlot) {
+          page.drawText(`First departure: ${timeSlot}`, {
+            x: cardX + 16, y: detailsY - 52, size: 9, color: textGray,
+          });
+        }
+        detailsY -= cardH + 22;
+      }
 
-      page.drawText("VALID HOURS", { x: leftCol, y: yPos, size: 10, color: rgb(0.42, 0.447, 0.533) });
-      page.drawText("9:00 AM - 8:00 PM", { x: leftCol, y: yPos - 20, size: 14, color: rgb(0.039, 0.302, 0.361) });
+      // ── Details row ──────────────────────────────────────────────────────
+      const lx = 75;
+      const rx = width / 2 + 45;
 
-      page.drawText("BOOKING ID", { x: rightCol, y: yPos, size: 10, color: rgb(0.42, 0.447, 0.533) });
-      page.drawText(bookingIdShort, { x: rightCol, y: yPos - 20, size: 14, color: rgb(0.039, 0.302, 0.361) });
-      yPos -= 70;
+      page.drawText("DATE", { x: lx, y: detailsY, size: 9, color: textGray });
+      page.drawText(shortDate, { x: lx, y: detailsY - 18, size: 13, color: textDark });
 
-      page.drawText("HOW TO USE", { x: width / 2 - 30, y: yPos, size: 11, color: rgb(0.42, 0.447, 0.533) });
-      yPos -= 25;
-      page.drawText("Show QR code to driver • Unlimited rides until 8 PM", { x: width / 2 - 159, y: yPos, size: 11, color: rgb(0.176, 0.204, 0.212) });
-      yPos -= 20;
-      page.drawText("Professional guides • Vehicles every 10-15 minutes", { x: width / 2 - 153, y: yPos, size: 11, color: rgb(0.176, 0.204, 0.212) });
+      page.drawText("TYPE", { x: rx, y: detailsY, size: 9, color: textGray });
+      page.drawText(passenger.type || "Adult", { x: rx, y: detailsY - 18, size: 13, color: textDark });
+      detailsY -= 52;
 
-      page.drawRectangle({ x: 0, y: 0, width, height: 100, color: rgb(0.039, 0.302, 0.361) });
-      page.drawRectangle({ x: 0, y: 100, width, height: 5, color: rgb(0.851, 0.471, 0.263) });
+      page.drawText("VALID HOURS", { x: lx, y: detailsY, size: 9, color: textGray });
+      page.drawText("9:00 AM – 7:00 PM", { x: lx, y: detailsY - 18, size: 13, color: textDark });
 
-      const footerTitle = "GO SINTRA";
-      page.drawText(footerTitle, { x: width / 2 - (footerTitle.length * 4), y: 65, size: 14, color: rgb(1, 1, 1) });
-      const footerSubtitle = "Premium Hop-On/Hop-Off Service";
-      page.drawText(footerSubtitle, { x: width / 2 - (footerSubtitle.length * 2.75), y: 48, size: 10, color: rgb(0.851, 0.471, 0.263) });
-      const contactLine = "info@hoponsintra.com  |  WhatsApp: +351 932 967 279";
-      page.drawText(contactLine, { x: width / 2 - (contactLine.length * 2.5), y: 30, size: 9, color: rgb(1, 1, 1) });
-      const hoursLine = "Operating Daily: 9:00 AM - 8:00 PM  |  Sintra, Portugal";
-      page.drawText(hoursLine, { x: width / 2 - (hoursLine.length * 2.25), y: 15, size: 8, color: rgb(0.941, 0.914, 0.894) });
+      page.drawText("BOOKING REF", { x: rx, y: detailsY, size: 9, color: textGray });
+      page.drawText(bookingRef, { x: rx, y: detailsY - 18, size: 13, color: textDark });
+      detailsY -= 52;
+
+      // ── Divider ───────────────────────────────────────────────────────────
+      page.drawRectangle({ x: 55, y: detailsY, width: width - 110, height: 1, color: offWhite });
+      detailsY -= 22;
+
+      // ── Instructions ─────────────────────────────────────────────────────
+      const instr1 = "Show QR code to driver  •  Unlimited rides all day  •  9 AM – 7 PM";
+      const instr2 = "Professional local guides on every vehicle  •  Sintra, Portugal";
+      page.drawText(instr1, { x: width / 2 - instr1.length * 2.5, y: detailsY, size: 9, color: textGray });
+      page.drawText(instr2, { x: width / 2 - instr2.length * 2.5, y: detailsY - 16, size: 9, color: textGray });
+
+      // ── Footer band ───────────────────────────────────────────────────────
+      const footerH = 85;
+      page.drawRectangle({ x: 0, y: 0, width, height: footerH, color: teal });
+      page.drawRectangle({ x: 0, y: footerH, width, height: 3, color: orange });
+
+      page.drawText("GO SINTRA", {
+        x: width / 2 - "GO SINTRA".length * 5,
+        y: 57, size: 16, color: white,
+      });
+      page.drawText("Hop-On / Hop-Off Day Pass Service", {
+        x: width / 2 - "Hop-On / Hop-Off Day Pass Service".length * 3,
+        y: 38, size: 10, color: orange,
+      });
+      page.drawText("info@hoponsintra.com  |  +351 932 967 279  |  Sintra, Portugal", {
+        x: width / 2 - "info@hoponsintra.com  |  +351 932 967 279  |  Sintra, Portugal".length * 2.3,
+        y: 18, size: 8, color: rgb(0.8, 0.88, 0.9),
+      });
     }
 
     const pdfBytes = await pdfDoc.save();

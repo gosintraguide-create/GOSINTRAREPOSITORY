@@ -122,7 +122,7 @@ function contactCard(): string {
       <tr>
         <td style="vertical-align:top;padding-right:12px;">
           <p style="margin:0 0 4px;font-size:13px;color:#6b7280;">WhatsApp</p>
-          <p style="margin:0;font-size:14px;font-weight:700;color:#1a1f2e;">+351 919 495 826</p>
+          <p style="margin:0;font-size:14px;font-weight:700;color:#1a1f2e;">+351 932 967 279</p>
         </td>
         <td style="vertical-align:top;">
           <p style="margin:0 0 4px;font-size:13px;color:#6b7280;">Email</p>

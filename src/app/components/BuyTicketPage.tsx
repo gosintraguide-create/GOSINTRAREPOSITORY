@@ -142,22 +142,6 @@ export function BuyTicketPage() {
       value: "sintra-town-center",
       label: t.buyTicket.pickupLocations.sintraTownCenter,
     },
-    {
-      value: "pena-palace",
-      label: t.buyTicket.pickupLocations.penaPalace,
-    },
-    {
-      value: "moorish-castle",
-      label: t.buyTicket.pickupLocations.moorishCastle,
-    },
-    {
-      value: "sintra-palace",
-      label: t.buyTicket.pickupLocations.sintraPalace,
-    },
-    {
-      value: "other",
-      label: t.buyTicket.pickupLocations.other,
-    },
   ];
   // Feature flag for monument tickets
   const [monumentTicketsEnabled, setMonumentTicketsEnabled] =

@@ -264,7 +264,7 @@ export function PrivateTourDetailPage() {
         "@type": "TravelAgency",
         name: "Go Sintra",
         url: SITE_URL,
-        telephone: "+351 919 495 826",
+        telephone: "+351 932 967 279",
         address: {
           "@type": "PostalAddress",
           addressLocality: "Sintra",
