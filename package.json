@@ -7,7 +7,9 @@
     "build": "vite build && (node scripts/prerender.mjs || echo 'Prerender step failed - deploying without prerendering')",
     "build:vite": "vite build",
     "prerender": "node scripts/prerender.mjs",
-    "dev": "vite"
+    "dev": "vite",
+    "translate": "node scripts/retranslate.mjs",
+    "translate:new": "node scripts/retranslate.mjs --new-only"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "1.2.3",
@@ -72,6 +74,7 @@
     "vaul": "1.1.2"
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "^0.52.0",
     "@tailwindcss/vite": "4.1.12",
     "@vitejs/plugin-react": "4.7.0",
     "@sparticuz/chromium": "^130.0.0",
