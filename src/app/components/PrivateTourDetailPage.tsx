@@ -442,8 +442,8 @@ export function PrivateTourDetailPage() {
                 />
               </div>
 
-              {/* Short description */}
-              <p className="text-base leading-relaxed text-muted-foreground">
+              {/* Short description — lead paragraph */}
+              <p className="text-xl font-semibold leading-relaxed text-foreground border-l-4 border-primary pl-5">
                 {tour.description}
               </p>
 
@@ -490,12 +490,20 @@ export function PrivateTourDetailPage() {
                 <div className="p-5">
                   {/* Price */}
                   {tour.pricingMode !== "quote-only" && getLowestPrice(tour) != null && (
-                    <div className="mb-5">
+                    <div className="mb-4">
                       <p className="text-sm text-muted-foreground">{tTour.fromPrice}</p>
                       <div className="flex items-baseline gap-1.5">
                         <span className="text-3xl font-extrabold text-foreground">€{getLowestPrice(tour)}</span>
                         <span className="text-sm text-muted-foreground">{tTour.perPerson}</span>
                       </div>
+                    </div>
+                  )}
+
+                  {/* Duration */}
+                  {tour.duration && (
+                    <div className="mb-5 flex items-center gap-2 rounded-lg bg-secondary/50 px-3.5 py-2.5">
+                      <Clock className="h-4 w-4 shrink-0 text-primary" />
+                      <span className="text-sm font-medium text-foreground">{tour.duration}</span>
                     </div>
                   )}
 
