@@ -104,14 +104,14 @@
   },
   "routes": {
     "title": "Onze Twee Cirkelroutes",
-    "subtitle": "Verbindt alle belangrijke attracties • Geen need om van voertuig te wisselen",
+    "subtitle": "Verbindt alle belangrijke attracties • Geen voertuigwissel nodig",
     "route1": "Route 1",
     "route2": "Route 2",
     "bothRoutes": "Beide routes",
     "loopsBack": "keert terug",
     "onePassBothRoutes": "Één Pass, Beide Routes",
     "onePassDescription": "Uw dagpas geeft u onbeperkte toegang tot beide routes. Onze voertuigen bezoeken alle haltes tijdens de openingstijden (9 tot 19 uur), en u hoeft nooit van voertuig te wisselen - blijf aan boord terwijl routes verbinden bij het Station en Historisch Centrum Noord.",
-    "viewMapButton": "View Interactive Map",
+    "viewMapButton": "Bekijk de interactieve kaart",
     "stops": {
       "trainStation": "Treinstation",
       "historicalCenterNorth": "Historisch Centrum Noord",
@@ -201,31 +201,31 @@
     "requestPickupNow": "Nu Ophaling Aanvragen",
     "downloadTicketsButton": "Tickets Downloaden",
     "requestPickupButton": "Ophaling Aanvragen",
-    "contactSupportButton": "Contact Support",
-    "contactSupportTitle": "Contact Support",
+    "contactSupportButton": "Klantenservice",
+    "contactSupportTitle": "Klantenservice",
     "contactSupportDescription": "Heeft u hulp nodig? We zijn er voor u! Neem contact met ons op via een van deze kanalen."
   },
   "about": {
-    "title": "Over Hop On Sintra - Premium Hop-On/Hop-Off Service met Professionele Gidsen",
-    "subtitle": "Your premium hop-on/hop-off day pass service through Sintra's magical landscapes with professional local guides",
+    "title": "Over Hop On Sintra",
+    "subtitle": "Uw premium hop-on/hop-off dagpas door de magische landschappen van Sintra met professionele lokale gidsen",
     "story": [
-      "Hop On Sintra was born from a simple observation: visitors to this UNESCO World Heritage site deserved better than crowded buses and rigid schedules.",
-      "We created a flexible, premium day pass service that combines the intimacy of small vehicles driven by professional local guides with the freedom of hop-on/hop-off convenience.",
-      "Today, thousands of visitors choose Hop On Sintra for guaranteed seating, professional driver-guides, reliable service throughout the day, and an authentic, intimate way to explore this magical destination."
+      "Hop On Sintra ontstond vanuit een simpele observatie: bezoekers van dit UNESCO Werelderfgoed verdienden meer dan overvolle bussen en strakke schema's.",
+      "We creëerden een flexibele, premium dagpas-service die de intimiteit van kleine voertuigen met professionele lokale gidsen combineert met de vrijheid van hop-on/hop-off gemak.",
+      "Vandaag kiezen duizenden bezoekers voor Hop On Sintra vanwege gegarandeerde zitplaatsen, professionele chauffeur-gidsen, betrouwbare service de hele dag, en een authentieke, intieme manier om deze prachtige bestemming te verkennen."
     ],
-    "mission": "Our mission is to provide the most convenient, comfortable, and authentic way to explore Sintra's palaces, castles, and gardens with professional local guides.",
+    "mission": "Onze missie is om de meest gemakkelijke, comfortabele en authentieke manier te bieden om Sintra's paleizen, kastelen en tuinen te verkennen met professionele lokale gidsen.",
     "values": [
       {
-        "title": "Guaranteed Comfort",
-        "description": "Every passenger has a guaranteed seat in a small, intimate vehicle driven by a professional local guide. No standing, no overcrowding."
+        "title": "Gegarandeerd Comfort",
+        "description": "Elke passagier heeft een gegarandeerde zitplaats in een klein, sfeervol voertuig met een professionele lokale gids. Geen staan, geen gedrang."
       },
       {
-        "title": "Total Flexibility",
-        "description": "Hop off at any attraction, spend as long as you want, then hop back on. Your day, your pace."
+        "title": "Totale Vrijheid",
+        "description": "Stap uit bij elke attractie, blijf zo lang als u wilt, en stap dan weer in. Uw dag, uw tempo."
       },
       {
-        "title": "Professional Local Guides",
-        "description": "All our vehicles are driven by professional local guides who know Sintra inside and out, offering insights you won't find in guidebooks."
+        "title": "Professionele Lokale Gidsen",
+        "description": "Al onze voertuigen worden bestuurd door professionele lokale gidsen die Sintra van binnen en van buiten kennen en inzichten bieden die u nergens anders vindt."
       }
     ],
     "storyBadge": "Ons Verhaal",
@@ -977,17 +977,17 @@
     }
   },
   "routeMap": {
-    "badge": "Interactive Map",
-    "title": "Route Stops & Locations",
-    "subtitle": "View all our stops on Google Maps. Plan your journey and see exactly where we pick up and drop off throughout Sintra.",
-    "mapTitle": "Hop On Sintra Route Map",
-    "infoTitle": "How to Use the Map",
-    "infoDescription": "This interactive map shows all our pickup and drop-off locations throughout Sintra. You can zoom, pan, and click on markers to see details about each stop.",
-    "tip1": "Click on any marker to see the stop name and nearby attractions",
-    "tip2": "Use the directions feature to get walking routes between stops",
-    "tip3": "All stops are serviced throughout operating hours (9 AM to 7 PM)",
-    "ctaButton": "Book Your Day Pass Now",
-    "ctaSubtext": "Unlimited rides to all these stops for one full day"
+    "badge": "Interactieve Kaart",
+    "title": "Haltepunten & Locaties",
+    "subtitle": "Bekijk al onze stops op Google Maps. Plan uw route en zie precies waar wij ophalen en afzetten in Sintra.",
+    "mapTitle": "Hop On Sintra Routekaart",
+    "infoTitle": "Hoe de Kaart te Gebruiken",
+    "infoDescription": "Deze interactieve kaart toont al onze ophaal- en afzetlocaties in Sintra. U kunt inzoomen, pannen en op markers klikken voor details over elke stop.",
+    "tip1": "Klik op een marker om de naam van de stop en nabijgelegen attracties te zien",
+    "tip2": "Gebruik de routefunctie om looproutes tussen stops te berekenen",
+    "tip3": "Alle stops worden bediend tijdens openingsuren (9:00 - 19:00)",
+    "ctaButton": "Boek Nu Uw Dagpas",
+    "ctaSubtext": "Onbeperkte ritten naar al deze stops voor een hele dag"
   },
   "ui": {
     "home": "Home",
@@ -1119,31 +1119,31 @@
     }
   },
   "cookie": {
-    "title": "We Value Your Privacy",
-    "description": "We use cookies to enhance your browsing experience, personalize content, and analyze our traffic. Read our",
-    "privacyLink": "Privacy Policy",
-    "acceptAll": "Accept All",
-    "rejectAll": "Reject All",
-    "customize": "Customize",
-    "settingsTitle": "Cookie Settings",
-    "settingsDescription": "Choose which cookies you want to accept. You can change your preferences at any time.",
-    "savePreferences": "Save Preferences",
+    "title": "Wij Respecteren Uw Privacy",
+    "description": "Wij gebruiken cookies om uw browse-ervaring te verbeteren, inhoud te personaliseren en ons verkeer te analyseren. Lees onze",
+    "privacyLink": "Privacybeleid",
+    "acceptAll": "Alles Accepteren",
+    "rejectAll": "Alles Weigeren",
+    "customize": "Aanpassen",
+    "settingsTitle": "Cookie-instellingen",
+    "settingsDescription": "Kies welke cookies u wilt accepteren. U kunt uw voorkeuren op elk moment wijzigen.",
+    "savePreferences": "Voorkeuren Opslaan",
     "categories": {
       "necessary": {
-        "title": "Necessary Cookies",
-        "description": "Essential for the website to function properly. These cookies enable core functionality such as security, network management, and accessibility. You cannot opt-out of these cookies."
+        "title": "Noodzakelijke Cookies",
+        "description": "Essentieel voor het correct functioneren van de website. Deze cookies zorgen voor kernfunctionaliteit zoals beveiliging, netwerkbeheer en toegankelijkheid. U kunt deze cookies niet uitschakelen."
       },
       "functional": {
-        "title": "Functional Cookies",
-        "description": "Help us remember your preferences and settings, such as language selection, to provide you with a more personalized experience."
+        "title": "Functionele Cookies",
+        "description": "Helpen ons uw voorkeuren en instellingen te onthouden, zoals taalvoorkeur, zodat we u een persoonlijkere ervaring kunnen bieden."
       },
       "analytics": {
-        "title": "Analytics Cookies",
-        "description": "Help us understand how visitors interact with our website by collecting and reporting information anonymously. This helps us improve our service."
+        "title": "Analytische Cookies",
+        "description": "Helpen ons begrijpen hoe bezoekers de website gebruiken door anoniem informatie te verzamelen en te rapporteren. Dit helpt ons onze service te verbeteren."
       },
       "marketing": {
         "title": "Marketing Cookies",
-        "description": "Used to track visitors across websites to display relevant advertisements and encourage them to engage with our service."
+        "description": "Worden gebruikt om bezoekers op websites te volgen en relevante advertenties te tonen die hen aanmoedigen onze service te gebruiken."
       }
     }
   },

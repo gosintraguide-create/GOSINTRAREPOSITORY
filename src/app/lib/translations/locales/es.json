@@ -111,7 +111,7 @@
     "loopsBack": "regresa",
     "onePassBothRoutes": "Un Pase, Ambas Rutas",
     "onePassDescription": "Tu pase de día te da acceso ilimitado a ambas rutas. Nuestros vehículos visitan todas las paradas durante el horario de servicio (9 AM a 7 PM), y nunca necesitas cambiar de vehículo: permanece a bordo ya que las rutas se conectan en la Estación de Tren y en el Centro Histórico Norte.",
-    "viewMapButton": "View Interactive Map",
+    "viewMapButton": "Ver el mapa interactivo",
     "stops": {
       "trainStation": "Estación de Tren",
       "historicalCenterNorth": "Centro Histórico Norte",
@@ -209,23 +209,23 @@
     "title": "Sobre Hop On Sintra - Servicio Premium de Pase de Día con Guías Profesionales",
     "subtitle": "Your premium hop-on/hop-off day pass service through Sintra's magical landscapes with professional local guides",
     "story": [
-      "Hop On Sintra was born from a simple observation: visitors to this UNESCO World Heritage site deserved better than crowded buses and rigid schedules.",
-      "We created a flexible, premium day pass service that combines the intimacy of small vehicles driven by professional local guides with the freedom of hop-on/hop-off convenience.",
-      "Today, thousands of visitors choose Hop On Sintra for guaranteed seating, professional driver-guides, reliable service throughout the day, and an authentic, intimate way to explore this magical destination."
+      "Hop On Sintra nació de una observación sencilla: los visitantes de este sitio Patrimonio de la Humanidad de la UNESCO merecían algo mejor que autobuses llenos y horarios rígidos.",
+      "Creamos un servicio de pase diario flexible y premium que combina la intimidad de vehículos pequeños conducidos por guías locales profesionales con la libertad del hop-on/hop-off.",
+      "Hoy, miles de visitantes eligen Hop On Sintra por sus asientos garantizados, sus guías-conductores profesionales, su servicio fiable durante todo el día y una forma auténtica e íntima de explorar este destino mágico."
     ],
-    "mission": "Our mission is to provide the most convenient, comfortable, and authentic way to explore Sintra's palaces, castles, and gardens with professional local guides.",
+    "mission": "Nuestra misión es ofrecer la forma más cómoda, confortable y auténtica de explorar los palacios, castillos y jardines de Sintra con guías locales profesionales.",
     "values": [
       {
-        "title": "Guaranteed Comfort",
-        "description": "Every passenger has a guaranteed seat in a small, intimate vehicle driven by a professional local guide. No standing, no overcrowding."
+        "title": "Comodidad Garantizada",
+        "description": "Cada pasajero tiene un asiento garantizado en un vehículo pequeño y acogedor conducido por un guía local profesional. Sin viajar de pie, sin aglomeraciones."
       },
       {
-        "title": "Total Flexibility",
-        "description": "Hop off at any attraction, spend as long as you want, then hop back on. Your day, your pace."
+        "title": "Libertad Total",
+        "description": "Baja en cada atracción, quédate el tiempo que quieras y vuelve a subir. Tu día, a tu ritmo."
       },
       {
-        "title": "Professional Local Guides",
-        "description": "All our vehicles are driven by professional local guides who know Sintra inside and out, offering insights you won't find in guidebooks."
+        "title": "Guías Locales Profesionales",
+        "description": "Todos nuestros vehículos son conducidos por guías locales profesionales que conocen Sintra a fondo y comparten historias que no encontrarás en ninguna guía de viaje."
       }
     ],
     "storyBadge": "Nuestra Historia",
@@ -977,17 +977,17 @@
     }
   },
   "routeMap": {
-    "badge": "Interactive Map",
-    "title": "Route Stops & Locations",
-    "subtitle": "View all our stops on Google Maps. Plan your journey and see exactly where we pick up and drop off throughout Sintra.",
-    "mapTitle": "Hop On Sintra Route Map",
-    "infoTitle": "How to Use the Map",
-    "infoDescription": "This interactive map shows all our pickup and drop-off locations throughout Sintra. You can zoom, pan, and click on markers to see details about each stop.",
-    "tip1": "Click on any marker to see the stop name and nearby attractions",
-    "tip2": "Use the directions feature to get walking routes between stops",
-    "tip3": "All stops are serviced throughout operating hours (9 AM to 7 PM)",
-    "ctaButton": "Book Your Day Pass Now",
-    "ctaSubtext": "Unlimited rides to all these stops for one full day"
+    "badge": "Mapa Interactivo",
+    "title": "Paradas y Ubicaciones",
+    "subtitle": "Consulta todas nuestras paradas en Google Maps. Planifica tu recorrido y ve exactamente dónde recogemos y dejamos pasajeros en Sintra.",
+    "mapTitle": "Mapa de Rutas Hop On Sintra",
+    "infoTitle": "Cómo Usar el Mapa",
+    "infoDescription": "Este mapa interactivo muestra todos nuestros puntos de recogida y bajada en Sintra. Puedes hacer zoom, desplazarte y hacer clic en los marcadores para ver detalles de cada parada.",
+    "tip1": "Haz clic en cualquier marcador para ver el nombre de la parada y las atracciones cercanas",
+    "tip2": "Usa la función de indicaciones para obtener rutas a pie entre paradas",
+    "tip3": "Todas las paradas están en servicio durante el horario de funcionamiento (9 a 19 h)",
+    "ctaButton": "Reserva Tu Pase Diario Ahora",
+    "ctaSubtext": "Viajes ilimitados a todas estas paradas durante un día completo"
   },
   "ui": {
     "home": "Inicio",

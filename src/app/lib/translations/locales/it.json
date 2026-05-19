@@ -111,7 +111,7 @@
     "loopsBack": "torna indietro",
     "onePassBothRoutes": "Un Pass, Entrambi i Percorsi",
     "onePassDescription": "Il tuo pass giornaliero ti dà accesso illimitato a entrambi i percorsi. I nostri veicoli visitano tutte le fermate durante gli orari di servizio (dalle 9 alle 19), e non devi mai cambiare veicolo - resta a bordo mentre i percorsi si collegano alla Stazione Ferroviaria e al Centro Storico Nord.",
-    "viewMapButton": "View Interactive Map",
+    "viewMapButton": "Vedi la mappa interattiva",
     "stops": {
       "trainStation": "Stazione Ferroviaria",
       "historicalCenterNorth": "Centro Storico Nord",
@@ -209,23 +209,23 @@
     "title": "Su Hop On Sintra - Servizio Premium Hop-On/Hop-Off con Guide Professionali",
     "subtitle": "Your premium hop-on/hop-off day pass service through Sintra's magical landscapes with professional local guides",
     "story": [
-      "Hop On Sintra was born from a simple observation: visitors to this UNESCO World Heritage site deserved better than crowded buses and rigid schedules.",
-      "We created a flexible, premium day pass service that combines the intimacy of small vehicles driven by professional local guides with the freedom of hop-on/hop-off convenience.",
-      "Today, thousands of visitors choose Hop On Sintra for guaranteed seating, professional driver-guides, reliable service throughout the day, and an authentic, intimate way to explore this magical destination."
+      "Hop On Sintra è nata da una semplice osservazione: i visitatori di questo sito Patrimonio dell'Umanità UNESCO meritavano di meglio rispetto a bus affollati e orari rigidi.",
+      "Abbiamo creato un servizio di pass giornaliero flessibile e premium che combina l'intimità di piccoli veicoli guidati da guide locali professioniste con la libertà dell'hop-on/hop-off.",
+      "Oggi, migliaia di visitatori scelgono Hop On Sintra per i posti garantiti, le guide-autiste professioniste, il servizio affidabile per tutto il giorno e un modo autentico e intimo di esplorare questa destinazione magica."
     ],
-    "mission": "Our mission is to provide the most convenient, comfortable, and authentic way to explore Sintra's palaces, castles, and gardens with professional local guides.",
+    "mission": "La nostra missione è offrire il modo più comodo, confortevole e autentico per esplorare i palazzi, i castelli e i giardini di Sintra con guide locali professioniste.",
     "values": [
       {
-        "title": "Guaranteed Comfort",
-        "description": "Every passenger has a guaranteed seat in a small, intimate vehicle driven by a professional local guide. No standing, no overcrowding."
+        "title": "Comfort Garantito",
+        "description": "Ogni passeggero ha un posto garantito su un piccolo veicolo accogliente guidato da una guida locale professionista. Niente viaggi in piedi, niente sovraffollamento."
       },
       {
-        "title": "Total Flexibility",
-        "description": "Hop off at any attraction, spend as long as you want, then hop back on. Your day, your pace."
+        "title": "Libertà Totale",
+        "description": "Scendi a ogni attrazione, fermati quanto vuoi, poi risali a bordo. La tua giornata, al tuo ritmo."
       },
       {
-        "title": "Professional Local Guides",
-        "description": "All our vehicles are driven by professional local guides who know Sintra inside and out, offering insights you won't find in guidebooks."
+        "title": "Guide Locali Professioniste",
+        "description": "Tutti i nostri veicoli sono guidati da guide locali professioniste che conoscono Sintra in ogni angolo e condividono storie che non trovi in nessuna guida turistica."
       }
     ],
     "storyBadge": "La Nostra Storia",
@@ -977,17 +977,17 @@
     }
   },
   "routeMap": {
-    "badge": "Interactive Map",
-    "title": "Route Stops & Locations",
-    "subtitle": "View all our stops on Google Maps. Plan your journey and see exactly where we pick up and drop off throughout Sintra.",
-    "mapTitle": "Hop On Sintra Route Map",
-    "infoTitle": "How to Use the Map",
-    "infoDescription": "This interactive map shows all our pickup and drop-off locations throughout Sintra. You can zoom, pan, and click on markers to see details about each stop.",
-    "tip1": "Click on any marker to see the stop name and nearby attractions",
-    "tip2": "Use the directions feature to get walking routes between stops",
-    "tip3": "All stops are serviced throughout operating hours (9 AM to 7 PM)",
-    "ctaButton": "Book Your Day Pass Now",
-    "ctaSubtext": "Unlimited rides to all these stops for one full day"
+    "badge": "Mappa Interattiva",
+    "title": "Fermate e Posizioni",
+    "subtitle": "Visualizza tutte le nostre fermate su Google Maps. Pianifica il tuo percorso e scopri esattamente dove saliamo e scendiamo a Sintra.",
+    "mapTitle": "Mappa dei Percorsi Hop On Sintra",
+    "infoTitle": "Come Usare la Mappa",
+    "infoDescription": "Questa mappa interattiva mostra tutti i nostri punti di salita e discesa a Sintra. Puoi zoomare, scorrere e cliccare sui segnaposto per vedere i dettagli di ogni fermata.",
+    "tip1": "Clicca su un segnaposto per vedere il nome della fermata e le attrazioni vicine",
+    "tip2": "Usa la funzione indicazioni per ottenere percorsi a piedi tra le fermate",
+    "tip3": "Tutte le fermate sono servite durante gli orari operativi (dalle 9 alle 19)",
+    "ctaButton": "Prenota il Tuo Pass Giornaliero",
+    "ctaSubtext": "Corse illimitate verso tutte queste fermate per un giorno intero"
   },
   "ui": {
     "home": "Home",
@@ -1119,31 +1119,31 @@
     }
   },
   "cookie": {
-    "title": "We Value Your Privacy",
-    "description": "We use cookies to enhance your browsing experience, personalize content, and analyze our traffic. Read our",
-    "privacyLink": "Privacy Policy",
-    "acceptAll": "Accept All",
-    "rejectAll": "Reject All",
-    "customize": "Customize",
-    "settingsTitle": "Cookie Settings",
-    "settingsDescription": "Choose which cookies you want to accept. You can change your preferences at any time.",
-    "savePreferences": "Save Preferences",
+    "title": "Rispettiamo la Tua Privacy",
+    "description": "Utilizziamo i cookie per migliorare la tua esperienza di navigazione, personalizzare i contenuti e analizzare il nostro traffico. Leggi la nostra",
+    "privacyLink": "Informativa sulla Privacy",
+    "acceptAll": "Accetta Tutti",
+    "rejectAll": "Rifiuta Tutti",
+    "customize": "Personalizza",
+    "settingsTitle": "Impostazioni Cookie",
+    "settingsDescription": "Scegli quali cookie vuoi accettare. Puoi modificare le tue preferenze in qualsiasi momento.",
+    "savePreferences": "Salva Preferenze",
     "categories": {
       "necessary": {
-        "title": "Necessary Cookies",
-        "description": "Essential for the website to function properly. These cookies enable core functionality such as security, network management, and accessibility. You cannot opt-out of these cookies."
+        "title": "Cookie Necessari",
+        "description": "Essenziali per il corretto funzionamento del sito. Questi cookie abilitano funzionalità di base come sicurezza, gestione della rete e accessibilità. Non puoi disattivarli."
       },
       "functional": {
-        "title": "Functional Cookies",
-        "description": "Help us remember your preferences and settings, such as language selection, to provide you with a more personalized experience."
+        "title": "Cookie Funzionali",
+        "description": "Ci aiutano a ricordare le tue preferenze e impostazioni, come la lingua selezionata, per offrirti un'esperienza più personalizzata."
       },
       "analytics": {
-        "title": "Analytics Cookies",
-        "description": "Help us understand how visitors interact with our website by collecting and reporting information anonymously. This helps us improve our service."
+        "title": "Cookie Analitici",
+        "description": "Ci aiutano a capire come i visitatori interagiscono con il sito raccogliendo informazioni in modo anonimo. Questo ci aiuta a migliorare il servizio."
       },
       "marketing": {
-        "title": "Marketing Cookies",
-        "description": "Used to track visitors across websites to display relevant advertisements and encourage them to engage with our service."
+        "title": "Cookie di Marketing",
+        "description": "Usati per tracciare i visitatori sui siti web e mostrare annunci pertinenti che li incoraggino a utilizzare il nostro servizio."
       }
     }
   },
