@@ -95,9 +95,6 @@ export function InfoBar({ language = "en" }: InfoBarProps) {
         <div className="flex items-center gap-2">
           <Clock className="h-3.5 w-3.5 text-white/50 shrink-0" />
           <span className="text-base font-bold tracking-wide tabular-nums">{time}</span>
-          <span className="text-[11px] font-medium text-white/45 uppercase tracking-wider hidden sm:inline">
-            {t.lisbon}
-          </span>
         </div>
 
         {/* ── Weather — always visible; shows placeholder until API responds ── */}
