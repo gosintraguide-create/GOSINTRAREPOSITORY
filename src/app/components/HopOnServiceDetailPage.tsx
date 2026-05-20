@@ -33,6 +33,7 @@ import {
   DEFAULT_CONTENT,
 } from "../lib/contentManager";
 import { useEditableContent } from "../lib/useEditableContent";
+import { getTranslation } from "../lib/translations/loader";
 import Slider from "react-slick";
 import "../../styles/slick-custom.css";
 
@@ -72,7 +73,7 @@ interface OutletContext {
 // Rendered below the hero on mobile. Uses position:sticky so it stays in the
 // normal document flow (no page-shift on stick) and lands flush under the
 // header. Hidden on desktop (lg+).
-function MobileStickyBar({ basePrice, onBook }: { basePrice: number; onBook: () => void }) {
+function MobileStickyBar({ basePrice, onBook, labelFrom, labelPerPerson, labelGetPass }: { basePrice: number; onBook: () => void; labelFrom: string; labelPerPerson: string; labelGetPass: string }) {
   const [headerHeight, setHeaderHeight] = useState(0);
 
   useEffect(() => {
@@ -95,11 +96,11 @@ function MobileStickyBar({ basePrice, onBook }: { basePrice: number; onBook: () 
       <div className="flex items-center justify-between gap-4 px-4 py-3">
         <div>
           <p className="text-[11px] font-medium uppercase tracking-wide text-stone-400 leading-none mb-0.5">
-            From
+            {labelFrom}
           </p>
           <p className="text-2xl font-extrabold leading-none text-primary">
             €{basePrice}
-            <span className="ml-1 text-xs font-medium text-muted-foreground">/ person</span>
+            <span className="ml-1 text-xs font-medium text-muted-foreground">/ {labelPerPerson}</span>
           </p>
         </div>
         <Button
@@ -107,7 +108,7 @@ function MobileStickyBar({ basePrice, onBook }: { basePrice: number; onBook: () 
           className="h-10 shrink-0 px-5 text-sm font-semibold"
         >
           <Ticket className="mr-1.5 h-4 w-4" />
-          Get your pass
+          {labelGetPass}
         </Button>
       </div>
     </div>
@@ -121,6 +122,7 @@ export function HopOnServiceDetailPage() {
 
   // Use the hook that auto-updates when content changes
   const comprehensiveContent = useEditableContent(language);
+  const t = getTranslation(language).hopOnService;
 
   // Day pass price — read from localStorage (set by admin pricing sync)
   const [basePrice, setBasePrice] = useState<number>(() => {
@@ -151,82 +153,47 @@ export function HopOnServiceDetailPage() {
   const features = useMemo(() => [
     {
       icon: <Car className="h-6 w-6" />,
-      title: "Unlimited Rides",
-      description:
-        "Hop on and off as many times as you want throughout the day",
+      title: t.feature1Title,
+      description: t.feature1Desc,
     },
     {
       icon: <Clock className="h-6 w-6" />,
-      title: "9am to 7pm Service",
-      description: "Full day access from morning to evening",
+      title: t.feature2Title,
+      description: t.feature2Desc,
     },
     {
       icon: <Users className="h-6 w-6" />,
-      title: "Guaranteed Seating",
-      description: "Reserved seats in tuk-tuks and UMM jeeps",
+      title: t.feature3Title,
+      description: t.feature3Desc,
     },
     {
       icon: <MapPin className="h-6 w-6" />,
-      title: "All Major Attractions",
-      description:
-        "Access to Pena Palace, Quinta da Regaleira, and more",
+      title: t.feature4Title,
+      description: t.feature4Desc,
     },
     {
       icon: <Sparkles className="h-6 w-6" />,
-      title: "Professional Drivers",
-      description: "Safe and comfortable transportation",
+      title: t.feature5Title,
+      description: t.feature5Desc,
     },
     {
       icon: <Check className="h-6 w-6" />,
-      title: "Skip the Wait",
-      description:
-        "No need to worry about parking or public transport schedules",
+      title: t.feature6Title,
+      description: t.feature6Desc,
     },
-  ], []);
+  ], [t]);
 
   // FAQ items
   const faqItems = useMemo(() => [
-    {
-      question: "How does the day pass work?",
-      answer:
-        "Your day pass gives you unlimited access to our hop-on/hop-off service from 9am to 7pm. Simply show your pass to board any of our vehicles at designated stops throughout Sintra. You can get on and off as many times as you like to explore the attractions at your own pace.",
-    },
-    {
-      question: "What vehicles do you use?",
-      answer:
-        "We operate a fleet of tuk-tuks and UMM jeeps, all equipped with comfortable seating. Our vehicles are perfect for navigating Sintra's narrow, winding roads and provide an authentic Portuguese experience.",
-    },
-    {
-      question: "Where can I board the service?",
-      answer:
-        "We have multiple pickup points throughout Sintra, including the train station, town center, and near major attractions. Check our route map for all stop locations and schedules.",
-    },
-    {
-      question: "Is the pass valid for multiple days?",
-      answer:
-        "Each pass is valid for one full day of service. If you need transportation for multiple days, you can purchase additional day passes at the time of booking or separately.",
-    },
-    {
-      question: "Can I bring luggage?",
-      answer:
-        "Small bags and backpacks are fine, but large luggage may not fit comfortably in our vehicles. If you have significant luggage, please contact us in advance to discuss your options.",
-    },
-    {
-      question: "Do you offer group discounts?",
-      answer:
-        "Yes! When booking multiple passes (for groups), you'll benefit from our group pricing. Children aged 7-12 also receive reduced pricing.",
-    },
-    {
-      question: "What if I miss a ride?",
-      answer:
-        "No problem! Our service runs continuously throughout the day with regular intervals. Just wait at any designated stop and the next vehicle will pick you up. Your pass is valid all day, so there's no rush.",
-    },
-    {
-      question: "Are attraction tickets included?",
-      answer:
-        "The day pass covers transportation only. However, you can add attraction tickets to your booking during checkout for a bundled experience. This saves you time and often money compared to buying separately.",
-    },
-  ], []);
+    { question: t.faq1Q, answer: t.faq1A },
+    { question: t.faq2Q, answer: t.faq2A },
+    { question: t.faq3Q, answer: t.faq3A },
+    { question: t.faq4Q, answer: t.faq4A },
+    { question: t.faq5Q, answer: t.faq5A },
+    { question: t.faq6Q, answer: t.faq6A },
+    { question: t.faq7Q, answer: t.faq7A },
+    { question: t.faq8Q, answer: t.faq8A },
+  ], [t]);
 
   // Generate structured data for SEO
   const structuredData = useMemo(() => {
@@ -407,7 +374,7 @@ export function HopOnServiceDetailPage() {
             className="gap-2"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Home
+            {t.backToHome}
           </Button>
         </div>
       </div>
@@ -425,25 +392,24 @@ export function HopOnServiceDetailPage() {
           <div className="w-full pb-8 sm:pb-12 md:pb-16 lg:pb-20">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <h1 className="mb-4 sm:mb-6 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-tight drop-shadow-2xl">
-                Hop On Sintra Day Pass
+                {t.heroTitle}
               </h1>
 
               <p className="max-w-2xl text-lg sm:text-xl md:text-2xl text-white/95 mb-6 sm:mb-8 leading-relaxed">
-                Unlimited hop-on/hop-off access to all of
-                Sintra's top attractions with guaranteed seating
+                {t.heroSubtitle}
               </p>
 
               <div className="flex flex-wrap gap-2 sm:gap-3">
                 <div className="flex items-center gap-1.5 rounded-lg bg-white/15 px-3 py-1.5 backdrop-blur-md border border-white/20">
                   <Car className="h-3.5 w-3.5 text-white/90" />
                   <span className="text-sm font-medium text-white/90">
-                    Unlimited Rides
+                    {t.badgeUnlimitedRides}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 rounded-lg bg-white/15 px-3 py-1.5 backdrop-blur-md border border-white/20">
                   <Clock className="h-3.5 w-3.5 text-white/90" />
                   <span className="text-sm font-medium text-white/90">
-                    9am - 7pm Daily
+                    {t.badge9am7pm}
                   </span>
                 </div>
               </div>
@@ -453,7 +419,7 @@ export function HopOnServiceDetailPage() {
       </section>
 
       {/* ── Mobile sticky CTA ── only visible below lg breakpoint ── */}
-      <MobileStickyBar basePrice={basePrice} onBook={() => navigate("/buy-ticket")} />
+      <MobileStickyBar basePrice={basePrice} onBook={() => navigate("/buy-ticket")} labelFrom={t.priceFrom} labelPerPerson={t.pricePerPerson} labelGetPass={t.getYourPass} />
 
       {/* Main Content */}
       <section className="py-8 sm:py-12 md:py-16 lg:py-20">
@@ -464,26 +430,13 @@ export function HopOnServiceDetailPage() {
               {/* Description */}
               <div>
                 <h2 className="mb-4 sm:mb-5 text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">
-                  Your Ticket to Explore Sintra
+                  {t.descriptionTitle}
                 </h2>
                 <p className="text-base sm:text-lg leading-relaxed text-muted-foreground mb-4">
-                  The Hop On Sintra day pass is your key to
-                  discovering one of Portugal's most enchanting
-                  destinations. With unlimited rides throughout
-                  the day, you have the freedom to explore
-                  Sintra's magnificent palaces, historic
-                  castles, and breathtaking viewpoints at your
-                  own pace.
+                  {t.descriptionP1}
                 </p>
                 <p className="text-base sm:text-lg leading-relaxed text-muted-foreground">
-                  No fixed schedules, no rushing between
-                  attractions. Simply show your pass at any of
-                  our designated stops and hop aboard one of our
-                  comfortable tuk-tuks or UMM jeeps. Our
-                  professional drivers know Sintra's winding
-                  roads like the back of their hand, ensuring
-                  safe and efficient transportation while you
-                  sit back and enjoy the scenery.
+                  {t.descriptionP2}
                 </p>
               </div>
 
@@ -492,7 +445,7 @@ export function HopOnServiceDetailPage() {
                 <div className="mb-6 sm:mb-8">
                   <Badge className="mb-3 sm:mb-4">
                     <Camera className="mr-1 h-3 w-3" />
-                    Gallery
+                    {t.galleryBadge}
                   </Badge>
                   <div className="w-full max-w-full overflow-hidden rounded-xl sm:rounded-2xl shadow-lg bg-gray-100">
                     <div className="w-full max-w-full">
@@ -537,7 +490,7 @@ export function HopOnServiceDetailPage() {
               {/* Service Features */}
               <div>
                 <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-foreground">
-                  What's Included
+                  {t.featuresTitle}
                 </h2>
                 <div className="grid gap-4 sm:grid-cols-2">
                   {features.map((feature, index) => (
@@ -566,7 +519,7 @@ export function HopOnServiceDetailPage() {
               {/* FAQ Section */}
               <div>
                 <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-foreground">
-                  Frequently Asked Questions
+                  {t.faqTitle}
                 </h2>
                 <Accordion
                   type="single"
@@ -593,7 +546,7 @@ export function HopOnServiceDetailPage() {
               {/* Explore More Section */}
               <div>
                 <h2 className="mb-6 text-2xl sm:text-3xl font-bold text-foreground">
-                  Plan Your Perfect Trip
+                  {t.exploreSectionTitle}
                 </h2>
                 <div className="grid gap-4 sm:grid-cols-2">
                   {/* Travel Guide Link */}
@@ -607,11 +560,11 @@ export function HopOnServiceDetailPage() {
                       </div>
                       <div className="flex-1">
                         <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
-                          Travel Guide
+                          {t.travelGuideTitle}
                           <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
                         </h3>
                         <p className="text-sm text-muted-foreground">
-                          Discover insider tips, best times to visit each palace, and hidden gems of Sintra
+                          {t.travelGuideDesc}
                         </p>
                       </div>
                     </div>
@@ -628,11 +581,11 @@ export function HopOnServiceDetailPage() {
                       </div>
                       <div className="flex-1">
                         <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
-                          Private Tours
+                          {t.privateToursTitle}
                           <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
                         </h3>
                         <p className="text-sm text-muted-foreground">
-                          Want a personalized experience? Explore custom tours with expert local guides
+                          {t.privateToursDesc}
                         </p>
                       </div>
                     </div>
@@ -644,12 +597,10 @@ export function HopOnServiceDetailPage() {
               <div className="lg:hidden">
                 <Card className="p-6 sm:p-8 bg-gradient-to-br from-primary to-primary/90 text-white shadow-xl">
                   <h3 className="text-2xl font-bold mb-3">
-                    Ready to Explore Sintra?
+                    {t.mobileCtaTitle}
                   </h3>
                   <p className="mb-6 text-white/90">
-                    Get your day pass now and start discovering
-                    Sintra's magical attractions at your own
-                    pace.
+                    {t.mobileCtaDesc}
                   </p>
                   <Button
                     onClick={() => navigate("/buy-ticket")}
@@ -657,7 +608,7 @@ export function HopOnServiceDetailPage() {
                     className="w-full bg-white text-primary hover:bg-white/90 font-semibold"
                   >
                     <Ticket className="mr-2 h-5 w-5" />
-                    Book Your Day Pass
+                    {t.mobileCtaButton}
                   </Button>
                 </Card>
               </div>
@@ -670,36 +621,36 @@ export function HopOnServiceDetailPage() {
                 <Card className="p-6 shadow-xl">
                   <div className="mb-6">
                     <h3 className="text-2xl font-bold text-foreground mb-2">
-                      Book Your Pass
+                      {t.bookingCardTitle}
                     </h3>
                     <p className="text-muted-foreground">
-                      Unlimited access to all attractions
+                      {t.bookingCardSubtitle}
                     </p>
                   </div>
 
                   <div className="mb-6 space-y-3">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Clock className="h-4 w-4 text-primary" />
-                      <span>Valid for one full day</span>
+                      <span>{t.bookingDetail1}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <CalendarCheck className="h-4 w-4 text-primary" />
-                      <span>Service: 9am - 7pm daily</span>
+                      <span>{t.bookingDetail2}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Users className="h-4 w-4 text-primary" />
-                      <span>Group discounts available</span>
+                      <span>{t.bookingDetail3}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <MapPin className="h-4 w-4 text-primary" />
-                      <span>Multiple pickup locations</span>
+                      <span>{t.bookingDetail4}</span>
                     </div>
                   </div>
 
                   <div className="mb-4 text-center">
-                    <span className="text-xs font-medium text-stone-400">From</span>
+                    <span className="text-xs font-medium text-stone-400">{t.priceFrom}</span>
                     <p className="text-4xl font-extrabold leading-none text-primary">€{basePrice}</p>
-                    <span className="text-xs text-muted-foreground">per person</span>
+                    <span className="text-xs text-muted-foreground">{t.pricePerPerson}</span>
                   </div>
 
                   <Button
@@ -708,11 +659,11 @@ export function HopOnServiceDetailPage() {
                     className="w-full font-semibold"
                   >
                     <Ticket className="mr-2 h-5 w-5" />
-                    Book Now
+                    {t.bookNow}
                   </Button>
 
                   <p className="mt-4 text-xs text-center text-muted-foreground">
-                    Instant confirmation • Flexible booking
+                    {t.bookingFootnote}
                   </p>
                 </Card>
 
@@ -720,32 +671,24 @@ export function HopOnServiceDetailPage() {
                 <Card className="p-6 shadow-lg mt-6 bg-secondary/30">
                   <h4 className="font-semibold text-foreground mb-4 flex items-center gap-2">
                     <Star className="h-5 w-5 text-primary" />
-                    Why Passengers Love Us
+                    {t.whyUsTitle}
                   </h4>
                   <ul className="space-y-3 text-sm">
                     <li className="flex items-start gap-2">
                       <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                      <span className="text-muted-foreground">
-                        No waiting for buses or taxis
-                      </span>
+                      <span className="text-muted-foreground">{t.whyUs1}</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                      <span className="text-muted-foreground">
-                        Skip parking hassles completely
-                      </span>
+                      <span className="text-muted-foreground">{t.whyUs2}</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                      <span className="text-muted-foreground">
-                        See more in less time
-                      </span>
+                      <span className="text-muted-foreground">{t.whyUs3}</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                      <span className="text-muted-foreground">
-                        Authentic Portuguese vehicles
-                      </span>
+                      <span className="text-muted-foreground">{t.whyUs4}</span>
                     </li>
                   </ul>
                 </Card>
