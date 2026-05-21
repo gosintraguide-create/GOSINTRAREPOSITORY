@@ -1,5 +1,7 @@
-import { ArrowRight } from "lucide-react";
+import { useState } from "react";
+import { ArrowRight, MessageCircle, Mail } from "lucide-react";
 import { Button } from "./ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import type { WebsiteContent } from "../lib/contentManager";
 import { getTranslation } from "../lib/translations/loader";
 
@@ -25,15 +27,76 @@ function ImagePlaceholder({ label }: { label: string }) {
   );
 }
 
+// ── Contact modal (shared markup, used per-card) ─────────────────────────────
+function ContactModal({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+}) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-xs rounded-2xl p-6 text-center">
+        <DialogHeader>
+          <DialogTitle className="text-base font-semibold text-foreground">
+            We're here to help
+          </DialogTitle>
+        </DialogHeader>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Choose how you'd like to reach us
+        </p>
+        <div className="mt-5 flex flex-col gap-3">
+          <a
+            href="https://wa.me/351932967279"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            onClick={() => onOpenChange(false)}
+          >
+            <MessageCircle className="h-4 w-4 shrink-0" />
+            WhatsApp
+          </a>
+          <a
+            href="mailto:info@hoponsintra.com"
+            className="flex items-center justify-center gap-2 rounded-xl border border-border bg-background px-4 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-secondary"
+            onClick={() => onOpenChange(false)}
+          >
+            <Mail className="h-4 w-4 shrink-0" />
+            info@hoponsintra.com
+          </a>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 // ── "What We Offer" card ─────────────────────────────────────────────────────
 interface OfferCardProps {
   imageUrl?: string;
   imagePlaceholderLabel?: string;
   title: string;
   description: string;
-  ctaLabel: string;
+  /** Small text link at bottom of content (e.g. "See what's included →") */
+  ctaLabel?: string;
+  /** Primary CTA button label — if provided, renders a full-width button */
+  ctaButtonLabel?: string;
+  /** Navigates to detail page (card click + ctaLabel) */
   onClick: () => void;
+  /** Navigates on primary CTA button press; falls back to onClick if omitted */
+  onBookClick?: () => void;
   fromPrice?: number | null;
+  /** Appended to price: "person" → "€15/person" */
+  priceUnit?: string;
+  /** Overlay badge top-left on the image */
+  badge?: string;
+  badgeVariant?: "accent" | "primary";
+  pills?: string[];
+  quote?: string;
+  /** Dark card style (slate-800 background) */
+  dark?: boolean;
+  /** Show "Have questions? Chat with us" link */
+  showContact?: boolean;
 }
 
 function OfferCard({
@@ -42,16 +105,30 @@ function OfferCard({
   title,
   description,
   ctaLabel,
+  ctaButtonLabel,
   onClick,
+  onBookClick,
   fromPrice,
+  priceUnit,
+  badge,
+  badgeVariant = "accent",
+  pills,
+  quote,
+  dark = false,
+  showContact = false,
 }: OfferCardProps) {
+  const [contactOpen, setContactOpen] = useState(false);
+
   return (
     <div
-      className="group cursor-pointer overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm transition-shadow hover:shadow-md"
-      onClick={onClick}
+      className={`group overflow-hidden rounded-2xl shadow-md transition-shadow hover:shadow-lg ${
+        dark
+          ? "bg-slate-800"
+          : "border border-stone-200 bg-white"
+      }`}
     >
-      {/* Image */}
-      <div className="aspect-[4/3] overflow-hidden bg-stone-100">
+      {/* ── Image + overlays ── */}
+      <div className="relative aspect-[4/3] cursor-pointer overflow-hidden bg-stone-200" onClick={onClick}>
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -62,27 +139,146 @@ function OfferCard({
         ) : (
           <ImagePlaceholder label={imagePlaceholderLabel ?? title} />
         )}
+
+        {/* Badge top-left */}
+        {badge && (
+          <span
+            className={`absolute left-3 top-3 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide text-white shadow ${
+              badgeVariant === "accent" ? "bg-accent" : "bg-primary"
+            }`}
+          >
+            {badge}
+          </span>
+        )}
+
+        {/* Price pill top-right */}
+        {fromPrice != null && (
+          <div
+            className={`absolute right-3 top-3 rounded-full px-3 py-1 text-xs font-semibold shadow ${
+              dark
+                ? "bg-slate-700/90 text-white"
+                : "bg-white/90 text-foreground"
+            }`}
+          >
+            From <span className="font-bold">€{fromPrice}</span>
+            {priceUnit ? `/${priceUnit}` : ""}
+          </div>
+        )}
       </div>
 
-      {/* Text */}
+      {/* ── Content ── */}
       <div className="p-5">
-        <h3 className="mb-1.5 text-base font-bold text-foreground">{title}</h3>
-        <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
+        {/* Title */}
+        <h3
+          className={`mb-1.5 text-lg font-bold ${
+            dark ? "text-white" : "text-foreground"
+          }`}
+        >
+          {title}
+        </h3>
+
+        {/* Description */}
+        <p
+          className={`mb-3 text-sm leading-relaxed ${
+            dark ? "text-slate-400" : "text-muted-foreground"
+          }`}
+        >
           {description}
         </p>
-        <div className="flex items-end justify-between gap-2">
-          <span className="inline-flex items-center gap-1 text-sm font-semibold text-accent transition-gap group-hover:gap-2">
+
+        {/* Feature pills */}
+        {pills && pills.length > 0 && (
+          <div className="mb-3 flex flex-wrap gap-1.5">
+            {pills.map((pill, i) => (
+              <span
+                key={i}
+                className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                  dark
+                    ? "bg-slate-700 text-slate-300"
+                    : "bg-stone-100 text-stone-700"
+                }`}
+              >
+                {pill}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Testimonial quote */}
+        {quote && (
+          <div
+            className={`mb-4 flex items-start gap-2 rounded-xl p-3 ${
+              dark ? "bg-slate-700/50" : "border border-stone-100 bg-stone-50"
+            }`}
+          >
+            <span className="mt-0.5 shrink-0 text-sm">⭐</span>
+            <p
+              className={`text-xs italic leading-relaxed ${
+                dark ? "text-slate-300" : "text-stone-600"
+              }`}
+            >
+              {quote}
+            </p>
+          </div>
+        )}
+
+        {/* Primary CTA button */}
+        {ctaButtonLabel && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              (onBookClick ?? onClick)();
+            }}
+            className={`mb-2 flex w-full items-center justify-center gap-1.5 rounded-xl px-4 py-3 text-sm font-bold transition-opacity hover:opacity-90 active:scale-[0.98] ${
+              dark
+                ? "bg-accent text-white"
+                : "bg-foreground text-background"
+            }`}
+          >
+            {ctaButtonLabel}
+            <ArrowRight className="h-4 w-4" />
+          </button>
+        )}
+
+        {/* Secondary text link */}
+        {ctaLabel && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onClick();
+            }}
+            className={`mb-2 flex w-full items-center justify-center gap-1 text-sm font-medium transition-colors ${
+              dark
+                ? "text-slate-400 hover:text-white"
+                : "text-accent hover:text-accent/80"
+            }`}
+          >
             {ctaLabel}
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-          </span>
-          {fromPrice != null && (
-            <div className="flex items-baseline gap-1 text-right">
-              <span className="text-xs font-medium text-stone-400">From</span>
-              <span className="text-2xl font-extrabold leading-none text-primary">€{fromPrice}</span>
-            </div>
-          )}
-        </div>
+            <ArrowRight className="h-3.5 w-3.5" />
+          </button>
+        )}
+
+        {/* Contact link */}
+        {showContact && (
+          <div className="mt-1 text-center">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setContactOpen(true);
+              }}
+              className={`text-xs underline underline-offset-2 transition-colors ${
+                dark
+                  ? "text-slate-500 hover:text-slate-300"
+                  : "text-muted-foreground hover:text-primary"
+              }`}
+            >
+              Have questions? Chat with us
+            </button>
+          </div>
+        )}
       </div>
+
+      <ContactModal open={contactOpen} onOpenChange={setContactOpen} />
     </div>
   );
 }
@@ -102,7 +298,6 @@ export function HeroSection({
   const travelGuideTitle = getTranslation(language).homepage.quickLinks.travelGuide.title;
 
   // ── Hero images ────────────────────────────────────────────────────────────
-  // Three named CMS fields — set via Content Editor → Home Page → Hero Images
   const mainImage =
     editableContent?.homepage?.hero?.heroImage ?? DEFAULT_HERO_IMAGE;
   const tukTukImage: string | null =
@@ -117,39 +312,6 @@ export function HeroSection({
     editableContent?.homepage?.productCards?.privateTours?.images?.[0]?.src ?? null;
   const travelGuideImg =
     editableContent?.homepage?.productCards?.travelGuide?.images?.[0]?.src ?? null;
-
-  // ── "What We Offer" cards ─────────────────────────────────────────────────
-  const offerCards = [
-    {
-      key: "daypass",
-      imageUrl: daypassImg,
-      imagePlaceholderLabel: "People in tuk tuk\nreal photo",
-      title: t.hero.daypassTitle,
-      description: t.hero.daypassDescription,
-      ctaLabel: t.hero.daypassCta,
-      onClick: () => onNavigate("hop-on-hop-off-sintra"),
-      fromPrice: priceLoaded && basePrice ? basePrice : null,
-    },
-    {
-      key: "private-tours",
-      imageUrl: privateToursImg,
-      imagePlaceholderLabel: "People in jeep\nreal photo",
-      title: t.hero.privateToursTitle,
-      description: t.hero.privateToursDescription,
-      ctaLabel: t.hero.privateToursCta,
-      onClick: () => onNavigate("private-tours"),
-      fromPrice: lowestTourPrice ?? null,
-    },
-    {
-      key: "travel-guide",
-      imageUrl: travelGuideImg,
-      imagePlaceholderLabel: "Sintra palace\neditorial photo",
-      title: travelGuideTitle,
-      description: t.hero.travelGuideDescription,
-      ctaLabel: t.hero.travelGuideCta,
-      onClick: () => onNavigate("travel-guide"),
-    },
-  ];
 
   return (
     <section className="bg-[#F5EFE3]">
@@ -261,9 +423,55 @@ export function HeroSection({
 
         {/* Cards */}
         <div className="grid gap-5 sm:grid-cols-3">
-          {offerCards.map((card) => (
-            <OfferCard key={card.key} {...card} />
-          ))}
+
+          {/* ── Day Pass card (light) ── */}
+          <OfferCard
+            imageUrl={daypassImg}
+            imagePlaceholderLabel="People in tuk tuk"
+            title={t.hero.daypassTitle}
+            description={t.hero.daypassDescription}
+            badge="Best Value"
+            badgeVariant="primary"
+            pills={["Hop on & off", "All attractions", "Guaranteed seat"]}
+            quote="\"Saw everything at our own pace — best transport decision we made in Portugal.\""
+            ctaButtonLabel="Book a day pass"
+            onBookClick={() => onNavigate("buy-ticket")}
+            ctaLabel={t.hero.daypassCta}
+            onClick={() => onNavigate("hop-on-hop-off-sintra")}
+            fromPrice={priceLoaded && basePrice ? basePrice : null}
+            priceUnit="person"
+            showContact
+          />
+
+          {/* ── Private Tours card (dark) ── */}
+          <OfferCard
+            imageUrl={privateToursImg}
+            imagePlaceholderLabel="People in jeep"
+            title={t.hero.privateToursTitle}
+            description={t.hero.privateToursDescription}
+            dark
+            badge="Most Popular"
+            badgeVariant="accent"
+            pills={["Up to 6 people", "Custom stops", "Half or full day"]}
+            quote="\"Best day of our whole Portugal trip. Our guide knew every hidden corner.\""
+            ctaButtonLabel="Book a private tour"
+            onClick={() => onNavigate("private-tours")}
+            fromPrice={lowestTourPrice ?? null}
+            priceUnit="group"
+            showContact
+          />
+
+          {/* ── Travel Guide card (light, editorial — no booking) ── */}
+          <OfferCard
+            imageUrl={travelGuideImg}
+            imagePlaceholderLabel="Sintra palace editorial photo"
+            title={travelGuideTitle}
+            description={t.hero.travelGuideDescription}
+            pills={["Palace guides", "Hidden gems", "Expert tips"]}
+            ctaLabel={t.hero.travelGuideCta}
+            onClick={() => onNavigate("travel-guide")}
+          />
+
         </div>
       </div>
     </section>
