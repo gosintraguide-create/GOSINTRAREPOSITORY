@@ -30,13 +30,13 @@ export const termsTranslations: { [key: string]: TermsContent } = {
       acceptance: {
         title: "Acceptance of Terms",
         content: [
-          "By accessing and using Go Sintra's hop-on/hop-off day pass service, you accept and agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our service.",
-          "These terms constitute a legally binding agreement between you and Go Sintra. We reserve the right to modify these terms at any time, and your continued use of our service constitutes acceptance of any changes."
+          "By accessing and using Hop On Sintra's hop-on/hop-off day pass service, you accept and agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our service.",
+          "These terms constitute a legally binding agreement between you and Hop On Sintra. We reserve the right to modify these terms at any time, and your continued use of our service constitutes acceptance of any changes."
         ]
       },
       service: {
         title: "Service Description",
-        intro: "Go Sintra provides a premium hop-on/hop-off day pass service in Sintra, Portugal, including:",
+        intro: "Hop On Sintra provides a premium hop-on/hop-off day pass service in Sintra, Portugal, including:",
         items: [
           "Unlimited rides on tuk tuks, UMM jeeps, and other small private vehicles throughout Sintra",
           "Guaranteed seating in groups of 2-6 passengers",
@@ -56,7 +56,7 @@ export const termsTranslations: { [key: string]: TermsContent } = {
           "All prices are in Euros (€) and include applicable taxes",
           "You will receive a booking confirmation and QR code via email upon successful payment",
           "Each passenger requires their own QR code to board vehicles",
-          "Booking confirmations are non-transferable unless explicitly authorized by Go Sintra"
+          "Booking confirmations are non-transferable unless explicitly authorized by Hop On Sintra"
         ]
       },
       validity: {
@@ -79,7 +79,7 @@ export const termsTranslations: { [key: string]: TermsContent } = {
           "Cancellations made less than 24 hours before: No refund",
           "No-shows are not eligible for refunds",
           "Refunds will be processed to the original payment method within 7-10 business days",
-          "Weather-related cancellations initiated by Go Sintra will receive full refunds or free rescheduling",
+          "Weather-related cancellations initiated by Hop On Sintra will receive full refunds or free rescheduling",
           "To request a cancellation, contact us via email or WhatsApp with your booking ID"
         ]
       },
@@ -90,7 +90,7 @@ export const termsTranslations: { [key: string]: TermsContent } = {
           "You are responsible for the safety and supervision of minors in your group",
           "You must follow all safety instructions provided by our drivers and staff",
           "Smoking, consumption of alcohol, and disruptive behavior are prohibited",
-          "You are responsible for your personal belongings; Go Sintra is not liable for lost items",
+          "You are responsible for your personal belongings; Hop On Sintra is not liable for lost items",
           "You must respect other passengers, drivers, and local residents",
           "Any damage to vehicles caused by passengers may result in additional charges"
         ]
@@ -98,23 +98,23 @@ export const termsTranslations: { [key: string]: TermsContent } = {
       liability: {
         title: "Limitation of Liability",
         content: [
-          "Go Sintra provides transportation services only and is not responsible for the operation, safety, or policies of third-party attractions.",
+          "Hop On Sintra provides transportation services only and is not responsible for the operation, safety, or policies of third-party attractions.",
           "While we strive to maintain our published schedule, we are not liable for delays caused by traffic, weather, mechanical issues, or other circumstances beyond our control.",
           "Our maximum liability for any claim arising from our services is limited to the amount paid for your day pass. We are not liable for indirect, incidental, or consequential damages.",
-          "Go Sintra maintains appropriate insurance coverage for passenger safety during transportation."
+          "Hop On Sintra maintains appropriate insurance coverage for passenger safety during transportation."
         ]
       },
       forceMajeure: {
         title: "Force Majeure",
         content: [
-          "Go Sintra shall not be held liable for failure to perform services due to circumstances beyond our reasonable control, including but not limited to: natural disasters, severe weather, pandemics, government restrictions, strikes, or other force majeure events.",
+          "Hop On Sintra shall not be held liable for failure to perform services due to circumstances beyond our reasonable control, including but not limited to: natural disasters, severe weather, pandemics, government restrictions, strikes, or other force majeure events.",
           "In such cases, we will make reasonable efforts to notify affected customers and offer rescheduling or refunds as appropriate."
         ]
       },
       intellectual: {
         title: "Intellectual Property",
         content: [
-          "All content on our website and in our materials, including text, graphics, logos, images, and software, is the property of Go Sintra and is protected by intellectual property laws.",
+          "All content on our website and in our materials, including text, graphics, logos, images, and software, is the property of Hop On Sintra and is protected by intellectual property laws.",
           "You may not copy, reproduce, distribute, or create derivative works from our content without explicit written permission."
         ]
       },
@@ -148,13 +148,13 @@ export const termsTranslations: { [key: string]: TermsContent } = {
       acceptance: {
         title: "Aceitação dos Termos",
         content: [
-          "Ao aceder e utilizar o serviço de passe diário hop-on/hop-off da Go Sintra, aceita e concorda em ficar vinculado a estes Termos de Serviço. Se não concordar com estes termos, não utilize o nosso serviço.",
-          "Estes termos constituem um acordo juridicamente vinculativo entre si e a Go Sintra. Reservamos o direito de modificar estes termos a qualquer momento, e o seu uso continuado do nosso serviço constitui aceitação de quaisquer alterações."
+          "Ao aceder e utilizar o serviço de passe diário hop-on/hop-off da Hop On Sintra, aceita e concorda em ficar vinculado a estes Termos de Serviço. Se não concordar com estes termos, não utilize o nosso serviço.",
+          "Estes termos constituem um acordo juridicamente vinculativo entre si e a Hop On Sintra. Reservamos o direito de modificar estes termos a qualquer momento, e o seu uso continuado do nosso serviço constitui aceitação de quaisquer alterações."
         ]
       },
       service: {
         title: "Descrição do Serviço",
-        intro: "A Go Sintra fornece um serviço premium de passe diário hop-on/hop-off em Sintra, Portugal, incluindo:",
+        intro: "A Hop On Sintra fornece um serviço premium de passe diário hop-on/hop-off em Sintra, Portugal, incluindo:",
         items: [
           "Viagens ilimitadas em tuk tuks, jipes UMM e outros pequenos veículos privados por toda Sintra",
           "Lugares garantidos em grupos de 2-6 passageiros",
@@ -174,7 +174,7 @@ export const termsTranslations: { [key: string]: TermsContent } = {
           "Todos os preços são em Euros (€) e incluem impostos aplicáveis",
           "Receberá uma confirmação de reserva e código QR por e-mail após pagamento bem-sucedido",
           "Cada passageiro precisa do seu próprio código QR para embarcar nos veículos",
-          "As confirmações de reserva não são transferíveis, a menos que explicitamente autorizado pela Go Sintra"
+          "As confirmações de reserva não são transferíveis, a menos que explicitamente autorizado pela Hop On Sintra"
         ]
       },
       validity: {
@@ -197,7 +197,7 @@ export const termsTranslations: { [key: string]: TermsContent } = {
           "Cancelamentos feitos menos de 24 horas antes: Sem reembolso",
           "Não comparências não são elegíveis para reembolsos",
           "Os reembolsos serão processados para o método de pagamento original dentro de 7-10 dias úteis",
-          "Cancelamentos relacionados com o clima iniciados pela Go Sintra receberão reembolsos totais ou reagendamento gratuito",
+          "Cancelamentos relacionados com o clima iniciados pela Hop On Sintra receberão reembolsos totais ou reagendamento gratuito",
           "Para solicitar um cancelamento, contacte-nos por e-mail ou WhatsApp com o seu ID de reserva"
         ]
       },
@@ -208,7 +208,7 @@ export const termsTranslations: { [key: string]: TermsContent } = {
           "É responsável pela segurança e supervisão de menores no seu grupo",
           "Deve seguir todas as instruções de segurança fornecidas pelos nossos motoristas e pessoal",
           "É proibido fumar, consumir álcool e ter comportamento perturbador",
-          "É responsável pelos seus pertences pessoais; a Go Sintra não é responsável por itens perdidos",
+          "É responsável pelos seus pertences pessoais; a Hop On Sintra não é responsável por itens perdidos",
           "Deve respeitar outros passageiros, motoristas e residentes locais",
           "Quaisquer danos aos veículos causados por passageiros podem resultar em cobranças adicionais"
         ]
@@ -216,23 +216,23 @@ export const termsTranslations: { [key: string]: TermsContent } = {
       liability: {
         title: "Limitação de Responsabilidade",
         content: [
-          "A Go Sintra fornece apenas serviços de transporte e não é responsável pela operação, segurança ou políticas de atrações de terceiros.",
+          "A Hop On Sintra fornece apenas serviços de transporte e não é responsável pela operação, segurança ou políticas de atrações de terceiros.",
           "Embora nos esforcemos para manter o nosso horário publicado, não somos responsáveis por atrasos causados por tráfego, clima, problemas mecânicos ou outras circunstâncias fora do nosso controlo.",
           "A nossa responsabilidade máxima para qualquer reclamação decorrente dos nossos serviços é limitada ao valor pago pelo seu passe diário. Não somos responsáveis por danos indiretos, incidentais ou consequentes.",
-          "A Go Sintra mantém cobertura de seguro apropriada para a segurança dos passageiros durante o transporte."
+          "A Hop On Sintra mantém cobertura de seguro apropriada para a segurança dos passageiros durante o transporte."
         ]
       },
       forceMajeure: {
         title: "Força Maior",
         content: [
-          "A Go Sintra não será responsabilizada por falha na prestação de serviços devido a circunstâncias além do nosso controlo razoável, incluindo mas não limitado a: desastres naturais, clima severo, pandemias, restrições governamentais, greves ou outros eventos de força maior.",
+          "A Hop On Sintra não será responsabilizada por falha na prestação de serviços devido a circunstâncias além do nosso controlo razoável, incluindo mas não limitado a: desastres naturais, clima severo, pandemias, restrições governamentais, greves ou outros eventos de força maior.",
           "Em tais casos, faremos esforços razoáveis para notificar os clientes afetados e oferecer reagendamento ou reembolsos conforme apropriado."
         ]
       },
       intellectual: {
         title: "Propriedade Intelectual",
         content: [
-          "Todo o conteúdo no nosso website e nos nossos materiais, incluindo texto, gráficos, logotipos, imagens e software, é propriedade da Go Sintra e está protegido por leis de propriedade intelectual.",
+          "Todo o conteúdo no nosso website e nos nossos materiais, incluindo texto, gráficos, logotipos, imagens e software, é propriedade da Hop On Sintra e está protegido por leis de propriedade intelectual.",
           "Não pode copiar, reproduzir, distribuir ou criar obras derivadas do nosso conteúdo sem permissão explícita por escrito."
         ]
       },
@@ -266,13 +266,13 @@ export const termsTranslations: { [key: string]: TermsContent } = {
       acceptance: {
         title: "Aceptación de los Términos",
         content: [
-          "Al acceder y usar el servicio de pase diario hop-on/hop-off de Go Sintra, acepta y acepta estar obligado por estos Términos de Servicio. Si no está de acuerdo con estos términos, no use nuestro servicio.",
-          "Estos términos constituyen un acuerdo legalmente vinculante entre usted y Go Sintra. Nos reservamos el derecho de modificar estos términos en cualquier momento, y su uso continuado de nuestro servicio constituye la aceptación de cualquier cambio."
+          "Al acceder y usar el servicio de pase diario hop-on/hop-off de Hop On Sintra, acepta y acepta estar obligado por estos Términos de Servicio. Si no está de acuerdo con estos términos, no use nuestro servicio.",
+          "Estos términos constituyen un acuerdo legalmente vinculante entre usted y Hop On Sintra. Nos reservamos el derecho de modificar estos términos en cualquier momento, y su uso continuado de nuestro servicio constituye la aceptación de cualquier cambio."
         ]
       },
       service: {
         title: "Descripción del Servicio",
-        intro: "Go Sintra proporciona un servicio premium de pase diario hop-on/hop-off en Sintra, Portugal, que incluye:",
+        intro: "Hop On Sintra proporciona un servicio premium de pase diario hop-on/hop-off en Sintra, Portugal, que incluye:",
         items: [
           "Viajes ilimitados en tuk tuks, jeeps UMM y otros pequeños vehículos privados por todo Sintra",
           "Asientos garantizados en grupos de 2-6 pasajeros",
@@ -292,7 +292,7 @@ export const termsTranslations: { [key: string]: TermsContent } = {
           "Todos los precios están en Euros (€) e incluyen impuestos aplicables",
           "Recibirá una confirmación de reserva y código QR por correo electrónico después del pago exitoso",
           "Cada pasajero requiere su propio código QR para abordar los vehículos",
-          "Las confirmaciones de reserva no son transferibles a menos que Go Sintra lo autorice explícitamente"
+          "Las confirmaciones de reserva no son transferibles a menos que Hop On Sintra lo autorice explícitamente"
         ]
       },
       validity: {
@@ -315,7 +315,7 @@ export const termsTranslations: { [key: string]: TermsContent } = {
           "Cancelaciones hechas menos de 24 horas antes: Sin reembolso",
           "Las no presentaciones no son elegibles para reembolsos",
           "Los reembolsos se procesarán al método de pago original dentro de 7-10 días hábiles",
-          "Las cancelaciones relacionadas con el clima iniciadas por Go Sintra recibirán reembolsos completos o reprogramación gratuita",
+          "Las cancelaciones relacionadas con el clima iniciadas por Hop On Sintra recibirán reembolsos completos o reprogramación gratuita",
           "Para solicitar una cancelación, contáctenos por correo electrónico o WhatsApp con su ID de reserva"
         ]
       },
@@ -326,7 +326,7 @@ export const termsTranslations: { [key: string]: TermsContent } = {
           "Es responsable de la seguridad y supervisión de menores en su grupo",
           "Debe seguir todas las instrucciones de seguridad proporcionadas por nuestros conductores y personal",
           "Está prohibido fumar, consumir alcohol y tener comportamiento perturbador",
-          "Es responsable de sus pertenencias personales; Go Sintra no es responsable de artículos perdidos",
+          "Es responsable de sus pertenencias personales; Hop On Sintra no es responsable de artículos perdidos",
           "Debe respetar a otros pasajeros, conductores y residentes locales",
           "Cualquier daño a los vehículos causado por pasajeros puede resultar en cargos adicionales"
         ]
@@ -334,23 +334,23 @@ export const termsTranslations: { [key: string]: TermsContent } = {
       liability: {
         title: "Limitación de Responsabilidad",
         content: [
-          "Go Sintra proporciona solo servicios de transporte y no es responsable de la operación, seguridad o políticas de atracciones de terceros.",
+          "Hop On Sintra proporciona solo servicios de transporte y no es responsable de la operación, seguridad o políticas de atracciones de terceros.",
           "Aunque nos esforzamos por mantener nuestro horario publicado, no somos responsables de retrasos causados por tráfico, clima, problemas mecánicos u otras circunstancias fuera de nuestro control.",
           "Nuestra responsabilidad máxima para cualquier reclamo que surja de nuestros servicios está limitada al monto pagado por su pase diario. No somos responsables de daños indirectos, incidentales o consecuentes.",
-          "Go Sintra mantiene cobertura de seguro apropiada para la seguridad de los pasajeros durante el transporte."
+          "Hop On Sintra mantiene cobertura de seguro apropiada para la seguridad de los pasajeros durante el transporte."
         ]
       },
       forceMajeure: {
         title: "Fuerza Mayor",
         content: [
-          "Go Sintra no será responsable por el incumplimiento de la prestación de servicios debido a circunstancias más allá de nuestro control razonable, incluyendo pero no limitado a: desastres naturales, clima severo, pandemias, restricciones gubernamentales, huelgas u otros eventos de fuerza mayor.",
+          "Hop On Sintra no será responsable por el incumplimiento de la prestación de servicios debido a circunstancias más allá de nuestro control razonable, incluyendo pero no limitado a: desastres naturales, clima severo, pandemias, restricciones gubernamentales, huelgas u otros eventos de fuerza mayor.",
           "En tales casos, haremos esfuerzos razonables para notificar a los clientes afectados y ofrecer reprogramación o reembolsos según corresponda."
         ]
       },
       intellectual: {
         title: "Propiedad Intelectual",
         content: [
-          "Todo el contenido en nuestro sitio web y en nuestros materiales, incluidos texto, gráficos, logotipos, imágenes y software, es propiedad de Go Sintra y está protegido por leyes de propiedad intelectual.",
+          "Todo el contenido en nuestro sitio web y en nuestros materiales, incluidos texto, gráficos, logotipos, imágenes y software, es propiedad de Hop On Sintra y está protegido por leyes de propiedad intelectual.",
           "No puede copiar, reproducir, distribuir o crear obras derivadas de nuestro contenido sin permiso explícito por escrito."
         ]
       },
@@ -384,13 +384,13 @@ export const termsTranslations: { [key: string]: TermsContent } = {
       acceptance: {
         title: "Acceptation des Conditions",
         content: [
-          "En accédant et en utilisant le service de pass journalier hop-on/hop-off de Go Sintra, vous acceptez et acceptez d'être lié par ces Conditions d'Utilisation. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser notre service.",
-          "Ces conditions constituent un accord juridiquement contraignant entre vous et Go Sintra. Nous nous réservons le droit de modifier ces conditions à tout moment, et votre utilisation continue de notre service constitue l'acceptation de tout changement."
+          "En accédant et en utilisant le service de pass journalier hop-on/hop-off de Hop On Sintra, vous acceptez et acceptez d'être lié par ces Conditions d'Utilisation. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser notre service.",
+          "Ces conditions constituent un accord juridiquement contraignant entre vous et Hop On Sintra. Nous nous réservons le droit de modifier ces conditions à tout moment, et votre utilisation continue de notre service constitue l'acceptation de tout changement."
         ]
       },
       service: {
         title: "Description du Service",
-        intro: "Go Sintra fournit un service premium de pass journalier hop-on/hop-off à Sintra, Portugal, comprenant:",
+        intro: "Hop On Sintra fournit un service premium de pass journalier hop-on/hop-off à Sintra, Portugal, comprenant:",
         items: [
           "Trajets illimités en tuk tuks, jeeps UMM et autres petits véhicules privés à travers Sintra",
           "Sièges garantis en groupes de 2-6 passagers",
@@ -410,7 +410,7 @@ export const termsTranslations: { [key: string]: TermsContent } = {
           "Tous les prix sont en Euros (€) et incluent les taxes applicables",
           "Vous recevrez une confirmation de réservation et un code QR par e-mail après un paiement réussi",
           "Chaque passager a besoin de son propre code QR pour monter dans les véhicules",
-          "Les confirmations de réservation ne sont pas transférables sauf autorisation explicite de Go Sintra"
+          "Les confirmations de réservation ne sont pas transférables sauf autorisation explicite de Hop On Sintra"
         ]
       },
       validity: {
@@ -433,7 +433,7 @@ export const termsTranslations: { [key: string]: TermsContent } = {
           "Annulations effectuées moins de 24 heures avant: Pas de remboursement",
           "Les non-présentations ne sont pas éligibles aux remboursements",
           "Les remboursements seront traités vers le mode de paiement original dans un délai de 7-10 jours ouvrables",
-          "Les annulations liées aux conditions météorologiques initiées par Go Sintra recevront des remboursements complets ou une reprogrammation gratuite",
+          "Les annulations liées aux conditions météorologiques initiées par Hop On Sintra recevront des remboursements complets ou une reprogrammation gratuite",
           "Pour demander une annulation, contactez-nous par e-mail ou WhatsApp avec votre ID de réservation"
         ]
       },
@@ -444,7 +444,7 @@ export const termsTranslations: { [key: string]: TermsContent } = {
           "Vous êtes responsable de la sécurité et de la supervision des mineurs dans votre groupe",
           "Vous devez suivre toutes les instructions de sécurité fournies par nos conducteurs et notre personnel",
           "Il est interdit de fumer, de consommer de l'alcool et d'avoir un comportement perturbateur",
-          "Vous êtes responsable de vos effets personnels; Go Sintra n'est pas responsable des objets perdus",
+          "Vous êtes responsable de vos effets personnels; Hop On Sintra n'est pas responsable des objets perdus",
           "Vous devez respecter les autres passagers, les conducteurs et les résidents locaux",
           "Tout dommage aux véhicules causé par les passagers peut entraîner des frais supplémentaires"
         ]
@@ -452,23 +452,23 @@ export const termsTranslations: { [key: string]: TermsContent } = {
       liability: {
         title: "Limitation de Responsabilité",
         content: [
-          "Go Sintra fournit uniquement des services de transport et n'est pas responsable de l'exploitation, de la sécurité ou des politiques des attractions tierces.",
+          "Hop On Sintra fournit uniquement des services de transport et n'est pas responsable de l'exploitation, de la sécurité ou des politiques des attractions tierces.",
           "Bien que nous nous efforcions de maintenir notre horaire publié, nous ne sommes pas responsables des retards causés par la circulation, les conditions météorologiques, les problèmes mécaniques ou d'autres circonstances hors de notre contrôle.",
           "Notre responsabilité maximale pour toute réclamation découlant de nos services est limitée au montant payé pour votre pass journalier. Nous ne sommes pas responsables des dommages indirects, accessoires ou consécutifs.",
-          "Go Sintra maintient une couverture d'assurance appropriée pour la sécurité des passagers pendant le transport."
+          "Hop On Sintra maintient une couverture d'assurance appropriée pour la sécurité des passagers pendant le transport."
         ]
       },
       forceMajeure: {
         title: "Force Majeure",
         content: [
-          "Go Sintra ne sera pas tenu responsable de l'impossibilité de fournir des services en raison de circonstances indépendantes de notre volonté raisonnable, y compris mais sans s'y limiter: catastrophes naturelles, conditions météorologiques extrêmes, pandémies, restrictions gouvernementales, grèves ou autres événements de force majeure.",
+          "Hop On Sintra ne sera pas tenu responsable de l'impossibilité de fournir des services en raison de circonstances indépendantes de notre volonté raisonnable, y compris mais sans s'y limiter: catastrophes naturelles, conditions météorologiques extrêmes, pandémies, restrictions gouvernementales, grèves ou autres événements de force majeure.",
           "Dans de tels cas, nous ferons des efforts raisonnables pour notifier les clients affectés et offrir une reprogrammation ou des remboursements selon le cas."
         ]
       },
       intellectual: {
         title: "Propriété Intellectuelle",
         content: [
-          "Tout le contenu de notre site web et dans nos matériaux, y compris le texte, les graphiques, les logos, les images et les logiciels, est la propriété de Go Sintra et est protégé par les lois sur la propriété intellectuelle.",
+          "Tout le contenu de notre site web et dans nos matériaux, y compris le texte, les graphiques, les logos, les images et les logiciels, est la propriété de Hop On Sintra et est protégé par les lois sur la propriété intellectuelle.",
           "Vous ne pouvez pas copier, reproduire, distribuer ou créer des œuvres dérivées de notre contenu sans autorisation écrite explicite."
         ]
       },
@@ -502,13 +502,13 @@ export const termsTranslations: { [key: string]: TermsContent } = {
       acceptance: {
         title: "Annahme der Bedingungen",
         content: [
-          "Durch den Zugriff auf und die Nutzung des Hop-on/Hop-off-Tagespass-Service von Go Sintra akzeptieren Sie diese Nutzungsbedingungen und erklären sich damit einverstanden, an sie gebunden zu sein. Wenn Sie mit diesen Bedingungen nicht einverstanden sind, nutzen Sie bitte unseren Service nicht.",
-          "Diese Bedingungen stellen eine rechtlich bindende Vereinbarung zwischen Ihnen und Go Sintra dar. Wir behalten uns das Recht vor, diese Bedingungen jederzeit zu ändern, und Ihre fortgesetzte Nutzung unseres Service stellt die Annahme aller Änderungen dar."
+          "Durch den Zugriff auf und die Nutzung des Hop-on/Hop-off-Tagespass-Service von Hop On Sintra akzeptieren Sie diese Nutzungsbedingungen und erklären sich damit einverstanden, an sie gebunden zu sein. Wenn Sie mit diesen Bedingungen nicht einverstanden sind, nutzen Sie bitte unseren Service nicht.",
+          "Diese Bedingungen stellen eine rechtlich bindende Vereinbarung zwischen Ihnen und Hop On Sintra dar. Wir behalten uns das Recht vor, diese Bedingungen jederzeit zu ändern, und Ihre fortgesetzte Nutzung unseres Service stellt die Annahme aller Änderungen dar."
         ]
       },
       service: {
         title: "Servicebeschreibung",
-        intro: "Go Sintra bietet einen Premium-Hop-on/Hop-off-Tagespass-Service in Sintra, Portugal, einschließlich:",
+        intro: "Hop On Sintra bietet einen Premium-Hop-on/Hop-off-Tagespass-Service in Sintra, Portugal, einschließlich:",
         items: [
           "Unbegrenzte Fahrten mit Tuk Tuks, UMM-Jeeps und anderen kleinen Privatfahrzeugen durch Sintra",
           "Garantierte Sitzplätze in Gruppen von 2-6 Passagieren",
@@ -528,7 +528,7 @@ export const termsTranslations: { [key: string]: TermsContent } = {
           "Alle Preise sind in Euro (€) und enthalten anwendbare Steuern",
           "Sie erhalten eine Buchungsbestätigung und einen QR-Code per E-Mail nach erfolgreicher Zahlung",
           "Jeder Passagier benötigt seinen eigenen QR-Code zum Einsteigen in Fahrzeuge",
-          "Buchungsbestätigungen sind nicht übertragbar, es sei denn, dies wird von Go Sintra ausdrücklich genehmigt"
+          "Buchungsbestätigungen sind nicht übertragbar, es sei denn, dies wird von Hop On Sintra ausdrücklich genehmigt"
         ]
       },
       validity: {
@@ -551,7 +551,7 @@ export const termsTranslations: { [key: string]: TermsContent } = {
           "Stornierungen weniger als 24 Stunden vorher: Keine Rückerstattung",
           "Nichterscheinen berechtigt nicht zur Rückerstattung",
           "Rückerstattungen werden innerhalb von 7-10 Werktagen auf die ursprüngliche Zahlungsmethode verarbeitet",
-          "Wetterbedingte Stornierungen, die von Go Sintra initiiert werden, erhalten vollständige Rückerstattungen oder kostenlose Umplanung",
+          "Wetterbedingte Stornierungen, die von Hop On Sintra initiiert werden, erhalten vollständige Rückerstattungen oder kostenlose Umplanung",
           "Um eine Stornierung anzufordern, kontaktieren Sie uns per E-Mail oder WhatsApp mit Ihrer Buchungs-ID"
         ]
       },
@@ -562,7 +562,7 @@ export const termsTranslations: { [key: string]: TermsContent } = {
           "Sie sind für die Sicherheit und Aufsicht von Minderjährigen in Ihrer Gruppe verantwortlich",
           "Sie müssen alle Sicherheitsanweisungen unserer Fahrer und Mitarbeiter befolgen",
           "Rauchen, Alkoholkonsum und störendes Verhalten sind verboten",
-          "Sie sind für Ihre persönlichen Gegenstände verantwortlich; Go Sintra haftet nicht für verlorene Gegenstände",
+          "Sie sind für Ihre persönlichen Gegenstände verantwortlich; Hop On Sintra haftet nicht für verlorene Gegenstände",
           "Sie müssen andere Passagiere, Fahrer und Anwohner respektieren",
           "Schäden an Fahrzeugen, die von Passagieren verursacht werden, können zu zusätzlichen Gebühren führen"
         ]
@@ -570,23 +570,23 @@ export const termsTranslations: { [key: string]: TermsContent } = {
       liability: {
         title: "Haftungsbeschränkung",
         content: [
-          "Go Sintra bietet nur Transportdienste an und ist nicht verantwortlich für den Betrieb, die Sicherheit oder die Richtlinien von Drittanbieter-Attraktionen.",
+          "Hop On Sintra bietet nur Transportdienste an und ist nicht verantwortlich für den Betrieb, die Sicherheit oder die Richtlinien von Drittanbieter-Attraktionen.",
           "Obwohl wir uns bemühen, unseren veröffentlichten Zeitplan einzuhalten, haften wir nicht für Verzögerungen aufgrund von Verkehr, Wetter, mechanischen Problemen oder anderen Umständen außerhalb unserer Kontrolle.",
           "Unsere maximale Haftung für Ansprüche aus unseren Dienstleistungen ist auf den für Ihren Tagespass gezahlten Betrag begrenzt. Wir haften nicht für indirekte, zufällige oder Folgeschäden.",
-          "Go Sintra unterhält angemessenen Versicherungsschutz für die Passagiersicherheit während des Transports."
+          "Hop On Sintra unterhält angemessenen Versicherungsschutz für die Passagiersicherheit während des Transports."
         ]
       },
       forceMajeure: {
         title: "Höhere Gewalt",
         content: [
-          "Go Sintra haftet nicht für die Nichterbringung von Dienstleistungen aufgrund von Umständen außerhalb unserer angemessenen Kontrolle, einschließlich, aber nicht beschränkt auf: Naturkatastrophen, schweres Wetter, Pandemien, behördliche Beschränkungen, Streiks oder andere Ereignisse höherer Gewalt.",
+          "Hop On Sintra haftet nicht für die Nichterbringung von Dienstleistungen aufgrund von Umständen außerhalb unserer angemessenen Kontrolle, einschließlich, aber nicht beschränkt auf: Naturkatastrophen, schweres Wetter, Pandemien, behördliche Beschränkungen, Streiks oder andere Ereignisse höherer Gewalt.",
           "In solchen Fällen werden wir angemessene Anstrengungen unternehmen, um betroffene Kunden zu benachrichtigen und Umplanung oder Rückerstattungen anzubieten, wie angemessen."
         ]
       },
       intellectual: {
         title: "Geistiges Eigentum",
         content: [
-          "Alle Inhalte auf unserer Website und in unseren Materialien, einschließlich Text, Grafiken, Logos, Bilder und Software, sind Eigentum von Go Sintra und durch Gesetze zum Schutz geistigen Eigentums geschützt.",
+          "Alle Inhalte auf unserer Website und in unseren Materialien, einschließlich Text, Grafiken, Logos, Bilder und Software, sind Eigentum von Hop On Sintra und durch Gesetze zum Schutz geistigen Eigentums geschützt.",
           "Sie dürfen unsere Inhalte nicht kopieren, reproduzieren, verteilen oder abgeleitete Werke erstellen ohne ausdrückliche schriftliche Genehmigung."
         ]
       },

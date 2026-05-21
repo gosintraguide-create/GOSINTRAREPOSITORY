@@ -27,7 +27,7 @@ export const privacyTranslations: { [key: string]: PrivacyContent } = {
       introduction: {
         title: "Introduction",
         content: [
-          "Go Sintra (\"we\", \"our\", or \"us\") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our hop-on/hop-off day pass service in Sintra, Portugal.",
+          "Hop On Sintra (\"we\", \"our\", or \"us\") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our hop-on/hop-off day pass service in Sintra, Portugal.",
           "Please read this privacy policy carefully. If you do not agree with the terms of this privacy policy, please do not access the site or use our services."
         ]
       },
@@ -130,7 +130,7 @@ export const privacyTranslations: { [key: string]: PrivacyContent } = {
       introduction: {
         title: "Introdução",
         content: [
-          "A Go Sintra (\"nós\", \"nosso\" ou \"nos\") está comprometida em proteger a sua privacidade. Esta Política de Privacidade explica como recolhemos, utilizamos, divulgamos e protegemos as suas informações quando utiliza o nosso serviço de passe diário hop-on/hop-off em Sintra, Portugal.",
+          "A Hop On Sintra (\"nós\", \"nosso\" ou \"nos\") está comprometida em proteger a sua privacidade. Esta Política de Privacidade explica como recolhemos, utilizamos, divulgamos e protegemos as suas informações quando utiliza o nosso serviço de passe diário hop-on/hop-off em Sintra, Portugal.",
           "Por favor, leia esta política de privacidade cuidadosamente. Se não concordar com os termos desta política de privacidade, não aceda ao site ou utilize os nossos serviços."
         ]
       },
@@ -233,7 +233,7 @@ export const privacyTranslations: { [key: string]: PrivacyContent } = {
       introduction: {
         title: "Introducción",
         content: [
-          "Go Sintra (\"nosotros\", \"nuestro\" o \"nos\") está comprometido a proteger su privacidad. Esta Política de Privacidad explica cómo recopilamos, usamos, divulgamos y protegemos su información cuando utiliza nuestro servicio de pase diario hop-on/hop-off en Sintra, Portugal.",
+          "Hop On Sintra (\"nosotros\", \"nuestro\" o \"nos\") está comprometido a proteger su privacidad. Esta Política de Privacidad explica cómo recopilamos, usamos, divulgamos y protegemos su información cuando utiliza nuestro servicio de pase diario hop-on/hop-off en Sintra, Portugal.",
           "Por favor, lea esta política de privacidad cuidadosamente. Si no está de acuerdo con los términos de esta política de privacidad, no acceda al sitio ni utilice nuestros servicios."
         ]
       },
@@ -336,7 +336,7 @@ export const privacyTranslations: { [key: string]: PrivacyContent } = {
       introduction: {
         title: "Introduction",
         content: [
-          "Go Sintra (\"nous\", \"notre\" ou \"nos\") s'engage à protéger votre vie privée. Cette Politique de Confidentialité explique comment nous collectons, utilisons, divulguons et protégeons vos informations lorsque vous utilisez notre service de pass journalier hop-on/hop-off à Sintra, Portugal.",
+          "Hop On Sintra (\"nous\", \"notre\" ou \"nos\") s'engage à protéger votre vie privée. Cette Politique de Confidentialité explique comment nous collectons, utilisons, divulguons et protégeons vos informations lorsque vous utilisez notre service de pass journalier hop-on/hop-off à Sintra, Portugal.",
           "Veuillez lire attentivement cette politique de confidentialité. Si vous n'acceptez pas les termes de cette politique de confidentialité, veuillez ne pas accéder au site ou utiliser nos services."
         ]
       },
@@ -439,7 +439,7 @@ export const privacyTranslations: { [key: string]: PrivacyContent } = {
       introduction: {
         title: "Einführung",
         content: [
-          "Go Sintra (\"wir\", \"unser\" oder \"uns\") ist dem Schutz Ihrer Privatsphäre verpflichtet. Diese Datenschutzerklärung erklärt, wie wir Ihre Informationen sammeln, verwenden, offenlegen und schützen, wenn Sie unseren Hop-on/Hop-off-Tagespass-Service in Sintra, Portugal, nutzen.",
+          "Hop On Sintra (\"wir\", \"unser\" oder \"uns\") ist dem Schutz Ihrer Privatsphäre verpflichtet. Diese Datenschutzerklärung erklärt, wie wir Ihre Informationen sammeln, verwenden, offenlegen und schützen, wenn Sie unseren Hop-on/Hop-off-Tagespass-Service in Sintra, Portugal, nutzen.",
           "Bitte lesen Sie diese Datenschutzerklärung sorgfältig durch. Wenn Sie mit den Bedingungen dieser Datenschutzerklärung nicht einverstanden sind, greifen Sie bitte nicht auf die Website zu oder nutzen Sie unsere Dienste nicht."
         ]
       },
