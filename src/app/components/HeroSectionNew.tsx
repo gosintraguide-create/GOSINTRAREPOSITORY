@@ -121,10 +121,8 @@ function OfferCard({
 
   return (
     <div
-      className={`group overflow-hidden rounded-2xl shadow-md transition-shadow hover:shadow-lg ${
-        dark
-          ? "bg-slate-800"
-          : "border border-stone-200 bg-white"
+      className={`group flex flex-col overflow-hidden rounded-2xl shadow-md transition-shadow hover:shadow-lg ${
+        dark ? "bg-slate-800" : "border border-stone-200 bg-white"
       }`}
     >
       {/* ── Image + overlays ── */}
@@ -155,9 +153,7 @@ function OfferCard({
         {fromPrice != null && (
           <div
             className={`absolute right-3 top-3 rounded-full px-3 py-1 text-xs font-semibold shadow ${
-              dark
-                ? "bg-slate-700/90 text-white"
-                : "bg-white/90 text-foreground"
+              dark ? "bg-slate-700/90 text-white" : "bg-white/90 text-foreground"
             }`}
           >
             From <span className="font-bold">€{fromPrice}</span>
@@ -166,116 +162,115 @@ function OfferCard({
         )}
       </div>
 
-      {/* ── Content ── */}
-      <div className="p-5">
-        {/* Title */}
-        <h3
-          className={`mb-1.5 text-lg font-bold ${
-            dark ? "text-white" : "text-foreground"
-          }`}
-        >
-          {title}
-        </h3>
+      {/* ── Content — flex-1 so it stretches to fill card height ── */}
+      <div className="flex flex-1 flex-col p-6">
 
-        {/* Description */}
-        <p
-          className={`mb-3 text-sm leading-relaxed ${
-            dark ? "text-slate-400" : "text-muted-foreground"
-          }`}
-        >
-          {description}
-        </p>
-
-        {/* Feature pills */}
-        {pills && pills.length > 0 && (
-          <div className="mb-3 flex flex-wrap gap-1.5">
-            {pills.map((pill, i) => (
-              <span
-                key={i}
-                className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                  dark
-                    ? "bg-slate-700 text-slate-300"
-                    : "bg-stone-100 text-stone-700"
-                }`}
-              >
-                {pill}
-              </span>
-            ))}
-          </div>
-        )}
-
-        {/* Testimonial quote */}
-        {quote && (
-          <div
-            className={`mb-4 flex items-start gap-2 rounded-xl p-3 ${
-              dark ? "bg-slate-700/50" : "border border-stone-100 bg-stone-50"
+        {/* Top section: title + description + pills + quote */}
+        <div className="flex-1">
+          <h3
+            className={`mb-2 text-lg font-bold ${
+              dark ? "text-white" : "text-foreground"
             }`}
           >
-            <span className="mt-0.5 shrink-0 text-sm">⭐</span>
-            <p
-              className={`text-xs italic leading-relaxed ${
-                dark ? "text-slate-300" : "text-stone-600"
+            {title}
+          </h3>
+
+          <p
+            className={`mb-4 text-sm leading-relaxed ${
+              dark ? "text-slate-400" : "text-muted-foreground"
+            }`}
+          >
+            {description}
+          </p>
+
+          {/* Feature pills */}
+          {pills && pills.length > 0 && (
+            <div className="mb-4 flex flex-wrap gap-1.5">
+              {pills.map((pill, i) => (
+                <span
+                  key={i}
+                  className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                    dark ? "bg-slate-700 text-slate-300" : "bg-stone-100 text-stone-700"
+                  }`}
+                >
+                  {pill}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Testimonial quote */}
+          {quote && (
+            <div
+              className={`mb-5 flex items-start gap-2 rounded-xl p-3 ${
+                dark ? "bg-slate-700/50" : "border border-stone-100 bg-stone-50"
               }`}
             >
-              {quote}
-            </p>
-          </div>
-        )}
+              <span className="mt-0.5 shrink-0 text-sm">⭐</span>
+              <p
+                className={`text-xs italic leading-relaxed ${
+                  dark ? "text-slate-300" : "text-stone-600"
+                }`}
+              >
+                {quote}
+              </p>
+            </div>
+          )}
+        </div>
 
-        {/* Primary CTA button */}
-        {ctaButtonLabel && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              (onBookClick ?? onClick)();
-            }}
-            className={`mb-2 flex w-full items-center justify-center gap-1.5 rounded-xl px-4 py-3 text-sm font-bold transition-opacity hover:opacity-90 active:scale-[0.98] ${
-              dark
-                ? "bg-accent text-white"
-                : "bg-foreground text-background"
-            }`}
-          >
-            {ctaButtonLabel}
-            <ArrowRight className="h-4 w-4" />
-          </button>
-        )}
-
-        {/* Secondary text link */}
-        {ctaLabel && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onClick();
-            }}
-            className={`mb-2 flex w-full items-center justify-center gap-1 text-sm font-medium transition-colors ${
-              dark
-                ? "text-slate-400 hover:text-white"
-                : "text-accent hover:text-accent/80"
-            }`}
-          >
-            {ctaLabel}
-            <ArrowRight className="h-3.5 w-3.5" />
-          </button>
-        )}
-
-        {/* Contact link */}
-        {showContact && (
-          <div className="mt-1 text-center">
+        {/* Bottom section: buttons pinned to base of card */}
+        <div className="mt-5 space-y-2">
+          {/* Primary CTA button */}
+          {ctaButtonLabel && (
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                setContactOpen(true);
+                (onBookClick ?? onClick)();
               }}
-              className={`text-xs underline underline-offset-2 transition-colors ${
-                dark
-                  ? "text-slate-500 hover:text-slate-300"
-                  : "text-muted-foreground hover:text-primary"
+              className={`flex w-full items-center justify-center gap-1.5 rounded-xl px-4 py-3 text-sm font-bold transition-opacity hover:opacity-90 active:scale-[0.98] ${
+                dark ? "bg-accent text-white" : "bg-foreground text-background"
               }`}
             >
-              Have questions? Chat with us
+              {ctaButtonLabel}
+              <ArrowRight className="h-4 w-4" />
             </button>
-          </div>
-        )}
+          )}
+
+          {/* Secondary text link */}
+          {ctaLabel && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onClick();
+              }}
+              className={`flex w-full items-center justify-center gap-1 text-sm font-medium transition-colors ${
+                dark ? "text-slate-400 hover:text-white" : "text-accent hover:text-accent/80"
+              }`}
+            >
+              {ctaLabel}
+              <ArrowRight className="h-3.5 w-3.5" />
+            </button>
+          )}
+
+          {/* Contact link */}
+          {showContact && (
+            <div className="pt-1 text-center">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setContactOpen(true);
+                }}
+                className={`text-xs underline underline-offset-2 transition-colors ${
+                  dark
+                    ? "text-slate-500 hover:text-slate-300"
+                    : "text-muted-foreground hover:text-primary"
+                }`}
+              >
+                Have questions? Chat with us
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       <ContactModal open={contactOpen} onOpenChange={setContactOpen} />
