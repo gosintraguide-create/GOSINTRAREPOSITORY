@@ -203,17 +203,13 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
               >
                 {t.about}
               </Link>
-              <Link
-                to="/live-chat"
+              <a
+                href="mailto:hoponsintra@gmail.com"
                 onClick={closeMenu}
-                className={`block w-full rounded-xl px-4 py-3 text-left text-sm transition-colors ${
-                  location.pathname === "/live-chat"
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:bg-secondary hover:text-primary"
-                }`}
+                className="block w-full rounded-xl px-4 py-3 text-left text-sm transition-colors text-muted-foreground hover:bg-secondary hover:text-primary"
               >
                 {t.contactInfo || "Contact"}
-              </Link>
+              </a>
               <Link
                 to="/route-map"
                 onClick={closeMenu}
