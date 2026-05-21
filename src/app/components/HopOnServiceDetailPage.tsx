@@ -420,18 +420,8 @@ export function HopOnServiceDetailPage() {
       <div className="hidden lg:block bg-background">
         <div className="mx-auto max-w-7xl px-6 py-8 lg:px-8">
           {/* Page title */}
-          <div className="mb-6 flex flex-wrap items-center gap-3">
+          <div className="mb-6">
             <h1 className="text-4xl font-bold text-foreground xl:text-5xl">{t.heroTitle}</h1>
-            <div className="flex flex-wrap gap-2">
-              <div className="flex items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5">
-                <Car className="h-3.5 w-3.5 text-primary" />
-                <span className="text-sm font-medium text-primary">{t.badgeUnlimitedRides}</span>
-              </div>
-              <div className="flex items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5">
-                <Clock className="h-3.5 w-3.5 text-primary" />
-                <span className="text-sm font-medium text-primary">{t.badge9am7pm}</span>
-              </div>
-            </div>
           </div>
 
           {/* Two-column grid */}
