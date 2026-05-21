@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { Calendar, ArrowRight, Minus, Plus } from "lucide-react";
+import { Calendar, ArrowRight, Minus, Plus, MessageCircle, Mail } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { getTranslation } from "../lib/translations";
 
 interface BookingCardProps {
@@ -15,6 +16,7 @@ interface BookingCardProps {
 export function BookingCard({ onNavigate, basePrice, language = "en" }: BookingCardProps) {
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [quantity, setQuantity] = useState(2);
+  const [contactOpen, setContactOpen] = useState(false);
   const t = getTranslation(language).productComponents;
 
   // Set default date to today
@@ -115,6 +117,50 @@ export function BookingCard({ onNavigate, basePrice, language = "en" }: BookingC
           {t.bookingCard.bookNow}
           <ArrowRight className="ml-2 h-5 w-5" />
         </Button>
+
+        {/* Contact CTA */}
+        <div className="mt-3 text-center">
+          <button
+            onClick={() => setContactOpen(true)}
+            className="text-xs text-muted-foreground hover:text-primary transition-colors underline underline-offset-2"
+          >
+            Have questions? Contact us
+          </button>
+        </div>
+
+        {/* Contact modal */}
+        <Dialog open={contactOpen} onOpenChange={setContactOpen}>
+          <DialogContent className="max-w-xs rounded-2xl p-6 text-center">
+            <DialogHeader>
+              <DialogTitle className="text-base font-semibold text-foreground">
+                We're here to help
+              </DialogTitle>
+            </DialogHeader>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Choose how you'd like to reach us
+            </p>
+            <div className="mt-5 flex flex-col gap-3">
+              <a
+                href="https://wa.me/351932967279"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                onClick={() => setContactOpen(false)}
+              >
+                <MessageCircle className="h-4 w-4 shrink-0" />
+                WhatsApp
+              </a>
+              <a
+                href="mailto:info@hoponsintra.com"
+                className="flex items-center justify-center gap-2 rounded-xl border border-border bg-background px-4 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-secondary"
+                onClick={() => setContactOpen(false)}
+              >
+                <Mail className="h-4 w-4 shrink-0" />
+                info@hoponsintra.com
+              </a>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </Card>
   );

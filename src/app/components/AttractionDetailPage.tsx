@@ -14,7 +14,10 @@ import {
   Lightbulb,
   ChevronRight,
   ChevronLeft,
+  MessageCircle,
+  Mail,
 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import {
   DEFAULT_COMPREHENSIVE_CONTENT,
 } from "../lib/comprehensiveContent";
@@ -192,6 +195,7 @@ export function AttractionDetailPage() {
 
   const [ticketQuantity, setTicketQuantity] = useState(1);
   const [selectedOption, setSelectedOption] = useState("");
+  const [contactOpen, setContactOpen] = useState(false);
 
   if (!attraction) {
     return (
@@ -534,6 +538,16 @@ export function AttractionDetailPage() {
                         {tAttr.getDayPass}
                         <ChevronRight className="ml-2 h-4 w-4" />
                       </Button>
+
+                      {/* Contact CTA */}
+                      <div className="mt-3 text-center">
+                        <button
+                          onClick={() => setContactOpen(true)}
+                          className="text-xs text-muted-foreground hover:text-primary transition-colors underline underline-offset-2"
+                        >
+                          Have questions? Contact us
+                        </button>
+                      </div>
                     </div>
                   </Card>
                 </div>
@@ -751,6 +765,40 @@ export function AttractionDetailPage() {
           </section>
         );
       })()}
+
+      {/* Contact modal — shared by both mobile and desktop booking cards */}
+      <Dialog open={contactOpen} onOpenChange={setContactOpen}>
+        <DialogContent className="max-w-xs rounded-2xl p-6 text-center">
+          <DialogHeader>
+            <DialogTitle className="text-base font-semibold text-foreground">
+              We're here to help
+            </DialogTitle>
+          </DialogHeader>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Choose how you'd like to reach us
+          </p>
+          <div className="mt-5 flex flex-col gap-3">
+            <a
+              href="https://wa.me/351932967279"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              onClick={() => setContactOpen(false)}
+            >
+              <MessageCircle className="h-4 w-4 shrink-0" />
+              WhatsApp
+            </a>
+            <a
+              href="mailto:info@hoponsintra.com"
+              className="flex items-center justify-center gap-2 rounded-xl border border-border bg-background px-4 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-secondary"
+              onClick={() => setContactOpen(false)}
+            >
+              <Mail className="h-4 w-4 shrink-0" />
+              info@hoponsintra.com
+            </a>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
