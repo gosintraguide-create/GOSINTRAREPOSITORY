@@ -430,11 +430,11 @@ export function HeroSection({
             imagePlaceholderLabel="People in tuk tuk"
             title={t.hero.daypassTitle}
             description={t.hero.daypassDescription}
-            badge="Best Value"
+            badge="Great Value"
             badgeVariant="primary"
             pills={["Hop on & off", "All attractions", "Guaranteed seat"]}
             quote={"\"Saw everything at our own pace — best transport decision we made in Portugal.\""}
-            ctaButtonLabel="Book a day pass"
+            ctaButtonLabel="Buy a day pass"
             onBookClick={() => onNavigate("buy-ticket")}
             ctaLabel={t.hero.daypassCta}
             onClick={() => onNavigate("hop-on-hop-off-sintra")}
@@ -457,17 +457,18 @@ export function HeroSection({
             ctaButtonLabel="Book a private tour"
             onClick={() => onNavigate("private-tours")}
             fromPrice={lowestTourPrice ?? null}
-            priceUnit="group"
+            priceUnit="person"
             showContact
           />
 
-          {/* ── Travel Guide card (light, editorial — no booking) ── */}
+          {/* ── Travel Guide card (light, editorial) ── */}
           <OfferCard
             imageUrl={travelGuideImg}
             imagePlaceholderLabel="Sintra palace editorial photo"
             title={travelGuideTitle}
             description={t.hero.travelGuideDescription}
             pills={["Palace guides", "Hidden gems", "Expert tips"]}
+            ctaButtonLabel="Explore Sintra guides"
             ctaLabel={t.hero.travelGuideCta}
             onClick={() => onNavigate("travel-guide")}
           />
