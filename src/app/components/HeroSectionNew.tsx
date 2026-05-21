@@ -403,7 +403,7 @@ export function HeroSection({
       <div className="hidden md:block">
       {/* ── Top: Split hero ──────────────────────────────────────────────── */}
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
-        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+        <div className="grid items-center gap-10 md:grid-cols-2 md:gap-10 lg:gap-16">
           {/* Left column — text */}
           <div className="flex flex-col">
             {/* Eyebrow */}
