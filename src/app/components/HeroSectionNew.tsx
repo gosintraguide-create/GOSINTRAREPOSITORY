@@ -433,7 +433,7 @@ export function HeroSection({
             badge="Best Value"
             badgeVariant="primary"
             pills={["Hop on & off", "All attractions", "Guaranteed seat"]}
-            quote="\"Saw everything at our own pace — best transport decision we made in Portugal.\""
+            quote={"\"Saw everything at our own pace — best transport decision we made in Portugal.\""}
             ctaButtonLabel="Book a day pass"
             onBookClick={() => onNavigate("buy-ticket")}
             ctaLabel={t.hero.daypassCta}
@@ -453,7 +453,7 @@ export function HeroSection({
             badge="Most Popular"
             badgeVariant="accent"
             pills={["Up to 6 people", "Custom stops", "Half or full day"]}
-            quote="\"Best day of our whole Portugal trip. Our guide knew every hidden corner.\""
+            quote={"\"Best day of our whole Portugal trip. Our guide knew every hidden corner.\""}
             ctaButtonLabel="Book a private tour"
             onClick={() => onNavigate("private-tours")}
             fromPrice={lowestTourPrice ?? null}
