@@ -262,7 +262,7 @@ export function PrivateTourDetailPage() {
       touristType: "Private Tour",
       provider: {
         "@type": "TravelAgency",
-        name: "Go Sintra",
+        name: "Hop On Sintra",
         url: SITE_URL,
         telephone: "+351 932 967 279",
         address: {
@@ -344,19 +344,19 @@ export function PrivateTourDetailPage() {
   return (
     <div className="flex-1">
       <Helmet>
-        <title>{tour.title} | Private Tours Sintra – Go Sintra</title>
+        <title>{tour.title} | Private Tours Sintra – Hop On Sintra</title>
         <meta name="description" content={tour.description} />
         <link rel="canonical" href={tourUrl} />
         {/* Open Graph */}
         <meta property="og:type" content="website" />
-        <meta property="og:title" content={`${tour.title} | Go Sintra`} />
+        <meta property="og:title" content={`${tour.title} | Hop On Sintra`} />
         <meta property="og:description" content={tour.description} />
         <meta property="og:image" content={tourImage} />
         <meta property="og:url" content={tourUrl} />
-        <meta property="og:site_name" content="Go Sintra" />
+        <meta property="og:site_name" content="Hop On Sintra" />
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={`${tour.title} | Go Sintra`} />
+        <meta name="twitter:title" content={`${tour.title} | Hop On Sintra`} />
         <meta name="twitter:description" content={tour.description} />
         <meta name="twitter:image" content={tourImage} />
         {/* JSON-LD */}

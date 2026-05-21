@@ -207,7 +207,7 @@ export function PrivateToursPage() {
       "@type": "ItemList",
       name: "Private Tours in Sintra",
       description:
-        "Exclusive private tours of Sintra's palaces, castles, and historic sites with Go Sintra",
+        "Exclusive private tours of Sintra's palaces, castles, and historic sites with Hop On Sintra",
       url: `${SITE_URL}/private-tours`,
       numberOfItems: tours.length,
       itemListElement: tours.map((tour, i) => ({
@@ -223,7 +223,7 @@ export function PrivateToursPage() {
             "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=800",
           provider: {
             "@type": "TravelAgency",
-            name: "Go Sintra",
+            name: "Hop On Sintra",
             url: SITE_URL,
           },
         },
@@ -361,24 +361,24 @@ export function PrivateToursPage() {
   return (
     <div className="flex-1">
       <Helmet>
-        <title>Private Tours in Sintra | Go Sintra</title>
+        <title>Private Tours in Sintra | Hop On Sintra</title>
         <meta
           name="description"
-          content="Discover Sintra with an exclusive private tour. Explore Pena Palace, Quinta da Regaleira, and more with a dedicated guide from Go Sintra."
+          content="Private guided tours in Sintra with a dedicated local expert. Visit Pena Palace, Quinta da Regaleira, hidden gems, and the Atlantic coastline. Custom itineraries for families, couples, and small groups."
         />
         <link rel="canonical" href={`${SITE_URL}/private-tours`} />
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="Private Tours in Sintra | Go Sintra" />
+        <meta property="og:title" content="Private Tours in Sintra | Hop On Sintra" />
         <meta
           property="og:description"
-          content="Exclusive private tours of Sintra's palaces and historic sites."
+          content="Private guided tours in Sintra with a dedicated local expert. Custom itineraries for families, couples, and small groups."
         />
         <meta
           property="og:image"
           content="https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200"
         />
         <meta property="og:url" content={`${SITE_URL}/private-tours`} />
-        <meta property="og:site_name" content="Go Sintra" />
+        <meta property="og:site_name" content="Hop On Sintra" />
         {toursStructuredData && (
           <script type="application/ld+json">
             {JSON.stringify(toursStructuredData)}
