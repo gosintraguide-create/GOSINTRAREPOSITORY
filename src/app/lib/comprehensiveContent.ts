@@ -574,7 +574,7 @@ export interface ComprehensiveContent {
 export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
   company: {
     name: "Hop On Sintra",
-    email: "info@hoponsintra.com",
+    email: "hoponsintra@gmail.com",
     phone: "+351 932 967 279",
     location: "Sintra, Portugal",
     operatingHours: "9 AM - 8 PM Daily",

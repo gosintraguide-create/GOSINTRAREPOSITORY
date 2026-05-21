@@ -453,7 +453,7 @@ export function generateBookingConfirmationEmail(data: BookingEmailData): string
       <p style="font-size: 20px; margin-bottom: 10px;"><strong>🎫 Go Sintra</strong></p>
       <p style="color: #D97843; font-weight: 600;">Premium Hop-On/Hop-Off Day Pass Service</p>
       <p style="margin-top: 20px;">
-        📧 <a href="mailto:info@hoponsintra.com">info@hoponsintra.com</a>
+        📧 <a href="mailto:hoponsintra@gmail.com">hoponsintra@gmail.com</a>
       </p>
       <p style="margin-top: 5px;">
         📱 WhatsApp: <a href="https://wa.me/351932967279">+351 932 967 279</a>
@@ -526,7 +526,7 @@ HOW IT WORKS
 3. Just show up at any stop — service runs all day
 
 Need help? Contact us:
-Email: info@hoponsintra.com
+Email: hoponsintra@gmail.com
 WhatsApp: +351 932 967 279
 
 Safe travels and enjoy Sintra!

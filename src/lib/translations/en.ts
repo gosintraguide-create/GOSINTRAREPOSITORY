@@ -3,7 +3,7 @@ import { WebsiteContent } from '../contentManager';
 export const en: WebsiteContent = {
   company: {
     name: "Hop On Sintra",
-    email: "info@hoponsintra.com",
+    email: "hoponsintra@gmail.com",
     phone: "+351 932 967 279",
     location: "Sintra, Portugal",
     operatingHours: "9:00 AM - 7:00 PM Daily",

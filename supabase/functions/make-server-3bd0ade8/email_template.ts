@@ -126,7 +126,7 @@ function contactCard(): string {
         </td>
         <td style="vertical-align:top;">
           <p style="margin:0 0 4px;font-size:13px;color:#6b7280;">Email</p>
-          <p style="margin:0;font-size:14px;font-weight:700;color:#1a1f2e;">info@hoponsintra.com</p>
+          <p style="margin:0;font-size:14px;font-weight:700;color:#1a1f2e;">hoponsintra@gmail.com</p>
         </td>
       </tr>
     </table>
@@ -138,7 +138,7 @@ function footer(): string {
     <div style="background:#0A4D5C;border-radius:0 0 16px 16px;padding:28px 36px;text-align:center;">
       <p style="margin:0 0 4px;font-size:18px;font-weight:800;color:#ffffff;">Go Sintra</p>
       <p style="margin:0 0 16px;font-size:12px;color:#D97843;font-weight:600;letter-spacing:1px;text-transform:uppercase;">Private Tours &amp; Hop-On Service</p>
-      <p style="margin:0;font-size:12px;color:rgba(255,255,255,0.55);">info@hoponsintra.com &nbsp;·&nbsp; +351 932 967 279 &nbsp;·&nbsp; Sintra, Portugal</p>
+      <p style="margin:0;font-size:12px;color:rgba(255,255,255,0.55);">hoponsintra@gmail.com &nbsp;·&nbsp; +351 932 967 279 &nbsp;·&nbsp; Sintra, Portugal</p>
     </div>`;
 }
 
@@ -291,7 +291,7 @@ export function generateBookingConfirmationHTML(data: {
     ${sectionLabel("How it works")}
     ${stepItem("🎟️", "Show your QR code", "When you board any of our vehicles, open the PDF and show your personal QR code to the driver.")}
     ${stepItem("🔄", "Hop on, hop off", "Unlimited rides all day across all stops — leave and re-join the route as many times as you like.")}
-    ${stepItem("🕐", "Departures every 30 min", "Vehicles run continuously from 9 AM to 7 PM. No need to book a seat — just wait at any stop.")}
+    ${stepItem("🕐", "Consistent service all day", "Vehicles run continuously from 9 AM to 7 PM. No need to book a seat — just show up at any stop.")}
     ${stepItem("🎙️", "Professional guides", "Every vehicle has a certified local guide sharing stories and history along the way.")}
   `);
 

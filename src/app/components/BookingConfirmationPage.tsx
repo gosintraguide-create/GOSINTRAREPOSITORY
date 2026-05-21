@@ -452,8 +452,8 @@ export function BookingConfirmationPage({ onNavigate, booking, language = "en" }
           <p className="mb-2">{t.bookingConfirmation.questionsOrChanges}</p>
           <p>
             {t.bookingConfirmation.contactViaEmail}{" "}
-            <a href="mailto:info@hoponsintra.com" className="text-primary hover:underline">
-              info@hoponsintra.com
+            <a href="mailto:hoponsintra@gmail.com" className="text-primary hover:underline">
+              hoponsintra@gmail.com
             </a>{" "}
             {t.bookingConfirmation.or}{" "}
             <a href="https://wa.me/351932967279" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">

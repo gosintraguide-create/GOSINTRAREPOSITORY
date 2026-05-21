@@ -1,7 +1,7 @@
 {
   "company": {
     "name": "Hop On Sintra",
-    "email": "info@hoponsintra.com",
+    "email": "hoponsintra@gmail.com",
     "phone": "+351 932 967 279",
     "location": "Sintra, Portugal",
     "operatingHours": "9h - 19h Tous les jours",
@@ -1393,7 +1393,7 @@
       "sendMessage": "Envoyer le Message",
       "sending": "Envoi...",
       "messageSent": "Merci pour votre message! Nous vous recontacterons bientôt.",
-      "messageError": "Impossible d'envoyer le message. Veuillez utiliser WhatsApp ou nous envoyer un e-mail à info@hoponsintra.com",
+      "messageError": "Impossible d'envoyer le message. Veuillez utiliser WhatsApp ou nous envoyer un e-mail à hoponsintra@gmail.com",
       "fullName": "Nom Complet",
       "emailAddress": "Adresse E-mail"
     },

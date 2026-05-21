@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+
+# Utility / transactional pages — no indexing value
+Disallow: /admin
+Disallow: /driver
+Disallow: /qr-scanner
+Disallow: /buy-ticket
+Disallow: /manage-booking
+Disallow: /request-pickup
+Disallow: /sunset-special
+Disallow: /404
+Disallow: /privacy-policy
+Disallow: /terms-of-service
+
+# Block all standalone HTML utility files at root
+Disallow: /*.html$
+
+Sitemap: https://www.hoponsintra.com/sitemap.xml

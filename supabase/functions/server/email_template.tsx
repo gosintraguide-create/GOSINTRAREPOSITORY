@@ -101,7 +101,7 @@ export function generateBookingConfirmationHTML(data: any): string {
     <div style="background-color: #0A4D5C; color: #ffffff; padding: 25px; text-align: center;">
       <p style="margin: 0 0 5px 0; font-size: 18px; font-weight: 700;">Hop On Sintra</p>
       <p style="margin: 0 0 15px 0; color: #D97843; font-size: 13px;">Professional Hop-On/Hop-Off Day Pass Service</p>
-      <p style="margin: 5px 0; font-size: 13px;">📧 info@hoponsintra.com</p>
+      <p style="margin: 5px 0; font-size: 13px;">📧 hoponsintra@gmail.com</p>
       <p style="margin: 5px 0; font-size: 13px;">📱 WhatsApp: +351 932 967 279</p>
       <p style="margin: 15px 0 0 0; font-size: 12px; opacity: 0.8;">Daily Service: 9:00 AM - 7:00 PM | Sintra, Portugal</p>
     </div>

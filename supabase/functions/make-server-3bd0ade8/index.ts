@@ -491,8 +491,8 @@ async function generateBookingPDF(booking: any, qrCodes: string[]): Promise<stri
         x: width / 2 - "Hop-On / Hop-Off Day Pass Service".length * 3,
         y: 38, size: 10, color: orange,
       });
-      page.drawText("info@hoponsintra.com  |  +351 932 967 279  |  Sintra, Portugal", {
-        x: width / 2 - "info@hoponsintra.com  |  +351 932 967 279  |  Sintra, Portugal".length * 2.3,
+      page.drawText("hoponsintra@gmail.com  |  +351 932 967 279  |  Sintra, Portugal", {
+        x: width / 2 - "hoponsintra@gmail.com  |  +351 932 967 279  |  Sintra, Portugal".length * 2.3,
         y: 18, size: 8, color: rgb(0.8, 0.88, 0.9),
       });
     }
@@ -546,7 +546,7 @@ async function sendBookingEmail(booking: any, qrCodes: string[]) {
     const emailPayload: any = {
       from: "Hop On Sintra <bookings@hoponsintra.com>",
       to: [recipientEmail],
-      reply_to: "info@hoponsintra.com",
+      reply_to: "hoponsintra@gmail.com",
       subject: `🎉 Your Hop On Sintra Booking Confirmed - ${formattedDate}`,
       html: htmlContent,
     };

@@ -789,12 +789,12 @@ export function AttractionDetailPage() {
               WhatsApp
             </a>
             <a
-              href="mailto:info@hoponsintra.com"
+              href="mailto:hoponsintra@gmail.com"
               className="flex items-center justify-center gap-2 rounded-xl border border-border bg-background px-4 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-secondary"
               onClick={() => setContactOpen(false)}
             >
               <Mail className="h-4 w-4 shrink-0" />
-              info@hoponsintra.com
+              hoponsintra@gmail.com
             </a>
           </div>
         </DialogContent>
