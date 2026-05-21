@@ -16,8 +16,8 @@ async function apiCall<T>(
   try {
     const url = `${API_BASE_URL}${endpoint}`;
     
-    // Only log API calls when not in silent mode
-    if (!silent) {
+    // Only log API calls in development and when not in silent mode
+    if (import.meta.env.DEV && !silent) {
       console.log(`🔗 API Call: ${options.method || 'GET'} ${url}`);
     }
     
@@ -193,26 +193,15 @@ export async function setAvailability(date: string, availability: any) {
 
 // Booking Management
 export async function createBooking(bookingData: any) {
-  console.log("📤 Creating booking with data:", bookingData);
-  console.log("🔗 API endpoint:", `${API_BASE_URL}/bookings`);
-  console.log("🔑 Using project ID:", projectId);
-  console.log("🔑 Has anon key:", !!publicAnonKey);
-  
   const response = await apiCall('/bookings', {
     method: 'POST',
     body: JSON.stringify(bookingData),
   });
-  
-  console.log("📥 Booking response:", response);
-  
-  if (!response.success) {
-    console.error("❌ Booking creation failed:");
-    console.error("   - Error:", response.error);
-    console.error("   - Booking data sent:", bookingData);
-  } else {
-    console.log("✅ Booking created successfully:", response.data);
+
+  if (!response.success && import.meta.env.DEV) {
+    console.error("❌ Booking creation failed:", response.error);
   }
-  
+
   return response;
 }
 
@@ -241,7 +230,6 @@ export async function checkHealth() {
 
 // Stripe Payment Integration
 export async function createPaymentIntent(amount: number, metadata?: any) {
-  console.log(`💳 Creating payment intent for €${amount}`);
   const response = await apiCall('/create-payment-intent', {
     method: 'POST',
     body: JSON.stringify({ amount, currency: 'eur', metadata }),
@@ -250,7 +238,6 @@ export async function createPaymentIntent(amount: number, metadata?: any) {
 }
 
 export async function verifyPayment(paymentIntentId: string) {
-  console.log(`🔍 Verifying payment: ${paymentIntentId}`);
   const response = await apiCall('/verify-payment', {
     method: 'POST',
     body: JSON.stringify({ paymentIntentId }),

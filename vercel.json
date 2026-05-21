@@ -2,7 +2,10 @@
   "redirects": [
     { "source": "/hop-on-service", "destination": "/hop-on-hop-off-sintra", "permanent": true },
     { "source": "/blog", "destination": "/travel-guide", "permanent": true },
-    { "source": "/blog/:slug*", "destination": "/travel-guide/:slug*", "permanent": true }
+    { "source": "/blog/:slug*", "destination": "/travel-guide/:slug*", "permanent": true },
+    { "source": "/quinta-regaleira", "destination": "/attractions/quinta-regaleira", "permanent": true },
+    { "source": "/convento-capuchos", "destination": "/attractions/convento-capuchos", "permanent": true },
+    { "source": "/", "has": [{ "type": "query", "key": "lang" }], "destination": "/", "permanent": false }
   ],
   "rewrites": [
     {

@@ -4,7 +4,34 @@ import { projectId, publicAnonKey } from "../utils/supabase/info";
 import { getTranslation } from "../lib/translations/loader";
 
 const API_URL = `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/info-bar`;
-const REFETCH_INTERVAL = 10 * 60 * 1000;
+const REFETCH_INTERVAL = 10 * 60 * 1000; // 10 minutes
+const CACHE_KEY = "infobar_cache";
+
+interface InfoBarCache {
+  weather: { temp: number; description: string; icon: string } | null;
+  traffic: { level: string } | null;
+  cachedAt: number;
+}
+
+function readCache(): InfoBarCache | null {
+  try {
+    const raw = sessionStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const parsed: InfoBarCache = JSON.parse(raw);
+    if (Date.now() - parsed.cachedAt > REFETCH_INTERVAL) return null; // stale
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function writeCache(weather: InfoBarCache["weather"], traffic: InfoBarCache["traffic"]) {
+  try {
+    sessionStorage.setItem(CACHE_KEY, JSON.stringify({ weather, traffic, cachedAt: Date.now() }));
+  } catch {
+    // sessionStorage unavailable (private browsing quota); silently skip
+  }
+}
 
 function getLisbonTime() {
   return new Intl.DateTimeFormat("en-GB", {
@@ -42,10 +69,11 @@ interface InfoBarProps {
 
 export function InfoBar({ language = "en" }: InfoBarProps) {
   const t = getTranslation(language).infoBar;
+  const cached = readCache();
   const [time, setTime]       = useState(getLisbonTime);
-  const [weather, setWeather] = useState<{ temp: number; description: string; icon: string } | null>(null);
-  const [traffic, setTraffic] = useState<{ level: string } | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [weather, setWeather] = useState<{ temp: number; description: string; icon: string } | null>(cached?.weather ?? null);
+  const [traffic, setTraffic] = useState<{ level: string } | null>(cached?.traffic ?? null);
+  const [loading, setLoading] = useState(!cached); // skip loading state when cache is warm
 
   // Clock tick
   useEffect(() => {
@@ -53,8 +81,13 @@ export function InfoBar({ language = "en" }: InfoBarProps) {
     return () => clearInterval(id);
   }, []);
 
-  // Fetch weather + traffic
+  // Fetch weather + traffic (skip if sessionStorage cache is fresh)
   useEffect(() => {
+    // If we already initialised state from a warm cache, defer the next fetch
+    // until the cache would actually be stale.
+    const cacheAge = cached ? Date.now() - cached.cachedAt : REFETCH_INTERVAL;
+    const initialDelay = Math.max(0, REFETCH_INTERVAL - cacheAge);
+
     let cancelled = false;
     async function fetchData() {
       try {
@@ -64,8 +97,11 @@ export function InfoBar({ language = "en" }: InfoBarProps) {
         if (!res.ok) return;
         const data = await res.json();
         if (!cancelled) {
-          if (data.weather) setWeather(data.weather);
-          if (data.traffic) setTraffic(data.traffic);
+          const w = data.weather ?? null;
+          const tr = data.traffic ?? null;
+          setWeather(w);
+          setTraffic(tr);
+          writeCache(w, tr);
         }
       } catch (_) {
         // silently degrade
@@ -73,10 +109,20 @@ export function InfoBar({ language = "en" }: InfoBarProps) {
         if (!cancelled) setLoading(false);
       }
     }
-    fetchData();
+
+    // If cache was warm, schedule first real fetch only when cache expires
+    const timeout = initialDelay > 0
+      ? setTimeout(() => { fetchData(); }, initialDelay)
+      : null;
+    if (initialDelay === 0) fetchData();
+
     const id = setInterval(fetchData, REFETCH_INTERVAL);
-    return () => { cancelled = true; clearInterval(id); };
-  }, []);
+    return () => {
+      cancelled = true;
+      if (timeout) clearTimeout(timeout);
+      clearInterval(id);
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const trafficLabels: Record<string, string> = {
     clear: t.clearTraffic,

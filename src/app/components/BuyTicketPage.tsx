@@ -249,7 +249,6 @@ export function BuyTicketPage() {
               "admin-pricing",
               JSON.stringify(data.pricing),
             );
-            console.log("✅ Loaded pricing from database");
             return;
           }
         } else if (response.status === 404) {
@@ -281,9 +280,7 @@ export function BuyTicketPage() {
               ...parsed.attractions,
             },
           });
-          console.log("ℹ️ Using saved pricing");
         } catch (e) {
-          console.log("ℹ️ Using default pricing");
         }
       }
     }
@@ -307,7 +304,6 @@ export function BuyTicketPage() {
         if (response.ok) {
           const data = await response.json();
           setTicketPurchasesEnabled(data.enabled !== false);
-          console.log("✅ Loaded ticket purchases setting:", data.enabled);
         }
       } catch (error) {
         console.error("Error loading ticket purchases setting:", error);

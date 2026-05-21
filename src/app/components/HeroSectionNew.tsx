@@ -211,6 +211,8 @@ export function HeroSection({
                 alt="Wide landscape of Sintra forest and palace"
                 className="h-full w-full object-cover"
                 loading="eager"
+                fetchPriority="high"
+                decoding="sync"
               />
             </div>
 

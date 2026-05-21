@@ -26,7 +26,15 @@ import {
   Star,
   BookOpen,
   Compass,
+  MessageCircle,
+  Mail,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
 import {
   loadContentWithLanguage,
   type WebsiteContent,
@@ -123,6 +131,8 @@ export function HopOnServiceDetailPage() {
   // Use the hook that auto-updates when content changes
   const comprehensiveContent = useEditableContent(language);
   const t = getTranslation(language).hopOnService;
+
+  const [contactOpen, setContactOpen] = useState(false);
 
   // Day pass price — read from localStorage (set by admin pricing sync)
   const [basePrice, setBasePrice] = useState<number>(() => {
@@ -662,9 +672,53 @@ export function HopOnServiceDetailPage() {
                     {t.bookNow}
                   </Button>
 
-                  <p className="mt-4 text-xs text-center text-muted-foreground">
+                  <p className="mt-3 text-xs text-center text-muted-foreground">
                     {t.bookingFootnote}
                   </p>
+
+                  {/* Contact CTA */}
+                  <div className="mt-3 text-center">
+                    <button
+                      onClick={() => setContactOpen(true)}
+                      className="text-xs text-muted-foreground hover:text-primary transition-colors underline underline-offset-2"
+                    >
+                      Have questions? Contact us
+                    </button>
+                  </div>
+
+                  {/* Contact modal */}
+                  <Dialog open={contactOpen} onOpenChange={setContactOpen}>
+                    <DialogContent className="max-w-xs rounded-2xl p-6 text-center">
+                      <DialogHeader>
+                        <DialogTitle className="text-base font-semibold text-foreground">
+                          We're here to help
+                        </DialogTitle>
+                      </DialogHeader>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        Choose how you'd like to reach us
+                      </p>
+                      <div className="mt-5 flex flex-col gap-3">
+                        <a
+                          href="https://wa.me/351932967279"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                          onClick={() => setContactOpen(false)}
+                        >
+                          <MessageCircle className="h-4 w-4 shrink-0" />
+                          WhatsApp
+                        </a>
+                        <a
+                          href="mailto:info@hoponsintra.com"
+                          className="flex items-center justify-center gap-2 rounded-xl border border-border bg-background px-4 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-secondary"
+                          onClick={() => setContactOpen(false)}
+                        >
+                          <Mail className="h-4 w-4 shrink-0" />
+                          info@hoponsintra.com
+                        </a>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </Card>
 
                 {/* Why Choose Card */}
