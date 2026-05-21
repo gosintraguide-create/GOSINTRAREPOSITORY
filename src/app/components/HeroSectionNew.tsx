@@ -308,8 +308,86 @@ export function HeroSection({
   const travelGuideImg =
     editableContent?.homepage?.productCards?.travelGuide?.images?.[0]?.src ?? null;
 
+  // Lowest price across all products — used in mobile social proof strip
+  const lowestPrice =
+    priceLoaded && basePrice
+      ? lowestTourPrice != null
+        ? Math.min(basePrice, lowestTourPrice)
+        : basePrice
+      : null;
+
   return (
     <section className="bg-[#F5EFE3]">
+
+      {/* ── MOBILE LAYOUT (hidden at md+) ──────────────────────────────── */}
+      <div className="md:hidden">
+
+        {/* 1. Hero image — full bleed, 220px, gradient fade into bg */}
+        <div className="relative h-[220px] overflow-hidden">
+          <img
+            src={mainImage}
+            alt="Wide landscape of Sintra forest and palace"
+            className="h-full w-full object-cover"
+            loading="eager"
+            fetchPriority="high"
+            decoding="sync"
+          />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#F5EFE3] to-transparent" />
+        </div>
+
+        {/* 2. Social proof */}
+        <div className="px-4 pt-4 text-center">
+          <span className="text-xs text-muted-foreground">
+            {"★★★★★"} 4.9 &nbsp;·&nbsp;
+            {/* TODO: update review count here if it changes — mirrors reviewCount in HopOnServiceDetailPage.tsx JSON-LD */}
+            523 reviews &nbsp;·&nbsp;
+            {lowestPrice != null ? `From €${lowestPrice}/person` : "From €25/person"}
+          </span>
+        </div>
+
+        {/* 3. Heading */}
+        <div className="px-4 pt-5">
+          <h1 className="text-3xl font-bold leading-[1.15] tracking-tight text-foreground">
+            {t.hero.heroHeadingPre}{" "}
+            <em className="not-italic text-accent">{t.hero.heroTukTuk}</em>{" "}
+            {t.hero.heroHeadingMid}{" "}
+            <em className="italic text-accent">{t.hero.heroVintageJeep}</em>
+            {t.hero.heroHeadingPost}
+          </h1>
+        </div>
+
+        {/* 4. Subtitle */}
+        <p className="px-4 pt-3 text-sm leading-relaxed text-muted-foreground">
+          {t.hero.heroSubtitleNew}
+        </p>
+
+        {/* 5. Primary CTA — smooth-scrolls to product cards */}
+        <div className="px-4 pt-5">
+          <button
+            onClick={() =>
+              document.getElementById("offer-cards")?.scrollIntoView({ behavior: "smooth" })
+            }
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-foreground px-6 py-3.5 text-sm font-bold text-background transition-opacity active:opacity-80"
+          >
+            Find your experience
+            <ArrowRight className="h-4 w-4" />
+          </button>
+        </div>
+
+        {/* 6. Secondary link — private tours */}
+        <div className="px-4 pb-8 pt-3 text-center">
+          <button
+            onClick={() => onNavigate("private-tours")}
+            className="text-sm font-medium text-accent hover:text-accent/80"
+          >
+            Private tours →
+          </button>
+        </div>
+
+      </div>
+
+      {/* ── DESKTOP LAYOUT (hidden on mobile, shown at md+) ────────────── */}
+      <div className="hidden md:block">
       {/* ── Top: Split hero ──────────────────────────────────────────────── */}
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
         <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
@@ -408,6 +486,7 @@ export function HeroSection({
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="border-t border-stone-300/60" />
       </div>
+      </div>{/* end desktop-only block */}
 
       {/* ── Bottom: "What We Offer" ──────────────────────────────────────── */}
       <div className="mx-auto max-w-7xl px-4 pb-12 pt-10 sm:px-6 sm:pb-16 sm:pt-12 lg:px-8">
@@ -417,7 +496,7 @@ export function HeroSection({
         </p>
 
         {/* Cards */}
-        <div className="grid gap-5 sm:grid-cols-3">
+        <div id="offer-cards" className="grid gap-5 sm:grid-cols-3">
 
           {/* ── Day Pass card (light) ── */}
           <OfferCard
