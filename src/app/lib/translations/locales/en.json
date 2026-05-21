@@ -97,10 +97,25 @@
     "sunsetSpecialErrorNotFound": "Booking ID not found. Please check and try again.",
     "sunsetSpecialErrorUnableToVerify": "Unable to verify booking ID. Please try again.",
     "sunsetSpecialBookingVerified": "Booking verified! Redirecting...",
-    "finalCtaTitle": "Ready for the Best Day Ever?",
-    "finalCtaSubtitle": "Book your full day pass now—adventure awaits! 🚗✨",
+    "finalCtaTitle": "Your Best Day in Sintra Starts Here",
+    "finalCtaSubtitle": "Hop on and off all day across Sintra's palaces and castles. Guaranteed seats, local guides, no fixed schedule.",
     "finalCtaButton": "Get Your Day Pass Now",
-    "finalCtaSubtext": "⚡ Instant confirmation • 📱 Mobile-friendly • 💳 Secure payment"
+    "finalCtaSubtext": "Instant confirmation · Mobile tickets · Secure payment",
+    "faq": {
+      "sectionTitle": "Common Questions About Visiting Sintra",
+      "q1": "Is Sintra worth visiting from Lisbon?",
+      "a1": "Yes — Sintra is one of Europe's most remarkable day trips, just 40 minutes by direct train from Lisbon's Rossio station. Its UNESCO World Heritage palaces, Moorish castle, and forested hillsides make it genuinely unmissable. Most visitors say it's the highlight of their Portugal trip.",
+      "q2": "Can you visit Sintra without a car?",
+      "a2": "Yes, easily. Trains from Lisbon Rossio run every 20–30 minutes to Sintra for around €2.30. Once there, a hop-on/hop-off day pass is the most practical way to reach Pena Palace, Quinta da Regaleira, Monserrate, Cabo da Roca, and other attractions — no car or taxi needed.",
+      "q3": "How long do you need in Sintra?",
+      "a3": "A full day is ideal. Pena Palace alone takes 2–3 hours including entry queues. With a day pass running from 9am to 7pm, you can comfortably visit 3–4 attractions, explore the historic town centre, and still catch the evening train back to Lisbon.",
+      "q4": "What is the best way to get around Sintra?",
+      "a4": "A hop-on/hop-off day pass is the most flexible option. Small tuk-tuks and vintage UMM jeeps run continuously from 9am to 7pm, connecting the train station with Pena Palace, Quinta da Regaleira, Monserrate, and other stops. Unlike large tour buses, vehicles carry 2–6 passengers with a local driver-guide on every ride.",
+      "q5": "Do I need to book Sintra tours in advance?",
+      "a5": "For weekends and peak summer months (July–September), booking ahead is strongly recommended. Pena Palace in particular sells out quickly. Day passes can be booked online in minutes with instant QR code confirmation sent to your email.",
+      "q6": "What is included in a hop-on/hop-off day pass?",
+      "a6": "The day pass gives unlimited rides across all Sintra stops from 9am to 7pm. Every vehicle has a local driver-guide on board. Guaranteed seating means no waiting for space. Hop off at any attraction, stay as long as you like, and board the next vehicle at no extra cost."
+    }
   },
   "routes": {
     "title": "Our Two Circular Routes",
@@ -502,7 +517,7 @@
   },
   "seo": {
     "home": {
-      "title": "Go Sintra - Premium Hop-On/Hop-Off Day Pass | Small Vehicle Tours",
+      "title": "Hop On Sintra — Tuk-Tuk & Jeep Tours | Hop-On/Hop-Off Day Pass in Sintra",
       "description": "Explore Sintra's UNESCO World Heritage sites with guaranteed seating in small vehicles. Unlimited rides all day. Book your flexible day pass online now.",
       "keywords": "Sintra tours, hop on hop off Sintra, Sintra transport, small group tours Sintra, Pena Palace tours, Sintra day pass"
     },
@@ -527,7 +542,7 @@
       "keywords": "about Go Sintra, Sintra tour company, premium Sintra transport, small group tours"
     },
     "blog": {
-      "title": "Sintra Travel Guide & Blog - Expert Tips, Guides & Itineraries",
+      "title": "Sintra Travel Guide — Local Tips, Hidden Gems & Itineraries | Hop On Sintra",
       "description": "Comprehensive travel guides for visiting Sintra, Portugal. Expert tips on transportation, attractions, planning your trip, and making the most of your Sintra adventure.",
       "keywords": "Sintra travel guide, Sintra blog, visit Sintra, Sintra tips, Pena Palace guide, Sintra itinerary, how to visit Sintra, Sintra Portugal"
     }

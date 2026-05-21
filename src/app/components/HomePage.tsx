@@ -38,6 +38,7 @@ import {
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 
 // HomePage component with integrated booking card
@@ -402,6 +403,32 @@ export function HomePage() {
     ]
   };
 
+  const homepageFaq = (legacyContent.homepage as any).faq;
+
+  const faqSchema = homepageFaq ? {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [1,2,3,4,5,6].map(n => ({
+      "@type": "Question",
+      "name": homepageFaq[`q${n}`],
+      "acceptedAnswer": { "@type": "Answer", "text": homepageFaq[`a${n}`] }
+    }))
+  } : null;
+
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Hop On Sintra",
+    "url": "https://www.hoponsintra.com",
+    "description": "Hop-on/hop-off tuk-tuk and jeep day pass for Sintra, Portugal. Private guided tours also available.",
+    "inLanguage": ["en","pt","fr","de","es","nl","it"],
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": { "@type": "EntryPoint", "urlTemplate": "https://www.hoponsintra.com/travel-guide?q={search_term_string}" },
+      "query-input": "required name=search_term_string"
+    }
+  };
+
   return (
     <div className="flex-1">
       {/* LocalBusiness structured data for Google */}
@@ -409,6 +436,18 @@ export function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
       />
+      {/* WebSite schema — enables Sitelinks search box eligibility */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+      />
+      {/* FAQPage schema — targets high-volume Sintra informational queries */}
+      {faqSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
+      )}
 
       {/* Hero Section - Visual Impact with Large Image */}
       <HeroSection
@@ -516,20 +555,34 @@ export function HomePage() {
         </div>
       </section>
 
+      {/* AEO FAQ Section */}
+      {homepageFaq && (
+        <section className="bg-muted/30 py-12 sm:py-16">
+          <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+            <h2 className="mb-8 text-center text-2xl font-bold text-foreground sm:text-3xl">
+              {homepageFaq.sectionTitle}
+            </h2>
+            <Accordion type="single" collapsible className="w-full space-y-3">
+              {[1,2,3,4,5,6].map(n => (
+                <AccordionItem key={n} value={`faq-${n}`} className="rounded-lg border bg-background px-5 shadow-sm">
+                  <AccordionTrigger className="py-4 text-left font-semibold hover:no-underline">
+                    {homepageFaq[`q${n}`]}
+                  </AccordionTrigger>
+                  <AccordionContent className="pb-4 leading-relaxed text-muted-foreground">
+                    {homepageFaq[`a${n}`]}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+        </section>
+      )}
+
       {/* Final CTA - More Exciting */}
       <section className="relative overflow-hidden bg-gradient-to-r from-primary via-primary/95 to-accent py-12 sm:py-16 lg:py-20">
-        <div className="absolute inset-0 opacity-20">
-          <div
-            className="absolute left-1/4 top-10 h-32 w-32 animate-bounce rounded-full bg-white/30 blur-2xl"
-            style={{ animationDuration: "3s" }}
-          />
-          <div
-            className="absolute bottom-10 right-1/4 h-40 w-40 animate-bounce rounded-full bg-white/30 blur-2xl"
-            style={{
-              animationDuration: "4s",
-              animationDelay: "1s",
-            }}
-          />
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <div className="absolute left-1/4 top-10 h-32 w-32 rounded-full bg-white/30 blur-2xl" />
+          <div className="absolute bottom-10 right-1/4 h-40 w-40 rounded-full bg-white/30 blur-2xl" />
         </div>
 
         <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">

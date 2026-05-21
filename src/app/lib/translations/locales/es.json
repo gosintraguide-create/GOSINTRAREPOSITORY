@@ -97,10 +97,25 @@
     "sunsetSpecialErrorNotFound": "ID de reserva no encontrado. Por favor verifica e intenta de nuevo.",
     "sunsetSpecialErrorUnableToVerify": "No se puede verificar el ID de reserva. Por favor intenta de nuevo.",
     "sunsetSpecialBookingVerified": "¡Reserva verificada! Redirigiendo...",
-    "finalCtaTitle": "¿Listo para el Mejor Día de Tu Vida?",
-    "finalCtaSubtitle": "¡Reserva tu pase de día ahora—la aventura te espera! 🚗✨",
+    "finalCtaTitle": "Tu Mejor Día en Sintra Empieza Aquí",
+    "finalCtaSubtitle": "Sube y baja todo el día entre los palacios y castillos de Sintra. Asientos garantizados, guías locales, sin horario fijo.",
     "finalCtaButton": "Obtén Tu Pase de Día Ahora",
-    "finalCtaSubtext": "⚡ Confirmación instantánea • 📱 Compatible con móviles • 💳 Pago seguro"
+    "finalCtaSubtext": "Confirmación instantánea · Entradas móviles · Pago seguro",
+    "faq": {
+      "sectionTitle": "Preguntas Frecuentes sobre Sintra",
+      "q1": "¿Vale la pena visitar Sintra desde Lisboa?",
+      "a1": "Sin duda — Sintra es una de las excursiones de un día más extraordinarias de Europa, a solo 40 minutos en tren directo desde la estación Rossio de Lisboa. Sus palacios Patrimonio de la Humanidad de la UNESCO, su castillo morisco y sus colinas arboladas la hacen verdaderamente imprescindible. La mayoría de los visitantes afirman que es lo mejor de su viaje a Portugal.",
+      "q2": "¿Se puede visitar Sintra sin coche?",
+      "a2": "Sí, fácilmente. Los trenes desde Lisboa Rossio salen cada 20-30 minutos hacia Sintra por unos 2,30 €. Una vez allí, un pase hop-on/hop-off es la forma más práctica de llegar al Palacio de la Pena, la Quinta da Regaleira, Monserrate, el Cabo da Roca y otras atracciones, sin coche ni taxi.",
+      "q3": "¿Cuánto tiempo se necesita para visitar Sintra?",
+      "a3": "Un día completo es lo ideal. Solo el Palacio de la Pena requiere 2-3 horas incluyendo las colas. Con un pase válido de 9 a 19 h, se pueden visitar cómodamente 3-4 atracciones, explorar el centro histórico y aún tomar el tren nocturno de vuelta a Lisboa.",
+      "q4": "¿Cuál es la mejor forma de moverse por Sintra?",
+      "a4": "Un pase hop-on/hop-off es la opción más flexible. Pequeños tuk-tuks y jeeps vintage circulan de forma continua de 9 a 19 h, conectando la estación con el Palacio de la Pena, la Quinta da Regaleira, Monserrate y otras paradas. A diferencia de los grandes autobuses turísticos, los vehículos llevan entre 2 y 6 pasajeros con un guía-conductor local en cada trayecto.",
+      "q5": "¿Hay que reservar las visitas a Sintra con antelación?",
+      "a5": "Para los fines de semana y los meses de verano (julio–septiembre) se recomienda encarecidamente reservar con antelación. El Palacio de la Pena en particular se agota rápidamente. Los pases de día se pueden reservar en línea en minutos con confirmación instantánea por código QR enviada al correo electrónico.",
+      "q6": "¿Qué incluye un pase hop-on/hop-off?",
+      "a6": "El pase de día ofrece viajes ilimitados en todas las paradas de Sintra de 9 a 19 h. Cada vehículo lleva un guía-conductor local a bordo. Los asientos garantizados eliminan las esperas. Bájate en cualquier atracción, quédate todo el tiempo que quieras y sube al siguiente vehículo sin coste adicional."
+    }
   },
   "routes": {
     "title": "Nuestras Dos Rutas Circulares",

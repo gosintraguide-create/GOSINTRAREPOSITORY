@@ -54,7 +54,6 @@ export async function generateSitemap(): Promise<string> {
     { path: '/travel-guide', changefreq: 'weekly', priority: '0.9', lastmod: new Date().toISOString().split('T')[0] },
     { path: '/about', changefreq: 'monthly', priority: '0.7', lastmod: new Date().toISOString().split('T')[0] },
     { path: '/route-map', changefreq: 'monthly', priority: '0.7', lastmod: new Date().toISOString().split('T')[0] },
-    { path: '/live-chat', changefreq: 'monthly', priority: '0.6', lastmod: new Date().toISOString().split('T')[0] },
   ];
 
   staticPages.forEach(page => {

@@ -16,8 +16,22 @@ export function AboutPage() {
   const { language = "en" } = useOutletContext<OutletContext>();
   const content = getTranslation(language).about;
 
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": content.faq.map((item: { q: string; a: string }) => ({
+      "@type": "Question",
+      "name": item.q,
+      "acceptedAnswer": { "@type": "Answer", "text": item.a }
+    }))
+  };
+
   return (
     <div className="flex-1">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       {/* Hero Section */}
       <section className="bg-primary py-12 sm:py-16 lg:py-24">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">

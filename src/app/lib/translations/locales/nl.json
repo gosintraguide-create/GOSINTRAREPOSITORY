@@ -97,10 +97,25 @@
     "sunsetSpecialErrorNotFound": "Boekings-ID niet gevonden. Controleer en probeer opnieuw.",
     "sunsetSpecialErrorUnableToVerify": "Kan boekings-ID niet verifiëren. Probeer opnieuw.",
     "sunsetSpecialBookingVerified": "Boeking geverifieerd! Doorverwijzen...",
-    "finalCtaTitle": "Klaar voor de Beste Dag Ooit?",
-    "finalCtaSubtitle": "Boek nu uw dagpas—het avontuur wacht! 🚗✨",
+    "finalCtaTitle": "Uw Beste Dag in Sintra Begint Hier",
+    "finalCtaSubtitle": "De hele dag in- en uitstappen bij Sintra's paleizen en kastelen. Gegarandeerde zitplaats, lokale gidsen, geen vast schema.",
     "finalCtaButton": "Krijg Nu Uw Dagpas",
-    "finalCtaSubtext": "⚡ Directe bevestiging • 📱 Mobiel-vriendelijk • 💳 Veilige betaling"
+    "finalCtaSubtext": "Directe bevestiging · Mobiel ticket · Veilige betaling",
+    "faq": {
+      "sectionTitle": "Veelgestelde vragen over Sintra",
+      "q1": "Is Sintra een dagtrip waard vanuit Lissabon?",
+      "a1": "Ja — Sintra is een van Europa's meest bijzondere daguitstapjes, op slechts 40 minuten directe trein van het Rossio-station in Lissabon. De UNESCO-paleizen, het Moorse kasteel en de beboste heuvels maken het tot een onmisbare bestemming. De meeste bezoekers zeggen dat het het hoogtepunt van hun Portugal-reis is.",
+      "q2": "Kun je Sintra bezoeken zonder auto?",
+      "a2": "Ja, makkelijk. Treinen vanuit Lissabon Rossio rijden elke 20-30 minuten naar Sintra voor ongeveer €2,30. Eenmaal in Sintra is een hop-on/hop-off dagpas de handigste manier om Palácio da Pena, Quinta da Regaleira, Monserrate, Cabo da Roca en andere attracties te bereiken — geen auto of taxi nodig.",
+      "q3": "Hoeveel tijd heb je nodig in Sintra?",
+      "a3": "Een volle dag is ideaal. Palácio da Pena alleen al duurt 2-3 uur inclusief wachtrijen. Met een dagpas van 9u tot 19u kunt u comfortabel 3-4 attracties bezoeken, het historisch centrum verkennen en nog de avondtrein terug naar Lissabon halen.",
+      "q4": "Wat is de beste manier om door Sintra te reizen?",
+      "a4": "Een hop-on/hop-off dagpas is de meest flexibele optie. Kleine tuk-tuks en vintage UMM jeeps rijden doorlopend van 9u tot 19u en verbinden het treinstation met Palácio da Pena, Quinta da Regaleira, Monserrate en andere haltes. Anders dan grote touringcars vervoeren de voertuigen 2-6 passagiers met een lokale chauffeur-gids.",
+      "q5": "Moet ik Sintra-tours van tevoren boeken?",
+      "a5": "Voor weekenden en de drukke zomermaanden (juli-september) is vooraf boeken sterk aanbevolen. Palácio da Pena raakt snel vol. Dagpassen kunt u in enkele minuten online boeken met directe QR-code bevestiging per e-mail.",
+      "q6": "Wat is inbegrepen in een hop-on/hop-off dagpas?",
+      "a6": "De dagpas geeft onbeperkte ritten over alle haltes in Sintra van 9u tot 19u. Elk voertuig heeft een lokale chauffeur-gids aan boord. Gegarandeerde zitplaats betekent geen wachten. Stap uit bij een attractie, blijf zo lang als u wilt en stap gratis in het volgende voertuig."
+    }
   },
   "routes": {
     "title": "Onze Twee Cirkelroutes",

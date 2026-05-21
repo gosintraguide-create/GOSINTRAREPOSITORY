@@ -97,10 +97,25 @@
     "sunsetSpecialErrorNotFound": "ID de réservation introuvable. Veuillez vérifier et réessayer.",
     "sunsetSpecialErrorUnableToVerify": "Impossible de vérifier l'ID de réservation. Veuillez réessayer.",
     "sunsetSpecialBookingVerified": "Réservation vérifiée! Redirection...",
-    "finalCtaTitle": "Prêt pour le Meilleur Jour de Votre Vie?",
-    "finalCtaSubtitle": "Réservez votre pass journée maintenant—l'aventure vous attend! 🚗✨",
+    "finalCtaTitle": "Votre Plus Belle Journée à Sintra Commence Ici",
+    "finalCtaSubtitle": "Montez et descendez toute la journée entre les palais et châteaux de Sintra. Places garanties, guides locaux, aucun horaire fixe.",
     "finalCtaButton": "Obtenez Votre Pass Journée Maintenant",
-    "finalCtaSubtext": "⚡ Confirmation instantanée • 📱 Compatible mobile • 💳 Paiement sécurisé"
+    "finalCtaSubtext": "Confirmation instantanée · Billets mobiles · Paiement sécurisé",
+    "faq": {
+      "sectionTitle": "Questions Fréquentes sur Sintra",
+      "q1": "Vaut-il la peine de visiter Sintra depuis Lisbonne?",
+      "a1": "Absolument — Sintra est l'une des excursions à la journée les plus remarquables d'Europe, à seulement 40 minutes en train direct depuis la gare Rossio de Lisbonne. Ses palais classés au patrimoine mondial de l'UNESCO, son château mauresque et ses collines boisées en font un incontournable. La plupart des visiteurs disent que c'est le point fort de leur séjour au Portugal.",
+      "q2": "Peut-on visiter Sintra sans voiture?",
+      "a2": "Oui, facilement. Les trains depuis Lisbonne Rossio circulent toutes les 20 à 30 minutes jusqu'à Sintra pour environ 2,30 €. Une fois sur place, un pass hop-on/hop-off est la façon la plus pratique d'atteindre le Palais de Pena, la Quinta da Regaleira, Monserrate, le Cabo da Roca et d'autres attractions — sans voiture ni taxi.",
+      "q3": "Combien de temps faut-il prévoir pour Sintra?",
+      "a3": "Une journée entière est idéale. Le Palais de Pena seul nécessite 2 à 3 heures en comptant les files d'attente. Avec un pass valable de 9h à 19h, vous pouvez confortablement visiter 3 à 4 attractions, explorer le centre historique et prendre le train du soir pour Lisbonne.",
+      "q4": "Quel est le meilleur moyen de se déplacer à Sintra?",
+      "a4": "Un pass hop-on/hop-off est l'option la plus flexible. De petits tuk-tuks et des jeeps vintage circulent en continu de 9h à 19h, reliant la gare au Palais de Pena, à la Quinta da Regaleira, à Monserrate et aux autres arrêts. Contrairement aux grands bus touristiques, les véhicules transportent 2 à 6 passagers avec un guide-chauffeur local à chaque trajet.",
+      "q5": "Faut-il réserver à l'avance pour Sintra?",
+      "a5": "Pour les week-ends et les mois d'été (juillet–septembre), il est fortement conseillé de réserver à l'avance. Le Palais de Pena affiche complet très rapidement. Les pass journée peuvent être réservés en ligne en quelques minutes avec une confirmation instantanée par QR code envoyée par e-mail.",
+      "q6": "Qu'est-ce qui est inclus dans un pass hop-on/hop-off?",
+      "a6": "Le pass journée offre des trajets illimités sur tous les arrêts de Sintra de 9h à 19h. Chaque véhicule dispose d'un guide-chauffeur local. Les places garanties signifient qu'il n'y a pas d'attente. Descendez à n'importe quelle attraction, restez aussi longtemps que vous le souhaitez, et remontez dans le véhicule suivant sans frais supplémentaires."
+    }
   },
   "routes": {
     "title": "Nos Deux Circuits Circulaires",

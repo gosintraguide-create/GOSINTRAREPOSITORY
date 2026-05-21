@@ -74,7 +74,7 @@ export const router = createBrowserRouter([
           meta: {
             title: "Hop On Day Pass - Unlimited Sintra Transportation Service",
             description:
-              "Discover how our unlimited day pass works. Hop on and off as many times as you want with guaranteed seating in tuk-tuks and UMM jeeps from 9am to 7pm daily.",
+              "Unlimited hop-on/hop-off rides across all Sintra attractions from 9am to 7pm. Guaranteed seating in tuk-tuks and UMM jeeps. Local driver-guide on every vehicle.",
             keywords:
               "Hop On Sintra service, Sintra day pass details, unlimited rides Sintra, hop on hop off service, Sintra transportation pass",
             index: true,
@@ -119,7 +119,7 @@ export const router = createBrowserRouter([
           meta: {
             title: "Private Tours of Sintra - Personalized Guided Experiences",
             description:
-              "Experience Sintra your way with a private tour. Expert local guides, custom itineraries, and flexible schedules. Perfect for families, couples, and groups.",
+              "Private guided tours in Sintra with a dedicated local expert. Visit Pena Palace, Quinta da Regaleira, hidden gems, and the Atlantic coastline. Custom itineraries for families, couples, and small groups.",
             keywords:
               "Sintra private tours, private Sintra guide, custom Sintra tour, personalized Sintra experience, private guide Sintra",
             index: true,
@@ -142,7 +142,7 @@ export const router = createBrowserRouter([
           meta: {
             title: "Sintra Travel Blog - Tips, Guides & Hidden Gems",
             description:
-              "Discover insider tips, travel guides, and hidden gems of Sintra. Expert advice on visiting palaces, best photography spots, and local recommendations.",
+              "Sintra travel guides, palace tips, and day-trip planning from Lisbon. Local knowledge on Pena Palace, Quinta da Regaleira, Cabo da Roca, and beyond.",
             keywords:
               "Sintra blog, Sintra travel tips, Sintra guide, visit Sintra, Sintra photography, Sintra hidden gems",
             index: true,
