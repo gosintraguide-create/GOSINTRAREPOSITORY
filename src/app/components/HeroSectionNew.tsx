@@ -121,15 +121,16 @@ function OfferCard({
 
   return (
     <div
-      className={`group flex flex-row sm:flex-col overflow-hidden rounded-2xl shadow-md transition-shadow hover:shadow-lg ${
+      className={`group flex flex-row sm:flex-col overflow-hidden rounded-2xl shadow-md transition-shadow hover:shadow-lg cursor-pointer sm:cursor-default ${
         dark ? "bg-slate-800" : "border border-stone-200 bg-white"
       }`}
+      onClick={onClick}
     >
       {/* ── Image + overlays ── */}
       {/* Mobile: fixed 130px wide, full card height. sm+: full width, 4/3 aspect */}
       <div
-        className="relative w-[130px] shrink-0 cursor-pointer overflow-hidden bg-stone-200 sm:w-auto sm:aspect-[4/3]"
-        onClick={onClick}
+        className="relative w-[130px] shrink-0 overflow-hidden bg-stone-200 sm:w-auto sm:aspect-[4/3] sm:cursor-pointer"
+        onClick={(e) => { e.stopPropagation(); onClick(); }}
       >
         {imageUrl ? (
           <img
@@ -188,7 +189,7 @@ function OfferCard({
           </h3>
 
           <p
-            className={`mb-2 text-xs leading-relaxed sm:mb-4 sm:text-sm ${
+            className={`mb-2 hidden text-xs leading-relaxed sm:mb-4 sm:block sm:text-sm ${
               dark ? "text-slate-400" : "text-muted-foreground"
             }`}
           >
@@ -230,8 +231,8 @@ function OfferCard({
           )}
         </div>
 
-        {/* Bottom section: buttons pinned to base of card */}
-        <div className="mt-2 space-y-1.5 sm:mt-5 sm:space-y-2">
+        {/* Bottom section: buttons — hidden on mobile (whole card is the tap target) */}
+        <div className="mt-2 hidden space-y-1.5 sm:mt-5 sm:block sm:space-y-2">
           {/* Primary CTA button */}
           {ctaButtonLabel && (
             <button
