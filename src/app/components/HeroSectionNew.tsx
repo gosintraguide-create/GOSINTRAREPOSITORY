@@ -501,15 +501,131 @@ export function HeroSection({
       </div>
       </div>{/* end desktop-only block */}
 
-      {/* ── Bottom: "What We Offer" ──────────────────────────────────────── */}
-      <div className="mx-auto max-w-7xl px-4 pb-12 pt-10 sm:px-6 sm:pb-16 sm:pt-12 lg:px-8">
+      {/* ── MOBILE CARDS (hidden at md+) ──────────────────────────────── */}
+      <div id="offer-cards" className="md:hidden px-4 pb-10 pt-3">
+
+        {/* Section header */}
+        <p style={{ fontSize: '11px', fontWeight: 700, color: '#888', letterSpacing: '1.5px', marginBottom: '12px', textTransform: 'uppercase' }}>
+          How do you want to explore?
+        </p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+
+          {/* ── Card 1: Private tours ── */}
+          <div
+            onClick={() => onNavigate("private-tours")}
+            className="hover:scale-[1.01] active:scale-[0.99]"
+            style={{ display: 'flex', height: '150px', borderRadius: '16px', overflow: 'hidden', background: '#1a1a1a', cursor: 'pointer', transition: 'transform 0.15s ease' }}
+          >
+            <div style={{ width: '44%', flexShrink: 0, position: 'relative' }}>
+              {privateToursImg
+                ? <img src={privateToursImg} alt={t.hero.privateToursTitle} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                : <div style={{ width: '100%', height: '100%', background: '#333' }} />
+              }
+              <span style={{ position: 'absolute', top: '8px', left: '8px', background: '#ff6b35', color: 'white', fontSize: '9px', fontWeight: 700, padding: '3px 8px', borderRadius: '20px' }}>
+                MOST POPULAR
+              </span>
+            </div>
+            <div style={{ flex: 1, padding: '14px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', overflow: 'hidden' }}>
+              <div style={{ overflow: 'hidden' }}>
+                <h3 style={{ fontSize: '15px', fontWeight: 800, color: 'white', marginTop: 0, marginBottom: '3px', lineHeight: 1.2 }}>
+                  {t.hero.privateToursTitle}
+                </h3>
+                {priceLoaded && lowestTourPrice != null && (
+                  <p style={{ fontSize: '11px', color: '#aaa', marginTop: 0, marginBottom: '6px' }}>
+                    From €{lowestTourPrice}/person
+                  </p>
+                )}
+                <p style={{ fontSize: '11px', color: '#bbb', lineHeight: 1.4, margin: 0, overflow: 'hidden' }}>
+                  {t.hero.privateToursDescription}
+                </p>
+              </div>
+              <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+                {['Up to 6', 'Custom stops'].map(pill => (
+                  <span key={pill} style={{ background: 'rgba(255,255,255,0.1)', color: '#ccc', fontSize: '10px', padding: '3px 7px', borderRadius: '20px', whiteSpace: 'nowrap' }}>
+                    {pill}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* ── Card 2: Full day pass ── */}
+          <div
+            onClick={() => onNavigate("hop-on-hop-off-sintra")}
+            className="hover:scale-[1.01] active:scale-[0.99]"
+            style={{ display: 'flex', height: '150px', borderRadius: '16px', overflow: 'hidden', background: 'white', border: '0.5px solid rgba(0,0,0,0.08)', cursor: 'pointer', transition: 'transform 0.15s ease' }}
+          >
+            <div style={{ width: '44%', flexShrink: 0, position: 'relative' }}>
+              {daypassImg
+                ? <img src={daypassImg} alt={t.hero.daypassTitle} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                : <div style={{ width: '100%', height: '100%', background: '#e0d8cc' }} />
+              }
+              <span style={{ position: 'absolute', top: '8px', left: '8px', background: '#0d4a4a', color: 'white', fontSize: '9px', fontWeight: 700, padding: '3px 8px', borderRadius: '20px' }}>
+                GREAT VALUE
+              </span>
+            </div>
+            <div style={{ flex: 1, padding: '14px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', overflow: 'hidden' }}>
+              <div style={{ overflow: 'hidden' }}>
+                <h3 style={{ fontSize: '15px', fontWeight: 800, color: '#1a1a1a', marginTop: 0, marginBottom: '3px', lineHeight: 1.2 }}>
+                  {t.hero.daypassTitle}
+                </h3>
+                {priceLoaded && basePrice ? (
+                  <p style={{ fontSize: '11px', color: '#888', marginTop: 0, marginBottom: '6px' }}>
+                    From €{basePrice}/person
+                  </p>
+                ) : null}
+                <p style={{ fontSize: '11px', color: '#666', lineHeight: 1.4, margin: 0, overflow: 'hidden' }}>
+                  {t.hero.daypassDescription}
+                </p>
+              </div>
+              <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+                {['Unlimited hops', 'All vehicles'].map(pill => (
+                  <span key={pill} style={{ background: '#f0ebe0', color: '#555', fontSize: '10px', padding: '3px 7px', borderRadius: '20px', whiteSpace: 'nowrap' }}>
+                    {pill}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* ── Card 3: Travel guide ── */}
+          <div
+            onClick={() => onNavigate("travel-guide")}
+            className="hover:scale-[1.01] active:scale-[0.99]"
+            style={{ display: 'flex', height: '110px', borderRadius: '16px', overflow: 'hidden', background: 'white', border: '0.5px solid rgba(0,0,0,0.08)', cursor: 'pointer', transition: 'transform 0.15s ease', opacity: 0.9 }}
+          >
+            <div style={{ width: '44%', flexShrink: 0 }}>
+              {travelGuideImg
+                ? <img src={travelGuideImg} alt={travelGuideTitle} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                : <div style={{ width: '100%', height: '100%', background: '#e0d8cc' }} />
+              }
+            </div>
+            <div style={{ flex: 1, padding: '14px', display: 'flex', flexDirection: 'column', justifyContent: 'center', overflow: 'hidden' }}>
+              <h3 style={{ fontSize: '14px', fontWeight: 800, color: '#1a1a1a', marginTop: 0, marginBottom: '3px', lineHeight: 1.2 }}>
+                {travelGuideTitle}
+              </h3>
+              <span style={{ display: 'inline-block', background: '#e8f5e9', color: '#2e7d32', fontSize: '9px', fontWeight: 700, padding: '3px 8px', borderRadius: '20px', marginBottom: '6px', width: 'fit-content' }}>
+                100% FREE
+              </span>
+              <p style={{ fontSize: '11px', color: '#777', lineHeight: 1.4, margin: 0, overflow: 'hidden' }}>
+                {t.hero.travelGuideDescription}
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* ── Bottom: "What We Offer" — desktop only ───────────────────── */}
+      <div className="hidden md:block mx-auto max-w-7xl px-4 pb-12 pt-10 sm:px-6 sm:pb-16 sm:pt-12 lg:px-8">
         {/* Section eyebrow */}
         <p className="mb-6 text-xs font-semibold uppercase tracking-widest text-primary">
           {t.hero.whatWeOffer}
         </p>
 
         {/* Cards */}
-        <div id="offer-cards" className="grid gap-5 sm:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-3">
 
           {/* ── Day Pass card (light) ── */}
           <OfferCard
