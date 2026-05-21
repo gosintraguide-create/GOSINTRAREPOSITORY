@@ -121,12 +121,16 @@ function OfferCard({
 
   return (
     <div
-      className={`group flex flex-col overflow-hidden rounded-2xl shadow-md transition-shadow hover:shadow-lg ${
+      className={`group flex flex-row sm:flex-col overflow-hidden rounded-2xl shadow-md transition-shadow hover:shadow-lg ${
         dark ? "bg-slate-800" : "border border-stone-200 bg-white"
       }`}
     >
       {/* ── Image + overlays ── */}
-      <div className="relative aspect-[4/3] cursor-pointer overflow-hidden bg-stone-200" onClick={onClick}>
+      {/* Mobile: fixed 130px wide, full card height. sm+: full width, 4/3 aspect */}
+      <div
+        className="relative w-[130px] shrink-0 cursor-pointer overflow-hidden bg-stone-200 sm:w-auto sm:aspect-[4/3]"
+        onClick={onClick}
+      >
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -138,10 +142,10 @@ function OfferCard({
           <ImagePlaceholder label={imagePlaceholderLabel ?? title} />
         )}
 
-        {/* Badge top-left */}
+        {/* Badge top-left — smaller on mobile */}
         {badge && (
           <span
-            className={`absolute left-3 top-3 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide text-white shadow ${
+            className={`absolute left-2 top-2 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow sm:left-3 sm:top-3 sm:px-3 sm:py-1 sm:text-xs ${
               badgeVariant === "accent" ? "bg-accent" : "bg-primary"
             }`}
           >
@@ -149,10 +153,10 @@ function OfferCard({
           </span>
         )}
 
-        {/* Price pill top-right */}
+        {/* Price pill — image overlay on desktop only; mobile shows it in content */}
         {fromPrice != null && (
           <div
-            className={`absolute right-3 top-3 rounded-full px-3 py-1 text-xs font-semibold shadow ${
+            className={`absolute right-3 top-3 hidden rounded-full px-3 py-1 text-xs font-semibold shadow sm:block ${
               dark ? "bg-slate-700/90 text-white" : "bg-white/90 text-foreground"
             }`}
           >
@@ -163,12 +167,20 @@ function OfferCard({
       </div>
 
       {/* ── Content — flex-1 so it stretches to fill card height ── */}
-      <div className="flex flex-1 flex-col p-6">
+      <div className="flex flex-1 flex-col p-3 sm:p-6">
 
         {/* Top section: title + description + pills + quote */}
         <div className="flex-1">
+
+          {/* Price line — mobile only (replaces image overlay pill) */}
+          {fromPrice != null && (
+            <p className={`mb-1 text-xs font-semibold sm:hidden ${dark ? "text-slate-300" : "text-foreground"}`}>
+              From <span className="font-bold">€{fromPrice}</span>{priceUnit ? `/${priceUnit}` : ""}
+            </p>
+          )}
+
           <h3
-            className={`mb-2 text-lg font-bold ${
+            className={`mb-1 text-sm font-bold sm:mb-2 sm:text-lg ${
               dark ? "text-white" : "text-foreground"
             }`}
           >
@@ -176,7 +188,7 @@ function OfferCard({
           </h3>
 
           <p
-            className={`mb-4 text-sm leading-relaxed ${
+            className={`mb-2 text-xs leading-relaxed sm:mb-4 sm:text-sm ${
               dark ? "text-slate-400" : "text-muted-foreground"
             }`}
           >
@@ -185,11 +197,11 @@ function OfferCard({
 
           {/* Feature pills */}
           {pills && pills.length > 0 && (
-            <div className="mb-4 flex flex-wrap gap-1.5">
+            <div className="mb-2 flex flex-wrap gap-1 sm:mb-4 sm:gap-1.5">
               {pills.map((pill, i) => (
                 <span
                   key={i}
-                  className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                  className={`rounded-full px-2 py-0.5 text-[10px] font-medium sm:px-2.5 sm:text-xs ${
                     dark ? "bg-slate-700 text-slate-300" : "bg-stone-100 text-stone-700"
                   }`}
                 >
@@ -202,13 +214,13 @@ function OfferCard({
           {/* Testimonial quote */}
           {quote && (
             <div
-              className={`mb-5 flex items-start gap-2 rounded-xl p-3 ${
+              className={`mb-3 flex items-start gap-2 rounded-xl p-2 sm:mb-5 sm:p-3 ${
                 dark ? "bg-slate-700/50" : "border border-stone-100 bg-stone-50"
               }`}
             >
-              <span className="mt-0.5 shrink-0 text-sm">⭐</span>
+              <span className="mt-0.5 shrink-0 text-xs sm:text-sm">⭐</span>
               <p
-                className={`text-xs italic leading-relaxed ${
+                className={`text-[10px] italic leading-relaxed sm:text-xs ${
                   dark ? "text-slate-300" : "text-stone-600"
                 }`}
               >
@@ -219,7 +231,7 @@ function OfferCard({
         </div>
 
         {/* Bottom section: buttons pinned to base of card */}
-        <div className="mt-5 space-y-2">
+        <div className="mt-2 space-y-1.5 sm:mt-5 sm:space-y-2">
           {/* Primary CTA button */}
           {ctaButtonLabel && (
             <button
@@ -227,12 +239,12 @@ function OfferCard({
                 e.stopPropagation();
                 (onBookClick ?? onClick)();
               }}
-              className={`flex w-full items-center justify-center gap-1.5 rounded-xl px-4 py-3 text-sm font-bold transition-opacity hover:opacity-90 active:scale-[0.98] ${
+              className={`flex w-full items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold transition-opacity hover:opacity-90 active:scale-[0.98] sm:px-4 sm:py-3 sm:text-sm ${
                 dark ? "bg-accent text-white" : "bg-foreground text-background"
               }`}
             >
               {ctaButtonLabel}
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </button>
           )}
 
@@ -243,24 +255,24 @@ function OfferCard({
                 e.stopPropagation();
                 onClick();
               }}
-              className={`flex w-full items-center justify-center gap-1 text-sm font-medium transition-colors ${
+              className={`flex w-full items-center justify-center gap-1 text-xs font-medium transition-colors sm:text-sm ${
                 dark ? "text-slate-400 hover:text-white" : "text-accent hover:text-accent/80"
               }`}
             >
               {ctaLabel}
-              <ArrowRight className="h-3.5 w-3.5" />
+              <ArrowRight className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
             </button>
           )}
 
           {/* Contact link */}
           {showContact && (
-            <div className="pt-1 text-center">
+            <div className="pt-0.5 text-center sm:pt-1">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   setContactOpen(true);
                 }}
-                className={`text-xs underline underline-offset-2 transition-colors ${
+                className={`text-[10px] underline underline-offset-2 transition-colors sm:text-xs ${
                   dark
                     ? "text-slate-500 hover:text-slate-300"
                     : "text-muted-foreground hover:text-primary"
