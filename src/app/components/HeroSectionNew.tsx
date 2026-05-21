@@ -189,7 +189,7 @@ function OfferCard({
           </h3>
 
           <p
-            className={`mb-2 hidden text-xs leading-relaxed sm:mb-4 sm:block sm:text-sm ${
+            className={`mb-2 text-xs leading-relaxed sm:mb-4 sm:text-sm ${
               dark ? "text-slate-400" : "text-muted-foreground"
             }`}
           >
