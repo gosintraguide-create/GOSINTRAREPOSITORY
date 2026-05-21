@@ -151,7 +151,7 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
         <div
           onClick={handleBookClick}
           className="hover:scale-[1.01] active:scale-[0.99]"
-          style={{ display: 'flex', height: '155px', borderRadius: '16px', overflow: 'hidden', background: '#1a1a1a', cursor: isAvailable ? 'pointer' : 'default', transition: 'transform 0.15s ease' }}
+          style={{ display: 'flex', height: '190px', borderRadius: '16px', overflow: 'hidden', background: 'white', border: '0.5px solid rgba(0,0,0,0.08)', cursor: isAvailable ? 'pointer' : 'default', transition: 'transform 0.15s ease', boxShadow: '0 2px 12px rgba(249,115,22,0.08)' }}
         >
           {/* Image */}
           <div style={{ width: '44%', flexShrink: 0, position: 'relative' }}>
@@ -162,10 +162,10 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
                 className="h-full w-full object-cover"
               />
             ) : (
-              <div style={{ width: '100%', height: '100%', background: '#333' }} />
+              <div style={{ width: '100%', height: '100%', background: '#ffe0c4' }} />
             )}
             {/* Badge */}
-            <span style={{ position: 'absolute', top: '8px', left: '8px', background: '#f97316', color: 'white', fontSize: '9px', fontWeight: 700, padding: '3px 8px', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+            <span style={{ position: 'absolute', top: '8px', left: '8px', background: 'linear-gradient(to right, #f97316, #ec4899)', color: 'white', fontSize: '9px', fontWeight: 700, padding: '3px 8px', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '3px' }}>
               <Sparkles style={{ width: '8px', height: '8px' }} />
               {ts.sunsetSpecialBadge}
             </span>
@@ -174,10 +174,10 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
           {/* Content */}
           <div style={{ flex: 1, padding: '14px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', overflow: 'hidden' }}>
             <div style={{ overflow: 'hidden' }}>
-              <h3 style={{ fontSize: '15px', fontWeight: 800, color: 'white', marginTop: 0, marginBottom: '3px', lineHeight: 1.2 }}>
+              <h3 style={{ fontSize: '15px', fontWeight: 800, color: '#1a1a1a', marginTop: 0, marginBottom: '3px', lineHeight: 1.2 }}>
                 {ts.sunsetSpecialTitle}
               </h3>
-              <p style={{ fontSize: '11px', color: '#bbb', lineHeight: 1.4, margin: 0, overflow: 'hidden' }}>
+              <p style={{ fontSize: '11px', color: '#666', lineHeight: 1.4, margin: 0, overflow: 'hidden' }}>
                 {ts.sunsetSpecialDescription}
               </p>
             </div>
@@ -186,12 +186,12 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
               {/* Details pills */}
               <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
                 {sunsetSpecial?.departureTime && (
-                  <span style={{ background: 'rgba(255,255,255,0.1)', color: '#ccc', fontSize: '10px', padding: '3px 7px', borderRadius: '20px', whiteSpace: 'nowrap' }}>
+                  <span style={{ background: '#fff7ed', color: '#c2410c', fontSize: '10px', padding: '3px 7px', borderRadius: '20px', whiteSpace: 'nowrap' }}>
                     {sunsetSpecial.departureTime}
                   </span>
                 )}
                 {sunsetSpecial?.limitedSeats && (
-                  <span style={{ background: 'rgba(249,115,22,0.2)', color: '#fb923c', fontSize: '10px', padding: '3px 7px', borderRadius: '20px', whiteSpace: 'nowrap' }}>
+                  <span style={{ background: '#fff7ed', color: '#c2410c', fontSize: '10px', padding: '3px 7px', borderRadius: '20px', whiteSpace: 'nowrap' }}>
                     {sunsetSpecial.limitedSeats} {ts.sunsetSpecialSeats}
                   </span>
                 )}
@@ -202,14 +202,14 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                     <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22c55e' }} />
-                    <span style={{ fontSize: '10px', color: '#86efac' }}>{ts.sunsetSpecialAvailableNow}</span>
+                    <span style={{ fontSize: '10px', color: '#15803d' }}>{ts.sunsetSpecialAvailableNow}</span>
                   </div>
                   <span style={{ background: 'linear-gradient(to right, #f97316, #ec4899)', color: 'white', fontSize: '10px', fontWeight: 700, padding: '4px 10px', borderRadius: '20px' }}>
                     {ts.sunsetSpecialBookButton}
                   </span>
                 </div>
               ) : (
-                <span style={{ fontSize: '10px', color: '#fb923c' }}>{ts.sunsetSpecialComingSoon}</span>
+                <span style={{ fontSize: '10px', color: '#c2410c' }}>{ts.sunsetSpecialComingSoon}</span>
               )}
             </div>
           </div>
