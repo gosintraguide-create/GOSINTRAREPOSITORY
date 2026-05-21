@@ -127,9 +127,9 @@ function OfferCard({
       onClick={onClick}
     >
       {/* ── Image + overlays ── */}
-      {/* Mobile: fixed 130px wide, full card height. sm+: full width, 4/3 aspect */}
+      {/* Mobile: fixed 130px wide. md–lg: 2/1 (flat). lg+: 4/3 (standard) */}
       <div
-        className="relative w-[130px] shrink-0 overflow-hidden bg-stone-200 sm:w-auto sm:aspect-[4/3] sm:cursor-pointer"
+        className="relative w-[130px] shrink-0 overflow-hidden bg-stone-200 sm:w-auto sm:aspect-[2/1] lg:aspect-[4/3] sm:cursor-pointer"
         onClick={(e) => { e.stopPropagation(); onClick(); }}
       >
         {imageUrl ? (
@@ -168,7 +168,7 @@ function OfferCard({
       </div>
 
       {/* ── Content — flex-1 so it stretches to fill card height ── */}
-      <div className="flex flex-1 flex-col p-3 sm:p-6">
+      <div className="flex flex-1 flex-col p-3 sm:p-4 lg:p-6">
 
         {/* Top section: title + description + pills + quote */}
         <div className="flex-1">
@@ -181,7 +181,7 @@ function OfferCard({
           )}
 
           <h3
-            className={`mb-1 text-sm font-bold sm:mb-2 sm:text-lg ${
+            className={`mb-1 text-sm font-bold sm:text-base sm:mb-1 lg:mb-2 lg:text-lg ${
               dark ? "text-white" : "text-foreground"
             }`}
           >
@@ -189,7 +189,7 @@ function OfferCard({
           </h3>
 
           <p
-            className={`mb-2 text-xs leading-relaxed sm:mb-4 sm:text-sm ${
+            className={`mb-2 text-xs leading-relaxed sm:mb-2 sm:text-xs lg:mb-4 lg:text-sm ${
               dark ? "text-slate-400" : "text-muted-foreground"
             }`}
           >
@@ -198,7 +198,7 @@ function OfferCard({
 
           {/* Feature pills */}
           {pills && pills.length > 0 && (
-            <div className="mb-2 flex flex-wrap gap-1 sm:mb-4 sm:gap-1.5">
+            <div className="mb-2 flex flex-wrap gap-1 sm:mb-2 sm:gap-1 lg:mb-4 lg:gap-1.5">
               {pills.map((pill, i) => (
                 <span
                   key={i}
@@ -212,10 +212,10 @@ function OfferCard({
             </div>
           )}
 
-          {/* Testimonial quote — hidden on mobile to keep cards compact */}
+          {/* Testimonial quote — hidden on mobile + md, shown only at lg+ */}
           {quote && (
             <div
-              className={`mb-3 hidden items-start gap-2 rounded-xl p-2 sm:mb-5 sm:flex sm:p-3 ${
+              className={`mb-3 hidden items-start gap-2 rounded-xl p-2 lg:mb-5 lg:flex lg:p-3 ${
                 dark ? "bg-slate-700/50" : "border border-stone-100 bg-stone-50"
               }`}
             >
@@ -232,7 +232,7 @@ function OfferCard({
         </div>
 
         {/* Bottom section: buttons — hidden on mobile (whole card is the tap target) */}
-        <div className="mt-2 hidden space-y-1.5 sm:mt-5 sm:block sm:space-y-2">
+        <div className="mt-2 hidden space-y-1.5 sm:mt-3 sm:block lg:mt-5 lg:space-y-2">
           {/* Primary CTA button */}
           {ctaButtonLabel && (
             <button
@@ -240,7 +240,7 @@ function OfferCard({
                 e.stopPropagation();
                 (onBookClick ?? onClick)();
               }}
-              className={`flex w-full items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold transition-opacity hover:opacity-90 active:scale-[0.98] sm:px-4 sm:py-3 sm:text-sm ${
+              className={`flex w-full items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold transition-opacity hover:opacity-90 active:scale-[0.98] lg:px-4 lg:py-3 lg:text-sm ${
                 dark ? "bg-accent text-white" : "bg-foreground text-background"
               }`}
             >
