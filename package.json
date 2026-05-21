@@ -4,10 +4,10 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "build": "vite build && (node scripts/prerender.mjs || echo 'Prerender step failed - deploying without prerendering')",
-    "build:vite": "vite build",
+    "build": "node node_modules/vite/bin/vite.js build && (node scripts/prerender.mjs || echo 'Prerender step failed - deploying without prerendering')",
+    "build:vite": "node node_modules/vite/bin/vite.js build",
     "prerender": "node scripts/prerender.mjs",
-    "dev": "vite",
+    "dev": "node node_modules/vite/bin/vite.js",
     "translate": "node scripts/retranslate.mjs",
     "translate:new": "node scripts/retranslate.mjs --new-only"
   },
