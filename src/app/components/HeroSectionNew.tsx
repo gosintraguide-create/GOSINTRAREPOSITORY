@@ -211,10 +211,10 @@ function OfferCard({
             </div>
           )}
 
-          {/* Testimonial quote */}
+          {/* Testimonial quote — hidden on mobile to keep cards compact */}
           {quote && (
             <div
-              className={`mb-3 flex items-start gap-2 rounded-xl p-2 sm:mb-5 sm:p-3 ${
+              className={`mb-3 hidden items-start gap-2 rounded-xl p-2 sm:mb-5 sm:flex sm:p-3 ${
                 dark ? "bg-slate-700/50" : "border border-stone-100 bg-stone-50"
               }`}
             >
