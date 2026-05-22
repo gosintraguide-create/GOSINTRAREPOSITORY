@@ -414,9 +414,8 @@ function CategorySection({
 
       {/* Mobile horizontal scroll */}
       <div
-        className="md:hidden"
+        className="flex md:hidden"
         style={{
-          display: "flex",
           overflowX: "auto",
           gap: "12px",
           padding: "0 18px",
