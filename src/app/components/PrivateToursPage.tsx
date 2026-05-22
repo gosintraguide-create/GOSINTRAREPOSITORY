@@ -170,8 +170,9 @@ function ComingSoonCard({ accent, description, isMobile }: { accent: string; des
         minHeight: isMobile ? "130px" : "140px",
         borderRadius: "14px",
         overflow: "hidden",
-        background: "white",
-        border: "0.5px solid rgba(0,0,0,0.08)",
+        background: "#fdf9f3",
+        border: "0.5px solid rgba(180,140,80,0.2)",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
         opacity: 0.45,
         flexShrink: 0,
         width: isMobile ? "280px" : undefined,
@@ -220,18 +221,27 @@ function TourCard({ tour, accent, isMobile }: { tour: PrivateTour; accent: strin
         minHeight: isMobile ? "130px" : "140px",
         borderRadius: "14px",
         overflow: "hidden",
-        background: "white",
-        border: "0.5px solid rgba(0,0,0,0.08)",
+        background: "#fdf9f3",
+        border: "0.5px solid rgba(180,140,80,0.2)",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
         cursor: "pointer",
         textDecoration: "none",
-        transition: "transform 0.15s ease",
+        transition: "all 0.2s ease",
         flexShrink: 0,
         ...(isMobile
           ? { width: "280px", minWidth: "280px", maxWidth: "280px" }
           : {}),
       }}
-      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = "scale(1.01)"; }}
-      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "scale(1)"; }}
+      onMouseEnter={(e) => {
+        const el = e.currentTarget as HTMLElement;
+        el.style.transform = "translateY(-4px)";
+        el.style.boxShadow = "0 8px 24px rgba(0,0,0,0.12)";
+      }}
+      onMouseLeave={(e) => {
+        const el = e.currentTarget as HTMLElement;
+        el.style.transform = "translateY(0)";
+        el.style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
+      }}
     >
       {/* Image */}
       <div
@@ -259,13 +269,14 @@ function TourCard({ tour, accent, isMobile }: { tour: PrivateTour; accent: strin
               position: "absolute",
               top: "6px",
               left: "6px",
-              background: accent,
+              background: "rgba(0,0,0,0.45)",
+              backdropFilter: "blur(4px)",
               color: "white",
-              fontSize: "8px",
+              fontSize: "9px",
               fontWeight: 700,
-              padding: "2px 7px",
+              padding: "4px 10px",
               borderRadius: "20px",
-              letterSpacing: "0.4px",
+              letterSpacing: "0.5px",
               lineHeight: 1.4,
               whiteSpace: "nowrap",
             }}
@@ -288,11 +299,11 @@ function TourCard({ tour, accent, isMobile }: { tour: PrivateTour; accent: strin
         {/* Title */}
         <p
           style={{
-            fontSize: "14px",
+            fontSize: "15px",
             fontWeight: 800,
             color: "#1a1a1a",
             marginBottom: "3px",
-            lineHeight: 1.2,
+            lineHeight: 1.3,
             overflow: "hidden",
             display: "-webkit-box",
             WebkitLineClamp: 2,
@@ -302,14 +313,22 @@ function TourCard({ tour, accent, isMobile }: { tour: PrivateTour; accent: strin
           {tour.title}
         </p>
         {/* Price */}
-        {price && (
-          <p style={{ fontSize: "11px", color: "#888", marginBottom: "6px" }}>{price}</p>
-        )}
+        {price && (() => {
+          const slashIdx = price.indexOf(" / ");
+          const base = slashIdx >= 0 ? price.slice(0, slashIdx) : price;
+          const suffix = slashIdx >= 0 ? price.slice(slashIdx + 3) : null;
+          return (
+            <p style={{ fontSize: "13px", fontWeight: 800, color: "#1a1a1a", marginBottom: "6px" }}>
+              {base}
+              {suffix && <span style={{ fontSize: "10px", fontWeight: 500, color: "#a08050" }}> / {suffix}</span>}
+            </p>
+          );
+        })()}
         {/* Description — 2 lines max */}
         <p
           style={{
-            fontSize: "11px",
-            color: "#666",
+            fontSize: "12px",
+            color: "#6b5a3a",
             lineHeight: 1.5,
             overflow: "hidden",
             display: "-webkit-box",
@@ -355,31 +374,31 @@ function CategorySection({
         {/* Desktop header */}
         <div
           className="hidden md:flex"
-          style={{ alignItems: "flex-start", gap: "14px", marginBottom: "16px" }}
+          style={{ alignItems: "center", gap: "16px", marginBottom: "20px" }}
         >
           <div
             style={{
-              width: "3px",
+              width: "4px",
+              height: "52px",
               borderRadius: "2px",
-              background: category.accent,
-              alignSelf: "stretch",
-              minHeight: "36px",
+              background: `linear-gradient(to bottom, ${category.accent}, ${category.accent}33)`,
               flexShrink: 0,
             }}
           />
           <div>
             <p
               style={{
-                fontSize: "13px",
-                fontWeight: 800,
-                letterSpacing: "0.8px",
+                fontSize: "18px",
+                fontWeight: 900,
                 color: category.accent,
-                lineHeight: 1.3,
+                letterSpacing: "-0.3px",
+                lineHeight: 1.2,
+                marginBottom: "4px",
               }}
             >
               {category.name}
             </p>
-            <p style={{ fontSize: "13px", color: "#888", marginTop: "2px", lineHeight: 1.5 }}>
+            <p style={{ fontSize: "13px", color: "#7a6040", lineHeight: 1.5, margin: 0 }}>
               {category.description}
             </p>
           </div>
@@ -389,24 +408,25 @@ function CategorySection({
         <div
           className="md:hidden"
           style={{
-            paddingLeft: "18px",
-            borderLeft: `3px solid ${category.accent}`,
+            paddingLeft: "16px",
+            borderLeft: `4px solid ${category.accent}`,
             marginLeft: "18px",
             marginBottom: "16px",
           }}
         >
           <p
             style={{
-              fontSize: "13px",
-              fontWeight: 800,
-              letterSpacing: "0.8px",
+              fontSize: "16px",
+              fontWeight: 900,
               color: category.accent,
-              lineHeight: 1.3,
+              letterSpacing: "-0.3px",
+              lineHeight: 1.2,
+              marginBottom: "4px",
             }}
           >
             {category.name}
           </p>
-          <p style={{ fontSize: "12px", color: "#888", marginTop: "2px", lineHeight: 1.5 }}>
+          <p style={{ fontSize: "12px", color: "#7a6040", lineHeight: 1.5, margin: 0 }}>
             {category.description}
           </p>
         </div>
@@ -450,10 +470,10 @@ function CategorySection({
 
 // ── Category Sticky Nav ──────────────────────────────────────────────────────
 const STICKY_NAV_PILLS = [
-  { id: "classic_sintra", label: "Classic Sintra" },
-  { id: "off_the_beaten_path", label: "Off the Beaten Path" },
-  { id: "nature_adventure", label: "Nature & Adventure" },
-  { id: "hiking", label: "Hiking" },
+  { id: "classic_sintra", label: "Classic Sintra", sectionId: "section-classic" },
+  { id: "off_the_beaten_path", label: "Off the Beaten Path", sectionId: "section-beaten" },
+  { id: "nature_adventure", label: "Nature & Adventure", sectionId: "section-nature" },
+  { id: "hiking", label: "Hiking", sectionId: "section-hiking" },
 ] as const;
 
 function CategoryStickyNav({
@@ -483,7 +503,7 @@ function CategoryStickyNav({
         top: navbarHeight,
         zIndex: 100,
         background: "#f5f0e8",
-        borderBottom: "0.5px solid rgba(0,0,0,0.1)",
+        borderBottom: "1px solid rgba(180,140,80,0.25)",
         display: "flex",
         overflowX: "auto",
         scrollbarWidth: "none",
@@ -500,12 +520,14 @@ function CategoryStickyNav({
             onClick={() => onPillClick(pill.id)}
             style={{
               padding: "14px 18px",
-              fontSize: "12px",
-              fontWeight: 600,
-              color: isActive ? "#1a1a1a" : "#888",
+              fontSize: "11px",
+              fontWeight: 700,
+              color: isActive ? "#1a1a1a" : "#a08050",
+              textTransform: "uppercase" as const,
+              letterSpacing: "0.5px",
               borderWidth: "0 0 2px 0",
               borderStyle: "solid",
-              borderColor: isActive ? "#1a1a1a" : "transparent",
+              borderColor: isActive ? "#ff6b35" : "transparent",
               cursor: "pointer",
               transition: "all 0.2s ease",
               whiteSpace: "nowrap",
@@ -565,26 +587,36 @@ export function PrivateToursPage() {
     return () => window.removeEventListener("resize", measure);
   }, []);
 
-  // Track which category section is in view
+  // Track which category section is in view using IntersectionObserver
   useEffect(() => {
-    const combined = navbarHeight + stickyNavHeight;
-    const handleScroll = () => {
-      let activeId = CATEGORIES[0].id;
-      for (const cat of CATEGORIES) {
-        const el = document.getElementById(`pt-section-${cat.id}`);
-        if (el && el.getBoundingClientRect().top <= combined + 1) {
-          activeId = cat.id;
-        }
+    const offset = navbarHeight + stickyNavHeight;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const pill = STICKY_NAV_PILLS.find((p) => p.sectionId === entry.target.id);
+            if (pill) setActiveCategory(pill.id);
+          }
+        });
+      },
+      {
+        rootMargin: `-${offset}px 0px -60% 0px`,
+        threshold: 0,
       }
-      setActiveCategory(activeId);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
+    );
+
+    for (const pill of STICKY_NAV_PILLS) {
+      const el = document.getElementById(pill.sectionId);
+      if (el) observer.observe(el);
+    }
+
+    return () => observer.disconnect();
   }, [navbarHeight, stickyNavHeight]);
 
   const handlePillClick = (catId: string) => {
-    const el = document.getElementById(`pt-section-${catId}`);
+    const pill = STICKY_NAV_PILLS.find((p) => p.id === catId);
+    const el = pill ? document.getElementById(pill.sectionId) : null;
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
@@ -837,7 +869,7 @@ export function PrivateToursPage() {
 
   // ── Main redesigned page ─────────────────────────────────────────────────
   return (
-    <div className="flex-1" style={{ background: "#fafaf8" }}>
+    <div className="flex-1" style={{ background: "#f5f0e8" }}>
       <Helmet>
         <title>Private Tours in Sintra | Hop On Sintra</title>
         <meta
@@ -872,44 +904,39 @@ export function PrivateToursPage() {
       />
 
       {/* ── Page header ───────────────────────────────────────────────────── */}
+      {/* Desktop */}
       <div
-        className="hidden md:block"
-        style={{ padding: "40px 48px 16px" }}
+        className="hidden md:flex"
+        style={{ padding: "32px 48px 0", alignItems: "flex-end", justifyContent: "space-between" }}
       >
-        <h1 style={{ fontSize: "28px", fontWeight: 800, color: "#1a1a1a", marginBottom: "8px", lineHeight: 1.2 }}>
-          {t.hero?.title || "Private tours"}
-        </h1>
-        <p
-          style={{
-            fontSize: "15px",
-            color: "#777",
-            maxWidth: "560px",
-            lineHeight: 1.6,
-            margin: 0,
-          }}
-        >
-          Your vehicle, your guide, your Sintra. Choose the experience that fits your day — from a quick introduction to a full immersive journey.
-        </p>
+        <div>
+          <p style={{ fontSize: "11px", fontWeight: 700, color: "#ff6b35", letterSpacing: "2px", textTransform: "uppercase", marginBottom: "8px" }}>
+            Sintra, Portugal
+          </p>
+          <h1 style={{ fontSize: "32px", fontWeight: 900, color: "#1a1a1a", letterSpacing: "-1px", lineHeight: 1.1, margin: 0 }}>
+            {t.hero?.title || "Private tours"}
+          </h1>
+        </div>
+        <div style={{ textAlign: "right", paddingBottom: "4px" }}>
+          <p style={{ fontSize: "13px", color: "#a08050", fontWeight: 500, margin: 0, marginBottom: "2px" }}>Your vehicle · Your guide · Your Sintra</p>
+          <p style={{ fontSize: "12px", color: "#888", margin: 0 }}>Choose the experience that fits your day</p>
+        </div>
+      </div>
+      <div className="hidden md:block" style={{ padding: "0 48px" }}>
+        <div style={{ height: "2px", background: "linear-gradient(to right, #ff6b35, #c8a84b, transparent)", borderRadius: "2px", margin: "20px 0 32px" }} />
       </div>
 
-      <div
-        className="md:hidden"
-        style={{ padding: "22px 18px 8px" }}
-      >
-        <h1 style={{ fontSize: "22px", fontWeight: 800, color: "#1a1a1a", marginBottom: "6px", lineHeight: 1.2 }}>
+      {/* Mobile */}
+      <div className="md:hidden" style={{ padding: "24px 18px 0" }}>
+        <p style={{ fontSize: "11px", fontWeight: 700, color: "#ff6b35", letterSpacing: "2px", textTransform: "uppercase", marginBottom: "8px" }}>
+          Sintra, Portugal
+        </p>
+        <h1 style={{ fontSize: "26px", fontWeight: 900, color: "#1a1a1a", letterSpacing: "-0.5px", lineHeight: 1.1, marginBottom: "8px" }}>
           {t.hero?.title || "Private tours"}
         </h1>
-        <p
-          style={{
-            fontSize: "13px",
-            color: "#777",
-            maxWidth: "560px",
-            lineHeight: 1.6,
-            margin: 0,
-          }}
-        >
-          Your vehicle, your guide, your Sintra. Choose the experience that fits your day — from a quick introduction to a full immersive journey.
-        </p>
+        <p style={{ fontSize: "13px", color: "#a08050", fontWeight: 500, margin: 0, marginBottom: "2px" }}>Your vehicle · Your guide · Your Sintra</p>
+        <p style={{ fontSize: "12px", color: "#888", margin: 0 }}>Choose the experience that fits your day</p>
+        <div style={{ height: "2px", background: "linear-gradient(to right, #ff6b35, #c8a84b, transparent)", borderRadius: "2px", margin: "16px 0 24px" }} />
       </div>
 
       {/* ── Loading / error / empty states ────────────────────────────────── */}
@@ -949,10 +976,10 @@ export function PrivateToursPage() {
       {!loading && !fetchError && (
         <div className="px-[18px] pb-8 pt-3 md:px-[48px] md:pb-10">
           <div className="flex flex-col gap-[28px] md:gap-[36px]">
-            {CATEGORIES.map((cat) => (
+            {CATEGORIES.map((cat, idx) => (
               <div
                 key={cat.id}
-                id={`pt-section-${cat.id}`}
+                id={STICKY_NAV_PILLS[idx].sectionId}
                 style={{ scrollMarginTop: `${navbarHeight + stickyNavHeight}px` }}
               >
                 <CategorySection
@@ -971,18 +998,17 @@ export function PrivateToursPage() {
         <div
           className="hidden md:flex"
           style={{
-            background: "white",
-            borderTop: "0.5px solid rgba(0,0,0,0.08)",
-            padding: "24px 48px 32px",
+            background: "#1a1a1a",
+            padding: "28px 48px",
             alignItems: "center",
             justifyContent: "space-between",
           }}
         >
           <div>
-            <p style={{ fontSize: "15px", fontWeight: 700, color: "#1a1a1a", marginBottom: "4px" }}>
+            <p style={{ fontSize: "16px", fontWeight: 800, color: "white", marginBottom: "5px" }}>
               Not sure which tour is right for you?
             </p>
-            <p style={{ fontSize: "13px", color: "#888" }}>
+            <p style={{ fontSize: "13px", color: "#888", lineHeight: 1.5 }}>
               Chat with us and we'll help you find the perfect experience.
             </p>
           </div>
@@ -996,7 +1022,7 @@ export function PrivateToursPage() {
               fontSize: "14px",
               fontWeight: 700,
               borderRadius: "10px",
-              padding: "13px 24px",
+              padding: "14px 28px",
               textDecoration: "none",
               whiteSpace: "nowrap",
               flexShrink: 0,
@@ -1011,15 +1037,14 @@ export function PrivateToursPage() {
         <div
           className="md:hidden"
           style={{
-            background: "white",
-            borderTop: "0.5px solid rgba(0,0,0,0.08)",
-            padding: "16px 18px 22px",
+            background: "#1a1a1a",
+            padding: "20px 18px",
           }}
         >
-          <p style={{ fontSize: "13px", fontWeight: 700, color: "#1a1a1a", marginBottom: "4px" }}>
+          <p style={{ fontSize: "16px", fontWeight: 800, color: "white", marginBottom: "5px" }}>
             Not sure which tour is right for you?
           </p>
-          <p style={{ fontSize: "12px", color: "#888", marginBottom: "12px" }}>
+          <p style={{ fontSize: "13px", color: "#888", lineHeight: 1.5, marginBottom: "12px" }}>
             Chat with us and we'll help you find the perfect experience.
           </p>
           <a
