@@ -923,35 +923,27 @@ export function PrivateToursPage() {
       {/* Desktop */}
       <div
         className="hidden md:flex"
-        style={{ padding: "32px 48px 0", alignItems: "flex-end", justifyContent: "space-between" }}
+        style={{ padding: "32px 48px 0", flexDirection: "column", alignItems: "center", textAlign: "center" }}
       >
-        <div>
-          <p style={{ fontSize: "11px", fontWeight: 700, color: "#ff6b35", letterSpacing: "2px", textTransform: "uppercase", marginBottom: "8px" }}>
-            Sintra, Portugal
-          </p>
-          <h1 style={{ fontSize: "32px", fontWeight: 900, color: "#1a1a1a", letterSpacing: "-1px", lineHeight: 1.1, margin: 0 }}>
-            {t.hero?.title || "Private tours"}
-          </h1>
-        </div>
-        <div style={{ textAlign: "right", paddingBottom: "4px" }}>
-          <p style={{ fontSize: "13px", color: "#a08050", fontWeight: 500, margin: 0, marginBottom: "2px" }}>Your vehicle · Your guide · Your Sintra</p>
-          <p style={{ fontSize: "12px", color: "#888", margin: 0 }}>Choose the experience that fits your day</p>
-        </div>
+        <p style={{ fontSize: "11px", fontWeight: 700, color: "#ff6b35", letterSpacing: "2px", textTransform: "uppercase", marginBottom: "8px" }}>
+          Sintra, Portugal
+        </p>
+        <h1 style={{ fontSize: "32px", fontWeight: 900, color: "#1a1a1a", letterSpacing: "-1px", lineHeight: 1.1, margin: 0 }}>
+          {t.hero?.title || "Private tours"}
+        </h1>
       </div>
       <div className="hidden md:block" style={{ padding: "0 48px" }}>
         <div style={{ height: "2px", background: "linear-gradient(to right, #ff6b35, #c8a84b, transparent)", borderRadius: "2px", margin: "20px 0 32px" }} />
       </div>
 
       {/* Mobile */}
-      <div className="md:hidden" style={{ padding: "24px 18px 0" }}>
+      <div className="md:hidden" style={{ padding: "24px 18px 0", textAlign: "center" }}>
         <p style={{ fontSize: "11px", fontWeight: 700, color: "#ff6b35", letterSpacing: "2px", textTransform: "uppercase", marginBottom: "8px" }}>
           Sintra, Portugal
         </p>
         <h1 style={{ fontSize: "26px", fontWeight: 900, color: "#1a1a1a", letterSpacing: "-0.5px", lineHeight: 1.1, marginBottom: "8px" }}>
           {t.hero?.title || "Private tours"}
         </h1>
-        <p style={{ fontSize: "13px", color: "#a08050", fontWeight: 500, margin: 0, marginBottom: "2px" }}>Your vehicle · Your guide · Your Sintra</p>
-        <p style={{ fontSize: "12px", color: "#888", margin: 0 }}>Choose the experience that fits your day</p>
         <div style={{ height: "2px", background: "linear-gradient(to right, #ff6b35, #c8a84b, transparent)", borderRadius: "2px", margin: "16px 0 24px" }} />
       </div>
 
