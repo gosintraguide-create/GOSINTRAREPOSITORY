@@ -161,41 +161,45 @@ function getDisplayPrice(tour: PrivateTour): string {
 }
 
 // ── Coming Soon Card ─────────────────────────────────────────────────────────
-function ComingSoonCard({ accent, description }: { accent: string; description: string }) {
+function ComingSoonCard({ accent, description, isMobile }: { accent: string; description: string; isMobile?: boolean }) {
   return (
     <div
       style={{
         display: "flex",
-        height: "120px",
+        height: isMobile ? "130px" : "140px",
+        minHeight: isMobile ? "130px" : "140px",
         borderRadius: "14px",
         overflow: "hidden",
         background: "white",
         border: "0.5px solid rgba(0,0,0,0.08)",
         opacity: 0.45,
         flexShrink: 0,
+        width: isMobile ? "280px" : undefined,
+        minWidth: isMobile ? "280px" : undefined,
+        maxWidth: isMobile ? "280px" : undefined,
       }}
     >
-      {/* Image placeholder */}
+      {/* Image placeholder — solid accent colour */}
       <div
         style={{
-          width: "38%",
+          width: isMobile ? "42%" : "38%",
           flexShrink: 0,
-          background: `linear-gradient(135deg, ${accent}44, ${accent}22)`,
+          background: accent,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: "28px",
-          color: accent,
+          fontSize: "24px",
+          color: "white",
         }}
       >
         ＋
       </div>
       {/* Content */}
-      <div style={{ flex: 1, padding: "12px 14px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-        <p style={{ fontSize: "13px", fontWeight: 800, color: "#1a1a1a", marginBottom: "4px", lineHeight: 1.2 }}>
+      <div style={{ flex: 1, padding: "14px 16px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+        <p style={{ fontSize: "14px", fontWeight: 800, color: "#1a1a1a", marginBottom: "3px", lineHeight: 1.2 }}>
           More coming soon
         </p>
-        <p style={{ fontSize: "11px", color: "#aaa", lineHeight: 1.4, overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>
+        <p style={{ fontSize: "11px", color: "#aaa", lineHeight: 1.5 }}>
           {description}
         </p>
       </div>
@@ -212,7 +216,8 @@ function TourCard({ tour, accent, isMobile }: { tour: PrivateTour; accent: strin
       to={`/private-tours/${tour.id}`}
       style={{
         display: "flex",
-        height: "120px",
+        height: isMobile ? "130px" : undefined,
+        minHeight: isMobile ? "130px" : "140px",
         borderRadius: "14px",
         overflow: "hidden",
         background: "white",
@@ -221,7 +226,9 @@ function TourCard({ tour, accent, isMobile }: { tour: PrivateTour; accent: strin
         textDecoration: "none",
         transition: "transform 0.15s ease",
         flexShrink: 0,
-        ...(isMobile ? { width: "300px" } : {}),
+        ...(isMobile
+          ? { width: "280px", minWidth: "280px", maxWidth: "280px" }
+          : {}),
       }}
       onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = "scale(1.01)"; }}
       onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "scale(1)"; }}
@@ -272,18 +279,19 @@ function TourCard({ tour, accent, isMobile }: { tour: PrivateTour; accent: strin
       <div
         style={{
           flex: 1,
-          padding: "12px 14px",
+          padding: "14px 16px",
           display: "flex",
           flexDirection: "column",
           minWidth: 0,
         }}
       >
+        {/* Title */}
         <p
           style={{
-            fontSize: "13px",
+            fontSize: "14px",
             fontWeight: 800,
             color: "#1a1a1a",
-            marginBottom: "2px",
+            marginBottom: "3px",
             lineHeight: 1.2,
             overflow: "hidden",
             display: "-webkit-box",
@@ -293,29 +301,34 @@ function TourCard({ tour, accent, isMobile }: { tour: PrivateTour; accent: strin
         >
           {tour.title}
         </p>
+        {/* Price */}
         {price && (
-          <p style={{ fontSize: "11px", color: "#888", marginBottom: "5px" }}>{price}</p>
+          <p style={{ fontSize: "11px", color: "#888", marginBottom: "6px" }}>{price}</p>
         )}
+        {/* Description — 2 lines max */}
         <p
           style={{
             fontSize: "11px",
             color: "#666",
-            lineHeight: 1.4,
+            lineHeight: 1.5,
             overflow: "hidden",
-            whiteSpace: "nowrap",
-            textOverflow: "ellipsis",
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
             flex: 1,
           }}
         >
           {tour.description}
         </p>
+        {/* CTA */}
         <p
           style={{
             fontSize: "11px",
-            fontWeight: 700,
+            fontWeight: 600,
             color: accent,
             marginTop: "auto",
             paddingTop: "4px",
+            flexShrink: 0,
           }}
         >
           View tour →
@@ -428,9 +441,7 @@ function CategorySection({
           <TourCard key={tour.id} tour={tour} accent={category.accent} isMobile />
         ))}
         {needsComingSoon && (
-          <div style={{ width: "300px", flexShrink: 0 }}>
-            <ComingSoonCard accent={category.accent} description={category.comingSoonDesc} />
-          </div>
+          <ComingSoonCard accent={category.accent} description={category.comingSoonDesc} isMobile />
         )}
       </div>
     </div>
@@ -812,41 +823,19 @@ export function PrivateToursPage() {
         </div>
       )}
 
-      {/* ── Category sections ─────────────────────────────────────────────── */}
+      {/* ── Category sections — single mount, responsive padding ────────── */}
       {!loading && !fetchError && (
-        <>
-          {/* Desktop wrapper */}
-          <div
-            className="hidden md:block"
-            style={{ padding: "12px 48px 40px" }}
-          >
-            <div style={{ display: "flex", flexDirection: "column", gap: "36px" }}>
-              {CATEGORIES.map((cat) => (
-                <CategorySection
-                  key={cat.id}
-                  category={cat}
-                  tours={toursByCategory[cat.id] ?? []}
-                />
-              ))}
-            </div>
+        <div className="px-[18px] pb-8 pt-3 md:px-[48px] md:pb-10">
+          <div className="flex flex-col gap-[28px] md:gap-[36px]">
+            {CATEGORIES.map((cat) => (
+              <CategorySection
+                key={cat.id}
+                category={cat}
+                tours={toursByCategory[cat.id] ?? []}
+              />
+            ))}
           </div>
-
-          {/* Mobile wrapper */}
-          <div
-            className="md:hidden"
-            style={{ paddingTop: "12px", paddingBottom: "32px" }}
-          >
-            <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
-              {CATEGORIES.map((cat) => (
-                <CategorySection
-                  key={cat.id}
-                  category={cat}
-                  tours={toursByCategory[cat.id] ?? []}
-                />
-              ))}
-            </div>
-          </div>
-        </>
+        </div>
       )}
 
       {/* ── Bottom CTA ────────────────────────────────────────────────────── */}
