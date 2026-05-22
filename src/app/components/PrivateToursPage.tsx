@@ -937,20 +937,20 @@ export function PrivateToursPage() {
         </h1>
       </div>
 
+      {/* Gradient divider */}
+      <div className="hidden md:block" style={{ padding: "0 48px" }}>
+        <div style={{ height: "2px", background: "linear-gradient(to right, #ff6b35, #c8a84b, transparent)", borderRadius: "2px", margin: "20px 0 0" }} />
+      </div>
+      <div className="md:hidden">
+        <div style={{ height: "2px", background: "linear-gradient(to right, #ff6b35, #c8a84b, transparent)", borderRadius: "2px", margin: "16px 18px 0" }} />
+      </div>
+
       {/* ── Sticky category nav ───────────────────────────────────────────── */}
       <CategoryStickyNav
         navbarHeight={navbarHeight}
         activeCategory={activeCategory}
         onPillClick={handlePillClick}
       />
-
-      {/* Gradient divider */}
-      <div className="hidden md:block" style={{ padding: "0 48px" }}>
-        <div style={{ height: "2px", background: "linear-gradient(to right, #ff6b35, #c8a84b, transparent)", borderRadius: "2px", margin: "20px 0 32px" }} />
-      </div>
-      <div className="md:hidden">
-        <div style={{ height: "2px", background: "linear-gradient(to right, #ff6b35, #c8a84b, transparent)", borderRadius: "2px", margin: "16px 18px 24px" }} />
-      </div>
 
       {/* ── Loading / error / empty states ────────────────────────────────── */}
       {loading && (
