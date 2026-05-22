@@ -85,6 +85,8 @@ interface PrivateTour {
   published: boolean;
   order: number;
   heroImage?: string;
+  rating?: number;
+  reviewCount?: number;
   // Category field — may not exist in older records; inferred from title if absent
   category?: string;
 }
@@ -128,6 +130,13 @@ const CATEGORIES = [
 
 type CategoryId = typeof CATEGORIES[number]["id"];
 
+const CATEGORY_LABELS: Record<string, string> = {
+  classic_sintra: "Classic",
+  off_the_beaten_path: "Hidden gems",
+  nature_adventure: "Adventure",
+  hiking: "Hiking",
+};
+
 /** Assign a tour to a category. Uses the `category` field when present,
  *  otherwise infers from the title using keyword matching. */
 function getCategoryForTour(tour: PrivateTour): CategoryId {
@@ -166,41 +175,39 @@ function ComingSoonCard({ accent, description, isMobile }: { accent: string; des
     <div
       style={{
         display: "flex",
-        height: isMobile ? "130px" : "140px",
-        minHeight: isMobile ? "130px" : "140px",
-        borderRadius: "14px",
-        overflow: "hidden",
+        flexDirection: "column",
         background: "#fdf9f3",
+        borderRadius: "14px",
         border: "0.5px solid rgba(180,140,80,0.2)",
         boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-        opacity: 0.45,
-        flexShrink: 0,
-        width: isMobile ? "280px" : undefined,
-        minWidth: isMobile ? "280px" : undefined,
-        maxWidth: isMobile ? "280px" : undefined,
+        overflow: "hidden",
+        opacity: 0.35,
+        height: "100%",
+        ...(isMobile ? { width: "240px", minWidth: "240px", maxWidth: "240px", flexShrink: 0 } : {}),
       }}
     >
-      {/* Image placeholder — solid accent colour */}
+      {/* Image placeholder */}
       <div
         style={{
-          width: isMobile ? "42%" : "38%",
+          width: "100%",
+          height: "180px",
           flexShrink: 0,
           background: accent,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: "24px",
+          fontSize: "28px",
           color: "white",
         }}
       >
         ＋
       </div>
       {/* Content */}
-      <div style={{ flex: 1, padding: "14px 16px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-        <p style={{ fontSize: "14px", fontWeight: 800, color: "#1a1a1a", marginBottom: "3px", lineHeight: 1.2 }}>
+      <div style={{ padding: "14px 16px 16px", display: "flex", flexDirection: "column", gap: "5px", flex: 1 }}>
+        <p style={{ fontSize: "15px", fontWeight: 800, color: "#1a1a1a", margin: 0, lineHeight: 1.3 }}>
           More coming soon
         </p>
-        <p style={{ fontSize: "11px", color: "#aaa", lineHeight: 1.5 }}>
+        <p style={{ fontSize: "12px", color: "#6b5a3a", lineHeight: 1.5, margin: 0 }}>
           {description}
         </p>
       </div>
@@ -209,28 +216,40 @@ function ComingSoonCard({ accent, description, isMobile }: { accent: string; des
 }
 
 // ── Tour Card ────────────────────────────────────────────────────────────────
-function TourCard({ tour, accent, isMobile }: { tour: PrivateTour; accent: string; isMobile?: boolean }) {
+function TourCard({
+  tour,
+  accent,
+  categoryLabel,
+  isMobile,
+}: {
+  tour: PrivateTour;
+  accent: string;
+  categoryLabel: string;
+  isMobile?: boolean;
+}) {
   const price = getDisplayPrice(tour);
+  const slashIdx = price.indexOf(" / ");
+  const priceBase = slashIdx >= 0 ? price.slice(0, slashIdx) : price;
+  const priceSuffix = slashIdx >= 0 ? price.slice(slashIdx + 3) : null;
+  const metaParts: string[] = [categoryLabel];
+  if (tour.badge) metaParts.push(tour.badge);
 
   return (
     <Link
       to={`/private-tours/${tour.id}`}
       style={{
         display: "flex",
-        height: isMobile ? "130px" : undefined,
-        minHeight: isMobile ? "130px" : "140px",
-        borderRadius: "14px",
-        overflow: "hidden",
+        flexDirection: "column",
         background: "#fdf9f3",
+        borderRadius: "14px",
         border: "0.5px solid rgba(180,140,80,0.2)",
         boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+        overflow: "hidden",
         cursor: "pointer",
         textDecoration: "none",
         transition: "all 0.2s ease",
-        flexShrink: 0,
-        ...(isMobile
-          ? { width: "280px", minWidth: "280px", maxWidth: "280px" }
-          : {}),
+        height: "100%",
+        ...(isMobile ? { width: "240px", minWidth: "240px", maxWidth: "240px", flexShrink: 0 } : {}),
       }}
       onMouseEnter={(e) => {
         const el = e.currentTarget as HTMLElement;
@@ -244,31 +263,23 @@ function TourCard({ tour, accent, isMobile }: { tour: PrivateTour; accent: strin
       }}
     >
       {/* Image */}
-      <div
-        style={{
-          width: isMobile ? "42%" : "38%",
-          flexShrink: 0,
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
+      <div style={{ position: "relative", width: "100%", height: "180px", flexShrink: 0 }}>
         {tour.heroImage ? (
           <img
             src={tour.heroImage}
             alt={tour.title}
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
             loading="lazy"
           />
         ) : (
-          <div style={{ width: "100%", height: "100%", background: "#e5e7eb" }} />
+          <div style={{ width: "100%", height: "100%", background: `${accent}40` }} />
         )}
-        {/* Duration badge */}
         {tour.duration && (
           <div
             style={{
               position: "absolute",
-              top: "6px",
-              left: "6px",
+              top: "10px",
+              left: "10px",
               background: "rgba(0,0,0,0.45)",
               backdropFilter: "blur(4px)",
               color: "white",
@@ -277,7 +288,6 @@ function TourCard({ tour, accent, isMobile }: { tour: PrivateTour; accent: strin
               padding: "4px 10px",
               borderRadius: "20px",
               letterSpacing: "0.5px",
-              lineHeight: 1.4,
               whiteSpace: "nowrap",
             }}
           >
@@ -289,21 +299,25 @@ function TourCard({ tour, accent, isMobile }: { tour: PrivateTour; accent: strin
       {/* Content */}
       <div
         style={{
-          flex: 1,
-          padding: "14px 16px",
+          padding: "14px 16px 16px",
           display: "flex",
           flexDirection: "column",
-          minWidth: 0,
+          gap: "5px",
+          flex: 1,
         }}
       >
+        {/* Meta */}
+        <p style={{ fontSize: "11px", fontWeight: 600, color: "#a08050", letterSpacing: "0.3px", margin: 0 }}>
+          {metaParts.join(" · ")}
+        </p>
         {/* Title */}
         <p
           style={{
             fontSize: "15px",
             fontWeight: 800,
             color: "#1a1a1a",
-            marginBottom: "3px",
             lineHeight: 1.3,
+            margin: 0,
             overflow: "hidden",
             display: "-webkit-box",
             WebkitLineClamp: 2,
@@ -312,24 +326,13 @@ function TourCard({ tour, accent, isMobile }: { tour: PrivateTour; accent: strin
         >
           {tour.title}
         </p>
-        {/* Price */}
-        {price && (() => {
-          const slashIdx = price.indexOf(" / ");
-          const base = slashIdx >= 0 ? price.slice(0, slashIdx) : price;
-          const suffix = slashIdx >= 0 ? price.slice(slashIdx + 3) : null;
-          return (
-            <p style={{ fontSize: "13px", fontWeight: 800, color: "#1a1a1a", marginBottom: "6px" }}>
-              {base}
-              {suffix && <span style={{ fontSize: "10px", fontWeight: 500, color: "#a08050" }}> / {suffix}</span>}
-            </p>
-          );
-        })()}
-        {/* Description — 2 lines max */}
+        {/* Description */}
         <p
           style={{
             fontSize: "12px",
             color: "#6b5a3a",
             lineHeight: 1.5,
+            margin: 0,
             overflow: "hidden",
             display: "-webkit-box",
             WebkitLineClamp: 2,
@@ -339,19 +342,31 @@ function TourCard({ tour, accent, isMobile }: { tour: PrivateTour; accent: strin
         >
           {tour.description}
         </p>
-        {/* CTA */}
-        <p
+        {/* Footer */}
+        <div
           style={{
-            fontSize: "11px",
-            fontWeight: 600,
-            color: accent,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
             marginTop: "auto",
-            paddingTop: "4px",
-            flexShrink: 0,
+            paddingTop: "10px",
+            borderTop: "0.5px solid rgba(180,140,80,0.2)",
           }}
         >
-          View tour →
-        </p>
+          <div style={{ fontSize: "11px", fontWeight: 700, color: "#1a1a1a" }}>
+            {tour.rating ? (
+              <>★ {tour.rating} <span style={{ color: "#a08050", fontWeight: 500 }}>({tour.reviewCount})</span></>
+            ) : (
+              <span style={{ fontSize: "11px", fontWeight: 600, color: accent }}>View tour →</span>
+            )}
+          </div>
+          {price && (
+            <p style={{ fontSize: "13px", fontWeight: 800, color: "#1a1a1a", margin: 0 }}>
+              {priceBase}
+              {priceSuffix && <span style={{ fontSize: "10px", fontWeight: 500, color: "#a08050" }}> / {priceSuffix}</span>}
+            </p>
+          )}
+        </div>
       </div>
     </Link>
   );
@@ -435,10 +450,10 @@ function CategorySection({
       {/* Desktop grid */}
       <div
         className="hidden md:grid"
-        style={{ gridTemplateColumns: "repeat(3, 1fr)", gap: "14px" }}
+        style={{ gridTemplateColumns: "repeat(3, 1fr)", gap: "14px", alignItems: "stretch" }}
       >
         {tours.map((tour) => (
-          <TourCard key={tour.id} tour={tour} accent={category.accent} />
+          <TourCard key={tour.id} tour={tour} accent={category.accent} categoryLabel={CATEGORY_LABELS[category.id] ?? ""} />
         ))}
         {needsComingSoon && (
           <ComingSoonCard accent={category.accent} description={category.comingSoonDesc} />
@@ -451,14 +466,15 @@ function CategorySection({
         style={{
           overflowX: "auto",
           gap: "12px",
-          padding: "0 18px",
+          padding: "0 18px 8px",
           scrollbarWidth: "none",
           WebkitOverflowScrolling: "touch",
           msOverflowStyle: "none",
+          alignItems: "stretch",
         } as React.CSSProperties}
       >
         {tours.map((tour) => (
-          <TourCard key={tour.id} tour={tour} accent={category.accent} isMobile />
+          <TourCard key={tour.id} tour={tour} accent={category.accent} categoryLabel={CATEGORY_LABELS[category.id] ?? ""} isMobile />
         ))}
         {needsComingSoon && (
           <ComingSoonCard accent={category.accent} description={category.comingSoonDesc} isMobile />
