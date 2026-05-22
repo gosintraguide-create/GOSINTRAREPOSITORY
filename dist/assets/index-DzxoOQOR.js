@@ -1,0 +1,6 @@
+import{aj as T,au as f}from"./index-DBUcu2vE.js";/**
+ * @license lucide-react v0.487.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const l=[["rect",{width:"18",height:"11",x:"3",y:"11",rx:"2",ry:"2",key:"1w4ew1"}],["path",{d:"M7 11V7a5 5 0 0 1 10 0v4",key:"fwvmzm"}]],b=T("lock",l);var p={exports:{}},n,y;function P(){if(y)return n;y=1;var t="SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED";return n=t,n}var a,u;function v(){if(u)return a;u=1;var t=P();function i(){}function c(){}return c.resetWarningCache=i,a=function(){function e(S,g,_,x,w,m){if(m!==t){var s=new Error("Calling PropTypes validators directly is not supported by the `prop-types` package. Use PropTypes.checkPropTypes() to call them. Read more at http://fb.me/use-check-prop-types");throw s.name="Invariant Violation",s}}e.isRequired=e;function r(){return e}var o={array:e,bigint:e,bool:e,func:e,number:e,object:e,string:e,symbol:e,any:e,arrayOf:r,element:e,elementType:e,instanceOf:r,node:e,objectOf:r,oneOf:r,oneOfType:r,shape:r,exact:r,checkPropTypes:c,resetWarningCache:i};return o.PropTypes=o,o},a}var h;function R(){return h||(h=1,p.exports=v()()),p.exports}var d=R();const k=f(d);export{b as L,k as P};

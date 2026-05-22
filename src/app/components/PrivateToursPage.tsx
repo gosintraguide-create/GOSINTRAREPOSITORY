@@ -521,6 +521,7 @@ function CategoryStickyNav({
         background: "#f5f0e8",
         borderBottom: "1px solid rgba(180,140,80,0.25)",
         display: "flex",
+        justifyContent: "center",
         overflowX: "auto",
         scrollbarWidth: "none",
         WebkitOverflowScrolling: "touch",
@@ -912,13 +913,6 @@ export function PrivateToursPage() {
         )}
       </Helmet>
 
-      {/* ── Sticky category nav ───────────────────────────────────────────── */}
-      <CategoryStickyNav
-        navbarHeight={navbarHeight}
-        activeCategory={activeCategory}
-        onPillClick={handlePillClick}
-      />
-
       {/* ── Page header ───────────────────────────────────────────────────── */}
       {/* Desktop */}
       <div
@@ -932,9 +926,6 @@ export function PrivateToursPage() {
           {t.hero?.title || "Private tours"}
         </h1>
       </div>
-      <div className="hidden md:block" style={{ padding: "0 48px" }}>
-        <div style={{ height: "2px", background: "linear-gradient(to right, #ff6b35, #c8a84b, transparent)", borderRadius: "2px", margin: "20px 0 32px" }} />
-      </div>
 
       {/* Mobile */}
       <div className="md:hidden" style={{ padding: "24px 18px 0", textAlign: "center" }}>
@@ -944,7 +935,21 @@ export function PrivateToursPage() {
         <h1 style={{ fontSize: "26px", fontWeight: 900, color: "#1a1a1a", letterSpacing: "-0.5px", lineHeight: 1.1, marginBottom: "8px" }}>
           {t.hero?.title || "Private tours"}
         </h1>
-        <div style={{ height: "2px", background: "linear-gradient(to right, #ff6b35, #c8a84b, transparent)", borderRadius: "2px", margin: "16px 0 24px" }} />
+      </div>
+
+      {/* ── Sticky category nav ───────────────────────────────────────────── */}
+      <CategoryStickyNav
+        navbarHeight={navbarHeight}
+        activeCategory={activeCategory}
+        onPillClick={handlePillClick}
+      />
+
+      {/* Gradient divider */}
+      <div className="hidden md:block" style={{ padding: "0 48px" }}>
+        <div style={{ height: "2px", background: "linear-gradient(to right, #ff6b35, #c8a84b, transparent)", borderRadius: "2px", margin: "20px 0 32px" }} />
+      </div>
+      <div className="md:hidden">
+        <div style={{ height: "2px", background: "linear-gradient(to right, #ff6b35, #c8a84b, transparent)", borderRadius: "2px", margin: "16px 18px 24px" }} />
       </div>
 
       {/* ── Loading / error / empty states ────────────────────────────────── */}
