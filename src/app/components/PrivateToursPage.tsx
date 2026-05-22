@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { useOutletContext } from "react-router";
 import { Link } from "react-router";
@@ -448,6 +448,80 @@ function CategorySection({
   );
 }
 
+// ── Category Sticky Nav ──────────────────────────────────────────────────────
+const STICKY_NAV_PILLS = [
+  { id: "classic_sintra", label: "Classic Sintra" },
+  { id: "off_the_beaten_path", label: "Off the Beaten Path" },
+  { id: "nature_adventure", label: "Nature & Adventure" },
+  { id: "hiking", label: "Hiking" },
+] as const;
+
+function CategoryStickyNav({
+  navbarHeight,
+  activeCategory,
+  onPillClick,
+}: {
+  navbarHeight: number;
+  activeCategory: string;
+  onPillClick: (catId: string) => void;
+}) {
+  const pillRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+
+  useEffect(() => {
+    const el = pillRefs.current[activeCategory];
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+    }
+  }, [activeCategory]);
+
+  return (
+    <nav
+      id="private-tours-sticky-nav"
+      className="px-[18px] md:px-[48px]"
+      style={{
+        position: "sticky",
+        top: navbarHeight,
+        zIndex: 100,
+        background: "#f5f0e8",
+        borderBottom: "0.5px solid rgba(0,0,0,0.1)",
+        display: "flex",
+        overflowX: "auto",
+        scrollbarWidth: "none",
+        WebkitOverflowScrolling: "touch",
+        msOverflowStyle: "none",
+      } as React.CSSProperties}
+    >
+      {STICKY_NAV_PILLS.map((pill) => {
+        const isActive = activeCategory === pill.id;
+        return (
+          <button
+            key={pill.id}
+            ref={(el) => { pillRefs.current[pill.id] = el; }}
+            onClick={() => onPillClick(pill.id)}
+            style={{
+              padding: "14px 18px",
+              fontSize: "12px",
+              fontWeight: 600,
+              color: isActive ? "#1a1a1a" : "#888",
+              borderWidth: "0 0 2px 0",
+              borderStyle: "solid",
+              borderColor: isActive ? "#1a1a1a" : "transparent",
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+              whiteSpace: "nowrap",
+              background: "transparent",
+              outline: "none",
+              flexShrink: 0,
+            }}
+          >
+            {pill.label}
+          </button>
+        );
+      })}
+    </nav>
+  );
+}
+
 export function PrivateToursPage() {
   const { language = "en", onNavigate } = useOutletContext<OutletContext>();
 
@@ -472,6 +546,47 @@ export function PrivateToursPage() {
     message: "",
   });
   const [submitting, setSubmitting] = useState(false);
+
+  // ── Sticky nav state ──────────────────────────────────────────────────────
+  const [activeCategory, setActiveCategory] = useState<string>(CATEGORIES[0].id);
+  const [navbarHeight, setNavbarHeight] = useState(64);
+  const [stickyNavHeight, setStickyNavHeight] = useState(46);
+
+  // Measure the site header and sticky nav heights (updates on resize too)
+  useEffect(() => {
+    const measure = () => {
+      const header = document.querySelector("[data-site-header]");
+      if (header) setNavbarHeight(header.getBoundingClientRect().height);
+      const stickyNav = document.getElementById("private-tours-sticky-nav");
+      if (stickyNav) setStickyNavHeight(stickyNav.getBoundingClientRect().height);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  // Track which category section is in view
+  useEffect(() => {
+    const combined = navbarHeight + stickyNavHeight;
+    const handleScroll = () => {
+      let activeId = CATEGORIES[0].id;
+      for (const cat of CATEGORIES) {
+        const el = document.getElementById(`pt-section-${cat.id}`);
+        if (el && el.getBoundingClientRect().top <= combined + 1) {
+          activeId = cat.id;
+        }
+      }
+      setActiveCategory(activeId);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [navbarHeight, stickyNavHeight]);
+
+  const handlePillClick = (catId: string) => {
+    const el = document.getElementById(`pt-section-${catId}`);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   // Check if Private Tours feature is enabled
   const getFeatureFlag = () => {
@@ -749,6 +864,13 @@ export function PrivateToursPage() {
         )}
       </Helmet>
 
+      {/* ── Sticky category nav ───────────────────────────────────────────── */}
+      <CategoryStickyNav
+        navbarHeight={navbarHeight}
+        activeCategory={activeCategory}
+        onPillClick={handlePillClick}
+      />
+
       {/* ── Page header ───────────────────────────────────────────────────── */}
       <div
         className="hidden md:block"
@@ -828,11 +950,16 @@ export function PrivateToursPage() {
         <div className="px-[18px] pb-8 pt-3 md:px-[48px] md:pb-10">
           <div className="flex flex-col gap-[28px] md:gap-[36px]">
             {CATEGORIES.map((cat) => (
-              <CategorySection
+              <div
                 key={cat.id}
-                category={cat}
-                tours={toursByCategory[cat.id] ?? []}
-              />
+                id={`pt-section-${cat.id}`}
+                style={{ scrollMarginTop: `${navbarHeight + stickyNavHeight}px` }}
+              >
+                <CategorySection
+                  category={cat}
+                  tours={toursByCategory[cat.id] ?? []}
+                />
+              </div>
             ))}
           </div>
         </div>
