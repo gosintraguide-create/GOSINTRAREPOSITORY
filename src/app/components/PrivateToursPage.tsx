@@ -990,7 +990,7 @@ export function PrivateToursPage() {
 
       {/* ── Category sections — single mount, responsive padding ────────── */}
       {!loading && !fetchError && (
-        <div className="px-[18px] pb-8 pt-3 md:px-[48px] md:pb-10">
+        <div className="px-[18px] pb-8 pt-3 md:px-[48px] md:pb-10" style={{ maxWidth: "1200px", margin: "0 auto", boxSizing: "border-box" as const }}>
           <div className="flex flex-col gap-[28px] md:gap-[36px]">
             {CATEGORIES.map((cat, idx) => (
               <div
