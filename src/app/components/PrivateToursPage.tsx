@@ -171,9 +171,9 @@ function ComingSoonCard({ accent, description, isMobile }: { accent: string; des
         display: "flex",
         flexDirection: "column",
         background: "#ffffff",
-        borderRadius: "14px",
-        border: "0.5px solid rgba(180,140,80,0.15)",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+        borderRadius: "20px",
+        border: "1px solid #f0e9e3",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
         overflow: "hidden",
         opacity: 0.35,
         height: "100%",
@@ -184,7 +184,7 @@ function ComingSoonCard({ accent, description, isMobile }: { accent: string; des
       <div
         style={{
           width: "100%",
-          height: "180px",
+          aspectRatio: "16/9",
           flexShrink: 0,
           background: accent,
           display: "flex",
@@ -231,9 +231,9 @@ function TourCard({
         display: "flex",
         flexDirection: "column",
         background: "#ffffff",
-        borderRadius: "14px",
-        border: "0.5px solid rgba(180,140,80,0.15)",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+        borderRadius: "20px",
+        border: "1px solid #f0e9e3",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
         overflow: "hidden",
         cursor: "pointer",
         textDecoration: "none",
@@ -249,11 +249,11 @@ function TourCard({
       onMouseLeave={(e) => {
         const el = e.currentTarget as HTMLElement;
         el.style.transform = "translateY(0)";
-        el.style.boxShadow = "0 2px 8px rgba(0,0,0,0.05)";
+        el.style.boxShadow = "0 1px 3px rgba(0,0,0,0.08)";
       }}
     >
       {/* Image */}
-      <div style={{ position: "relative", width: "100%", height: "180px", flexShrink: 0 }}>
+      <div style={{ position: "relative", width: "100%", aspectRatio: "16/9", flexShrink: 0 }}>
         {tour.heroImage ? (
           <img
             src={tour.heroImage}
@@ -972,7 +972,7 @@ export function PrivateToursPage() {
         <p style={{ fontSize: "11px", fontWeight: 700, color: "#ff6b35", letterSpacing: "2px", textTransform: "uppercase", marginBottom: "8px" }}>
           Sintra, Portugal
         </p>
-        <h1 style={{ fontSize: "32px", fontWeight: 900, color: "#1a1a1a", letterSpacing: "-1px", lineHeight: 1.1, margin: 0 }}>
+        <h1 style={{ fontSize: "32px", fontWeight: 900, color: "#0d4a4a", letterSpacing: "-1px", lineHeight: 1.1, margin: 0 }}>
           {t.hero?.title || "Private tours"}
         </h1>
       </div>
@@ -982,17 +982,9 @@ export function PrivateToursPage() {
         <p style={{ fontSize: "11px", fontWeight: 700, color: "#ff6b35", letterSpacing: "2px", textTransform: "uppercase", marginBottom: "8px" }}>
           Sintra, Portugal
         </p>
-        <h1 style={{ fontSize: "26px", fontWeight: 900, color: "#1a1a1a", letterSpacing: "-0.5px", lineHeight: 1.1, marginBottom: "8px" }}>
+        <h1 style={{ fontSize: "26px", fontWeight: 900, color: "#0d4a4a", letterSpacing: "-0.5px", lineHeight: 1.1, marginBottom: "8px" }}>
           {t.hero?.title || "Private tours"}
         </h1>
-      </div>
-
-      {/* Gradient divider */}
-      <div className="hidden md:block" style={{ padding: "0 48px" }}>
-        <div style={{ height: "2px", background: "linear-gradient(to right, #ff6b35, #c8a84b, transparent)", borderRadius: "2px", margin: "20px 0 0" }} />
-      </div>
-      <div className="md:hidden">
-        <div style={{ height: "2px", background: "linear-gradient(to right, #ff6b35, #c8a84b, transparent)", borderRadius: "2px", margin: "16px 18px 0" }} />
       </div>
 
       {/* ── Sticky category nav ───────────────────────────────────────────── */}
@@ -1041,7 +1033,7 @@ export function PrivateToursPage() {
           {CATEGORIES.map((cat, idx) => {
             const isEven = idx % 2 === 1;
             const isFirst = idx === 0;
-            const bg = isEven ? "#f2ede6" : "#f8f5f0";
+            const bg = "#f8f5f0";
             return (
               <div
                 key={cat.id}
@@ -1150,7 +1142,7 @@ export function PrivateToursPage() {
       {/* ── FAQ Section ─────────────────────────────────────────────────────── */}
       <section style={{ background: "#f2ede6", padding: "48px 18px" }}>
         <div style={{ maxWidth: "720px", margin: "0 auto" }}>
-          <h2 style={{ fontSize: "22px", fontWeight: 900, color: "#1a1a1a", marginBottom: "28px", letterSpacing: "-0.5px" }}>
+          <h2 style={{ fontSize: "22px", fontWeight: 900, color: "#0d4a4a", marginBottom: "28px", letterSpacing: "-0.5px" }}>
             Frequently Asked Questions
           </h2>
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
