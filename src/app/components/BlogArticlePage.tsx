@@ -221,17 +221,6 @@ export function BlogArticlePage() {
         </div>
       </div>
 
-      {/* ── Hero — full-width image, no text overlay (Fix 2 / Option A) ── */}
-      {hasHero && (
-        <div className="overflow-hidden h-[220px] md:h-[45vh] md:max-h-[480px]">
-          <ImageWithFallback
-            src={article.featuredImage || article.heroImage || ""}
-            alt={translation.title}
-            className="w-full h-full object-cover"
-          />
-        </div>
-      )}
-
       {/* ── Article — single 680px centered column ── */}
       <article style={{ padding: "40px 0 64px" }}>
         <div style={columnStyle}>
@@ -272,8 +261,6 @@ export function BlogArticlePage() {
             fontSize: "13px",
             color: "#888",
             marginBottom: "32px",
-            paddingBottom: "24px",
-            borderBottom: "1px solid rgba(0,0,0,0.08)",
           }}>
             <span>{article.author}</span>
             <span style={{ color: "#ccc" }}>·</span>
@@ -281,6 +268,23 @@ export function BlogArticlePage() {
             <span style={{ color: "#ccc" }}>·</span>
             <span>{article.readTimeMinutes} {t.blog.minRead}</span>
           </div>
+
+          {/* Hero image — after title, Medium-style */}
+          {hasHero && (
+            <div style={{
+              width: "100%",
+              borderRadius: "12px",
+              overflow: "hidden",
+              marginBottom: "40px",
+              aspectRatio: "16/9",
+            }}>
+              <ImageWithFallback
+                src={article.featuredImage || article.heroImage || ""}
+                alt={translation.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
 
           {/* Fix 4 — Inline TOC for long articles only */}
           {showTOC && (
