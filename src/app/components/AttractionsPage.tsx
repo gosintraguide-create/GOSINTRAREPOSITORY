@@ -229,10 +229,10 @@ export function AttractionsPage() {
       />
 
       {/* Header Section - matches BlogPage (Travel Guide) style */}
-      <section className="border-b border-border bg-white py-12">
+      <section className="border-b border-border py-12">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="mb-6 text-center">
-            <h1 className="mb-3 text-primary font-extrabold text-[23px]">
+            <h1 className="mb-3 text-[#1a1a1a] font-extrabold text-[23px]">
               {t.attractionsPageTitle}
             </h1>
             <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
@@ -329,7 +329,7 @@ export function AttractionsPage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
 
                     {attraction.duration && (
-                      <Badge className="absolute left-4 top-4 bg-primary text-white">
+                      <Badge className="absolute left-4 top-4 bg-black/60 text-white backdrop-blur-sm">
                         {attraction.duration}
                       </Badge>
                     )}
@@ -351,7 +351,7 @@ export function AttractionsPage() {
                       )}
                     </div>
 
-                    <h3 className="mb-3 text-foreground group-hover:text-primary">
+                    <h3 className="mb-3 text-foreground">
                       {attraction.name}
                     </h3>
 
@@ -359,7 +359,7 @@ export function AttractionsPage() {
                       {attraction.description}
                     </p>
 
-                    <div className="flex items-center gap-2 text-primary">
+                    <div className="flex items-center gap-2 text-[#1a1a1a]">
                       <span>{t.exploreMore || "Explore"}</span>
                       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-2" />
                     </div>
