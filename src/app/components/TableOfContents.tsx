@@ -12,9 +12,10 @@ interface Heading {
 interface TableOfContentsProps {
   content: string;
   language?: string;
+  inline?: boolean;
 }
 
-export function TableOfContents({ content, language = "en" }: TableOfContentsProps) {
+export function TableOfContents({ content, language = "en", inline = false }: TableOfContentsProps) {
   const [headings, setHeadings] = useState<Heading[]>([]);
   const [activeId, setActiveId] = useState<string>("");
   const [isOpen, setIsOpen] = useState(true);
@@ -91,10 +92,61 @@ export function TableOfContents({ content, language = "en" }: TableOfContentsPro
     }
   };
 
-  if (headings.length < 3) {
-    return null; // Don't show TOC for articles with less than 3 headings
+  if (headings.length < 5) {
+    return null; // Don't show TOC for articles with fewer than 5 headings
   }
 
+  // Inline mode — simple indented list, no card/toggle
+  if (inline) {
+    return (
+      <div style={{
+        background: "#faf7f2",
+        border: "1px solid rgba(180,140,80,0.2)",
+        borderRadius: "10px",
+        padding: "20px 24px",
+        marginBottom: "36px",
+      }}>
+        <p style={{
+          fontSize: "11px",
+          fontWeight: 700,
+          color: "#a08050",
+          textTransform: "uppercase" as const,
+          letterSpacing: "1px",
+          margin: "0 0 12px",
+        }}>
+          {tableOfContentsLabel}
+        </p>
+        <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+          {headings.map((heading) => (
+            <li
+              key={heading.id}
+              style={{ paddingLeft: `${(heading.level - 1) * 16}px`, marginBottom: "6px" }}
+            >
+              <button
+                onClick={() => scrollToHeading(heading.id)}
+                style={{
+                  fontSize: "14px",
+                  lineHeight: 1.5,
+                  color: activeId === heading.id ? "#1a1a1a" : "#666",
+                  fontWeight: activeId === heading.id ? 600 : 400,
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: 0,
+                  textAlign: "left" as const,
+                  transition: "color 0.15s ease",
+                }}
+              >
+                {heading.text}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
+
+  // Sidebar mode — card with toggle (kept for potential future use)
   return (
     <Card className="overflow-hidden">
       <div className="border-b border-border bg-secondary/30 p-4">
