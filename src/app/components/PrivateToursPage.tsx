@@ -1,6 +1,7 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { useOutletContext } from "react-router";
+import { Link } from "react-router";
 // Force rebuild - all fields required - Build 2025-02-10
 import {
   ArrowRight,
@@ -84,6 +85,10 @@ interface PrivateTour {
   published: boolean;
   order: number;
   heroImage?: string;
+  rating?: number;
+  reviewCount?: number;
+  // Category field — may not exist in older records; inferred from title if absent
+  category?: string;
 }
 
 interface OutletContext {
@@ -91,9 +96,478 @@ interface OutletContext {
   onNavigate: (page: string, data?: any) => void;
 }
 
+// ── Category definitions ─────────────────────────────────────────────────────
+const CATEGORIES = [
+  {
+    id: "classic_sintra",
+    name: "CLASSIC SINTRA",
+    description: "Palaces, history, and the iconic route — Sintra as it should be seen.",
+    accent: "#c8a84b",
+    comingSoonDesc: "A new classic experience is being crafted.",
+  },
+  {
+    id: "off_the_beaten_path",
+    name: "OFF THE BEATEN PATH",
+    description: "Hidden corners, local spots, the Sintra most tourists never find.",
+    accent: "#2d5a3d",
+    comingSoonDesc: "Another hidden gem is on its way.",
+  },
+  {
+    id: "nature_adventure",
+    name: "NATURE & ADVENTURE",
+    description: "Less castles, more wilderness. Off-road, raw, and unforgettable.",
+    accent: "#cc5500",
+    comingSoonDesc: "A wilder adventure is being built.",
+  },
+  {
+    id: "hiking",
+    name: "HIKING",
+    description: "On foot, at your pace. Different trails, different landscapes, one unforgettable region.",
+    accent: "#4a6a8a",
+    comingSoonDesc: "Trail guides launching soon.",
+  },
+] as const;
+
+type CategoryId = typeof CATEGORIES[number]["id"];
+
+
+/** Assign a tour to a category. Uses the `category` field when present,
+ *  otherwise infers from the title using keyword matching. */
+function getCategoryForTour(tour: PrivateTour): CategoryId {
+  if (tour.category) return tour.category as CategoryId;
+  const t = tour.title.toLowerCase();
+  if (t.includes("off-road") || t.includes("off road") || t.includes("nature") || t.includes("adventure")) {
+    return "nature_adventure";
+  }
+  if (t.includes("hiking") || t.includes("hike") || t.includes("trail") || t.includes("walk")) {
+    return "hiking";
+  }
+  if (
+    t.includes("hidden") || t.includes("gem") || t.includes("beaten") ||
+    t.includes("secret") || t.includes("local") || t.includes("full day")
+  ) {
+    return "off_the_beaten_path";
+  }
+  return "classic_sintra";
+}
+
+/** Return the price string to show on the compact card. */
+function getDisplayPrice(tour: PrivateTour): string {
+  if (tour.pricingMode === "quote-only") return "Custom quote";
+  if (tour.perPersonPrice && tour.perPersonPrice > 0) return `From €${tour.perPersonPrice} / person`;
+  if (tour.fixedPrice && tour.fixedPrice > 0) return `From €${tour.fixedPrice}`;
+  if (tour.groupTiers && tour.groupTiers.length > 0) {
+    const min = Math.min(...tour.groupTiers.map((g) => g.price));
+    return `From €${min} / group`;
+  }
+  return tour.price || "";
+}
+
+// ── Coming Soon Card ─────────────────────────────────────────────────────────
+function ComingSoonCard({ accent, description, isMobile }: { accent: string; description: string; isMobile?: boolean }) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        background: "#fdf9f3",
+        borderRadius: "14px",
+        border: "0.5px solid rgba(180,140,80,0.2)",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+        overflow: "hidden",
+        opacity: 0.35,
+        height: "100%",
+        ...(isMobile ? { width: "240px", minWidth: "240px", maxWidth: "240px", flexShrink: 0 } : {}),
+      }}
+    >
+      {/* Image placeholder */}
+      <div
+        style={{
+          width: "100%",
+          height: "180px",
+          flexShrink: 0,
+          background: accent,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: "28px",
+          color: "white",
+        }}
+      >
+        ＋
+      </div>
+      {/* Content */}
+      <div style={{ padding: "14px 16px 16px", display: "flex", flexDirection: "column", gap: "5px", flex: 1 }}>
+        <p style={{ fontSize: "15px", fontWeight: 800, color: "#1a1a1a", margin: 0, lineHeight: 1.3 }}>
+          More coming soon
+        </p>
+        <p style={{ fontSize: "12px", color: "#6b5a3a", lineHeight: 1.5, margin: 0 }}>
+          {description}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ── Tour Card ────────────────────────────────────────────────────────────────
+function TourCard({
+  tour,
+  accent,
+  isMobile,
+}: {
+  tour: PrivateTour;
+  accent: string;
+  isMobile?: boolean;
+}) {
+  const price = getDisplayPrice(tour);
+  const slashIdx = price.indexOf(" / ");
+  const priceBase = slashIdx >= 0 ? price.slice(0, slashIdx) : price;
+  const priceSuffix = slashIdx >= 0 ? price.slice(slashIdx + 3) : null;
+
+  return (
+    <Link
+      to={`/private-tours/${tour.id}`}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        background: "#fdf9f3",
+        borderRadius: "14px",
+        border: "0.5px solid rgba(180,140,80,0.2)",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+        overflow: "hidden",
+        cursor: "pointer",
+        textDecoration: "none",
+        transition: "all 0.2s ease",
+        height: "100%",
+        ...(isMobile ? { width: "240px", minWidth: "240px", maxWidth: "240px", flexShrink: 0 } : {}),
+      }}
+      onMouseEnter={(e) => {
+        const el = e.currentTarget as HTMLElement;
+        el.style.transform = "translateY(-4px)";
+        el.style.boxShadow = "0 8px 24px rgba(0,0,0,0.12)";
+      }}
+      onMouseLeave={(e) => {
+        const el = e.currentTarget as HTMLElement;
+        el.style.transform = "translateY(0)";
+        el.style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
+      }}
+    >
+      {/* Image */}
+      <div style={{ position: "relative", width: "100%", height: "180px", flexShrink: 0 }}>
+        {tour.heroImage ? (
+          <img
+            src={tour.heroImage}
+            alt={tour.title}
+            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+            loading="lazy"
+          />
+        ) : (
+          <div style={{ width: "100%", height: "100%", background: `${accent}40` }} />
+        )}
+        {tour.duration && (
+          <div
+            style={{
+              position: "absolute",
+              top: "10px",
+              left: "10px",
+              background: "rgba(0,0,0,0.45)",
+              backdropFilter: "blur(4px)",
+              color: "white",
+              fontSize: "9px",
+              fontWeight: 700,
+              padding: "4px 10px",
+              borderRadius: "20px",
+              letterSpacing: "0.5px",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {tour.duration.toUpperCase()}
+          </div>
+        )}
+      </div>
+
+      {/* Content */}
+      <div
+        style={{
+          padding: "14px 16px 16px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "5px",
+          flex: 1,
+        }}
+      >
+        {/* Title */}
+        <p
+          style={{
+            fontSize: "16px",
+            fontWeight: 900,
+            color: "#1a1a1a",
+            lineHeight: 1.3,
+            margin: 0,
+            overflow: "hidden",
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+          }}
+        >
+          {tour.title}
+        </p>
+        {/* Description */}
+        <p
+          style={{
+            fontSize: "12px",
+            color: "#6b5a3a",
+            lineHeight: 1.5,
+            margin: 0,
+            overflow: "hidden",
+            display: "-webkit-box",
+            WebkitLineClamp: 1,
+            WebkitBoxOrient: "vertical",
+            flex: 1,
+          }}
+        >
+          {tour.description}
+        </p>
+        {/* Footer — rating left, price right */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginTop: "auto",
+            paddingTop: "10px",
+            borderTop: "0.5px solid rgba(180,140,80,0.2)",
+          }}
+        >
+          <div style={{ fontSize: "11px", fontWeight: 700, color: "#1a1a1a" }}>
+            {tour.rating && (
+              <>★ {tour.rating} <span style={{ color: "#a08050", fontWeight: 500 }}>({tour.reviewCount})</span></>
+            )}
+          </div>
+          {price && (
+            <p style={{ fontSize: "14px", fontWeight: 900, color: "#1a1a1a", margin: 0 }}>
+              {priceBase}
+              {priceSuffix && <span style={{ fontSize: "10px", fontWeight: 500, color: "#a08050" }}> / {priceSuffix}</span>}
+            </p>
+          )}
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+// ── Category Section ─────────────────────────────────────────────────────────
+function CategorySection({
+  category,
+  tours,
+  bgColor = "#f5f0e8",
+}: {
+  category: typeof CATEGORIES[number];
+  tours: PrivateTour[];
+  bgColor?: string;
+}) {
+  const needsComingSoon = tours.length < 2;
+
+  return (
+    <div>
+      {/* Category header */}
+      <>
+        {/* Desktop header */}
+        <div
+          className="hidden md:flex"
+          style={{ alignItems: "flex-start", gap: "16px", marginBottom: "24px" }}
+        >
+          <div
+            style={{
+              width: "4px",
+              alignSelf: "stretch",
+              borderRadius: "2px",
+              background: `linear-gradient(to bottom, ${category.accent}, ${category.accent}33)`,
+              flexShrink: 0,
+            }}
+          />
+          <div>
+            <p
+              style={{
+                fontSize: "22px",
+                fontWeight: 900,
+                color: category.accent,
+                letterSpacing: "-0.3px",
+                lineHeight: 1.2,
+                marginBottom: "4px",
+              }}
+            >
+              {category.name}
+            </p>
+            <p style={{ fontSize: "13px", color: "#7a6040", lineHeight: 1.5, margin: 0 }}>
+              {category.description}
+            </p>
+          </div>
+        </div>
+
+        {/* Mobile header */}
+        <div
+          className="md:hidden"
+          style={{
+            paddingLeft: "16px",
+            borderLeft: `4px solid ${category.accent}`,
+            marginLeft: "18px",
+            marginBottom: "16px",
+          }}
+        >
+          <p
+            style={{
+              fontSize: "22px",
+              fontWeight: 900,
+              color: category.accent,
+              letterSpacing: "-0.3px",
+              lineHeight: 1.2,
+              marginBottom: "4px",
+            }}
+          >
+            {category.name}
+          </p>
+          <p style={{ fontSize: "12px", color: "#7a6040", lineHeight: 1.5, margin: 0 }}>
+            {category.description}
+          </p>
+        </div>
+      </>
+
+      {/* Desktop grid */}
+      <div
+        className="hidden md:grid"
+        style={{ gridTemplateColumns: "repeat(3, 1fr)", gap: "14px", alignItems: "stretch" }}
+      >
+        {tours.map((tour) => (
+          <TourCard key={tour.id} tour={tour} accent={category.accent} />
+        ))}
+        {needsComingSoon && (
+          <ComingSoonCard accent={category.accent} description={category.comingSoonDesc} />
+        )}
+      </div>
+
+      {/* Mobile horizontal scroll — wrapped for right-edge fade affordance */}
+      <div className="md:hidden" style={{ position: "relative", overflow: "hidden" }}>
+        <div
+          className="flex"
+          style={{
+            overflowX: "auto",
+            gap: "12px",
+            padding: "0 18px 8px",
+            scrollbarWidth: "none",
+            WebkitOverflowScrolling: "touch",
+            msOverflowStyle: "none",
+            alignItems: "stretch",
+          } as React.CSSProperties}
+        >
+          {tours.map((tour) => (
+            <TourCard key={tour.id} tour={tour} accent={category.accent} isMobile />
+          ))}
+          {needsComingSoon && (
+            <ComingSoonCard accent={category.accent} description={category.comingSoonDesc} isMobile />
+          )}
+        </div>
+        {/* Right-edge fade: indicates more cards exist off-screen */}
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: "8px",
+            width: "48px",
+            pointerEvents: "none",
+            background: `linear-gradient(to left, ${bgColor} 10%, transparent 100%)`,
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ── Category Sticky Nav ──────────────────────────────────────────────────────
+const STICKY_NAV_PILLS = [
+  { id: "classic_sintra", label: "Classic Sintra", sectionId: "section-classic" },
+  { id: "off_the_beaten_path", label: "Off the Beaten Path", sectionId: "section-beaten" },
+  { id: "nature_adventure", label: "Nature & Adventure", sectionId: "section-nature" },
+  { id: "hiking", label: "Hiking", sectionId: "section-hiking" },
+] as const;
+
+function CategoryStickyNav({
+  navbarHeight,
+  activeCategory,
+  onPillClick,
+}: {
+  navbarHeight: number;
+  activeCategory: string;
+  onPillClick: (catId: string) => void;
+}) {
+  const pillRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+
+  useEffect(() => {
+    const el = pillRefs.current[activeCategory];
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+    }
+  }, [activeCategory]);
+
+  return (
+    <nav
+      id="private-tours-sticky-nav"
+      className="px-[18px] md:px-[48px]"
+      style={{
+        position: "sticky",
+        top: navbarHeight,
+        zIndex: 40,
+        background: "#f5f0e8",
+        borderBottom: "1px solid rgba(180,140,80,0.25)",
+        display: "flex",
+        justifyContent: "center",
+        overflowX: "auto",
+        scrollbarWidth: "none",
+        WebkitOverflowScrolling: "touch",
+        msOverflowStyle: "none",
+      } as React.CSSProperties}
+    >
+      {STICKY_NAV_PILLS.map((pill) => {
+        const isActive = activeCategory === pill.id;
+        return (
+          <button
+            key={pill.id}
+            ref={(el) => { pillRefs.current[pill.id] = el; }}
+            onClick={() => onPillClick(pill.id)}
+            style={{
+              padding: "14px 18px",
+              minHeight: "44px",
+              display: "flex",
+              alignItems: "center",
+              fontSize: "11px",
+              fontWeight: 700,
+              color: isActive ? "#1a1a1a" : "#7a5c2e",
+              textTransform: "uppercase" as const,
+              letterSpacing: "0.5px",
+              borderWidth: "0 0 2px 0",
+              borderStyle: "solid",
+              borderColor: isActive ? "#ff6b35" : "transparent",
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+              whiteSpace: "nowrap",
+              background: "transparent",
+              outline: "none",
+              flexShrink: 0,
+            }}
+          >
+            {pill.label}
+          </button>
+        );
+      })}
+    </nav>
+  );
+}
+
 export function PrivateToursPage() {
   const { language = "en", onNavigate } = useOutletContext<OutletContext>();
-  
+
   const content = getTranslation(language);
   const t = content.privateTours;
   const uiT = getUITranslation(language);
@@ -104,7 +578,7 @@ export function PrivateToursPage() {
   const [fetchError, setFetchError] = useState(false);
   const [selectedTour, setSelectedTour] = useState<PrivateTour | null>(null);
   const [showRequestDialog, setShowRequestDialog] = useState(false);
-  
+
   // Form state
   const [formData, setFormData] = useState({
     customerName: "",
@@ -115,6 +589,57 @@ export function PrivateToursPage() {
     message: "",
   });
   const [submitting, setSubmitting] = useState(false);
+
+  // ── Sticky nav state ──────────────────────────────────────────────────────
+  const [activeCategory, setActiveCategory] = useState<string>(CATEGORIES[0].id);
+  const [navbarHeight, setNavbarHeight] = useState(64);
+  const [stickyNavHeight, setStickyNavHeight] = useState(46);
+
+  // Measure the site header and sticky nav heights (updates on resize too)
+  useEffect(() => {
+    const measure = () => {
+      const header = document.querySelector("[data-site-header]");
+      if (header) setNavbarHeight(header.getBoundingClientRect().height);
+      const stickyNav = document.getElementById("private-tours-sticky-nav");
+      if (stickyNav) setStickyNavHeight(stickyNav.getBoundingClientRect().height);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  // Track which category section is in view using IntersectionObserver
+  useEffect(() => {
+    const offset = navbarHeight + stickyNavHeight;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const pill = STICKY_NAV_PILLS.find((p) => p.sectionId === entry.target.id);
+            if (pill) setActiveCategory(pill.id);
+          }
+        });
+      },
+      {
+        rootMargin: `-${offset}px 0px -60% 0px`,
+        threshold: 0,
+      }
+    );
+
+    for (const pill of STICKY_NAV_PILLS) {
+      const el = document.getElementById(pill.sectionId);
+      if (el) observer.observe(el);
+    }
+
+    return () => observer.disconnect();
+  }, [navbarHeight, stickyNavHeight]);
+
+  const handlePillClick = (catId: string) => {
+    const pill = STICKY_NAV_PILLS.find((p) => p.id === catId);
+    const el = pill ? document.getElementById(pill.sectionId) : null;
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   // Check if Private Tours feature is enabled
   const getFeatureFlag = () => {
@@ -231,15 +756,9 @@ export function PrivateToursPage() {
     };
   }, [tours]);
 
-  const handleRequestTour = (tour: PrivateTour) => {
-    setSelectedTour(tour);
-    setShowRequestDialog(true);
-  };
-
   const submitTourRequest = async () => {
     if (!selectedTour) return;
 
-    // Validation
     if (!formData.customerName || !formData.email) {
       toast.error("Please fill in your name and email");
       return;
@@ -290,10 +809,10 @@ export function PrivateToursPage() {
     }
   };
 
+  // ── Coming Soon page (feature flag off) ─────────────────────────────────
   if (!getFeatureFlag()) {
     return (
       <div className="flex-1">
-        {/* Coming Soon Hero */}
         <section className="relative flex min-h-[80vh] items-center overflow-hidden bg-gradient-to-br from-primary via-primary/95 to-primary/90">
           <div className="absolute inset-0 opacity-10">
             <div className="absolute left-10 top-10 h-64 w-64 rounded-full bg-white blur-3xl" />
@@ -357,9 +876,21 @@ export function PrivateToursPage() {
     );
   }
 
-  // Full Private Tours Page (when enabled) - Redesigned to match Attractions page
+  // ── Group tours by category ──────────────────────────────────────────────
+  const toursByCategory = useMemo(() => {
+    const map: Record<string, PrivateTour[]> = {};
+    for (const cat of CATEGORIES) map[cat.id] = [];
+    for (const tour of tours) {
+      const catId = getCategoryForTour(tour);
+      if (!map[catId]) map[catId] = [];
+      map[catId].push(tour);
+    }
+    return map;
+  }, [tours]);
+
+  // ── Main redesigned page ─────────────────────────────────────────────────
   return (
-    <div className="flex-1">
+    <div className="flex-1" style={{ background: "#f5f0e8" }}>
       <Helmet>
         <title>Private Tours in Sintra | Hop On Sintra</title>
         <meta
@@ -384,248 +915,289 @@ export function PrivateToursPage() {
             {JSON.stringify(toursStructuredData)}
           </script>
         )}
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What is a private tour in Sintra?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "A private tour with Hop On Sintra is an exclusive guided experience reserved entirely for your group. Your dedicated local expert takes you through Sintra's palaces, castles, gardens, and hidden gems at your own pace, with a fully customisable itinerary."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How do I book a private tour in Sintra?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Browse our private tour options on this page, choose the experience that suits your group, and click to check availability. You can also reach us directly on WhatsApp at +351 932 967 279 to discuss your requirements."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What is the difference between the hop-on day pass and a private tour?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "The hop-on day pass gives you unlimited shared tuk-tuk and jeep rides between Sintra's major stops from 9am to 7pm. A private tour is exclusively for your group, with a dedicated guide, a custom itinerary, and door-to-door commentary — ideal for families, couples, and special occasions."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Can I customise a private tour itinerary?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. All Hop On Sintra private tours are fully customisable. Contact us before booking to request specific stops, a different pace, or a bespoke route that includes locations not listed in our standard packages."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How many people can join a private tour?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Our private tours are designed for small groups, typically 1–8 guests, so every experience feels personal. Larger groups can be accommodated on request — contact us to discuss options."
+              }
+            }
+          ]
+        })}</script>
       </Helmet>
 
-      {/* Header Section - Clean, minimal like Attractions page */}
-      <section className="border-b border-border bg-white py-12">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="mb-3 text-primary font-extrabold text-[24px]">
-              {t.hero?.title || "Private Tours in Sintra"}
-            </h1>
-            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-              {t.hero?.subtitle || "Experience Sintra's magic with a personalized private tour tailored to your preferences"}
-            </p>
-          </div>
-        </div>
-      </section>
+      {/* ── Page header ───────────────────────────────────────────────────── */}
+      {/* Desktop */}
+      <div
+        className="hidden md:flex"
+        style={{ padding: "32px 48px 0", flexDirection: "column", alignItems: "center", textAlign: "center" }}
+      >
+        <p style={{ fontSize: "11px", fontWeight: 700, color: "#ff6b35", letterSpacing: "2px", textTransform: "uppercase", marginBottom: "8px" }}>
+          Sintra, Portugal
+        </p>
+        <h1 style={{ fontSize: "32px", fontWeight: 900, color: "#1a1a1a", letterSpacing: "-1px", lineHeight: 1.1, margin: 0 }}>
+          {t.hero?.title || "Private tours"}
+        </h1>
+      </div>
 
-      {/* Tours Grid - Similar to Attractions grid */}
-      <section className="py-12 sm:py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          {loading ? (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">{t.loading}</p>
-            </div>
-          ) : fetchError ? (
-            <Card className="p-8 text-center">
-              <p className="text-lg font-medium mb-2">Could not load tours</p>
-              <p className="text-muted-foreground mb-4">
-                There was a problem connecting to the server. Please try again.
-              </p>
-              <Button onClick={loadTours}>
-                Try Again
-              </Button>
-            </Card>
-          ) : tours.length === 0 ? (
-            <Card className="p-8 text-center">
-              <MessageCircle className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-              <p className="text-lg font-medium mb-2">
-                {t.noPackagesAvailable}
-              </p>
-              <p className="text-muted-foreground mb-4">
-                {t.contactForCustomTours}
-              </p>
-              <Button onClick={() => onNavigate("live-chat")}>
-                <MessageCircle className="mr-2 h-4 w-4" />
-                {t.contactUs}
-              </Button>
-            </Card>
-          ) : (
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {tours.map((tour) => (
-                <Card
-                  key={tour.id}
-                  className="group h-full cursor-pointer overflow-hidden border bg-white shadow-md transition-all hover:shadow-xl"
-                  onClick={() => onNavigate("private-tour-detail", { tourId: tour.id })}
+      {/* Mobile */}
+      <div className="md:hidden" style={{ padding: "24px 18px 0", textAlign: "center" }}>
+        <p style={{ fontSize: "11px", fontWeight: 700, color: "#ff6b35", letterSpacing: "2px", textTransform: "uppercase", marginBottom: "8px" }}>
+          Sintra, Portugal
+        </p>
+        <h1 style={{ fontSize: "26px", fontWeight: 900, color: "#1a1a1a", letterSpacing: "-0.5px", lineHeight: 1.1, marginBottom: "8px" }}>
+          {t.hero?.title || "Private tours"}
+        </h1>
+      </div>
+
+      {/* Gradient divider */}
+      <div className="hidden md:block" style={{ padding: "0 48px" }}>
+        <div style={{ height: "2px", background: "linear-gradient(to right, #ff6b35, #c8a84b, transparent)", borderRadius: "2px", margin: "20px 0 0" }} />
+      </div>
+      <div className="md:hidden">
+        <div style={{ height: "2px", background: "linear-gradient(to right, #ff6b35, #c8a84b, transparent)", borderRadius: "2px", margin: "16px 18px 0" }} />
+      </div>
+
+      {/* ── Sticky category nav ───────────────────────────────────────────── */}
+      <CategoryStickyNav
+        navbarHeight={navbarHeight}
+        activeCategory={activeCategory}
+        onPillClick={handlePillClick}
+      />
+
+      {/* ── Loading / error / empty states ────────────────────────────────── */}
+      {loading && (
+        <div style={{ padding: "48px 48px", textAlign: "center" }}>
+          <p style={{ fontSize: "14px", color: "#888" }}>{t.loading}</p>
+        </div>
+      )}
+
+      {!loading && fetchError && (
+        <div style={{ padding: "32px 48px" }}>
+          <Card className="p-8 text-center">
+            <p className="text-lg font-medium mb-2">Could not load tours</p>
+            <p className="text-muted-foreground mb-4">
+              There was a problem connecting to the server. Please try again.
+            </p>
+            <Button onClick={loadTours}>Try Again</Button>
+          </Card>
+        </div>
+      )}
+
+      {!loading && !fetchError && tours.length === 0 && (
+        <div style={{ padding: "32px 48px" }}>
+          <Card className="p-8 text-center">
+            <MessageCircle className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+            <p className="text-lg font-medium mb-2">{t.noPackagesAvailable}</p>
+            <p className="text-muted-foreground mb-4">{t.contactForCustomTours}</p>
+            <Button onClick={() => onNavigate("live-chat")}>
+              <MessageCircle className="mr-2 h-4 w-4" />
+              {t.contactUs}
+            </Button>
+          </Card>
+        </div>
+      )}
+
+      {/* ── Category sections — alternating backgrounds, full-bleed ────── */}
+      {!loading && !fetchError && (
+        <div className="pb-8 md:pb-10">
+          {CATEGORIES.map((cat, idx) => {
+            const isEven = idx % 2 === 1;
+            const isFirst = idx === 0;
+            const bg = isEven ? "#eee8dc" : "#f5f0e8";
+            return (
+              <div
+                key={cat.id}
+                id={STICKY_NAV_PILLS[idx].sectionId}
+                style={{
+                  scrollMarginTop: `${navbarHeight + stickyNavHeight}px`,
+                  background: bg,
+                  paddingTop: isFirst ? "12px" : "48px",
+                  paddingBottom: isEven ? "32px" : "48px",
+                }}
+              >
+                <div
+                  className="px-[18px] md:px-[48px]"
+                  style={{ maxWidth: "1200px", margin: "0 auto", boxSizing: "border-box" as const }}
                 >
-                  {/* Hero Image - Like Attractions page */}
-                  <div className="relative aspect-[16/10] overflow-hidden">
-                    <ImageWithFallback
-                      src={tour.heroImage || "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&h=600&fit=crop"}
-                      alt={tour.title}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    
-                    {/* Badge on image */}
-                    {tour.badge && (
-                      <div className="absolute right-4 top-4">
-                        <Badge
-                          className={
-                            tour.badgeColor === "accent" 
-                              ? "bg-accent text-white" 
-                              : "bg-primary text-white"
-                          }
-                        >
-                          {tour.badge}
-                        </Badge>
-                      </div>
-                    )}
-
-                    {/* Title on image */}
-                    <div className="absolute bottom-0 left-0 right-0 p-6">
-                      <h3 className="text-white">
-                        {tour.title}
-                      </h3>
-                    </div>
-                  </div>
-
-                  {/* Content */}
-                  <div className="p-5">
-                    <p className="mb-4 text-sm text-muted-foreground line-clamp-2">
-                      {tour.description}
-                    </p>
-
-                    {/* Tour Info */}
-                    <div className="mb-4 space-y-2">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Clock className="h-4 w-4" />
-                        <span>{tour.duration}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <span className="font-semibold text-foreground">{tour.price}</span>
-                        {tour.priceSubtext && (
-                          <span className="text-muted-foreground">
-                            {tour.priceSubtext}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* CTA */}
-                    <div className="flex items-center justify-end gap-2 border-t border-border pt-3 text-sm text-primary">
-                      <span className="font-medium">{t.viewDetails}</span>
-                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-2" />
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          )}
-
-          {tours.length > 0 && (
-            <div className="mt-8 text-center">
-              <p className="text-sm text-muted-foreground">
-                {t.packages?.disclaimer || "All prices are subject to availability. Custom itineraries available upon request."}
-              </p>
-            </div>
-          )}
+                  <CategorySection
+                    category={cat}
+                    tours={toursByCategory[cat.id] ?? []}
+                    bgColor={bg}
+                  />
+                </div>
+              </div>
+            );
+          })}
         </div>
-      </section>
+      )}
 
-      {/* Explore More Section */}
-      <section className="py-16 sm:py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-12 text-center">
-            <h2 className="mb-4 text-foreground">
-              {t.exploreMore.title}
-            </h2>
-            <p className="mx-auto max-w-2xl text-muted-foreground">
-              {t.exploreMore.subtitle}
+      {/* ── Bottom CTA ────────────────────────────────────────────────────── */}
+      <>
+        {/* Desktop CTA */}
+        <div
+          className="hidden md:flex"
+          style={{
+            background: "#1a1a1a",
+            padding: "28px 48px",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <div>
+            <p style={{ fontSize: "16px", fontWeight: 800, color: "white", marginBottom: "5px" }}>
+              Not sure which tour is right for you?
+            </p>
+            <p style={{ fontSize: "13px", color: "#888", lineHeight: 1.5 }}>
+              Chat with us and we'll help you find the perfect experience.
             </p>
           </div>
-
-          <div className="grid gap-6 md:grid-cols-3">
-            {/* Hop On Service Link */}
-            <Card
-              className="p-6 shadow-md hover:shadow-xl transition-all cursor-pointer group"
-              onClick={() => onNavigate("hop-on-hop-off-sintra")}
-            >
-              <div className="mb-4">
-                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
-                  <Car className="h-7 w-7" />
-                </div>
-              </div>
-              <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
-                {t.exploreMore.hopOnTitle}
-                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-              </h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                {t.exploreMore.hopOnDescription}
-              </p>
-              <Badge className="bg-primary/10 text-primary">
-                {t.exploreMore.hopOnBadge}
-              </Badge>
-            </Card>
-
-            {/* Attractions Link */}
-            <Card
-              className="p-6 shadow-md hover:shadow-xl transition-all cursor-pointer group"
-              onClick={() => onNavigate("attractions")}
-            >
-              <div className="mb-4">
-                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 group-hover:bg-amber-500/20 transition-colors">
-                  <Landmark className="h-7 w-7" />
-                </div>
-              </div>
-              <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
-                {t.exploreMore.attractionsTitle}
-                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-              </h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                {t.exploreMore.attractionsDescription}
-              </p>
-              <Badge className="bg-amber-500/10 text-amber-600">
-                {t.exploreMore.attractionsBadge}
-              </Badge>
-            </Card>
-
-            {/* Travel Guide Link */}
-            <Card
-              className="p-6 shadow-md hover:shadow-xl transition-all cursor-pointer group"
-              onClick={() => onNavigate("travel-guide")}
-            >
-              <div className="mb-4">
-                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 group-hover:bg-blue-500/20 transition-colors">
-                  <BookOpen className="h-7 w-7" />
-                </div>
-              </div>
-              <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
-                {t.exploreMore.travelGuideTitle}
-                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-              </h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                {t.exploreMore.travelGuideDescription}
-              </p>
-              <Badge className="bg-blue-500/10 text-blue-600">
-                {t.exploreMore.travelGuideBadge}
-              </Badge>
-            </Card>
-          </div>
+          <a
+            href="https://wa.me/351932967279"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              background: "#ff6b35",
+              color: "white",
+              fontSize: "14px",
+              fontWeight: 700,
+              borderRadius: "10px",
+              padding: "14px 28px",
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+              flexShrink: 0,
+              marginLeft: "24px",
+            }}
+          >
+            Chat with us →
+          </a>
         </div>
-      </section>
 
-      {/* Bottom Info Section - Like Attractions page */}
-      <section className="border-t border-border bg-secondary/20 py-12">
-        <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-          <h2 className="mb-4 text-foreground">
-            {t.customExperience.title}
-          </h2>
-          <p className="mb-6 text-muted-foreground">
-            {t.customExperience.subtitle}
+        {/* Mobile CTA */}
+        <div
+          className="md:hidden"
+          style={{
+            background: "#1a1a1a",
+            padding: "20px 18px",
+          }}
+        >
+          <p style={{ fontSize: "16px", fontWeight: 800, color: "white", marginBottom: "5px" }}>
+            Not sure which tour is right for you?
           </p>
-          <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-            <Button
-              size="lg"
-              onClick={() => onNavigate("live-chat")}
-            >
-              <MessageCircle className="mr-2 h-5 w-5" />
-              {t.customExperience.chatButton}
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={() => onNavigate("buy-ticket")}
-            >
-              {t.customExperience.exploreDayPass}
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+          <p style={{ fontSize: "13px", color: "#888", lineHeight: 1.5, marginBottom: "12px" }}>
+            Chat with us and we'll help you find the perfect experience.
+          </p>
+          <a
+            href="https://wa.me/351932967279"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "block",
+              width: "100%",
+              background: "#ff6b35",
+              color: "white",
+              fontSize: "14px",
+              fontWeight: 700,
+              borderRadius: "10px",
+              padding: "13px 24px",
+              textDecoration: "none",
+              textAlign: "center",
+              boxSizing: "border-box",
+            }}
+          >
+            Chat with us →
+          </a>
+        </div>
+      </>
+
+      {/* ── FAQ Section ─────────────────────────────────────────────────────── */}
+      <section style={{ background: "#fff", borderTop: "1px solid #e5e0d8", padding: "48px 18px" }}>
+        <div style={{ maxWidth: "720px", margin: "0 auto" }}>
+          <h2 style={{ fontSize: "22px", fontWeight: 900, color: "#1a1a1a", marginBottom: "28px", letterSpacing: "-0.5px" }}>
+            Frequently Asked Questions
+          </h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            {[
+              {
+                q: "What is a private tour in Sintra?",
+                a: "A private tour with Hop On Sintra is an exclusive guided experience reserved entirely for your group. Your dedicated local expert takes you through Sintra's palaces, castles, gardens, and hidden gems at your own pace, with a fully customisable itinerary.",
+              },
+              {
+                q: "How do I book a private tour in Sintra?",
+                a: "Browse our private tour options above, choose the experience that suits your group, and click to check availability. You can also reach us on WhatsApp to discuss your requirements before booking.",
+              },
+              {
+                q: "What is the difference between the hop-on day pass and a private tour?",
+                a: "The hop-on day pass gives you unlimited shared tuk-tuk and jeep rides between Sintra's major stops from 9am to 7pm. A private tour is exclusively for your group, with a dedicated guide, a custom itinerary, and door-to-door commentary — ideal for families, couples, and special occasions.",
+              },
+              {
+                q: "Can I customise a private tour itinerary?",
+                a: "Yes. All Hop On Sintra private tours are fully customisable. Contact us before booking to request specific stops, a different pace, or a bespoke route that includes locations not listed in our standard packages.",
+              },
+              {
+                q: "How many people can join a private tour?",
+                a: "Our private tours are designed for small groups, typically 1–8 guests. Larger groups can be accommodated on request — contact us to discuss options.",
+              },
+            ].map((item, i) => (
+              <div
+                key={i}
+                style={{
+                  borderRadius: "12px",
+                  border: "1px solid #e5e0d8",
+                  background: "#faf8f4",
+                  padding: "20px 22px",
+                }}
+              >
+                <h3 style={{ fontSize: "15px", fontWeight: 700, color: "#1a1a1a", marginBottom: "8px" }}>
+                  {item.q}
+                </h3>
+                <p style={{ fontSize: "14px", color: "#666", lineHeight: 1.6, margin: 0 }}>
+                  {item.a}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Tour Request Dialog */}
+      {/* ── Tour Request Dialog (kept for potential future use) ────────────── */}
       <Dialog open={showRequestDialog} onOpenChange={setShowRequestDialog}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
@@ -651,9 +1223,7 @@ export function PrivateToursPage() {
                     <Input
                       id="name"
                       value={formData.customerName}
-                      onChange={(e) =>
-                        setFormData({ ...formData, customerName: e.target.value })
-                      }
+                      onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
                       placeholder="John Doe"
                       className="pl-10"
                     />
@@ -668,9 +1238,7 @@ export function PrivateToursPage() {
                       id="email"
                       type="email"
                       value={formData.email}
-                      onChange={(e) =>
-                        setFormData({ ...formData, email: e.target.value })
-                      }
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       placeholder="john@example.com"
                       className="pl-10"
                     />
@@ -685,9 +1253,7 @@ export function PrivateToursPage() {
                       id="phone"
                       type="tel"
                       value={formData.phone}
-                      onChange={(e) =>
-                        setFormData({ ...formData, phone: e.target.value })
-                      }
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       placeholder="+351 123 456 789"
                       className="pl-10"
                       required
@@ -704,9 +1270,7 @@ export function PrivateToursPage() {
                       type="number"
                       min="1"
                       value={formData.numberOfPeople}
-                      onChange={(e) =>
-                        setFormData({ ...formData, numberOfPeople: e.target.value })
-                      }
+                      onChange={(e) => setFormData({ ...formData, numberOfPeople: e.target.value })}
                       placeholder="2"
                       className="pl-10"
                       required
@@ -718,23 +1282,16 @@ export function PrivateToursPage() {
                   <Label>Preferred Date *</Label>
                   <Popover>
                     <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-start text-left font-normal"
-                      >
+                      <Button variant="outline" className="w-full justify-start text-left font-normal">
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {formData.preferredDate
-                          ? formData.preferredDate.toLocaleDateString()
-                          : "Pick a date"}
+                        {formData.preferredDate ? formData.preferredDate.toLocaleDateString() : "Pick a date"}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0">
                       <Calendar
                         mode="single"
                         selected={formData.preferredDate}
-                        onSelect={(date) =>
-                          setFormData({ ...formData, preferredDate: date })
-                        }
+                        onSelect={(date) => setFormData({ ...formData, preferredDate: date })}
                         disabled={(date) => date < new Date()}
                         initialFocus
                       />
@@ -747,9 +1304,7 @@ export function PrivateToursPage() {
                   <Textarea
                     id="message"
                     value={formData.message}
-                    onChange={(e) =>
-                      setFormData({ ...formData, message: e.target.value })
-                    }
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     placeholder="Any special requirements or questions?"
                     rows={4}
                     required
@@ -758,17 +1313,10 @@ export function PrivateToursPage() {
               </div>
 
               <div className="flex gap-2">
-                <Button
-                  onClick={submitTourRequest}
-                  disabled={submitting}
-                  className="flex-1"
-                >
+                <Button onClick={submitTourRequest} disabled={submitting} className="flex-1">
                   {submitting ? "Submitting..." : "Submit Request"}
                 </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => setShowRequestDialog(false)}
-                >
+                <Button variant="outline" onClick={() => setShowRequestDialog(false)}>
                   Cancel
                 </Button>
               </div>

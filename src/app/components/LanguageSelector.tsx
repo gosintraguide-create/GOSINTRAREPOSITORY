@@ -46,7 +46,7 @@ export function LanguageSelector({ currentLanguage, onLanguageChange }: Language
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex h-9 items-center gap-2 rounded-lg border border-border bg-background px-3 text-foreground transition-colors hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+      <DropdownMenuTrigger className="flex h-11 items-center gap-2 rounded-lg border border-border bg-background px-3 text-foreground transition-colors hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
         <SelectedFlag className="w-5 h-4 rounded-sm border border-border/50" />
         <span className="text-sm">{selectedLanguage.code.toUpperCase()}</span>
       </DropdownMenuTrigger>

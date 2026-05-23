@@ -530,7 +530,7 @@ export function RootLayout() {
       {showScrollTop && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-20 right-4 z-40 flex h-11 w-11 items-center justify-center rounded-full bg-primary text-white shadow-lg transition-all hover:bg-primary/90 hover:scale-110 active:scale-95 md:bottom-8 md:right-6"
+          className="fixed bottom-[84px] left-4 z-40 flex h-11 w-11 items-center justify-center rounded-full bg-primary text-white shadow-lg transition-all hover:bg-primary/90 hover:scale-110 active:scale-95 md:bottom-8 md:left-auto md:right-6"
           aria-label="Scroll to top"
         >
           <ArrowUp className="h-5 w-5" />

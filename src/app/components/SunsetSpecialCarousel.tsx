@@ -140,8 +140,84 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
     return null;
   }
 
+  // Current slide image for mobile layout
+  const mobileImage = sunsetSpecial?.images?.[currentSlide] ?? sunsetSpecial?.images?.[0];
+
   return (
     <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12">
+
+      {/* ── MOBILE CARD (hidden at md+) ──────────────────────────────── */}
+      <div className="md:hidden mb-0 -mt-4 pb-2">
+        <div
+          onClick={handleBookClick}
+          className="hover:scale-[1.01] active:scale-[0.99]"
+          style={{ display: 'flex', height: '190px', borderRadius: '16px', overflow: 'hidden', background: 'white', border: '0.5px solid rgba(0,0,0,0.08)', cursor: isAvailable ? 'pointer' : 'default', transition: 'transform 0.15s ease', boxShadow: '0 2px 12px rgba(249,115,22,0.08)' }}
+        >
+          {/* Image */}
+          <div style={{ width: '44%', flexShrink: 0, position: 'relative' }}>
+            {mobileImage ? (
+              <ImageWithFallback
+                src={mobileImage.url}
+                alt={mobileImage.alt}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <div style={{ width: '100%', height: '100%', background: '#ffe0c4' }} />
+            )}
+            {/* Badge */}
+            <span style={{ position: 'absolute', top: '8px', left: '8px', background: 'linear-gradient(to right, #f97316, #ec4899)', color: 'white', fontSize: '9px', fontWeight: 700, padding: '3px 8px', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+              <Sparkles style={{ width: '8px', height: '8px' }} />
+              {ts.sunsetSpecialBadge}
+            </span>
+          </div>
+
+          {/* Content */}
+          <div style={{ flex: 1, padding: '14px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', overflow: 'hidden' }}>
+            <div style={{ overflow: 'hidden' }}>
+              <h3 style={{ fontSize: '15px', fontWeight: 800, color: '#1a1a1a', marginTop: 0, marginBottom: '3px', lineHeight: 1.2 }}>
+                {ts.sunsetSpecialTitle}
+              </h3>
+              <p style={{ fontSize: '11px', color: '#666', lineHeight: 1.4, margin: 0, overflow: 'hidden' }}>
+                {ts.sunsetSpecialDescription}
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              {/* Details pills */}
+              <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+                {sunsetSpecial?.departureTime && (
+                  <span style={{ background: '#fff7ed', color: '#c2410c', fontSize: '10px', padding: '3px 7px', borderRadius: '20px', whiteSpace: 'nowrap' }}>
+                    {sunsetSpecial.departureTime}
+                  </span>
+                )}
+                {sunsetSpecial?.limitedSeats && (
+                  <span style={{ background: '#fff7ed', color: '#c2410c', fontSize: '10px', padding: '3px 7px', borderRadius: '20px', whiteSpace: 'nowrap' }}>
+                    {sunsetSpecial.limitedSeats} {ts.sunsetSpecialSeats}
+                  </span>
+                )}
+              </div>
+
+              {/* Availability + CTA */}
+              {isAvailable ? (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22c55e' }} />
+                    <span style={{ fontSize: '10px', color: '#15803d' }}>{ts.sunsetSpecialAvailableNow}</span>
+                  </div>
+                  <span style={{ background: 'linear-gradient(to right, #f97316, #ec4899)', color: 'white', fontSize: '10px', fontWeight: 700, padding: '4px 10px', borderRadius: '20px' }}>
+                    {ts.sunsetSpecialBookButton}
+                  </span>
+                </div>
+              ) : (
+                <span style={{ fontSize: '10px', color: '#c2410c' }}>{ts.sunsetSpecialComingSoon}</span>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── DESKTOP CARD (hidden on mobile) ──────────────────────────── */}
+      <div className="hidden md:block">
       <div className="relative overflow-hidden rounded-xl bg-white shadow-lg border border-gray-200">
         <div className="grid lg:grid-cols-2 gap-0">
           {/* Left: Carousel */}
@@ -267,6 +343,8 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
           </div>
         </div>
       </div>
+
+      </div>{/* end desktop card */}
 
       {/* Booking ID Verification Dialog */}
       <Dialog open={showBookingDialog} onOpenChange={setShowBookingDialog}>

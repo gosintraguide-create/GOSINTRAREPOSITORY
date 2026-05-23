@@ -152,6 +152,8 @@ export function InfoBar({ language = "en" }: InfoBarProps) {
               <img
                 src={`https://openweathermap.org/img/wn/${weather.icon}.png`}
                 alt={weather.description}
+                width="32"
+                height="32"
                 className="h-8 w-8 -my-1 drop-shadow-sm"
                 onError={(e) => {
                   const span = document.createElement("span");
