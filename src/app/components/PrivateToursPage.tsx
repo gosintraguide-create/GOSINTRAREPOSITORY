@@ -518,7 +518,7 @@ function CategoryStickyNav({
       style={{
         position: "sticky",
         top: navbarHeight,
-        zIndex: 100,
+        zIndex: 40,
         background: "#f5f0e8",
         borderBottom: "1px solid rgba(180,140,80,0.25)",
         display: "flex",
