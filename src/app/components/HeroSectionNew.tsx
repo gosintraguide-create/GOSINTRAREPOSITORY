@@ -241,7 +241,7 @@ function OfferCard({
                 (onBookClick ?? onClick)();
               }}
               className={`flex w-full items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold transition-opacity hover:opacity-90 active:scale-[0.98] lg:px-4 lg:py-3 lg:text-sm ${
-                dark ? "bg-accent text-white" : "bg-foreground text-background"
+                dark ? "bg-accent text-white" : "bg-primary text-primary-foreground"
               }`}
             >
               {ctaButtonLabel}
