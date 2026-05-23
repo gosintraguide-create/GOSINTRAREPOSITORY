@@ -238,8 +238,9 @@ function TourCard({
         cursor: "pointer",
         textDecoration: "none",
         transition: "all 0.2s ease",
-        height: "100%",
-        ...(isMobile ? { width: "240px", minWidth: "240px", maxWidth: "240px", flexShrink: 0 } : {}),
+        ...(isMobile
+          ? { width: "240px", minWidth: "240px", maxWidth: "240px", flexShrink: 0 }
+          : { height: "400px" }),
       }}
       onMouseEnter={(e) => {
         const el = e.currentTarget as HTMLElement;
@@ -253,7 +254,7 @@ function TourCard({
       }}
     >
       {/* Image */}
-      <div style={{ position: "relative", width: "100%", height: "190px", flexShrink: 0 }}>
+      <div style={{ position: "relative", width: "100%", height: isMobile ? "160px" : "40%", flexShrink: 0 }}>
         {tour.heroImage ? (
           <img
             src={tour.heroImage}
