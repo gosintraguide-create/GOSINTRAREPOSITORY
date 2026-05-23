@@ -169,8 +169,11 @@ export function BlogArticlePage() {
     <div className="flex-1">
       <ReadingProgress />
 
-      {/* SEO */}
+      {/* SEO + Source Serif 4 font (article pages only) */}
       <Helmet>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet" />
         <title>{translation.title} — Hop On Sintra Blog</title>
         <meta name="description" content={translation.excerpt || translation.content.substring(0, 155)} />
         <meta name="keywords" content={article.seoKeywords || article.tags?.join(", ")} />
@@ -225,34 +228,51 @@ export function BlogArticlePage() {
       <article style={{ padding: "40px 0 64px" }}>
         <div style={columnStyle}>
 
-          {/* Fix 7 — Category badge + Fix 2 Option A — title below hero */}
-          <div style={{ marginBottom: "24px" }}>
-            <span style={{
-              display: "inline-block",
-              background: "#f0ebe0",
-              color: "#a08050",
-              fontSize: "11px",
-              fontWeight: 700,
-              textTransform: "uppercase" as const,
-              letterSpacing: "1px",
-              padding: "4px 12px",
-              borderRadius: "20px",
-              marginBottom: "14px",
-            }}>
-              {categoryName}
-            </span>
-            <h1 style={{
-              fontSize: "clamp(1.6rem, 4vw, 2.25rem)",
-              fontWeight: 800,
-              color: "#1a1a1a",
-              lineHeight: 1.2,
-              margin: 0,
-            }}>
-              {translation.title}
-            </h1>
-          </div>
+          {/* 1 — Category badge */}
+          <span style={{
+            display: "inline-block",
+            background: "#f0ebe0",
+            color: "#a08050",
+            fontSize: "11px",
+            fontWeight: 700,
+            textTransform: "uppercase" as const,
+            letterSpacing: "1px",
+            padding: "4px 12px",
+            borderRadius: "20px",
+            marginBottom: "12px",
+          }}>
+            {categoryName}
+          </span>
 
-          {/* Fix 3 — Simplified meta bar: author · date · read time only */}
+          {/* 2 — Article title (serif) */}
+          <h1 style={{
+            fontFamily: "'Source Serif 4', Georgia, serif",
+            fontSize: "clamp(1.625rem, 5vw, 2.25rem)",
+            fontWeight: 700,
+            color: "#1a1a1a",
+            lineHeight: 1.2,
+            letterSpacing: "-0.3px",
+            margin: "0 0 10px",
+          }}>
+            {translation.title}
+          </h1>
+
+          {/* 3 — Subtitle / excerpt (serif italic) */}
+          {translation.excerpt && (
+            <p style={{
+              fontFamily: "'Source Serif 4', Georgia, serif",
+              fontSize: "1.25rem",
+              fontWeight: 400,
+              fontStyle: "italic",
+              color: "#6b6b6b",
+              lineHeight: 1.5,
+              margin: "0 0 16px",
+            }}>
+              {translation.excerpt}
+            </p>
+          )}
+
+          {/* 4 — Meta bar: author · date · read time */}
           <div style={{
             display: "flex",
             flexWrap: "wrap",
@@ -260,7 +280,7 @@ export function BlogArticlePage() {
             gap: "6px",
             fontSize: "13px",
             color: "#888",
-            marginBottom: "32px",
+            marginBottom: "28px",
           }}>
             <span>{article.author}</span>
             <span style={{ color: "#ccc" }}>·</span>
@@ -269,41 +289,28 @@ export function BlogArticlePage() {
             <span>{article.readTimeMinutes} {t.blog.minRead}</span>
           </div>
 
-          {/* Hero image — after title, Medium-style */}
+          {/* 5 — Hero image */}
           {hasHero && (
             <div style={{
               width: "100%",
-              borderRadius: "12px",
+              borderRadius: "8px",
               overflow: "hidden",
-              marginBottom: "40px",
-              aspectRatio: "16/9",
+              marginBottom: "32px",
             }}>
               <ImageWithFallback
                 src={article.featuredImage || article.heroImage || ""}
                 alt={translation.title}
-                className="w-full h-full object-cover"
+                className="w-full object-cover block h-[220px] md:h-[380px]"
               />
             </div>
           )}
 
-          {/* Fix 4 — Inline TOC for long articles only */}
+          {/* Inline TOC for long articles only */}
           {showTOC && (
             <TableOfContents content={translation.content} language={lang} inline />
           )}
 
-          {/* Excerpt */}
-          {translation.excerpt && (
-            <p style={{
-              fontSize: "1.125rem",
-              lineHeight: 1.75,
-              color: "#555",
-              marginBottom: "32px",
-            }}>
-              {translation.excerpt}
-            </p>
-          )}
-
-          {/* Fix 1 + 6 — Article body, constrained by column width */}
+          {/* 6 — Article body */}
           <div
             className="prose prose-article max-w-none"
             dangerouslySetInnerHTML={{ __html: renderMarkdown(translation.content) }}

@@ -742,9 +742,11 @@ input:-webkit-autofill:active {
 
 /* Prose article modifier - optimized for blog article pages */
 .prose-article {
+  font-family: 'Source Serif 4', Georgia, serif;
   font-size: 1.125rem; /* 18px */
   line-height: 1.8;
   color: #2a2a2a;
+  font-weight: 400;
 }
 
 @media (max-width: 767px) {
@@ -754,14 +756,16 @@ input:-webkit-autofill:active {
 }
 
 .prose-article :where(p):not(:where([class~="not-prose"] *)) {
+  font-family: 'Source Serif 4', Georgia, serif;
   margin-top: 0;
   margin-bottom: 1.5rem; /* 24px */
   line-height: 1.8;
 }
 
 .prose-article :where(h1):not(:where([class~="not-prose"] *)) {
+  font-family: 'Source Serif 4', Georgia, serif;
   color: #1a1a1a;
-  font-weight: 800;
+  font-weight: 700;
   font-size: 1.875rem;
   margin-top: 2.5rem;
   margin-bottom: 0.75rem;
@@ -769,18 +773,20 @@ input:-webkit-autofill:active {
 }
 
 .prose-article :where(h2):not(:where([class~="not-prose"] *)) {
+  font-family: 'Source Serif 4', Georgia, serif;
   color: #1a1a1a;
-  font-weight: 800;
-  font-size: 1.375rem; /* 22px */
+  font-weight: 700;
+  font-size: 1.5rem; /* 24px */
   margin-top: 2.5rem;  /* 40px */
   margin-bottom: 0.75rem; /* 12px */
   line-height: 1.3;
 }
 
 .prose-article :where(h3):not(:where([class~="not-prose"] *)) {
+  font-family: 'Source Serif 4', Georgia, serif;
   color: #2a2a2a;
-  font-weight: 700;
-  font-size: 1.125rem; /* 18px */
+  font-weight: 600;
+  font-size: 1.25rem; /* 20px */
   margin-top: 1.75rem; /* 28px */
   margin-bottom: 0.5rem; /* 8px */
   line-height: 1.4;
