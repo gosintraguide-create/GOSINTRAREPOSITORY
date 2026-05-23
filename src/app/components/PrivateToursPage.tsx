@@ -170,10 +170,10 @@ function ComingSoonCard({ accent, description, isMobile }: { accent: string; des
       style={{
         display: "flex",
         flexDirection: "column",
-        background: "#fdf9f3",
+        background: "#ffffff",
         borderRadius: "14px",
-        border: "0.5px solid rgba(180,140,80,0.2)",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+        border: "0.5px solid rgba(180,140,80,0.15)",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
         overflow: "hidden",
         opacity: 0.35,
         height: "100%",
@@ -230,10 +230,10 @@ function TourCard({
       style={{
         display: "flex",
         flexDirection: "column",
-        background: "#fdf9f3",
+        background: "#ffffff",
         borderRadius: "14px",
-        border: "0.5px solid rgba(180,140,80,0.2)",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+        border: "0.5px solid rgba(180,140,80,0.15)",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
         overflow: "hidden",
         cursor: "pointer",
         textDecoration: "none",
@@ -249,7 +249,7 @@ function TourCard({
       onMouseLeave={(e) => {
         const el = e.currentTarget as HTMLElement;
         el.style.transform = "translateY(0)";
-        el.style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
+        el.style.boxShadow = "0 2px 8px rgba(0,0,0,0.05)";
       }}
     >
       {/* Image */}
@@ -299,8 +299,8 @@ function TourCard({
         {/* Title */}
         <p
           style={{
-            fontSize: "16px",
-            fontWeight: 900,
+            fontSize: "15px",
+            fontWeight: 800,
             color: "#1a1a1a",
             lineHeight: 1.3,
             margin: 0,
@@ -336,7 +336,7 @@ function TourCard({
             justifyContent: "space-between",
             marginTop: "auto",
             paddingTop: "10px",
-            borderTop: "0.5px solid rgba(180,140,80,0.2)",
+            borderTop: "0.5px solid rgba(180,140,80,0.15)",
           }}
         >
           <div style={{ fontSize: "11px", fontWeight: 700, color: "#1a1a1a" }}>
@@ -399,7 +399,7 @@ function CategorySection({
             >
               {category.name}
             </p>
-            <p style={{ fontSize: "13px", color: "#7a6040", lineHeight: 1.5, margin: 0 }}>
+            <p style={{ fontSize: "13px", color: "#6b5a3a", lineHeight: 1.5, margin: 0 }}>
               {category.description}
             </p>
           </div>
@@ -427,7 +427,7 @@ function CategorySection({
           >
             {category.name}
           </p>
-          <p style={{ fontSize: "12px", color: "#7a6040", lineHeight: 1.5, margin: 0 }}>
+          <p style={{ fontSize: "12px", color: "#6b5a3a", lineHeight: 1.5, margin: 0 }}>
             {category.description}
           </p>
         </div>
@@ -519,7 +519,7 @@ function CategoryStickyNav({
         position: "sticky",
         top: navbarHeight,
         zIndex: 40,
-        background: "#f5f0e8",
+        background: "#f8f5f0",
         borderBottom: "1px solid rgba(180,140,80,0.25)",
         display: "flex",
         justifyContent: "center",
@@ -543,7 +543,7 @@ function CategoryStickyNav({
               alignItems: "center",
               fontSize: "11px",
               fontWeight: 700,
-              color: isActive ? "#1a1a1a" : "#7a5c2e",
+              color: isActive ? "#1a1a1a" : "#a08050",
               textTransform: "uppercase" as const,
               letterSpacing: "0.5px",
               borderWidth: "0 0 2px 0",
@@ -890,7 +890,7 @@ export function PrivateToursPage() {
 
   // ── Main redesigned page ─────────────────────────────────────────────────
   return (
-    <div className="flex-1" style={{ background: "#f5f0e8" }}>
+    <div className="flex-1" style={{ background: "#f8f5f0" }}>
       <Helmet>
         <title>Private Tours in Sintra | Hop On Sintra</title>
         <meta
@@ -1041,7 +1041,7 @@ export function PrivateToursPage() {
           {CATEGORIES.map((cat, idx) => {
             const isEven = idx % 2 === 1;
             const isFirst = idx === 0;
-            const bg = isEven ? "#eee8dc" : "#f5f0e8";
+            const bg = isEven ? "#f2ede6" : "#f8f5f0";
             return (
               <div
                 key={cat.id}
@@ -1098,7 +1098,7 @@ export function PrivateToursPage() {
               color: "white",
               fontSize: "14px",
               fontWeight: 700,
-              borderRadius: "10px",
+              borderRadius: "12px",
               padding: "14px 28px",
               textDecoration: "none",
               whiteSpace: "nowrap",
@@ -1135,7 +1135,7 @@ export function PrivateToursPage() {
               color: "white",
               fontSize: "14px",
               fontWeight: 700,
-              borderRadius: "10px",
+              borderRadius: "12px",
               padding: "13px 24px",
               textDecoration: "none",
               textAlign: "center",
@@ -1148,7 +1148,7 @@ export function PrivateToursPage() {
       </>
 
       {/* ── FAQ Section ─────────────────────────────────────────────────────── */}
-      <section style={{ background: "#fff", borderTop: "1px solid #e5e0d8", padding: "48px 18px" }}>
+      <section style={{ background: "#f2ede6", padding: "48px 18px" }}>
         <div style={{ maxWidth: "720px", margin: "0 auto" }}>
           <h2 style={{ fontSize: "22px", fontWeight: 900, color: "#1a1a1a", marginBottom: "28px", letterSpacing: "-0.5px" }}>
             Frequently Asked Questions
@@ -1179,9 +1179,9 @@ export function PrivateToursPage() {
               <div
                 key={i}
                 style={{
-                  borderRadius: "12px",
-                  border: "1px solid #e5e0d8",
-                  background: "#faf8f4",
+                  borderRadius: "14px",
+                  border: "0.5px solid rgba(180,140,80,0.15)",
+                  background: "#ffffff",
                   padding: "20px 22px",
                 }}
               >
