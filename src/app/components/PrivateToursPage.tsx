@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { useOutletContext } from "react-router";
 import { Link } from "react-router";
@@ -308,7 +308,7 @@ function TourCard({
             margin: 0,
             overflow: "hidden",
             display: "-webkit-box",
-            WebkitLineClamp: 1,
+            WebkitLineClamp: 2,
             WebkitBoxOrient: "vertical",
             flex: 1,
           }}
@@ -474,8 +474,15 @@ function CategoryStickyNav({
   onPillClick: (catId: string) => void;
 }) {
   const pillRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const isFirstMount = useRef(true);
 
   useEffect(() => {
+    // Skip on initial mount — scrollIntoView on mount causes unexpected vertical
+    // scroll on mobile, making the sticky nav appear mid-screen.
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      return;
+    }
     const el = pillRefs.current[activeCategory];
     if (el) {
       el.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
@@ -566,8 +573,8 @@ export function PrivateToursPage() {
   const [navbarHeight, setNavbarHeight] = useState(64);
   const [stickyNavHeight, setStickyNavHeight] = useState(46);
 
-  // Measure the site header and sticky nav heights (updates on resize too)
-  useEffect(() => {
+  // Measure the site header and sticky nav heights (runs before paint to prevent flash)
+  useLayoutEffect(() => {
     const measure = () => {
       const header = document.querySelector("[data-site-header]");
       if (header) setNavbarHeight(header.getBoundingClientRect().height);
@@ -1002,7 +1009,6 @@ export function PrivateToursPage() {
       {!loading && !fetchError && (
         <div className="pb-8 md:pb-10">
           {CATEGORIES.map((cat, idx) => {
-            const isEven = idx % 2 === 1;
             const isFirst = idx === 0;
             const bg = "#f8f5f0";
             return (
@@ -1013,7 +1019,7 @@ export function PrivateToursPage() {
                   scrollMarginTop: `${navbarHeight + stickyNavHeight}px`,
                   background: bg,
                   paddingTop: isFirst ? "12px" : "48px",
-                  paddingBottom: isEven ? "32px" : "48px",
+                  paddingBottom: "48px",
                 }}
               >
                 <div
