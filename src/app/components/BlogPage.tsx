@@ -181,10 +181,10 @@ export function BlogPage() {
   return (
     <div className="flex-1">
       {/* Hero / Search Section */}
-      <section className="border-b border-border py-12">
+      <section className="border-b border-border bg-white py-12">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="mb-6 text-center">
-            <h1 className="mb-3 text-[#1a1a1a] font-extrabold text-[23px]">
+            <h1 className="mb-3 text-primary font-extrabold text-[23px]">
               {tb.pageTitle}
             </h1>
             <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
@@ -208,7 +208,7 @@ export function BlogPage() {
       </section>
 
       {/* Categories + Tag Filter */}
-      <section className="border-b border-border py-4">
+      <section className="border-b border-border bg-white py-4">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3 overflow-x-auto pb-1 scrollbar-none">
             <div className="flex flex-shrink-0 items-center gap-2">
@@ -216,44 +216,26 @@ export function BlogPage() {
               <span className="text-sm text-muted-foreground">{tb.filterBy}</span>
             </div>
             <div className="flex flex-shrink-0 gap-2">
-              {[
-                {
-                  key: "all",
-                  label: tb.allArticles,
-                  isActive: selectedCategory === "all" && !selectedTag,
-                  onClick: () => { setSelectedCategory("all"); setSelectedTag(""); },
-                },
-                ...categories.map((category) => ({
-                  key: category.id,
-                  label: getCategoryName(category.slug),
-                  isActive: selectedCategory === category.slug,
-                  onClick: () => { setSelectedCategory(category.slug); setSelectedTag(""); },
-                })),
-              ].map(({ key, label, isActive, onClick }) => (
-                <button
-                  key={key}
-                  onClick={onClick}
-                  style={{
-                    padding: "5px 14px",
-                    borderRadius: "20px",
-                    fontSize: "13px",
-                    fontWeight: isActive ? 600 : 400,
-                    background: isActive ? "#1a1a1a" : "#ffffff",
-                    color: isActive ? "#ffffff" : "#6b5a3a",
-                    border: `1px solid ${isActive ? "#1a1a1a" : "rgba(160,128,80,0.35)"}`,
-                    cursor: "pointer",
-                    whiteSpace: "nowrap" as const,
-                    transition: "all 0.15s ease",
-                    flexShrink: 0,
-                    lineHeight: "1.5",
-                  }}
+              <Button
+                variant={selectedCategory === "all" && !selectedTag ? "default" : "outline"}
+                size="sm"
+                onClick={() => { setSelectedCategory("all"); setSelectedTag(""); }}
+              >
+                {tb.allArticles}
+              </Button>
+              {categories.map((category) => (
+                <Button
+                  key={category.id}
+                  variant={selectedCategory === category.slug ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => { setSelectedCategory(category.slug); setSelectedTag(""); }}
                 >
-                  {label}
-                </button>
+                  {getCategoryName(category.slug)}
+                </Button>
               ))}
             </div>
             {selectedTag && (
-              <div className="flex flex-shrink-0 items-center gap-2 rounded-full border border-[rgba(160,128,80,0.3)] bg-[#f0ebe0] px-3 py-1 text-sm text-[#6b5a3a]">
+              <div className="flex flex-shrink-0 items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-sm text-primary">
                 <Tag className="h-3.5 w-3.5" />
                 {selectedTag}
                 <button onClick={() => setSelectedTag("")} className="ml-1 hover:text-destructive">
@@ -294,6 +276,7 @@ export function BlogPage() {
               <div className="mb-6 text-center">
                 <Badge variant="outline">
                   {filteredArticles.length}{" "}
+                  {filteredArticles.length === 1 ? tb.article : tb.articles}{" "}
                   {tb.articlesFound}
                 </Badge>
               </div>
@@ -322,10 +305,10 @@ export function BlogPage() {
                       )}
                       <div className="flex flex-col justify-center p-6 sm:p-8 lg:w-1/2">
                         <div className="mb-3 flex items-center gap-2">
-                          <Badge className="bg-[#1a1a1a] text-white">{getCategoryName(featured.category)}</Badge>
+                          <Badge className="bg-primary text-white">{getCategoryName(featured.category)}</Badge>
                           <Badge variant="outline" className="text-xs">Featured</Badge>
                         </div>
-                        <h2 className="mb-3 text-xl font-bold leading-snug text-foreground sm:text-2xl">
+                        <h2 className="mb-3 text-xl font-bold leading-snug text-foreground group-hover:text-primary sm:text-2xl">
                           {featT.title}
                         </h2>
                         <p className="mb-4 line-clamp-3 text-muted-foreground">{featT.excerpt}</p>
@@ -339,14 +322,14 @@ export function BlogPage() {
                               <button
                                 key={tag}
                                 onClick={(e) => { e.stopPropagation(); setSelectedTag(tag); setSelectedCategory("all"); }}
-                                className="flex items-center gap-1 rounded-full border border-border px-2.5 py-0.5 text-xs text-muted-foreground hover:border-[#1a1a1a] hover:text-[#1a1a1a] transition-colors"
+                                className="flex items-center gap-1 rounded-full border border-border px-2.5 py-0.5 text-xs text-muted-foreground hover:border-primary hover:text-primary transition-colors"
                               >
                                 <Tag className="h-3 w-3" />{tag}
                               </button>
                             ))}
                           </div>
                         )}
-                        <div className="flex items-center gap-2 font-medium text-[#1a1a1a]">
+                        <div className="flex items-center gap-2 font-medium text-primary">
                           {tb.readGuide}
                           <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-2" />
                         </div>
@@ -375,7 +358,7 @@ export function BlogPage() {
                               className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                            <Badge className="absolute left-3 top-3 bg-black/60 text-white text-xs backdrop-blur-sm">
+                            <Badge className="absolute left-3 top-3 bg-primary text-white text-xs">
                               {getCategoryName(article.category)}
                             </Badge>
                           </div>
@@ -385,7 +368,7 @@ export function BlogPage() {
                             <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{formatDate(article.publishDate)}</span>
                             <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{article.readTimeMinutes} {tb.minRead}</span>
                           </div>
-                          <h3 className="mb-2 text-base font-semibold leading-snug text-foreground">
+                          <h3 className="mb-2 text-base font-semibold leading-snug text-foreground group-hover:text-primary">
                             {t.title}
                           </h3>
                           <p className="mb-3 flex-1 line-clamp-2 text-sm text-muted-foreground">{t.excerpt}</p>
@@ -395,14 +378,14 @@ export function BlogPage() {
                                 <button
                                   key={tag}
                                   onClick={(e) => { e.stopPropagation(); setSelectedTag(tag); setSelectedCategory("all"); }}
-                                  className="flex items-center gap-1 rounded-full border border-border px-2 py-0.5 text-xs text-muted-foreground hover:border-[#1a1a1a] hover:text-[#1a1a1a] transition-colors"
+                                  className="flex items-center gap-1 rounded-full border border-border px-2 py-0.5 text-xs text-muted-foreground hover:border-primary hover:text-primary transition-colors"
                                 >
                                   <Tag className="h-2.5 w-2.5" />{tag}
                                 </button>
                               ))}
                             </div>
                           )}
-                          <div className="flex items-center gap-1.5 text-sm font-medium text-[#1a1a1a]">
+                          <div className="flex items-center gap-1.5 text-sm font-medium text-primary">
                             {tb.readGuide}
                             <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
                           </div>
@@ -418,7 +401,7 @@ export function BlogPage() {
       </section>
 
       {/* Explore More Section */}
-      <section className="py-16 sm:py-20">
+      <section className="py-16 sm:py-20 bg-white">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="mb-12 text-center">
             <h2 className="mb-4 text-foreground">
@@ -539,7 +522,7 @@ export function BlogPage() {
                     <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                       <Icon className="h-6 w-6 text-primary" />
                     </div>
-                    <h3 className="mb-2 text-foreground">
+                    <h3 className="mb-2 text-foreground group-hover:text-primary">
                       {getCategoryName(category.slug)}
                     </h3>
                     <p className="mb-4 text-muted-foreground">
