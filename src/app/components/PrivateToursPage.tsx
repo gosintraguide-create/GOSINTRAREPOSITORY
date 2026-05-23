@@ -184,7 +184,7 @@ function ComingSoonCard({ accent, description, isMobile }: { accent: string; des
       <div
         style={{
           width: "100%",
-          aspectRatio: "16/9",
+          height: "160px",
           flexShrink: 0,
           background: accent,
           display: "flex",
@@ -253,7 +253,7 @@ function TourCard({
       }}
     >
       {/* Image */}
-      <div style={{ position: "relative", width: "100%", aspectRatio: "16/9", flexShrink: 0 }}>
+      <div style={{ position: "relative", width: "100%", height: "160px", flexShrink: 0 }}>
         {tour.heroImage ? (
           <img
             src={tour.heroImage}
@@ -289,10 +289,10 @@ function TourCard({
       {/* Content */}
       <div
         style={{
-          padding: "14px 16px 16px",
+          padding: "12px 14px 14px",
           display: "flex",
           flexDirection: "column",
-          gap: "5px",
+          gap: "4px",
           flex: 1,
         }}
       >
@@ -345,9 +345,9 @@ function TourCard({
             )}
           </div>
           {price && (
-            <p style={{ fontSize: "14px", fontWeight: 900, color: "#1a1a1a", margin: 0 }}>
+            <p style={{ fontSize: "17px", fontWeight: 900, color: "#0d4a4a", margin: 0 }}>
               {priceBase}
-              {priceSuffix && <span style={{ fontSize: "10px", fontWeight: 500, color: "#a08050" }}> / {priceSuffix}</span>}
+              {priceSuffix && <span style={{ fontSize: "11px", fontWeight: 500, color: "#a08050" }}> / {priceSuffix}</span>}
             </p>
           )}
         </div>
