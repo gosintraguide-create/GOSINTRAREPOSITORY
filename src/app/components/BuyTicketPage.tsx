@@ -1080,6 +1080,19 @@ export function BuyTicketPage() {
                 </p>
               </div>
             </div>
+
+            {/* Mobile-only current step label — desktop shows labels under each dot */}
+            <p className="mt-3 text-center text-sm font-semibold text-foreground sm:hidden">
+              {ct.buyTicketPage.stepDescriptions && (
+                <>
+                  {currentStep === 1 && `Step 1 of 5 — ${ct.buyTicketPage.progressLabels.dateTime}`}
+                  {currentStep === 2 && `Step 2 of 5 — ${ct.buyTicketPage.progressLabels.pickupSpot}`}
+                  {currentStep === 3 && `Step 3 of 5 — ${ct.buyTicketPage.progressLabels.attractions}`}
+                  {currentStep === 4 && `Step 4 of 5 — ${ct.buyTicketPage.progressLabels.yourDetails}`}
+                  {currentStep === 5 && `Step 5 of 5 — ${ct.buyTicketPage.progressLabels.confirmation}`}
+                </>
+              )}
+            </p>
           </div>
         </div>
       </section>
@@ -1797,6 +1810,7 @@ export function BuyTicketPage() {
                       <Input
                         id="fullName"
                         type="text"
+                        autoComplete="name"
                         placeholder={t.buyTicket.step3.fullNamePlaceholder}
                         className="border-border pl-10 bg-white"
                         required
@@ -1823,6 +1837,7 @@ export function BuyTicketPage() {
                       <Input
                         id="email"
                         type="email"
+                        autoComplete="email"
                         placeholder={t.buyTicket.step3.emailPlaceholder}
                         className="border-border pl-10 bg-white"
                         required
@@ -1852,6 +1867,7 @@ export function BuyTicketPage() {
                       <Input
                         id="confirmEmail"
                         type="email"
+                        autoComplete="email"
                         placeholder={t.buyTicket.step3.confirmEmailPlaceholder}
                         className="border-border pl-10 bg-white"
                         required
@@ -1885,6 +1901,7 @@ export function BuyTicketPage() {
                       <Input
                         id="phoneNumber"
                         type="tel"
+                        autoComplete="tel"
                         placeholder="+351 912 345 678"
                         value={`${formData.phonePrefix}${formData.phoneNumber}`}
                         onChange={(e) => {

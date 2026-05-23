@@ -320,6 +320,52 @@ export function PrivateTourDetailPage() {
     return schema;
   }, [tour]);
 
+  const tourFaqItems = useMemo(() => {
+    if (!tour) return [];
+    const items: { question: string; answer: string }[] = [
+      {
+        question: `How long is the ${tour.title}?`,
+        answer: `The ${tour.title} lasts ${tour.duration}.`,
+      },
+    ];
+    if (tour.features?.length) {
+      items.push({
+        question: `What is included in the ${tour.title}?`,
+        answer: tour.features.join(". "),
+      });
+    }
+    if (tour.maxGroupSize) {
+      items.push({
+        question: "How many people can join this private tour?",
+        answer: `This private tour accommodates ${tour.minPeople ? `${tour.minPeople} to ` : "up to "}${tour.maxGroupSize} guests. All tours are exclusively for your group — no strangers join.`,
+      });
+    }
+    items.push(
+      {
+        question: "Can I customise the itinerary?",
+        answer: "Yes. All Hop On Sintra private tours are fully customisable. Contact us before your booking to request stops, pacing changes, or a bespoke route.",
+      },
+      {
+        question: "What is the cancellation policy?",
+        answer: "Free cancellation is available. Contact us to reschedule or cancel your private tour booking.",
+      }
+    );
+    return items;
+  }, [tour]);
+
+  const tourFaqSchema = useMemo(() => {
+    if (!tourFaqItems.length) return null;
+    return {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: tourFaqItems.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    };
+  }, [tourFaqItems]);
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -367,6 +413,11 @@ export function PrivateTourDetailPage() {
         {tourStructuredData && (
           <script type="application/ld+json">
             {JSON.stringify(tourStructuredData)}
+          </script>
+        )}
+        {tourFaqSchema && (
+          <script type="application/ld+json">
+            {JSON.stringify(tourFaqSchema)}
           </script>
         )}
       </Helmet>
@@ -473,6 +524,21 @@ export function PrivateTourDetailPage() {
                       >
                         <Check className="h-5 w-5 flex-shrink-0 text-primary" />
                         <span>{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* FAQ Section — desktop */}
+              {tourFaqItems.length > 0 && (
+                <div className="pb-12">
+                  <h2 className="mb-6 text-2xl font-bold">Frequently Asked Questions</h2>
+                  <div className="space-y-4">
+                    {tourFaqItems.map((item, i) => (
+                      <div key={i} className="rounded-xl border border-border bg-white p-5">
+                        <h3 className="mb-2 font-semibold text-foreground">{item.question}</h3>
+                        <p className="text-base leading-relaxed text-muted-foreground">{item.answer}</p>
                       </div>
                     ))}
                   </div>
@@ -797,6 +863,21 @@ export function PrivateTourDetailPage() {
                   ))}
                 </div>
               </>
+            )}
+
+            {/* FAQ Section — mobile */}
+            {tourFaqItems.length > 0 && (
+              <div className="mt-8">
+                <h2 className="mb-6 text-3xl font-bold">Frequently Asked Questions</h2>
+                <div className="space-y-4">
+                  {tourFaqItems.map((item, i) => (
+                    <div key={i} className="rounded-xl border border-border bg-white p-5">
+                      <h3 className="mb-2 font-semibold text-foreground">{item.question}</h3>
+                      <p className="text-base leading-relaxed text-muted-foreground">{item.answer}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
           </div>
         </div>

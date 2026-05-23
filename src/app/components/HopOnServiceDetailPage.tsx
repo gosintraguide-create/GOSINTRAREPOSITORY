@@ -223,7 +223,7 @@ export function HopOnServiceDetailPage() {
         "@type": "Offer",
         priceCurrency: "EUR",
         availability: "https://schema.org/InStock",
-        url: "https://hoponsintra.com/hop-on-hop-off-sintra",
+        url: "https://www.hoponsintra.com/hop-on-hop-off-sintra",
         validFrom: new Date().toISOString(),
         priceValidUntil: new Date(
           Date.now() + 365 * 24 * 60 * 60 * 1000,
@@ -257,8 +257,8 @@ export function HopOnServiceDetailPage() {
       "@context": "https://schema.org",
       "@type": "Organization",
       name: "Hop On Sintra",
-      url: "https://hoponsintra.com",
-      logo: "https://hoponsintra.com/logo.png",
+      url: "https://www.hoponsintra.com",
+      logo: "https://www.hoponsintra.com/logo.png",
       description:
         "Hop-on/hop-off day pass service in Sintra, Portugal offering unlimited rides on tuk-tuks and UMM jeeps with guaranteed seating.",
       address: {
@@ -297,13 +297,13 @@ export function HopOnServiceDetailPage() {
           "@type": "ListItem",
           position: 1,
           name: "Home",
-          item: "https://hoponsintra.com",
+          item: "https://www.hoponsintra.com",
         },
         {
           "@type": "ListItem",
           position: 2,
           name: "Hop On Service",
-          item: "https://hoponsintra.com/hop-on-hop-off-sintra",
+          item: "https://www.hoponsintra.com/hop-on-hop-off-sintra",
         },
       ],
     };
@@ -335,7 +335,7 @@ export function HopOnServiceDetailPage() {
     updateMeta("property", "og:type", "product");
     updateMeta("property", "og:title", "Hop On Sintra Day Pass - Unlimited Access to All Attractions");
     updateMeta("property", "og:description", "Explore Sintra with unlimited hop-on/hop-off access. Guaranteed seating, 9am-7pm service. Visit all major palaces and attractions at your pace.");
-    updateMeta("property", "og:url", "https://hoponsintra.com/hop-on-hop-off-sintra");
+    updateMeta("property", "og:url", "https://www.hoponsintra.com/hop-on-hop-off-sintra");
     updateMeta("property", "og:image", comprehensiveContent.content?.seo?.hopOnService?.ogImage || comprehensiveContent.content?.seo?.defaultOgImage || "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1200&h=630&fit=crop&q=80");
     updateMeta("property", "og:image:secure_url", comprehensiveContent.content?.seo?.hopOnService?.ogImage || comprehensiveContent.content?.seo?.defaultOgImage || "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1200&h=630&fit=crop&q=80");
     updateMeta("property", "og:image:width", "1200");
@@ -363,7 +363,7 @@ export function HopOnServiceDetailPage() {
       canonical.rel = "canonical";
       document.head.appendChild(canonical);
     }
-    canonical.href = "https://hoponsintra.com/hop-on-hop-off-sintra";
+    canonical.href = "https://www.hoponsintra.com/hop-on-hop-off-sintra";
   }, [language, comprehensiveContent]);
 
   return (

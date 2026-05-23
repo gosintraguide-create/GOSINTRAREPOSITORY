@@ -13,7 +13,8 @@ export function LiveChatWidget({ language: _language = "en" }: LiveChatWidgetPro
       {/* Floating contact button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-4 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-lg transition-all hover:scale-110 hover:shadow-xl sm:bottom-6 sm:right-6 sm:h-16 sm:w-16"
+        className="fixed right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-lg transition-all hover:scale-110 hover:shadow-xl sm:right-6 sm:h-16 sm:w-16"
+        style={{ bottom: "calc(1rem + env(safe-area-inset-bottom, 0px))" }}
         aria-label="Contact us"
       >
         {isOpen ? (
@@ -25,7 +26,7 @@ export function LiveChatWidget({ language: _language = "en" }: LiveChatWidgetPro
 
       {/* Contact popup */}
       {isOpen && (
-        <div className="fixed bottom-20 right-4 z-40 w-72 rounded-2xl border border-border bg-background p-5 shadow-2xl sm:bottom-24 sm:right-6">
+        <div className="fixed right-4 z-40 w-72 rounded-2xl border border-border bg-background p-5 shadow-2xl sm:right-6" style={{ bottom: "calc(5rem + env(safe-area-inset-bottom, 0px))" }}>
           <h3 className="mb-1 text-base font-semibold text-foreground">We're here to help</h3>
           <p className="mb-4 text-sm text-muted-foreground">Choose how you'd like to reach us</p>
 

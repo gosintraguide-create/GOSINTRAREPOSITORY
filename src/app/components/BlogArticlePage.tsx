@@ -196,6 +196,27 @@ export function BlogArticlePage() {
         <meta name="twitter:description" content={translation.excerpt || translation.content.substring(0, 155)} />
         <meta name="twitter:image" content={article.featuredImage || article.heroImage || ""} />
         <meta name="robots" content="index, follow, max-image-preview:large" />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": translation.title,
+          "description": translation.excerpt || translation.content.substring(0, 155),
+          "datePublished": article.publishDate,
+          "dateModified": article.publishDate,
+          "author": { "@type": "Organization", "name": "Hop On Sintra" },
+          "publisher": {
+            "@type": "Organization",
+            "name": "Hop On Sintra",
+            "url": "https://www.hoponsintra.com",
+            "logo": { "@type": "ImageObject", "url": "https://www.hoponsintra.com/logo.png" }
+          },
+          "image": article.featuredImage || article.heroImage || undefined,
+          "url": `https://www.hoponsintra.com/travel-guide/${article.slug}`,
+          "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": `https://www.hoponsintra.com/travel-guide/${article.slug}`
+          }
+        })}</script>
       </Helmet>
 
       {/* Breadcrumb nav */}

@@ -130,12 +130,6 @@ const CATEGORIES = [
 
 type CategoryId = typeof CATEGORIES[number]["id"];
 
-const CATEGORY_LABELS: Record<string, string> = {
-  classic_sintra: "Classic",
-  off_the_beaten_path: "Hidden gems",
-  nature_adventure: "Adventure",
-  hiking: "Hiking",
-};
 
 /** Assign a tour to a category. Uses the `category` field when present,
  *  otherwise infers from the title using keyword matching. */
@@ -219,20 +213,16 @@ function ComingSoonCard({ accent, description, isMobile }: { accent: string; des
 function TourCard({
   tour,
   accent,
-  categoryLabel,
   isMobile,
 }: {
   tour: PrivateTour;
   accent: string;
-  categoryLabel: string;
   isMobile?: boolean;
 }) {
   const price = getDisplayPrice(tour);
   const slashIdx = price.indexOf(" / ");
   const priceBase = slashIdx >= 0 ? price.slice(0, slashIdx) : price;
   const priceSuffix = slashIdx >= 0 ? price.slice(slashIdx + 3) : null;
-  const metaParts: string[] = [categoryLabel];
-  if (tour.badge) metaParts.push(tour.badge);
 
   return (
     <Link
@@ -306,15 +296,11 @@ function TourCard({
           flex: 1,
         }}
       >
-        {/* Meta */}
-        <p style={{ fontSize: "11px", fontWeight: 600, color: "#a08050", letterSpacing: "0.3px", margin: 0 }}>
-          {metaParts.join(" · ")}
-        </p>
         {/* Title */}
         <p
           style={{
-            fontSize: "15px",
-            fontWeight: 800,
+            fontSize: "16px",
+            fontWeight: 900,
             color: "#1a1a1a",
             lineHeight: 1.3,
             margin: 0,
@@ -335,14 +321,14 @@ function TourCard({
             margin: 0,
             overflow: "hidden",
             display: "-webkit-box",
-            WebkitLineClamp: 2,
+            WebkitLineClamp: 1,
             WebkitBoxOrient: "vertical",
             flex: 1,
           }}
         >
           {tour.description}
         </p>
-        {/* Footer */}
+        {/* Footer — rating left, price right */}
         <div
           style={{
             display: "flex",
@@ -354,14 +340,12 @@ function TourCard({
           }}
         >
           <div style={{ fontSize: "11px", fontWeight: 700, color: "#1a1a1a" }}>
-            {tour.rating ? (
+            {tour.rating && (
               <>★ {tour.rating} <span style={{ color: "#a08050", fontWeight: 500 }}>({tour.reviewCount})</span></>
-            ) : (
-              <span style={{ fontSize: "11px", fontWeight: 600, color: accent }}>View tour →</span>
             )}
           </div>
           {price && (
-            <p style={{ fontSize: "13px", fontWeight: 800, color: "#1a1a1a", margin: 0 }}>
+            <p style={{ fontSize: "14px", fontWeight: 900, color: "#1a1a1a", margin: 0 }}>
               {priceBase}
               {priceSuffix && <span style={{ fontSize: "10px", fontWeight: 500, color: "#a08050" }}> / {priceSuffix}</span>}
             </p>
@@ -376,9 +360,11 @@ function TourCard({
 function CategorySection({
   category,
   tours,
+  bgColor = "#f5f0e8",
 }: {
   category: typeof CATEGORIES[number];
   tours: PrivateTour[];
+  bgColor?: string;
 }) {
   const needsComingSoon = tours.length < 2;
 
@@ -389,12 +375,12 @@ function CategorySection({
         {/* Desktop header */}
         <div
           className="hidden md:flex"
-          style={{ alignItems: "center", gap: "16px", marginBottom: "20px" }}
+          style={{ alignItems: "flex-start", gap: "16px", marginBottom: "24px" }}
         >
           <div
             style={{
               width: "4px",
-              height: "52px",
+              alignSelf: "stretch",
               borderRadius: "2px",
               background: `linear-gradient(to bottom, ${category.accent}, ${category.accent}33)`,
               flexShrink: 0,
@@ -403,7 +389,7 @@ function CategorySection({
           <div>
             <p
               style={{
-                fontSize: "18px",
+                fontSize: "22px",
                 fontWeight: 900,
                 color: category.accent,
                 letterSpacing: "-0.3px",
@@ -431,7 +417,7 @@ function CategorySection({
         >
           <p
             style={{
-              fontSize: "16px",
+              fontSize: "22px",
               fontWeight: 900,
               color: category.accent,
               letterSpacing: "-0.3px",
@@ -453,32 +439,47 @@ function CategorySection({
         style={{ gridTemplateColumns: "repeat(3, 1fr)", gap: "14px", alignItems: "stretch" }}
       >
         {tours.map((tour) => (
-          <TourCard key={tour.id} tour={tour} accent={category.accent} categoryLabel={CATEGORY_LABELS[category.id] ?? ""} />
+          <TourCard key={tour.id} tour={tour} accent={category.accent} />
         ))}
         {needsComingSoon && (
           <ComingSoonCard accent={category.accent} description={category.comingSoonDesc} />
         )}
       </div>
 
-      {/* Mobile horizontal scroll */}
-      <div
-        className="flex md:hidden"
-        style={{
-          overflowX: "auto",
-          gap: "12px",
-          padding: "0 18px 8px",
-          scrollbarWidth: "none",
-          WebkitOverflowScrolling: "touch",
-          msOverflowStyle: "none",
-          alignItems: "stretch",
-        } as React.CSSProperties}
-      >
-        {tours.map((tour) => (
-          <TourCard key={tour.id} tour={tour} accent={category.accent} categoryLabel={CATEGORY_LABELS[category.id] ?? ""} isMobile />
-        ))}
-        {needsComingSoon && (
-          <ComingSoonCard accent={category.accent} description={category.comingSoonDesc} isMobile />
-        )}
+      {/* Mobile horizontal scroll — wrapped for right-edge fade affordance */}
+      <div className="md:hidden" style={{ position: "relative", overflow: "hidden" }}>
+        <div
+          className="flex"
+          style={{
+            overflowX: "auto",
+            gap: "12px",
+            padding: "0 18px 8px",
+            scrollbarWidth: "none",
+            WebkitOverflowScrolling: "touch",
+            msOverflowStyle: "none",
+            alignItems: "stretch",
+          } as React.CSSProperties}
+        >
+          {tours.map((tour) => (
+            <TourCard key={tour.id} tour={tour} accent={category.accent} isMobile />
+          ))}
+          {needsComingSoon && (
+            <ComingSoonCard accent={category.accent} description={category.comingSoonDesc} isMobile />
+          )}
+        </div>
+        {/* Right-edge fade: indicates more cards exist off-screen */}
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: "8px",
+            width: "48px",
+            pointerEvents: "none",
+            background: `linear-gradient(to left, ${bgColor} 10%, transparent 100%)`,
+          }}
+        />
       </div>
     </div>
   );
@@ -537,11 +538,14 @@ function CategoryStickyNav({
             onClick={() => onPillClick(pill.id)}
             style={{
               padding: "14px 18px",
+              minHeight: "44px",
+              display: "flex",
+              alignItems: "center",
               fontSize: "11px",
-              fontWeight: 700,
-              color: isActive ? "#1a1a1a" : "#a08050",
+              fontWeight: 600,
+              color: isActive ? "#1a1a1a" : "#b09060",
               textTransform: "uppercase" as const,
-              letterSpacing: "0.5px",
+              letterSpacing: "0.3px",
               borderWidth: "0 0 2px 0",
               borderStyle: "solid",
               borderColor: isActive ? "#ff6b35" : "transparent",
@@ -911,6 +915,52 @@ export function PrivateToursPage() {
             {JSON.stringify(toursStructuredData)}
           </script>
         )}
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What is a private tour in Sintra?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "A private tour with Hop On Sintra is an exclusive guided experience reserved entirely for your group. Your dedicated local expert takes you through Sintra's palaces, castles, gardens, and hidden gems at your own pace, with a fully customisable itinerary."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How do I book a private tour in Sintra?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Browse our private tour options on this page, choose the experience that suits your group, and click to check availability. You can also reach us directly on WhatsApp at +351 932 967 279 to discuss your requirements."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What is the difference between the hop-on day pass and a private tour?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "The hop-on day pass gives you unlimited shared tuk-tuk and jeep rides between Sintra's major stops from 9am to 7pm. A private tour is exclusively for your group, with a dedicated guide, a custom itinerary, and door-to-door commentary — ideal for families, couples, and special occasions."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Can I customise a private tour itinerary?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. All Hop On Sintra private tours are fully customisable. Contact us before booking to request specific stops, a different pace, or a bespoke route that includes locations not listed in our standard packages."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How many people can join a private tour?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Our private tours are designed for small groups, typically 1–8 guests, so every experience feels personal. Larger groups can be accommodated on request — contact us to discuss options."
+              }
+            }
+          ]
+        })}</script>
       </Helmet>
 
       {/* ── Page header ───────────────────────────────────────────────────── */}
@@ -985,23 +1035,37 @@ export function PrivateToursPage() {
         </div>
       )}
 
-      {/* ── Category sections — single mount, responsive padding ────────── */}
+      {/* ── Category sections — alternating backgrounds, full-bleed ────── */}
       {!loading && !fetchError && (
-        <div className="px-[18px] pb-8 pt-3 md:px-[48px] md:pb-10" style={{ maxWidth: "1200px", margin: "0 auto", boxSizing: "border-box" as const }}>
-          <div className="flex flex-col gap-[28px] md:gap-[36px]">
-            {CATEGORIES.map((cat, idx) => (
+        <div className="pb-8 md:pb-10">
+          {CATEGORIES.map((cat, idx) => {
+            const isEven = idx % 2 === 1;
+            const isFirst = idx === 0;
+            const bg = isEven ? "#eee8dc" : "#f5f0e8";
+            return (
               <div
                 key={cat.id}
                 id={STICKY_NAV_PILLS[idx].sectionId}
-                style={{ scrollMarginTop: `${navbarHeight + stickyNavHeight}px` }}
+                style={{
+                  scrollMarginTop: `${navbarHeight + stickyNavHeight}px`,
+                  background: bg,
+                  paddingTop: isFirst ? "12px" : "48px",
+                  paddingBottom: isEven ? "32px" : "48px",
+                }}
               >
-                <CategorySection
-                  category={cat}
-                  tours={toursByCategory[cat.id] ?? []}
-                />
+                <div
+                  className="px-[18px] md:px-[48px]"
+                  style={{ maxWidth: "1200px", margin: "0 auto", boxSizing: "border-box" as const }}
+                >
+                  <CategorySection
+                    category={cat}
+                    tours={toursByCategory[cat.id] ?? []}
+                    bgColor={bg}
+                  />
+                </div>
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
       )}
 
@@ -1082,6 +1146,56 @@ export function PrivateToursPage() {
           </a>
         </div>
       </>
+
+      {/* ── FAQ Section ─────────────────────────────────────────────────────── */}
+      <section style={{ background: "#fff", borderTop: "1px solid #e5e0d8", padding: "48px 18px" }}>
+        <div style={{ maxWidth: "720px", margin: "0 auto" }}>
+          <h2 style={{ fontSize: "22px", fontWeight: 900, color: "#1a1a1a", marginBottom: "28px", letterSpacing: "-0.5px" }}>
+            Frequently Asked Questions
+          </h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            {[
+              {
+                q: "What is a private tour in Sintra?",
+                a: "A private tour with Hop On Sintra is an exclusive guided experience reserved entirely for your group. Your dedicated local expert takes you through Sintra's palaces, castles, gardens, and hidden gems at your own pace, with a fully customisable itinerary.",
+              },
+              {
+                q: "How do I book a private tour in Sintra?",
+                a: "Browse our private tour options above, choose the experience that suits your group, and click to check availability. You can also reach us on WhatsApp to discuss your requirements before booking.",
+              },
+              {
+                q: "What is the difference between the hop-on day pass and a private tour?",
+                a: "The hop-on day pass gives you unlimited shared tuk-tuk and jeep rides between Sintra's major stops from 9am to 7pm. A private tour is exclusively for your group, with a dedicated guide, a custom itinerary, and door-to-door commentary — ideal for families, couples, and special occasions.",
+              },
+              {
+                q: "Can I customise a private tour itinerary?",
+                a: "Yes. All Hop On Sintra private tours are fully customisable. Contact us before booking to request specific stops, a different pace, or a bespoke route that includes locations not listed in our standard packages.",
+              },
+              {
+                q: "How many people can join a private tour?",
+                a: "Our private tours are designed for small groups, typically 1–8 guests. Larger groups can be accommodated on request — contact us to discuss options.",
+              },
+            ].map((item, i) => (
+              <div
+                key={i}
+                style={{
+                  borderRadius: "12px",
+                  border: "1px solid #e5e0d8",
+                  background: "#faf8f4",
+                  padding: "20px 22px",
+                }}
+              >
+                <h3 style={{ fontSize: "15px", fontWeight: 700, color: "#1a1a1a", marginBottom: "8px" }}>
+                  {item.q}
+                </h3>
+                <p style={{ fontSize: "14px", color: "#666", lineHeight: 1.6, margin: 0 }}>
+                  {item.a}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* ── Tour Request Dialog (kept for potential future use) ────────────── */}
       <Dialog open={showRequestDialog} onOpenChange={setShowRequestDialog}>

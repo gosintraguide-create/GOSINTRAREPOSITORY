@@ -1,0 +1,1 @@
+import{aD as o}from"./index-GvuX50NC.js";import{R as t,a,C as s}from"./index-00jJB1XZ.js";function i({...l}){return o.jsx(t,{"data-slot":"collapsible",...l})}function n({...l}){return o.jsx(a,{"data-slot":"collapsible-trigger",...l})}function p({...l}){return o.jsx(s,{"data-slot":"collapsible-content",...l})}export{i as C,p as a,n as b};

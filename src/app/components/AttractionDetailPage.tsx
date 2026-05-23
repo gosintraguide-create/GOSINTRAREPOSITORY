@@ -233,6 +233,38 @@ export function AttractionDetailPage() {
     );
   };
 
+  // FAQ items derived from existing highlights and tips arrays
+  const faqItems = useMemo(() => {
+    if (!attraction) return [];
+    const items: { question: string; answer: string }[] = [];
+    if (attraction.highlights?.length) {
+      items.push({
+        question: `What are the highlights of ${attraction.name}?`,
+        answer: attraction.highlights.join(". "),
+      });
+    }
+    if (attraction.tips?.length) {
+      items.push({
+        question: `What should I know before visiting ${attraction.name}?`,
+        answer: attraction.tips.join(". "),
+      });
+    }
+    return items;
+  }, [attraction]);
+
+  const faqSchema = useMemo(() => {
+    if (!faqItems.length) return null;
+    return {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: faqItems.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    };
+  }, [faqItems]);
+
   // Generate structured data for SEO
   const structuredData = useMemo(() => {
     if (!attraction) return null;
@@ -336,6 +368,12 @@ export function AttractionDetailPage() {
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(structuredData),
           }}
+        />
+      )}
+      {faqSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
         />
       )}
 
@@ -598,6 +636,30 @@ export function AttractionDetailPage() {
                   ))}
                 </div>
               </div>
+
+              {/* FAQ Section */}
+              {faqItems.length > 0 && (
+                <div>
+                  <h3 className="mb-5 sm:mb-6 text-xl sm:text-2xl md:text-3xl font-bold text-foreground">
+                    Frequently Asked Questions
+                  </h3>
+                  <div className="space-y-4">
+                    {faqItems.map((item, i) => (
+                      <div
+                        key={i}
+                        className="rounded-xl border border-border bg-white p-5"
+                      >
+                        <h4 className="mb-3 text-base font-semibold text-foreground sm:text-lg">
+                          {item.question}
+                        </h4>
+                        <p className="text-base leading-relaxed text-muted-foreground">
+                          {item.answer}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Time Needed - Mobile Only */}
               <div className="lg:hidden">

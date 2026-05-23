@@ -47,13 +47,13 @@ export async function generateSitemap(): Promise<string> {
 
   // Static pages
   const staticPages = [
-    { path: '/', changefreq: 'daily', priority: '1.0', lastmod: new Date().toISOString().split('T')[0] },
-    { path: '/hop-on-hop-off-sintra', changefreq: 'weekly', priority: '0.9', lastmod: new Date().toISOString().split('T')[0] },
-    { path: '/attractions', changefreq: 'weekly', priority: '0.9', lastmod: new Date().toISOString().split('T')[0] },
-    { path: '/private-tours', changefreq: 'weekly', priority: '0.9', lastmod: new Date().toISOString().split('T')[0] },
-    { path: '/travel-guide', changefreq: 'weekly', priority: '0.9', lastmod: new Date().toISOString().split('T')[0] },
-    { path: '/about', changefreq: 'monthly', priority: '0.7', lastmod: new Date().toISOString().split('T')[0] },
-    { path: '/route-map', changefreq: 'monthly', priority: '0.7', lastmod: new Date().toISOString().split('T')[0] },
+    { path: '/', changefreq: 'daily', priority: '1.0', lastmod: '2025-04-01' },
+    { path: '/hop-on-hop-off-sintra', changefreq: 'weekly', priority: '0.9', lastmod: '2025-03-01' },
+    { path: '/attractions', changefreq: 'weekly', priority: '0.9', lastmod: '2025-03-01' },
+    { path: '/private-tours', changefreq: 'weekly', priority: '0.9', lastmod: '2025-03-01' },
+    { path: '/travel-guide', changefreq: 'weekly', priority: '0.9', lastmod: '2025-03-01' },
+    { path: '/about', changefreq: 'monthly', priority: '0.7', lastmod: '2025-01-01' },
+    { path: '/route-map', changefreq: 'monthly', priority: '0.7', lastmod: '2025-01-01' },
   ];
 
   staticPages.forEach(page => {
@@ -75,7 +75,7 @@ export async function generateSitemap(): Promise<string> {
       const slug = attraction.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
       urls.push({
         loc: `${baseUrl}/attractions/${slug}`,
-        lastmod: new Date().toISOString().split('T')[0],
+        lastmod: '2025-03-01',
         changefreq: 'monthly',
         priority: '0.8',
       });
@@ -100,7 +100,7 @@ export async function generateSitemap(): Promise<string> {
   privateTours.forEach(tour => {
     urls.push({
       loc: `${baseUrl}/private-tours/${tour.id}`,
-      lastmod: new Date().toISOString().split('T')[0],
+      lastmod: '2025-03-01',
       changefreq: 'monthly',
       priority: '0.7',
     });
