@@ -157,12 +157,11 @@ export function BlogArticlePage() {
 
   const hasHero = !!(article.featuredImage || article.heroImage);
 
-  // Shared column style: 680px centered, 20px side padding on all viewports
+  // Main content column (sits inside a flex row with the sidebar)
   const columnStyle: React.CSSProperties = {
+    flex: 1,
+    minWidth: 0,
     maxWidth: "680px",
-    margin: "0 auto",
-    padding: "0 20px",
-    boxSizing: "border-box",
   };
 
   return (
@@ -224,8 +223,13 @@ export function BlogArticlePage() {
         </div>
       </div>
 
-      {/* ── Article — single 680px centered column ── */}
+      {/* ── Article — content column + related articles sidebar ── */}
       <article style={{ padding: "40px 0 64px" }}>
+        {/* Outer wrapper wide enough for column + sidebar */}
+        <div style={{ maxWidth: "1060px", margin: "0 auto", padding: "0 20px", boxSizing: "border-box" as const }}>
+        <div className="flex flex-col lg:flex-row lg:items-start lg:gap-12">
+
+        {/* ── Main content column ── */}
         <div style={columnStyle}>
 
           {/* 1 — Category badge */}
@@ -372,71 +376,62 @@ export function BlogArticlePage() {
             </div>
           )}
         </div>
+        {/* ── end main content column ── */}
 
-        {/* Related articles — slightly wider container below the column */}
+        {/* ── Related articles sidebar ── */}
         {relatedArticles.length > 0 && (
-          <div style={{
-            maxWidth: "900px",
-            margin: "48px auto 0",
-            padding: "40px 20px 0",
-            borderTop: "1px solid rgba(0,0,0,0.08)",
-          }}>
-            <h2 style={{ fontSize: "18px", fontWeight: 700, color: "#1a1a1a", marginBottom: "20px" }}>
-              {t.blog.relatedGuides}
-            </h2>
-            <div className="grid gap-4 sm:grid-cols-3">
-              {relatedArticles.map((rel) => {
-                const relT = getArticleTranslation(rel, lang);
-                const relCat = categories.find((c) => c.id === rel.category || c.slug === rel.category);
-                const relCatName = relCat ? getCategoryTranslation(relCat, lang).name : rel.category;
-                const relImage = rel.thumbnailImage || rel.featuredImage || rel.heroImage;
-                return (
-                  <button
-                    key={rel.slug}
-                    onClick={() => navigate(`/travel-guide/${rel.slug}`)}
-                    className="group flex w-full cursor-pointer overflow-hidden rounded-xl border border-border bg-white text-left shadow-sm transition-shadow hover:shadow-md"
-                  >
-                    {relImage && (
-                      <div className="w-28 shrink-0 overflow-hidden">
-                        <ImageWithFallback
-                          src={relImage}
-                          alt={relT.title}
-                          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        />
-                      </div>
-                    )}
-                    <div className="flex min-w-0 flex-1 flex-col justify-between p-3">
-                      <div>
-                        <p className="text-sm font-semibold leading-snug text-foreground line-clamp-2">
-                          {relT.title}
-                        </p>
-                        {relT.excerpt && (
-                          <p className="mt-1 text-xs leading-relaxed text-muted-foreground line-clamp-2">
-                            {relT.excerpt}
+          <aside className="lg:w-72 lg:flex-shrink-0 mt-10 lg:mt-0">
+            <div className="lg:sticky lg:top-6 space-y-6">
+              <div>
+                <h2 className="mb-4 text-base font-semibold text-foreground">{t.blog.relatedGuides}</h2>
+                <div className="space-y-3">
+                  {relatedArticles.map((rel) => {
+                    const relT = getArticleTranslation(rel, lang);
+                    const relCat = categories.find((c) => c.id === rel.category || c.slug === rel.category);
+                    const relCatName = relCat ? getCategoryTranslation(relCat, lang).name : rel.category;
+                    const relImage = rel.thumbnailImage || rel.featuredImage || rel.heroImage;
+                    return (
+                      <button
+                        key={rel.slug}
+                        onClick={() => navigate(`/travel-guide/${rel.slug}`)}
+                        className="group flex w-full cursor-pointer overflow-hidden rounded-xl border border-border bg-white text-left shadow-sm transition-shadow hover:shadow-md"
+                      >
+                        {relImage && (
+                          <div className="w-24 shrink-0 overflow-hidden">
+                            <ImageWithFallback
+                              src={relImage}
+                              alt={relT.title}
+                              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            />
+                          </div>
+                        )}
+                        <div className="flex min-w-0 flex-1 flex-col justify-between p-3">
+                          <p className="text-sm font-semibold leading-snug text-foreground line-clamp-3">
+                            {relT.title}
                           </p>
-                        )}
-                      </div>
-                      <div className="mt-2.5 flex items-center gap-2 text-sm">
-                        {rel.readTimeMinutes && (
-                          <span className="flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
-                            <Clock className="h-3.5 w-3.5 shrink-0" />
-                            {rel.readTimeMinutes} min
-                          </span>
-                        )}
-                        {relCatName && (
-                          <span className="truncate text-xs text-muted-foreground">· {relCatName}</span>
-                        )}
-                        <span className="ml-auto shrink-0 whitespace-nowrap inline-flex items-center gap-0.5 text-sm font-medium text-primary">
-                          {t.blog.readGuide} <ChevronRight className="h-3.5 w-3.5" />
-                        </span>
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
+                          <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+                            {rel.readTimeMinutes && (
+                              <span className="flex shrink-0 items-center gap-1">
+                                <Clock className="h-3 w-3 shrink-0" />
+                                {rel.readTimeMinutes} min
+                              </span>
+                            )}
+                            {relCatName && (
+                              <span className="truncate">· {relCatName}</span>
+                            )}
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
-          </div>
+          </aside>
         )}
+
+        </div>{/* end flex row */}
+        </div>{/* end outer wrapper */}
       </article>
     </div>
   );
