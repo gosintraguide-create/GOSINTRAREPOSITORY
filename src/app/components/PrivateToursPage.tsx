@@ -253,7 +253,7 @@ function TourCard({
       }}
     >
       {/* Image */}
-      <div style={{ position: "relative", width: "100%", height: "160px", flexShrink: 0 }}>
+      <div style={{ position: "relative", width: "100%", height: "190px", flexShrink: 0 }}>
         {tour.heroImage ? (
           <img
             src={tour.heroImage}
@@ -263,26 +263,6 @@ function TourCard({
           />
         ) : (
           <div style={{ width: "100%", height: "100%", background: `${accent}40` }} />
-        )}
-        {tour.duration && (
-          <div
-            style={{
-              position: "absolute",
-              top: "10px",
-              left: "10px",
-              background: "rgba(0,0,0,0.45)",
-              backdropFilter: "blur(4px)",
-              color: "white",
-              fontSize: "9px",
-              fontWeight: 700,
-              padding: "4px 10px",
-              borderRadius: "20px",
-              letterSpacing: "0.5px",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {tour.duration.toUpperCase()}
-          </div>
         )}
       </div>
 
@@ -296,12 +276,18 @@ function TourCard({
           flex: 1,
         }}
       >
+        {/* Duration — sits where location text sits on GYG cards */}
+        {tour.duration && (
+          <p style={{ fontSize: "11px", fontWeight: 500, color: "#a08050", margin: 0, lineHeight: 1 }}>
+            {tour.duration}
+          </p>
+        )}
         {/* Title */}
         <p
           style={{
             fontSize: "15px",
             fontWeight: 800,
-            color: "#1a1a1a",
+            color: "#0d4a4a",
             lineHeight: 1.3,
             margin: 0,
             overflow: "hidden",
@@ -328,29 +314,13 @@ function TourCard({
         >
           {tour.description}
         </p>
-        {/* Footer — rating left, price right */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginTop: "auto",
-            paddingTop: "10px",
-            borderTop: "0.5px solid rgba(180,140,80,0.15)",
-          }}
-        >
-          <div style={{ fontSize: "11px", fontWeight: 700, color: "#1a1a1a" }}>
-            {tour.rating && (
-              <>★ {tour.rating} <span style={{ color: "#a08050", fontWeight: 500 }}>({tour.reviewCount})</span></>
-            )}
-          </div>
-          {price && (
-            <p style={{ fontSize: "17px", fontWeight: 900, color: "#0d4a4a", margin: 0 }}>
-              {priceBase}
-              {priceSuffix && <span style={{ fontSize: "11px", fontWeight: 500, color: "#a08050" }}> / {priceSuffix}</span>}
-            </p>
-          )}
-        </div>
+        {/* Price */}
+        {price && (
+          <p style={{ fontSize: "17px", fontWeight: 900, color: "#0d4a4a", margin: "8px 0 0" }}>
+            {priceBase}
+            {priceSuffix && <span style={{ fontSize: "11px", fontWeight: 500, color: "#a08050" }}> / {priceSuffix}</span>}
+          </p>
+        )}
       </div>
     </Link>
   );
