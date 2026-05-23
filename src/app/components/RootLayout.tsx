@@ -362,7 +362,7 @@ export function RootLayout() {
     setHreflangTags(location.pathname);
 
     // Open Graph
-    const defaultOgImage = "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop&q=80";
+    const defaultOgImage = "https://dwiznaefeqnduglmcivr.supabase.co/storage/v1/object/public/make-3bd0ade8-images/IMG_1829-1778931539038.JPEG";
     const ogImage = dynamicMeta?.ogImage || editableContent?.seo?.defaultOgImage || defaultOgImage;
 
     updateMeta("property", "og:type", "website");
