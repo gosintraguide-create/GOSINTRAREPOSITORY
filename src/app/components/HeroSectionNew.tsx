@@ -323,18 +323,19 @@ export function HeroSection({
     editableContent?.homepage?.productCards?.travelGuide?.images?.[0]?.src ?? null;
 
   // ── Social proof — editable from admin panel ─────────────────────────────
+  const PROOF_DEFAULTS = { rating: 4.9, reviewCount: 523 };
   const [socialProof, setSocialProof] = useState(() => {
     const cms = loadComprehensiveContentForLanguage(language);
-    return cms.homepage.socialProof;
+    return cms.homepage?.socialProof ?? PROOF_DEFAULTS;
   });
   useEffect(() => {
     syncComprehensiveContentFromDatabase()
-      .then((fresh) => setSocialProof(fresh.homepage.socialProof))
+      .then((fresh) => setSocialProof(fresh.homepage?.socialProof ?? PROOF_DEFAULTS))
       .catch(() => {});
   }, []);
 
-  const displayRating = socialProof.rating;
-  const displayReviewCount = socialProof.reviewCount;
+  const displayRating = socialProof?.rating ?? 4.9;
+  const displayReviewCount = socialProof?.reviewCount ?? 523;
 
   // Lowest price across all products — used in mobile social proof strip
   const lowestPrice =
