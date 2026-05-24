@@ -1,4 +1,4 @@
-import { useParams, useNavigate, useOutletContext } from "react-router";
+import { useParams, useNavigate, useOutletContext, Link } from "react-router";
 import { Breadcrumbs } from "./Breadcrumbs";
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
@@ -8,6 +8,7 @@ import {
   Tag,
   ChevronLeft,
   ChevronRight,
+  MapPin,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import {
@@ -50,6 +51,24 @@ export function BlogArticlePage() {
   const [allArticles, setAllArticles] = useState<BlogArticle[]>([]);
   const [categories, setCategories] = useState<BlogCategory[]>([]);
   const [loading, setLoading] = useState(true);
+  const [relatedTours, setRelatedTours] = useState<Array<{ id: string; title: string; duration?: string; heroImage?: string; published: boolean }>>([]);
+
+  useEffect(() => {
+    const loadTours = async () => {
+      try {
+        const res = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/private-tours`
+        );
+        if (!res.ok) return;
+        const data = await res.json();
+        const published = (data.tours || []).filter((t: { published: boolean }) => t.published);
+        setRelatedTours(published.slice(0, 3));
+      } catch {
+        /* silent fail — sidebar just won't show tours */
+      }
+    };
+    loadTours();
+  }, []);
 
   useEffect(() => {
     const load = async () => {
@@ -379,53 +398,99 @@ export function BlogArticlePage() {
         {/* ── end main content column ── */}
 
         {/* ── Related articles sidebar ── */}
-        {relatedArticles.length > 0 && (
-          <aside className="lg:w-72 lg:flex-shrink-0 mt-10 lg:mt-0">
-            <div className="lg:sticky lg:top-6 space-y-6">
-              <div>
-                <h2 className="mb-4 text-base font-semibold text-foreground">{t.blog.relatedGuides}</h2>
-                <div className="space-y-3">
-                  {relatedArticles.map((rel) => {
-                    const relT = getArticleTranslation(rel, lang);
-                    const relCat = categories.find((c) => c.id === rel.category || c.slug === rel.category);
-                    const relCatName = relCat ? getCategoryTranslation(relCat, lang).name : rel.category;
-                    const relImage = rel.thumbnailImage || rel.featuredImage || rel.heroImage;
-                    return (
-                      <button
-                        key={rel.slug}
-                        onClick={() => navigate(`/travel-guide/${rel.slug}`)}
-                        className="group flex w-full cursor-pointer overflow-hidden rounded-xl border border-border bg-white text-left shadow-sm transition-shadow hover:shadow-md"
+        {(relatedArticles.length > 0 || relatedTours.length > 0) && (
+          <aside className="lg:w-80 lg:flex-shrink-0 mt-10 lg:mt-0">
+            <div className="lg:sticky lg:top-6 space-y-8">
+
+              {/* Related guides */}
+              {relatedArticles.length > 0 && (
+                <div>
+                  <h2 className="mb-4 text-base font-semibold text-foreground">{t.blog.relatedGuides}</h2>
+                  <div className="space-y-3">
+                    {relatedArticles.map((rel) => {
+                      const relT = getArticleTranslation(rel, lang);
+                      const relCat = categories.find((c) => c.id === rel.category || c.slug === rel.category);
+                      const relCatName = relCat ? getCategoryTranslation(relCat, lang).name : rel.category;
+                      const relImage = rel.thumbnailImage || rel.featuredImage || rel.heroImage;
+                      return (
+                        <button
+                          key={rel.slug}
+                          onClick={() => navigate(`/travel-guide/${rel.slug}`)}
+                          className="group flex w-full cursor-pointer overflow-hidden rounded-lg border border-border bg-white text-left shadow-sm transition-shadow hover:shadow-md"
+                        >
+                          {relImage && (
+                            <div className="w-28 shrink-0 overflow-hidden">
+                              <ImageWithFallback
+                                src={relImage}
+                                alt={relT.title}
+                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                              />
+                            </div>
+                          )}
+                          <div className="flex min-w-0 flex-1 flex-col justify-between p-3">
+                            <p className="text-sm font-semibold leading-snug text-foreground line-clamp-3">
+                              {relT.title}
+                            </p>
+                            <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+                              {rel.readTimeMinutes && (
+                                <span className="flex shrink-0 items-center gap-1">
+                                  <Clock className="h-3 w-3 shrink-0" />
+                                  {rel.readTimeMinutes} min
+                                </span>
+                              )}
+                              {relCatName && (
+                                <span className="truncate">· {relCatName}</span>
+                              )}
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Related private tours */}
+              {relatedTours.length > 0 && (
+                <div>
+                  <h2 className="mb-4 text-base font-semibold text-foreground">Private Tours</h2>
+                  <div className="space-y-3">
+                    {relatedTours.map((tour) => (
+                      <Link
+                        key={tour.id}
+                        to={`/private-tours/${tour.id}`}
+                        className="group flex w-full overflow-hidden rounded-lg border border-border bg-white text-left shadow-sm transition-shadow hover:shadow-md"
                       >
-                        {relImage && (
-                          <div className="w-24 shrink-0 overflow-hidden">
+                        {tour.heroImage ? (
+                          <div className="w-28 shrink-0 overflow-hidden">
                             <ImageWithFallback
-                              src={relImage}
-                              alt={relT.title}
+                              src={tour.heroImage}
+                              alt={tour.title}
                               className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                             />
                           </div>
+                        ) : (
+                          <div className="w-28 shrink-0 bg-[#f2ede6] flex items-center justify-center">
+                            <MapPin className="h-5 w-5 text-muted-foreground/50" />
+                          </div>
                         )}
                         <div className="flex min-w-0 flex-1 flex-col justify-between p-3">
-                          <p className="text-sm font-semibold leading-snug text-foreground line-clamp-3">
-                            {relT.title}
+                          <p className="text-sm font-semibold leading-snug text-foreground line-clamp-3 group-hover:text-primary">
+                            {tour.title}
                           </p>
-                          <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
-                            {rel.readTimeMinutes && (
-                              <span className="flex shrink-0 items-center gap-1">
-                                <Clock className="h-3 w-3 shrink-0" />
-                                {rel.readTimeMinutes} min
-                              </span>
-                            )}
-                            {relCatName && (
-                              <span className="truncate">· {relCatName}</span>
-                            )}
-                          </div>
+                          {tour.duration && (
+                            <div className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
+                              <Clock className="h-3 w-3 shrink-0" />
+                              <span>{tour.duration}</span>
+                            </div>
+                          )}
                         </div>
-                      </button>
-                    );
-                  })}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
+
             </div>
           </aside>
         )}
