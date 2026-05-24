@@ -1214,6 +1214,36 @@ export function ContentEditor() {
 
         {/* Homepage Tab */}
         <TabsContent value="homepage" className="space-y-4">
+
+          {/* Social proof strip */}
+          <Card className="p-6">
+            <h3 className="mb-1 text-foreground">Social Proof</h3>
+            <p className="mb-4 text-sm text-muted-foreground">Shown above the fold on mobile — update whenever your Google rating changes.</p>
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <Label>Star rating (e.g. 4.9)</Label>
+                <Input
+                  type="number"
+                  min={1}
+                  max={5}
+                  step={0.1}
+                  value={content.homepage.socialProof?.rating ?? 4.9}
+                  onChange={(e) => updateContent(["homepage", "socialProof", "rating"], parseFloat(e.target.value))}
+                />
+              </div>
+              <div className="flex-1">
+                <Label>Review count (e.g. 523)</Label>
+                <Input
+                  type="number"
+                  min={0}
+                  step={1}
+                  value={content.homepage.socialProof?.reviewCount ?? 523}
+                  onChange={(e) => updateContent(["homepage", "socialProof", "reviewCount"], parseInt(e.target.value, 10))}
+                />
+              </div>
+            </div>
+          </Card>
+
           <Card className="p-6">
             <h3 className="mb-4 text-foreground">Hero Section</h3>
             <div className="space-y-4">

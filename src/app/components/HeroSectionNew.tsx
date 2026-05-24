@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { fetchGoogleRating } from "../lib/googlePlaces";
+import { loadComprehensiveContentForLanguage, syncComprehensiveContentFromDatabase } from "../lib/comprehensiveContent";
 import { ArrowRight, MessageCircle, Mail } from "lucide-react";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
@@ -322,15 +322,19 @@ export function HeroSection({
   const travelGuideImg =
     editableContent?.homepage?.productCards?.travelGuide?.images?.[0]?.src ?? null;
 
-  // ── Google rating (live, cached 24 h) ────────────────────────────────────
-  const [googleRating, setGoogleRating] = useState<{ rating: number; reviewCount: number } | null>(null);
+  // ── Social proof — editable from admin panel ─────────────────────────────
+  const [socialProof, setSocialProof] = useState(() => {
+    const cms = loadComprehensiveContentForLanguage(language);
+    return cms.homepage.socialProof;
+  });
   useEffect(() => {
-    fetchGoogleRating().then((r) => { if (r) setGoogleRating(r); }).catch(() => {});
+    syncComprehensiveContentFromDatabase()
+      .then((fresh) => setSocialProof(fresh.homepage.socialProof))
+      .catch(() => {});
   }, []);
 
-  // Fallback values shown until/if Google Places responds
-  const displayRating = googleRating?.rating ?? 4.9;
-  const displayReviewCount = googleRating?.reviewCount ?? 523;
+  const displayRating = socialProof.rating;
+  const displayReviewCount = socialProof.reviewCount;
 
   // Lowest price across all products — used in mobile social proof strip
   const lowestPrice =

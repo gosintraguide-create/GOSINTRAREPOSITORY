@@ -120,6 +120,10 @@ export interface ComprehensiveContent {
         getPassButton: string;
       };
     };
+    socialProof: {
+      rating: number;
+      reviewCount: number;
+    };
   };
 
   // How It Works Page
@@ -893,6 +897,10 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
         noBookingDescription: "You need to book a Hop On Sintra day pass first to access this exclusive experience.",
         getPassButton: "Get a Day Pass",
       },
+    },
+    socialProof: {
+      rating: 4.9,
+      reviewCount: 523,
     },
   },
 
