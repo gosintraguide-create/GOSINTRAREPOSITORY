@@ -270,7 +270,7 @@ export function BlogArticlePage() {
           {/* 2 — Article title (serif) */}
           <h1 style={{
             fontFamily: "'Source Serif 4', Georgia, serif",
-            fontSize: "clamp(2rem, 5.5vw, 2.875rem)",
+            fontSize: "clamp(2.25rem, 6vw, 3rem)",
             fontWeight: 700,
             color: "#1a1a1a",
             lineHeight: 1.15,
