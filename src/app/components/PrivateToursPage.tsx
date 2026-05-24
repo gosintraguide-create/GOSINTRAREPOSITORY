@@ -365,7 +365,7 @@ function CategorySection({
               width: "4px",
               alignSelf: "stretch",
               borderRadius: "2px",
-              background: `linear-gradient(to bottom, ${category.accent}, ${category.accent}33)`,
+              background: category.accent,
               flexShrink: 0,
             }}
           />
@@ -419,7 +419,7 @@ function CategorySection({
       {/* Desktop grid */}
       <div
         className="hidden md:grid"
-        style={{ gridTemplateColumns: "repeat(3, 1fr)", gap: "14px", alignItems: "stretch" }}
+        style={{ gridTemplateColumns: "repeat(3, 1fr)", gap: "20px", alignItems: "stretch" }}
       >
         {tours.map((tour) => (
           <TourCard key={tour.id} tour={tour} accent={category.accent} />
@@ -970,7 +970,7 @@ export function PrivateToursPage() {
       {/* Desktop */}
       <div
         className="hidden md:flex"
-        style={{ padding: "32px 48px 0", flexDirection: "column", alignItems: "center", textAlign: "center" }}
+        style={{ padding: "40px 48px 28px", flexDirection: "column", alignItems: "center", textAlign: "center" }}
       >
         <p style={{ fontSize: "11px", fontWeight: 700, color: "#ff6b35", letterSpacing: "2px", textTransform: "uppercase", marginBottom: "8px" }}>
           {cms.eyebrow}
@@ -1043,7 +1043,7 @@ export function PrivateToursPage() {
                 style={{
                   scrollMarginTop: `${navbarHeight + stickyNavHeight}px`,
                   background: bg,
-                  paddingTop: isFirst ? "12px" : "48px",
+                  paddingTop: isFirst ? "32px" : "48px",
                   paddingBottom: "48px",
                 }}
               >
