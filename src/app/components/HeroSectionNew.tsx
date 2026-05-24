@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { fetchGoogleRating } from "../lib/googlePlaces";
 import { ArrowRight, MessageCircle, Mail } from "lucide-react";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
@@ -321,6 +322,16 @@ export function HeroSection({
   const travelGuideImg =
     editableContent?.homepage?.productCards?.travelGuide?.images?.[0]?.src ?? null;
 
+  // ── Google rating (live, cached 24 h) ────────────────────────────────────
+  const [googleRating, setGoogleRating] = useState<{ rating: number; reviewCount: number } | null>(null);
+  useEffect(() => {
+    fetchGoogleRating().then((r) => { if (r) setGoogleRating(r); }).catch(() => {});
+  }, []);
+
+  // Fallback values shown until/if Google Places responds
+  const displayRating = googleRating?.rating ?? 4.9;
+  const displayReviewCount = googleRating?.reviewCount ?? 523;
+
   // Lowest price across all products — used in mobile social proof strip
   const lowestPrice =
     priceLoaded && basePrice
@@ -351,9 +362,8 @@ export function HeroSection({
         {/* 2. Social proof */}
         <div className="px-4 pt-4 text-center">
           <span className="text-xs text-muted-foreground">
-            {"★★★★★"} 4.9 &nbsp;·&nbsp;
-            {/* TODO: update review count here if it changes — mirrors reviewCount in HopOnServiceDetailPage.tsx JSON-LD */}
-            523 reviews &nbsp;·&nbsp;
+            {"★★★★★"} {displayRating} &nbsp;·&nbsp;
+            {displayReviewCount.toLocaleString()} reviews &nbsp;·&nbsp;
             {lowestPrice != null ? `From €${lowestPrice}/person` : "From €25/person"}
           </span>
         </div>
