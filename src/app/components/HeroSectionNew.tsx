@@ -463,6 +463,11 @@ export function HeroSection({
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
+
+            {/* Social proof */}
+            <p className="mt-4 text-xs text-muted-foreground">
+              {"★★★★★"} {displayRating} &nbsp;·&nbsp; {displayReviewCount.toLocaleString()} reviews
+            </p>
           </div>
 
           {/* Right column — photo grid */}
