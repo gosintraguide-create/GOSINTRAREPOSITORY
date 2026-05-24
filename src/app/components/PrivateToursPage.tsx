@@ -506,8 +506,10 @@ function CategoryStickyNav({
       id="private-tours-sticky-nav"
       className="px-[18px] md:px-[48px]"
       style={{
-        position: "sticky",
+        position: "fixed",
         top: navbarHeight,
+        left: 0,
+        right: 0,
         zIndex: 40,
         background: "#f8f5f0",
         borderBottom: "1px solid rgba(180,140,80,0.25)",
@@ -990,12 +992,14 @@ export function PrivateToursPage() {
         </h1>
       </div>
 
-      {/* ── Sticky category nav ───────────────────────────────────────────── */}
+      {/* ── Fixed category nav ───────────────────────────────────────────── */}
       <CategoryStickyNav
         navbarHeight={navbarHeight}
         activeCategory={activeCategory}
         onPillClick={handlePillClick}
       />
+      {/* Spacer so content below isn't hidden behind the fixed nav */}
+      <div style={{ height: stickyNavHeight }} />
 
       {/* ── Loading / error / empty states ────────────────────────────────── */}
       {loading && (
