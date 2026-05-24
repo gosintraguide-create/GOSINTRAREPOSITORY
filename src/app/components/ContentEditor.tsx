@@ -1042,6 +1042,10 @@ export function ContentEditor() {
             <FileText className="mr-1 h-4 w-4" />
             Travel Guide
           </TabsTrigger>
+          <TabsTrigger value="privateTours" className="flex-shrink-0">
+            <MapPin className="mr-1 h-4 w-4" />
+            Private Tours
+          </TabsTrigger>
           <TabsTrigger value="settings" className="flex-shrink-0">
             <Settings className="mr-1 h-4 w-4" />
             Settings
@@ -2333,6 +2337,203 @@ export function ContentEditor() {
               <div><Label>Book Flexible Day Pass</Label><Input value={mainContent.blog?.bookFlexibleDayPass || ""} onChange={(e) => updateMainContentField(["blog", "bookFlexibleDayPass"], e.target.value)} /></div>
               <div><Label>Book Day Pass Now</Label><Input value={mainContent.blog?.bookDayPassNow || ""} onChange={(e) => updateMainContentField(["blog", "bookDayPassNow"], e.target.value)} /></div>
             </div>
+          </Card>
+        </TabsContent>
+
+        {/* Private Tours Page Tab */}
+        <TabsContent value="privateTours" className="space-y-4">
+          {/* Page Header */}
+          <Card className="p-6">
+            <h3 className="mb-1 text-foreground">Page Header</h3>
+            <p className="mb-4 text-sm text-muted-foreground">
+              Controls the eyebrow text and title shown at the top of the Private Tours page.
+            </p>
+            <div className="space-y-4">
+              <div>
+                <Label>Eyebrow label (above title)</Label>
+                <Input
+                  value={content.privateTours?.page?.eyebrow ?? "Sintra, Portugal"}
+                  onChange={(e) => updateContent(["privateTours", "page", "eyebrow"], e.target.value)}
+                  placeholder="Sintra, Portugal"
+                />
+              </div>
+              <div>
+                <Label>Page Title (h1)</Label>
+                <Input
+                  value={content.privateTours?.page?.heroTitle ?? "Private tours"}
+                  onChange={(e) => updateContent(["privateTours", "page", "heroTitle"], e.target.value)}
+                  placeholder="Private tours"
+                />
+              </div>
+            </div>
+          </Card>
+
+          {/* Category Descriptions */}
+          <Card className="p-6">
+            <h3 className="mb-1 text-foreground">Tour Categories</h3>
+            <p className="mb-4 text-sm text-muted-foreground">
+              Names and descriptions shown in each category section header. Accent colours are fixed design tokens.
+            </p>
+            <div className="space-y-6">
+              {(
+                [
+                  { key: "classicSintra", label: "Classic Sintra", accent: "#c8a84b" },
+                  { key: "offTheBeatenPath", label: "Off the Beaten Path", accent: "#2d5a3d" },
+                  { key: "natureAdventure", label: "Nature & Adventure", accent: "#cc5500" },
+                  { key: "hiking", label: "Hiking", accent: "#4a6a8a" },
+                ] as const
+              ).map(({ key, label, accent }) => (
+                <div key={key} className="rounded-lg border border-border p-4">
+                  <div className="mb-3 flex items-center gap-2">
+                    <div className="h-3 w-3 rounded-full" style={{ background: accent }} />
+                    <span className="font-medium text-sm text-foreground">{label}</span>
+                  </div>
+                  <div className="space-y-3">
+                    <div>
+                      <Label>Category Name (displayed on page)</Label>
+                      <Input
+                        value={(content.privateTours?.page?.categories as any)?.[key]?.name ?? ""}
+                        onChange={(e) => updateContent(["privateTours", "page", "categories", key, "name"], e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label>Description (shown under the category name)</Label>
+                      <Textarea
+                        value={(content.privateTours?.page?.categories as any)?.[key]?.description ?? ""}
+                        onChange={(e) => updateContent(["privateTours", "page", "categories", key, "description"], e.target.value)}
+                        rows={2}
+                      />
+                    </div>
+                    <div>
+                      <Label>Coming Soon card text</Label>
+                      <Input
+                        value={(content.privateTours?.page?.categories as any)?.[key]?.comingSoonDesc ?? ""}
+                        onChange={(e) => updateContent(["privateTours", "page", "categories", key, "comingSoonDesc"], e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          {/* Bottom CTA */}
+          <Card className="p-6">
+            <h3 className="mb-1 text-foreground">Bottom CTA Banner</h3>
+            <p className="mb-4 text-sm text-muted-foreground">
+              The dark band at the bottom of the page that links visitors to WhatsApp.
+            </p>
+            <div className="space-y-4">
+              <div>
+                <Label>Heading</Label>
+                <Input
+                  value={content.privateTours?.page?.ctaTitle ?? ""}
+                  onChange={(e) => updateContent(["privateTours", "page", "ctaTitle"], e.target.value)}
+                  placeholder="Not sure which tour is right for you?"
+                />
+              </div>
+              <div>
+                <Label>Body text</Label>
+                <Textarea
+                  value={content.privateTours?.page?.ctaBody ?? ""}
+                  onChange={(e) => updateContent(["privateTours", "page", "ctaBody"], e.target.value)}
+                  rows={2}
+                  placeholder="Chat with us and we'll help you find the perfect experience."
+                />
+              </div>
+              <div>
+                <Label>Button text</Label>
+                <Input
+                  value={content.privateTours?.page?.ctaButton ?? ""}
+                  onChange={(e) => updateContent(["privateTours", "page", "ctaButton"], e.target.value)}
+                  placeholder="Chat with us →"
+                />
+              </div>
+            </div>
+          </Card>
+
+          {/* FAQ */}
+          <Card className="p-6">
+            <h3 className="mb-1 text-foreground">FAQ Section</h3>
+            <p className="mb-4 text-sm text-muted-foreground">
+              Questions and answers shown at the bottom of the Private Tours page.
+            </p>
+            <div className="mb-4">
+              <Label>Section heading</Label>
+              <Input
+                value={content.privateTours?.page?.faqTitle ?? "Frequently Asked Questions"}
+                onChange={(e) => updateContent(["privateTours", "page", "faqTitle"], e.target.value)}
+              />
+            </div>
+            <div className="space-y-4">
+              {(content.privateTours?.page?.faq ?? []).map((item, i) => (
+                <div key={i} className="rounded-lg border border-border p-4">
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Question {i + 1}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 text-destructive hover:text-destructive"
+                      onClick={() => {
+                        const updated = [...(content.privateTours?.page?.faq ?? [])];
+                        updated.splice(i, 1);
+                        updateContent(["privateTours", "page", "faq"], updated);
+                      }}
+                    >
+                      <Trash2 className="h-3.5 w-3.5 mr-1" /> Remove
+                    </Button>
+                  </div>
+                  <div className="space-y-3">
+                    <div>
+                      <Label>Question</Label>
+                      <Input
+                        value={item.question}
+                        onChange={(e) => {
+                          const updated = [...(content.privateTours?.page?.faq ?? [])];
+                          updated[i] = { ...updated[i], question: e.target.value };
+                          updateContent(["privateTours", "page", "faq"], updated);
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <Label>Answer</Label>
+                      <Textarea
+                        value={item.answer}
+                        onChange={(e) => {
+                          const updated = [...(content.privateTours?.page?.faq ?? [])];
+                          updated[i] = { ...updated[i], answer: e.target.value };
+                          updateContent(["privateTours", "page", "faq"], updated);
+                        }}
+                        rows={3}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => {
+                  const updated = [
+                    ...(content.privateTours?.page?.faq ?? []),
+                    { question: "", answer: "" },
+                  ];
+                  updateContent(["privateTours", "page", "faq"], updated);
+                }}
+              >
+                <Plus className="mr-2 h-4 w-4" /> Add FAQ item
+              </Button>
+            </div>
+          </Card>
+
+          {/* Tour Manager shortcut */}
+          <Card className="p-6">
+            <h3 className="mb-1 text-foreground">Tour Listings</h3>
+            <p className="text-sm text-muted-foreground">
+              Individual tour cards (title, description, pricing, images, features) are managed in the <strong>Private Tours</strong> section of the admin menu.
+            </p>
           </Card>
         </TabsContent>
 

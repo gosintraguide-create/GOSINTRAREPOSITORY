@@ -38,6 +38,7 @@ const LS_KEY = (lang: string) => `private-tours-cache-${lang}`;
 const LS_TS_KEY = (lang: string) => `private-tours-cache-ts-${lang}`;
 
 import { getTranslation, getUITranslation } from "../lib/translations/loader";
+import { loadComprehensiveContentForLanguage, syncComprehensiveContentFromDatabase, type ComprehensiveContent } from "../lib/comprehensiveContent";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
 import { toast } from 'sonner';
 import {
@@ -96,39 +97,50 @@ interface OutletContext {
   onNavigate: (page: string, data?: any) => void;
 }
 
-// ── Category definitions ─────────────────────────────────────────────────────
-const CATEGORIES = [
-  {
-    id: "classic_sintra",
-    name: "CLASSIC SINTRA",
-    description: "Palaces, history, and the iconic route — Sintra as it should be seen.",
-    accent: "#c8a84b",
-    comingSoonDesc: "A new classic experience is being crafted.",
-  },
-  {
-    id: "off_the_beaten_path",
-    name: "OFF THE BEATEN PATH",
-    description: "Hidden corners, local spots, the Sintra most tourists never find.",
-    accent: "#2d5a3d",
-    comingSoonDesc: "Another hidden gem is on its way.",
-  },
-  {
-    id: "nature_adventure",
-    name: "NATURE & ADVENTURE",
-    description: "Less castles, more wilderness. Off-road, raw, and unforgettable.",
-    accent: "#cc5500",
-    comingSoonDesc: "A wilder adventure is being built.",
-  },
-  {
-    id: "hiking",
-    name: "HIKING",
-    description: "On foot, at your pace. Different trails, different landscapes, one unforgettable region.",
-    accent: "#4a6a8a",
-    comingSoonDesc: "Trail guides launching soon.",
-  },
-] as const;
+// ── Category definitions (names/descriptions come from CMS) ─────────────────
+// Accents are design tokens and not editable from the admin.
+const CATEGORY_ACCENTS = {
+  classic_sintra: "#c8a84b",
+  off_the_beaten_path: "#2d5a3d",
+  nature_adventure: "#cc5500",
+  hiking: "#4a6a8a",
+} as const;
 
-type CategoryId = typeof CATEGORIES[number]["id"];
+// Build the CATEGORIES array from the CMS content at runtime (called inside the component)
+function buildCategories(cms: ComprehensiveContent["privateTours"]["page"]) {
+  return [
+    {
+      id: "classic_sintra" as const,
+      name: cms.categories.classicSintra.name,
+      description: cms.categories.classicSintra.description,
+      accent: CATEGORY_ACCENTS.classic_sintra,
+      comingSoonDesc: cms.categories.classicSintra.comingSoonDesc,
+    },
+    {
+      id: "off_the_beaten_path" as const,
+      name: cms.categories.offTheBeatenPath.name,
+      description: cms.categories.offTheBeatenPath.description,
+      accent: CATEGORY_ACCENTS.off_the_beaten_path,
+      comingSoonDesc: cms.categories.offTheBeatenPath.comingSoonDesc,
+    },
+    {
+      id: "nature_adventure" as const,
+      name: cms.categories.natureAdventure.name,
+      description: cms.categories.natureAdventure.description,
+      accent: CATEGORY_ACCENTS.nature_adventure,
+      comingSoonDesc: cms.categories.natureAdventure.comingSoonDesc,
+    },
+    {
+      id: "hiking" as const,
+      name: cms.categories.hiking.name,
+      description: cms.categories.hiking.description,
+      accent: CATEGORY_ACCENTS.hiking,
+      comingSoonDesc: cms.categories.hiking.comingSoonDesc,
+    },
+  ];
+}
+
+type CategoryId = "classic_sintra" | "off_the_beaten_path" | "nature_adventure" | "hiking";
 
 
 /** Assign a tour to a category. Uses the `category` field when present,
@@ -550,6 +562,19 @@ export function PrivateToursPage() {
   const t = content.privateTours;
   const uiT = getUITranslation(language);
 
+  // CMS page content (editable from admin)
+  const [cmsContent, setCmsContent] = useState<ComprehensiveContent>(
+    () => loadComprehensiveContentForLanguage(language)
+  );
+  const cms = cmsContent.privateTours.page;
+  const CATEGORIES = buildCategories(cms);
+
+  useEffect(() => {
+    syncComprehensiveContentFromDatabase().then((fresh) => {
+      setCmsContent(fresh);
+    }).catch(() => {/* keep cached */});
+  }, []);
+
   const [tours, setTours] = useState<PrivateTour[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -948,20 +973,20 @@ export function PrivateToursPage() {
         style={{ padding: "32px 48px 0", flexDirection: "column", alignItems: "center", textAlign: "center" }}
       >
         <p style={{ fontSize: "11px", fontWeight: 700, color: "#ff6b35", letterSpacing: "2px", textTransform: "uppercase", marginBottom: "8px" }}>
-          Sintra, Portugal
+          {cms.eyebrow}
         </p>
         <h1 style={{ fontSize: "32px", fontWeight: 900, color: "#0d4a4a", letterSpacing: "-1px", lineHeight: 1.1, margin: 0 }}>
-          {t.hero?.title || "Private tours"}
+          {cms.heroTitle}
         </h1>
       </div>
 
       {/* Mobile */}
       <div className="md:hidden" style={{ padding: "24px 18px 0", textAlign: "center" }}>
         <p style={{ fontSize: "11px", fontWeight: 700, color: "#ff6b35", letterSpacing: "2px", textTransform: "uppercase", marginBottom: "8px" }}>
-          Sintra, Portugal
+          {cms.eyebrow}
         </p>
         <h1 style={{ fontSize: "26px", fontWeight: 900, color: "#0d4a4a", letterSpacing: "-0.5px", lineHeight: 1.1, marginBottom: "8px" }}>
-          {t.hero?.title || "Private tours"}
+          {cms.heroTitle}
         </h1>
       </div>
 
@@ -1052,10 +1077,10 @@ export function PrivateToursPage() {
         >
           <div>
             <p style={{ fontSize: "16px", fontWeight: 800, color: "white", marginBottom: "5px" }}>
-              Not sure which tour is right for you?
+              {cms.ctaTitle}
             </p>
             <p style={{ fontSize: "13px", color: "#888", lineHeight: 1.5 }}>
-              Chat with us and we'll help you find the perfect experience.
+              {cms.ctaBody}
             </p>
           </div>
           <a
@@ -1075,7 +1100,7 @@ export function PrivateToursPage() {
               marginLeft: "24px",
             }}
           >
-            Chat with us →
+            {cms.ctaButton}
           </a>
         </div>
 
@@ -1088,10 +1113,10 @@ export function PrivateToursPage() {
           }}
         >
           <p style={{ fontSize: "16px", fontWeight: 800, color: "white", marginBottom: "5px" }}>
-            Not sure which tour is right for you?
+            {cms.ctaTitle}
           </p>
           <p style={{ fontSize: "13px", color: "#888", lineHeight: 1.5, marginBottom: "12px" }}>
-            Chat with us and we'll help you find the perfect experience.
+            {cms.ctaBody}
           </p>
           <a
             href="https://wa.me/351932967279"
@@ -1111,7 +1136,7 @@ export function PrivateToursPage() {
               boxSizing: "border-box",
             }}
           >
-            Chat with us →
+            {cms.ctaButton}
           </a>
         </div>
       </>
@@ -1120,31 +1145,10 @@ export function PrivateToursPage() {
       <section style={{ background: "#f2ede6", padding: "48px 18px" }}>
         <div style={{ maxWidth: "720px", margin: "0 auto" }}>
           <h2 style={{ fontSize: "22px", fontWeight: 900, color: "#0d4a4a", marginBottom: "28px", letterSpacing: "-0.5px" }}>
-            Frequently Asked Questions
+            {cms.faqTitle}
           </h2>
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            {[
-              {
-                q: "What is a private tour in Sintra?",
-                a: "A private tour with Hop On Sintra is an exclusive guided experience reserved entirely for your group. Your dedicated local expert takes you through Sintra's palaces, castles, gardens, and hidden gems at your own pace, with a fully customisable itinerary.",
-              },
-              {
-                q: "How do I book a private tour in Sintra?",
-                a: "Browse our private tour options above, choose the experience that suits your group, and click to check availability. You can also reach us on WhatsApp to discuss your requirements before booking.",
-              },
-              {
-                q: "What is the difference between the hop-on day pass and a private tour?",
-                a: "The hop-on day pass gives you unlimited shared tuk-tuk and jeep rides between Sintra's major stops from 9am to 7pm. A private tour is exclusively for your group, with a dedicated guide, a custom itinerary, and door-to-door commentary — ideal for families, couples, and special occasions.",
-              },
-              {
-                q: "Can I customise a private tour itinerary?",
-                a: "Yes. All Hop On Sintra private tours are fully customisable. Contact us before booking to request specific stops, a different pace, or a bespoke route that includes locations not listed in our standard packages.",
-              },
-              {
-                q: "How many people can join a private tour?",
-                a: "Our private tours are designed for small groups, typically 1–8 guests. Larger groups can be accommodated on request — contact us to discuss options.",
-              },
-            ].map((item, i) => (
+            {cms.faq.map((item, i) => (
               <div
                 key={i}
                 style={{
@@ -1155,10 +1159,10 @@ export function PrivateToursPage() {
                 }}
               >
                 <h3 style={{ fontSize: "15px", fontWeight: 700, color: "#1a1a1a", marginBottom: "8px" }}>
-                  {item.q}
+                  {item.question}
                 </h3>
                 <p style={{ fontSize: "14px", color: "#666", lineHeight: 1.6, margin: 0 }}>
-                  {item.a}
+                  {item.answer}
                 </p>
               </div>
             ))}

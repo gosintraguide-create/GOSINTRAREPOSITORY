@@ -563,6 +563,25 @@ export interface ComprehensiveContent {
     requestPickup: { title: string; description: string; keywords: string; ogImage?: string };
   };
 
+  // Private Tours Page (editable from admin)
+  privateTours: {
+    page: {
+      eyebrow: string;
+      heroTitle: string;
+      ctaTitle: string;
+      ctaBody: string;
+      ctaButton: string;
+      faqTitle: string;
+      faq: Array<{ question: string; answer: string }>;
+      categories: {
+        classicSintra: { name: string; description: string; comingSoonDesc: string };
+        offTheBeatenPath: { name: string; description: string; comingSoonDesc: string };
+        natureAdventure: { name: string; description: string; comingSoonDesc: string };
+        hiking: { name: string; description: string; comingSoonDesc: string };
+      };
+    };
+  };
+
   // Admin Settings (persisted across sessions and devices)
   adminSettings?: {
     autoTranslateEnabled: boolean;
@@ -1677,6 +1696,60 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
       title: "Request Pickup - Go Sintra",
       description: "Request a Go Sintra vehicle to your current location. Real-time tracking and estimated arrival times.",
       keywords: "request pickup Sintra, on-demand transport Sintra, Sintra ride request",
+    },
+  },
+  privateTours: {
+    page: {
+      eyebrow: "Sintra, Portugal",
+      heroTitle: "Private tours",
+      ctaTitle: "Not sure which tour is right for you?",
+      ctaBody: "Chat with us and we'll help you find the perfect experience.",
+      ctaButton: "Chat with us →",
+      faqTitle: "Frequently Asked Questions",
+      faq: [
+        {
+          question: "What is a private tour in Sintra?",
+          answer: "A private tour with Hop On Sintra is an exclusive guided experience reserved entirely for your group. Your dedicated local expert takes you through Sintra's palaces, castles, gardens, and hidden gems at your own pace, with a fully customisable itinerary.",
+        },
+        {
+          question: "How do I book a private tour in Sintra?",
+          answer: "Browse our private tour options above, choose the experience that suits your group, and click to check availability. You can also reach us on WhatsApp to discuss your requirements before booking.",
+        },
+        {
+          question: "What is the difference between the hop-on day pass and a private tour?",
+          answer: "The hop-on day pass gives you unlimited shared tuk-tuk and jeep rides between Sintra's major stops from 9am to 7pm. A private tour is exclusively for your group, with a dedicated guide, a custom itinerary, and door-to-door commentary — ideal for families, couples, and special occasions.",
+        },
+        {
+          question: "Can I customise a private tour itinerary?",
+          answer: "Yes. All Hop On Sintra private tours are fully customisable. Contact us before booking to request specific stops, a different pace, or a bespoke route that includes locations not listed in our standard packages.",
+        },
+        {
+          question: "How many people can join a private tour?",
+          answer: "Our private tours are designed for small groups, typically 1–8 guests. Larger groups can be accommodated on request — contact us to discuss options.",
+        },
+      ],
+      categories: {
+        classicSintra: {
+          name: "CLASSIC SINTRA",
+          description: "Iconic palaces, royal gardens, and the soul of Sintra's UNESCO heritage.",
+          comingSoonDesc: "More classic routes coming soon.",
+        },
+        offTheBeatenPath: {
+          name: "OFF THE BEATEN PATH",
+          description: "Hidden corners, local spots, the Sintra most tourists never find.",
+          comingSoonDesc: "Another hidden gem is on its way.",
+        },
+        natureAdventure: {
+          name: "NATURE & ADVENTURE",
+          description: "Less castles, more wilderness. Off-road, raw, and unforgettable.",
+          comingSoonDesc: "A wilder adventure is being built.",
+        },
+        hiking: {
+          name: "HIKING",
+          description: "On foot, at your pace. Different trails, different landscapes, one unforgettable region.",
+          comingSoonDesc: "Trail guides launching soon.",
+        },
+      },
     },
   },
   adminSettings: {
