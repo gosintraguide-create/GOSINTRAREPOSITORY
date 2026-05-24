@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { useOutletContext } from "react-router";
 import { Link } from "react-router";
@@ -506,10 +506,8 @@ function CategoryStickyNav({
       id="private-tours-sticky-nav"
       className="px-[18px] md:px-[48px]"
       style={{
-        position: "fixed",
+        position: "sticky",
         top: navbarHeight,
-        left: 0,
-        right: 0,
         zIndex: 40,
         background: "#f8f5f0",
         borderBottom: "1px solid rgba(180,140,80,0.25)",
@@ -600,17 +598,18 @@ export function PrivateToursPage() {
   const [navbarHeight, setNavbarHeight] = useState(64);
   const [stickyNavHeight, setStickyNavHeight] = useState(46);
 
-  // Measure the site header and sticky nav heights (runs before paint to prevent flash)
-  useLayoutEffect(() => {
-    const measure = () => {
-      const header = document.querySelector("[data-site-header]");
-      if (header) setNavbarHeight(header.getBoundingClientRect().height);
+  // Track site-header height with ResizeObserver — fires on initial paint, font load,
+  // mobile URL-bar collapse, and viewport resize (same pattern as HopOnServiceDetailPage).
+  useEffect(() => {
+    const el = document.querySelector("[data-site-header]") ?? document.querySelector("header");
+    if (!el) return;
+    const ro = new ResizeObserver(() => {
+      setNavbarHeight((el as HTMLElement).offsetHeight);
       const stickyNav = document.getElementById("private-tours-sticky-nav");
-      if (stickyNav) setStickyNavHeight(stickyNav.getBoundingClientRect().height);
-    };
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
+      if (stickyNav) setStickyNavHeight((stickyNav as HTMLElement).offsetHeight);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
   }, []);
 
   // Track which category section is in view using IntersectionObserver
@@ -992,14 +991,12 @@ export function PrivateToursPage() {
         </h1>
       </div>
 
-      {/* ── Fixed category nav ───────────────────────────────────────────── */}
+      {/* ── Sticky category nav ───────────────────────────────────────────── */}
       <CategoryStickyNav
         navbarHeight={navbarHeight}
         activeCategory={activeCategory}
         onPillClick={handlePillClick}
       />
-      {/* Spacer so content below isn't hidden behind the fixed nav */}
-      <div style={{ height: stickyNavHeight }} />
 
       {/* ── Loading / error / empty states ────────────────────────────────── */}
       {loading && (
