@@ -299,12 +299,6 @@ export function AttractionDetailPage() {
         opens: "09:00",
         closes: "19:00",
       },
-      aggregateRating: {
-        "@type": "AggregateRating",
-        ratingValue: "4.8",
-        reviewCount: "250",
-        bestRating: "5",
-      },
       ...(attraction.price && { priceRange: "€€" }),
     };
   }, [attraction, attractionId]);
