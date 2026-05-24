@@ -165,7 +165,6 @@ export function SunsetSpecialPurchasePage() {
     }
 
     setIsCreatingPayment(true);
-    setIsCreatingPayment(true);
 
     try {
       // Create payment intent for sunset special add-on

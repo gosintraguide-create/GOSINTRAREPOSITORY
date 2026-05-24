@@ -443,14 +443,44 @@ export function BuyTicketPage() {
     setIsCreatingPayment(true);
     setPaymentInitError(null);
     try {
-      const response = await createPaymentIntent(totalPrice, {
-        customerName: formData.fullName,
-        customerEmail: formData.email,
-        customerPhone: `${formData.phonePrefix}${formData.phoneNumber}`,
-        date: formData.date,
+      // Build pending booking data — stored server-side so stripe-webhook can
+      // complete the booking if the client drops after payment confirmation
+      const pendingPassengers = [
+        ...Array.from({ length: formData.adultQuantity }, (_, i) => ({
+          name: i === 0 ? formData.fullName : `Adult ${i + 1}`,
+          type: "Adult",
+        })),
+        ...Array.from({ length: formData.childQuantity }, (_, i) => ({
+          name: `Child ${i + 1}`,
+          type: "Child",
+        })),
+      ];
+
+      const pendingBookingData = {
+        contactInfo: {
+          name: formData.fullName,
+          email: formData.email,
+          phone: `${formData.phonePrefix}${formData.phoneNumber}`,
+        },
+        selectedDate: formData.date,
         timeSlot: formData.timeSlot,
-        quantity: formData.quantity,
-      });
+        pickupLocation: formData.pickupLocation,
+        passengers: pendingPassengers,
+        totalPrice,
+      };
+
+      const response = await createPaymentIntent(
+        totalPrice,
+        {
+          customerName: formData.fullName,
+          customerEmail: formData.email,
+          customerPhone: `${formData.phonePrefix}${formData.phoneNumber}`,
+          date: formData.date,
+          timeSlot: formData.timeSlot,
+          quantity: formData.quantity,
+        },
+        pendingBookingData,
+      );
 
       if (response.success && response.data) {
         setPaymentClientSecret(response.data.clientSecret);

@@ -586,6 +586,20 @@ app.post("/make-server-3bd0ade8/bookings", async (c) => {
     const body = await c.req.json();
     const { paymentIntentId, isTestBooking, skipEmail } = body;
 
+    // Idempotency: if this PI already triggered a booking (via webhook), return it
+    if (paymentIntentId) {
+      try {
+        const claimed = await kv.get(`pi_claimed_${paymentIntentId}`) as any;
+        if (claimed?.bookingId) {
+          const existingBooking = await kv.get(claimed.bookingId);
+          if (existingBooking) {
+            console.log(`ℹ️ Booking already exists for PI ${paymentIntentId} — returning ${claimed.bookingId}`);
+            return c.json({ success: true, booking: existingBooking, emailSent: true });
+          }
+        }
+      } catch {}
+    }
+
     // Payment verification
     if (stripe && paymentIntentId && !isTestBooking) {
       try {
@@ -615,6 +629,42 @@ app.post("/make-server-3bd0ade8/bookings", async (c) => {
     };
 
     await kv.set(bookingId, booking);
+
+    // Mark PI as claimed + clean up pending data (idempotency / webhook safety)
+    if (booking.paymentIntentId) {
+      try {
+        await kv.set(`pi_claimed_${booking.paymentIntentId}`, { bookingId, claimedAt: new Date().toISOString() });
+        await kv.del(`pending_pi_${booking.paymentIntentId}`);
+      } catch {}
+    }
+
+    // Decrement per-slot availability (same logic as driver-sales/create)
+    try {
+      const TIME_SLOTS_LIST = ["9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"];
+      const bookingDate = body.selectedDate;
+      const bookingSlot = body.timeSlot;
+      const passengerCount = body.passengers?.length || 1;
+
+      if (bookingDate && bookingSlot) {
+        const storedAvail = await kv.get(`availability_${bookingDate}`);
+        let slotMap: Record<string, number>;
+
+        if (storedAvail && typeof storedAvail === "object" &&
+            TIME_SLOTS_LIST.some(s => s in (storedAvail as any))) {
+          slotMap = { ...(storedAvail as Record<string, number>) };
+        } else {
+          slotMap = {};
+          TIME_SLOTS_LIST.forEach(s => { slotMap[s] = 50; });
+        }
+
+        if (slotMap[bookingSlot] !== undefined) {
+          slotMap[bookingSlot] = Math.max(0, slotMap[bookingSlot] - passengerCount);
+        }
+        await kv.set(`availability_${bookingDate}`, slotMap);
+      }
+    } catch (e) {
+      console.error("Availability decrement failed:", e);
+    }
 
     // Track prefix
     try {
@@ -923,6 +973,141 @@ app.post("/make-server-3bd0ade8/verify-booking-login", async (c) => {
   } catch (error) {
     console.error("Login verification error:", error);
     return c.json({ success: false, error: "Verification failed" }, 500);
+  }
+});
+
+// POST /bookings/lookup — find booking by bookingId + lastName, return full booking (ManageBookingPage)
+app.post("/make-server-3bd0ade8/bookings/lookup", async (c) => {
+  try {
+    const { bookingId, lastName } = await c.req.json();
+
+    if (!bookingId || !lastName) {
+      return c.json({ success: false, error: "Booking ID and last name are required" }, 400);
+    }
+
+    let booking = await kv.get(bookingId);
+    if (!booking) booking = await kv.get(`booking_${bookingId}`);
+
+    if (!booking) {
+      return c.json({ success: false, error: "Booking not found" }, 404);
+    }
+
+    // Verify last name
+    const bookingName = (booking as any).contactInfo?.name || "";
+    const bookingLastName = bookingName.split(" ").slice(-1)[0].toLowerCase();
+    const inputLastName = lastName.trim().toLowerCase();
+
+    if (bookingLastName !== inputLastName) {
+      return c.json({ success: false, error: "Invalid credentials" }, 401);
+    }
+
+    return c.json({ success: true, booking });
+  } catch (error) {
+    console.error("Booking lookup error:", error);
+    return c.json({ success: false, error: "Lookup failed" }, 500);
+  }
+});
+
+// GET /bookings/:id/full — return full booking by ID (SunsetSpecialPurchasePage)
+app.get("/make-server-3bd0ade8/bookings/:id/full", async (c) => {
+  try {
+    const id = c.req.param("id");
+    let booking = await kv.get(id);
+    if (!booking) booking = await kv.get(`booking_${id}`);
+
+    if (!booking) {
+      return c.json({ success: false, error: "Booking not found" }, 404);
+    }
+
+    return c.json({ success: true, booking });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// GET /bookings/:id/pdf — generate and return PDF as application/pdf
+app.get("/make-server-3bd0ade8/bookings/:id/pdf", async (c) => {
+  try {
+    const id = c.req.param("id");
+    let booking = await kv.get(id);
+    if (!booking) booking = await kv.get(`booking_${id}`);
+
+    if (!booking) {
+      return c.json({ success: false, error: "Booking not found" }, 404);
+    }
+
+    const qrCodes: string[] = (booking as any).qrCodes || [];
+    const pdfBase64 = await generateBookingPDF(booking, qrCodes);
+
+    // Decode base64 → Uint8Array
+    const binaryStr = atob(pdfBase64);
+    const bytes = new Uint8Array(binaryStr.length);
+    for (let i = 0; i < binaryStr.length; i++) {
+      bytes[i] = binaryStr.charCodeAt(i);
+    }
+
+    return new Response(bytes, {
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename="booking-${id}.pdf"`,
+      },
+    });
+  } catch (error) {
+    console.error("PDF generation error:", error);
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// POST /bookings/:id/add-sunset-special — add sunset special to an existing booking
+app.post("/make-server-3bd0ade8/bookings/:id/add-sunset-special", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const body = await c.req.json();
+    const { paymentIntentId, sunsetDate, quantity, amount } = body;
+
+    // Verify payment
+    if (stripe && paymentIntentId) {
+      try {
+        const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+        if (paymentIntent.status !== "succeeded") {
+          return c.json({ success: false, error: "Payment not confirmed" }, 400);
+        }
+      } catch {
+        return c.json({ success: false, error: "Payment verification failed" }, 400);
+      }
+    }
+
+    let booking = await kv.get(id) as any;
+    if (!booking) booking = await kv.get(`booking_${id}`) as any;
+
+    if (!booking) {
+      return c.json({ success: false, error: "Booking not found" }, 404);
+    }
+
+    // Attach sunset special to the booking
+    booking.sunsetSpecial = {
+      date: sunsetDate,
+      quantity: quantity || 1,
+      amount,
+      paymentIntentId,
+      addedAt: new Date().toISOString(),
+    };
+    await kv.set(id, booking);
+
+    // Record in sunset_bookings_{date} for availability tracking
+    const date = sunsetDate || booking.selectedDate;
+    const sunsetBookings = ((await kv.get(`sunset_bookings_${date}`)) as any[]) || [];
+    sunsetBookings.push({
+      bookingId: id,
+      quantity: quantity || 1,
+      addedAt: new Date().toISOString(),
+    });
+    await kv.set(`sunset_bookings_${date}`, sunsetBookings);
+
+    return c.json({ success: true, booking });
+  } catch (error) {
+    console.error("Add sunset special error:", error);
+    return c.json({ success: false, error: String(error) }, 500);
   }
 });
 
@@ -1946,13 +2131,25 @@ app.get("/make-server-3bd0ade8/stripe-config", (c) => {
 app.post("/make-server-3bd0ade8/create-payment-intent", async (c) => {
   if (!stripe) return c.json({ success: false, error: "Payment processing not configured" }, 503);
   try {
-    const { amount, currency = "eur", metadata } = await c.req.json();
+    const { amount, currency = "eur", metadata, pendingBookingData } = await c.req.json();
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount * 100),
       currency,
       metadata: metadata || {},
       automatic_payment_methods: { enabled: true },
     });
+
+    // Store pending booking data so the stripe-webhook can complete the booking
+    // if the client drops after payment confirmation but before calling POST /bookings
+    if (pendingBookingData) {
+      try {
+        await kv.set(`pending_pi_${paymentIntent.id}`, {
+          ...pendingBookingData,
+          pendingAt: new Date().toISOString(),
+        });
+      } catch {}
+    }
+
     return c.json({ success: true, clientSecret: paymentIntent.client_secret, paymentIntentId: paymentIntent.id });
   } catch (error) {
     return c.json({ success: false, error: String(error) }, 500);
@@ -1984,6 +2181,113 @@ app.post("/make-server-3bd0ade8/verify-payment", async (c) => {
   } catch (error) {
     return c.json({ success: false, error: String(error) }, 500);
   }
+});
+
+// POST /stripe-webhook — safety net: creates booking if client dropped after payment
+app.post("/make-server-3bd0ade8/stripe-webhook", async (c) => {
+  if (!stripe) return c.json({ success: false, error: "Stripe not configured" }, 503);
+
+  const sig = c.req.header("stripe-signature");
+  const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
+
+  let event: any;
+  try {
+    const rawBody = await c.req.text();
+    if (webhookSecret && sig) {
+      event = await stripe.webhooks.constructEventAsync(rawBody, sig, webhookSecret);
+    } else {
+      event = JSON.parse(rawBody);
+    }
+  } catch (err) {
+    console.error("Webhook signature error:", err);
+    return c.json({ error: `Webhook error: ${err}` }, 400);
+  }
+
+  if (event.type === "payment_intent.succeeded") {
+    const pi = event.data.object;
+    const piId = pi.id;
+
+    // Idempotency: skip if a booking was already created for this PI
+    try {
+      const claimed = await kv.get(`pi_claimed_${piId}`) as any;
+      if (claimed?.bookingId) {
+        console.log(`ℹ️ Webhook: PI ${piId} already claimed by booking ${claimed.bookingId}`);
+        return c.json({ received: true });
+      }
+    } catch {}
+
+    // Check for pending booking data stored when the PI was created
+    const pending = await kv.get(`pending_pi_${piId}`) as any;
+    if (pending) {
+      try {
+        const bookingId = await generateBookingId();
+        const passengerList: any[] = pending.passengers || [];
+        const qrCodes: string[] = [];
+        for (let i = 0; i < passengerList.length; i++) {
+          qrCodes.push(await generateQRCode(bookingId, i));
+        }
+
+        const booking = {
+          id: bookingId,
+          ...pending,
+          qrCodes,
+          createdAt: new Date().toISOString(),
+          status: "confirmed",
+          paymentStatus: "paid",
+          paymentIntentId: piId,
+          source: "stripe-webhook",
+        };
+
+        await kv.set(bookingId, booking);
+        await kv.set(`pi_claimed_${piId}`, { bookingId, claimedAt: new Date().toISOString() });
+        await kv.del(`pending_pi_${piId}`);
+
+        // Track booking prefix
+        try {
+          const prefix = bookingId.split("-")[0];
+          const usedPrefixes = ((await kv.get("booking_used_prefixes")) as string[]) || [];
+          if (!usedPrefixes.includes(prefix)) {
+            usedPrefixes.push(prefix);
+            await kv.set("booking_used_prefixes", usedPrefixes);
+          }
+        } catch {}
+
+        // Decrement availability
+        try {
+          const TIME_SLOTS_LIST = ["9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"];
+          const bookingDate = pending.selectedDate;
+          const bookingSlot = pending.timeSlot;
+          const count = passengerList.length || 1;
+          if (bookingDate && bookingSlot) {
+            const storedAvail = await kv.get(`availability_${bookingDate}`);
+            let slotMap: Record<string, number> = {};
+            if (storedAvail && typeof storedAvail === "object" &&
+                TIME_SLOTS_LIST.some(s => s in (storedAvail as any))) {
+              slotMap = { ...(storedAvail as Record<string, number>) };
+            } else {
+              TIME_SLOTS_LIST.forEach(s => { slotMap[s] = 50; });
+            }
+            if (slotMap[bookingSlot] !== undefined) {
+              slotMap[bookingSlot] = Math.max(0, slotMap[bookingSlot] - count);
+            }
+            await kv.set(`availability_${bookingDate}`, slotMap);
+          }
+        } catch {}
+
+        // Send confirmation email
+        try {
+          await sendBookingEmail(booking, qrCodes);
+        } catch {}
+
+        console.log(`✅ Webhook created booking ${bookingId} for PI ${piId}`);
+      } catch (err) {
+        console.error("Webhook booking creation failed:", err);
+        // Return 200 so Stripe doesn't retry — the pending data is still there for manual recovery
+      }
+    }
+  }
+
+  return c.json({ received: true });
 });
 
 // ===== INFO BAR (time / weather / traffic) =====

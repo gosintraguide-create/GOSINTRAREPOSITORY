@@ -229,11 +229,24 @@ export async function checkHealth() {
 }
 
 // Stripe Payment Integration
-export async function createPaymentIntent(amount: number, metadata?: any) {
+export async function createPaymentIntent(amount: number, metadata?: any, pendingBookingData?: any) {
   const response = await apiCall('/create-payment-intent', {
     method: 'POST',
-    body: JSON.stringify({ amount, currency: 'eur', metadata }),
+    body: JSON.stringify({ amount, currency: 'eur', metadata, pendingBookingData }),
   });
+  return response;
+}
+
+export async function lookupBooking(bookingId: string, lastName: string) {
+  const response = await apiCall('/bookings/lookup', {
+    method: 'POST',
+    body: JSON.stringify({ bookingId, lastName }),
+  });
+  return response;
+}
+
+export async function getFullBooking(bookingId: string) {
+  const response = await apiCall(`/bookings/${bookingId}/full`);
   return response;
 }
 
