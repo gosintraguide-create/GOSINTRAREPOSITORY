@@ -32,13 +32,16 @@ export default defineConfig({
     target: 'ES2020',
     cssMinify: true,
     chunkSizeWarningLimit: 600,
-    // NOTE: We previously had a manualChunks function that split recharts/d3,
-    // react-slick, @stripe, marked, and qrcode into separate chunks. That
-    // caused a "Cannot access 'A' before initialization" temporal-dead-zone
-    // error because recharts/d3 share internal modules with code that ended
-    // up in vendor — creating a circular initialization between the chunks.
-    // Vite's default code-splitting already lazy-loads these libs via the
-    // React.lazy()'d pages that import them, so the manual override gave us
-    // no real benefit at the cost of a broken build.
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          // Bundle ALL lucide-react icon modules into a single chunk.
+          // Without this, Vite emits ~40 separate 0.3–0.8 KB icon files,
+          // each requiring its own HTTP round-trip (~750 ms overhead × 40 = 30 s).
+          // lucide-react has no circular deps so this is safe.
+          if (id.includes('/node_modules/lucide-react/')) return 'icons';
+        },
+      },
+    },
   },
 })

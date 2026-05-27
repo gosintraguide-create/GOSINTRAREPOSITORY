@@ -1,0 +1,2478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sintra Day Planner — HopOn Sintra</title>
+  <style>
+    :root {
+      --terra: #C1694F;
+      --terra-l: #D4836B;
+      --terra-d: #A3503A;
+      --forest: #3A5A40;
+      --forest-l: #4E7857;
+      --cream: #F6F1E9;
+      --cream-d: #EDE5D4;
+      --slate: #2C3A47;
+      --slate-l: #4A5568;
+      --slate-ll: #7A8999;
+      --gold: #C9A84C;
+      --white: #FFFFFF;
+      --red: #C53030;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      background: var(--cream);
+      color: var(--slate);
+      line-height: 1.55;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ───────────────────────────────────── */
+    .hdr {
+      background: var(--slate);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,.25);
+    }
+    .hdr-logo { font-size: 1.15rem; font-weight: 800; color: var(--cream); text-decoration: none; letter-spacing: -.3px; }
+    .hdr-logo span { color: var(--terra-l); }
+    .hdr-tag { font-size: .78rem; color: rgba(246,241,233,.55); letter-spacing: .5px; text-transform: uppercase; }
+
+    /* ── CONTAINER ────────────────────────────────── */
+    .wrap { max-width: 660px; margin: 0 auto; padding: 20px 16px 48px; }
+
+    /* ── PROGRESS ─────────────────────────────────── */
+    .prog-meta { display: flex; justify-content: space-between; font-size: .75rem; color: var(--slate-ll); margin-bottom: 6px; }
+    .prog-bar { height: 5px; background: var(--cream-d); border-radius: 4px; overflow: hidden; margin-bottom: 22px; }
+    .prog-fill { height: 100%; background: var(--terra); border-radius: 4px; transition: width .35s ease; }
+
+    /* ── STEP CARD ────────────────────────────────── */
+    .step { background: var(--white); border-radius: 18px; padding: 28px 24px; box-shadow: 0 2px 16px rgba(0,0,0,.07); display: none; }
+    .step.on { display: block; }
+    .step-h { font-size: 1.35rem; font-weight: 800; color: var(--slate); margin-bottom: 4px; }
+    .step-sub { font-size: .875rem; color: var(--slate-ll); margin-bottom: 24px; }
+
+    /* ── COUNTER ──────────────────────────────────── */
+    .counters { display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
+    .counter { display: flex; align-items: center; justify-content: space-between; background: var(--cream); border-radius: 12px; padding: 14px 18px; }
+    .counter-info strong { display: block; font-size: .95rem; }
+    .counter-info small { font-size: .78rem; color: var(--slate-ll); }
+    .counter-ctrl { display: flex; align-items: center; gap: 18px; }
+    .cbtn {
+      width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--terra);
+      background: var(--white); color: var(--terra); font-size: 1.2rem; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1;
+      transition: background .15s, color .15s;
+    }
+    .cbtn:hover { background: var(--terra); color: var(--white); }
+    .cval { font-size: 1.25rem; font-weight: 800; min-width: 22px; text-align: center; }
+
+    /* ── FIELD LABEL ──────────────────────────────── */
+    .flabel { font-size: .72rem; font-weight: 700; color: var(--slate-ll); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 7px; }
+    .fgroup { margin-bottom: 22px; }
+
+    /* ── SELECT ───────────────────────────────────── */
+    .sel {
+      width: 100%; padding: 13px 40px 13px 15px; border: 2px solid var(--cream-d); border-radius: 10px;
+      font-size: .95rem; color: var(--slate); background: var(--white); cursor: pointer;
+      -webkit-appearance: none; appearance: none; transition: border-color .2s;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%234A5568' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center;
+    }
+    .sel:focus { outline: none; border-color: var(--terra); }
+
+    /* ── TOGGLE (2-col) ───────────────────────────── */
+    .toggle-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .tgl {
+      padding: 13px 10px; border: 2px solid var(--cream-d); border-radius: 10px;
+      text-align: center; cursor: pointer; font-weight: 600; font-size: .9rem;
+      color: var(--slate); background: var(--white); transition: all .2s; user-select: none;
+    }
+    .tgl em { display: block; font-size: .72rem; font-weight: 400; font-style: normal; color: var(--slate-ll); margin-top: 2px; }
+    .tgl:hover { border-color: var(--terra-l); }
+    .tgl.on { border-color: var(--terra); background: rgba(193,105,79,.07); color: var(--terra); }
+
+    /* ── TIME CHIPS ───────────────────────────────── */
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+    .chip {
+      padding: 9px 14px; border: 2px solid var(--cream-d); border-radius: 8px;
+      font-size: .875rem; font-weight: 600; cursor: pointer; background: var(--white);
+      color: var(--slate); transition: all .18s; user-select: none;
+    }
+    .chip:hover { border-color: var(--terra-l); }
+    .chip.on { background: var(--terra); border-color: var(--terra); color: var(--white); }
+    .time-inp {
+      width: 100%; padding: 11px 14px; border: 2px solid var(--cream-d); border-radius: 10px;
+      font-size: .95rem; color: var(--slate); background: var(--white); transition: border-color .2s;
+    }
+    .time-inp:focus { outline: none; border-color: var(--terra); }
+    .hidden { display: none !important; }
+
+    /* ── ALERT BOX ────────────────────────────────── */
+    .abox {
+      border-radius: 10px; padding: 12px 15px; font-size: .83rem; line-height: 1.45;
+      margin-top: 10px; display: none;
+    }
+    .abox.show { display: block; }
+    .abox-warn { background: rgba(201,168,76,.1); border: 1.5px solid var(--gold); }
+    .abox-bad  { background: rgba(197,48,48,.08); border: 1.5px solid var(--red); }
+
+    /* ── CARD OPTIONS (personality) ───────────────── */
+    .cards { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+    .card {
+      display: flex; align-items: center; gap: 16px; padding: 17px 20px;
+      border: 2px solid var(--cream-d); border-radius: 13px; cursor: pointer;
+      background: var(--white); transition: all .2s; user-select: none;
+    }
+    .card:hover { border-color: var(--terra-l); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,.07); }
+    .card.on { border-color: var(--terra); background: rgba(193,105,79,.05); box-shadow: 0 4px 14px rgba(193,105,79,.13); }
+    .card-ico { font-size: 1.4rem; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; background: var(--cream-d); border-radius: 9px; flex-shrink: 0; }
+    .card.on .card-ico { background: rgba(193,105,79,.15); }
+    .card-txt strong { display: block; font-size: .975rem; }
+    .card-txt small { font-size: .8rem; color: var(--slate-ll); }
+
+    /* ── SITE CARDS GRID (Step 6) ─────────────────── */
+    .site-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 26px;
+    }
+    .site-card {
+      border: 2.5px solid var(--cream-d);
+      border-radius: 14px;
+      background: var(--white);
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color .2s, box-shadow .2s, transform .2s;
+      user-select: none;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    .site-card:hover { border-color: var(--terra-l); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.1); }
+    .site-card.sel { border-color: var(--terra); box-shadow: 0 4px 18px rgba(193,105,79,.22); }
+    .site-card-img-wrap {
+      width: 100%; height: 120px; overflow: hidden; position: relative;
+      background: var(--cream-d); flex-shrink: 0;
+    }
+    .site-card-img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform .3s;
+      display: block;
+    }
+    .site-card:hover .site-card-img { transform: scale(1.04); }
+    .site-card-img-fallback {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      font-size: 2.8rem;
+    }
+    .site-card-check {
+      position: absolute; top: 8px; right: 8px; width: 28px; height: 28px;
+      border-radius: 50%; background: var(--terra); color: white;
+      display: none; align-items: center; justify-content: center;
+      font-size: .9rem; font-weight: 900; box-shadow: 0 2px 8px rgba(0,0,0,.25);
+      z-index: 2;
+    }
+    .site-card.sel .site-card-check { display: flex; }
+    .site-card-badges {
+      position: absolute; top: 8px; left: 8px; display: flex; flex-direction: column; gap: 4px; z-index: 2;
+    }
+    .site-card-body { padding: 10px 12px 8px; flex: 1; display: flex; flex-direction: column; }
+    .site-card-name { font-weight: 800; font-size: .85rem; color: var(--slate); margin-bottom: 3px; line-height: 1.25; }
+    .site-card-price { font-size: .75rem; color: var(--terra); font-weight: 700; margin-bottom: 3px; }
+    .site-card-note { font-size: .7rem; color: var(--slate-ll); line-height: 1.35; flex: 1; }
+    .site-card-sub {
+      display: none; padding: 8px 12px 10px; border-top: 1px solid var(--cream-d);
+      gap: 6px; background: var(--cream);
+    }
+    .site-card.sel .site-card-sub { display: flex; }
+    .site-sub-opt {
+      flex: 1; padding: 5px 6px; border: 1.5px solid var(--cream-d); border-radius: 7px;
+      font-size: .7rem; font-weight: 700; text-align: center; cursor: pointer;
+      background: var(--white); color: var(--slate); transition: all .15s;
+    }
+    .site-sub-opt:hover { border-color: var(--terra); }
+    .site-sub-opt.on { background: var(--terra); border-color: var(--terra); color: white; }
+    .badge { font-size: .6rem; font-weight: 700; padding: 2px 7px; border-radius: 20px; color: white; white-space: nowrap; display: inline-block; }
+    .badge-ico  { background: var(--terra); }
+    .badge-gem  { background: var(--forest); }
+    .badge-you  { background: var(--gold); color: var(--slate); }
+    .badge-dep  { background: var(--slate-ll); }
+
+    /* ── SUGGEST CTA ─────────────────────────────── */
+    .suggest-cta {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(193,105,79,.06); border: 1.5px dashed var(--terra-l);
+      border-radius: 11px; padding: 12px 16px; margin-bottom: 18px;
+    }
+    .suggest-cta-txt { font-size: .83rem; color: var(--slate-l); line-height: 1.4; }
+    .btn-suggest {
+      padding: 9px 16px; background: var(--terra); color: var(--white); border: none;
+      border-radius: 8px; font-size: .82rem; font-weight: 700; cursor: pointer;
+      white-space: nowrap; transition: all .18s; flex-shrink: 0; margin-left: 12px;
+    }
+    .btn-suggest:hover { background: var(--terra-d); }
+    .btn-suggest:disabled { background: var(--forest); cursor: default; }
+
+    /* ── RADIO ────────────────────────────────────── */
+    .radios { display: flex; flex-direction: column; gap: 10px; margin-bottom: 26px; }
+    .radio {
+      display: flex; align-items: flex-start; gap: 14px; padding: 15px 17px;
+      border: 2px solid var(--cream-d); border-radius: 12px; cursor: pointer;
+      background: var(--white); transition: all .2s; user-select: none;
+    }
+    .radio:hover { border-color: var(--terra-l); }
+    .radio.on { border-color: var(--terra); background: rgba(193,105,79,.05); }
+    .rdot {
+      width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--cream-d);
+      flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center;
+      transition: all .2s;
+    }
+    .radio.on .rdot { border-color: var(--terra); background: var(--terra); }
+    .radio.on .rdot::after { content: ''; width: 7px; height: 7px; border-radius: 50%; background: white; }
+    .radio strong { display: block; font-size: .95rem; }
+    .radio small { font-size: .8rem; color: var(--slate-ll); line-height: 1.4; }
+
+    /* ── NAV BUTTONS ──────────────────────────────── */
+    .nav { display: flex; align-items: center; justify-content: space-between; margin-top: 20px; }
+    .btn-back { background: transparent; border: none; color: var(--slate-ll); font-size: .9rem; cursor: pointer; padding: 10px 4px; transition: color .15s; }
+    .btn-back:hover { color: var(--slate); }
+    .btn-next {
+      padding: 13px 30px; background: var(--terra); color: var(--white); border: none;
+      border-radius: 10px; font-size: .95rem; font-weight: 700; cursor: pointer;
+      transition: all .2s; letter-spacing: .2px;
+    }
+    .btn-next:hover { background: var(--terra-d); transform: translateY(-1px); box-shadow: 0 5px 18px rgba(193,105,79,.3); }
+    .btn-calc {
+      width: 100%; padding: 16px; background: var(--terra); color: var(--white); border: none;
+      border-radius: 11px; font-size: 1.05rem; font-weight: 800; cursor: pointer;
+      transition: all .2s; letter-spacing: .2px; margin-top: 6px;
+    }
+    .btn-calc:hover { background: var(--terra-d); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(193,105,79,.35); }
+
+    /* ── RESULTS ──────────────────────────────────── */
+    #results { display: none; }
+    #results.on { display: block; }
+
+    .res-hdr {
+      background: var(--slate); color: var(--cream); border-radius: 18px;
+      padding: 26px 24px; text-align: center; margin-bottom: 18px;
+    }
+    .res-title { font-size: 1.4rem; font-weight: 800; margin-bottom: 3px; }
+    .res-sub { font-size: .85rem; opacity: .6; }
+
+    .action-row { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+    .abtn {
+      padding: 9px 18px; border: 2px solid var(--slate-ll); border-radius: 8px;
+      background: var(--white); color: var(--slate); font-size: .82rem; font-weight: 600;
+      cursor: pointer; transition: all .15s;
+    }
+    .abtn:hover { border-color: var(--slate); }
+
+    /* ── METRICS ROW ──────────────────────────────── */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .metric-card {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 18px 10px 14px;
+      text-align: center;
+      box-shadow: 0 2px 12px rgba(0,0,0,.06);
+    }
+    .metric-val {
+      font-size: 1.65rem;
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 4px;
+      color: var(--slate);
+    }
+    .metric-lbl {
+      font-size: .65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--slate-ll);
+      margin-bottom: 2px;
+    }
+    .metric-sub { font-size: .68rem; color: var(--slate-ll); }
+
+    .rsec { background: var(--white); border-radius: 16px; padding: 22px; margin-bottom: 18px; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+    .rsec-h { font-size: 1rem; font-weight: 800; color: var(--slate); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .rsec-h::before { content: ''; display: block; width: 4px; height: 18px; background: var(--terra); border-radius: 2px; flex-shrink: 0; }
+
+    /* Timeline */
+    .tl { position: relative; padding-left: 30px; }
+    .tl::before { content: ''; position: absolute; left: 8px; top: 6px; bottom: 6px; width: 2px; background: var(--cream-d); }
+    .tl-item { position: relative; margin-bottom: 16px; }
+    .tl-dot { position: absolute; left: -27px; top: 13px; width: 14px; height: 14px; border-radius: 50%; background: var(--terra); border: 2px solid var(--white); box-shadow: 0 0 0 2px var(--terra); }
+    .tl-dot.sm { width: 10px; height: 10px; left: -25px; top: 10px; background: var(--cream-d); box-shadow: 0 0 0 2px var(--slate-ll); }
+    .tl-card { background: var(--white); border-radius: 11px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+    .tl-card.leg { background: var(--cream); box-shadow: none; padding: 9px 13px; }
+    .tl-time { font-size: .75rem; color: var(--terra); font-weight: 700; margin-bottom: 2px; }
+    .tl-name { font-weight: 700; font-size: .95rem; }
+    .tl-detail { font-size: .82rem; color: var(--slate-ll); margin-top: 2px; }
+    .tl-cost { font-size: .78rem; color: var(--forest); font-weight: 700; margin-top: 5px; }
+
+    /* Cost table */
+    .ctable { width: 100%; border-collapse: collapse; }
+    .ctable td { padding: 9px 0; border-bottom: 1px solid var(--cream-d); font-size: .875rem; }
+    .ctable td:last-child { text-align: right; font-weight: 600; }
+    .ctable .sec td { padding-top: 15px; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--slate-ll); border-bottom: none; }
+    .ctable .sec td:last-child { font-weight: 700; }
+    .ctable .tot td { border-bottom: none; padding-top: 14px; font-weight: 800; font-size: 1.02rem; color: var(--terra); }
+
+    /* Tips */
+    .tips { display: flex; flex-direction: column; gap: 11px; }
+    .tip { display: flex; gap: 13px; padding: 15px; border-radius: 11px; border-left: 4px solid var(--terra); background: var(--white); box-shadow: 0 2px 8px rgba(0,0,0,.05); }
+    .tip.warn { border-left-color: var(--gold); background: rgba(201,168,76,.04); }
+    .tip.crit { border-left-color: var(--red); background: rgba(197,48,48,.04); }
+    .tip.info { border-left-color: var(--forest); background: rgba(58,90,64,.04); }
+    .tip-ico { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
+    .tip-txt { font-size: .845rem; color: var(--slate); line-height: 1.5; }
+    .tip-txt a { color: var(--terra); }
+
+    /* ── OVERTIME BANNER ─────────────────────────── */
+    .overtime-banner {
+      background: rgba(197,48,48,.07);
+      border: 1.5px solid var(--red);
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-bottom: 18px;
+      font-size: .875rem;
+      color: var(--slate);
+      line-height: 1.55;
+      display: none;
+    }
+    .overtime-banner strong { color: var(--red); }
+
+    /* ── SAVINGS ROW ──────────────────────────────── */
+    .savings-row td { color: var(--forest) !important; font-size: .82rem; font-weight: 700; border-bottom: none !important; padding-top: 10px !important; }
+
+    /* ── COLLAPSIBLE SECTIONS ─────────────────────── */
+    .rsec.collapsible .rsec-h { cursor: pointer; user-select: none; margin-bottom: 0; }
+    .rsec.collapsible .rsec-h .collapse-icon { margin-left: auto; font-style: normal; font-size: .8rem; opacity: .45; transition: transform .25s; }
+    .rsec.collapsible.open .rsec-h { margin-bottom: 16px; }
+    .rsec.collapsible.open .rsec-h .collapse-icon { transform: rotate(180deg); }
+    .collapsible-body { display: none; }
+    .rsec.collapsible.open .collapsible-body { display: block; }
+
+    /* ── SIMPLIFIED TIMELINE ──────────────────────── */
+    .tl-card.leg { background: var(--cream); box-shadow: none; padding: 7px 13px; }
+    .tl-leg-row { display: flex; align-items: center; gap: 8px; }
+    .tl-leg-arrow { color: var(--terra-l); font-weight: 900; font-size: .78rem; flex-shrink: 0; }
+    .tl-leg-dest { flex: 1; font-size: .82rem; font-weight: 700; color: var(--slate); }
+    .tl-leg-dur { font-size: .73rem; color: var(--slate-ll); white-space: nowrap; }
+    .tl-queue-note { font-size: .73rem; color: var(--slate-ll); margin-top: 3px; font-style: italic; }
+
+    /* Tour recommendations */
+    .tour-recs-hdr { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--slate-ll); margin: 20px 0 10px; }
+    .tour-recs { display: flex; flex-direction: column; gap: 9px; }
+    .tour-rec {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 16px; background: var(--forest); border-radius: 12px;
+      text-decoration: none; transition: all .2s;
+    }
+    .tour-rec:hover { background: var(--forest-l); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(58,90,64,.3); }
+    .tour-rec-icon { font-size: 1.4rem; flex-shrink: 0; }
+    .tour-rec-info { flex: 1; min-width: 0; }
+    .tour-rec-name { font-weight: 800; font-size: .88rem; color: var(--cream); margin-bottom: 2px; }
+    .tour-rec-meta { font-size: .74rem; color: rgba(246,241,233,.65); line-height: 1.35; }
+    .tour-rec-arr { color: var(--terra-l); font-size: 1.1rem; font-weight: 800; flex-shrink: 0; }
+
+    /* Score reasons */
+    .score-reasons {
+      background: rgba(183,121,31,.07);
+      border: 1.5px solid rgba(183,121,31,.28);
+      border-radius: 12px;
+      padding: 13px 16px;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .score-reasons-title {
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: #B7791F;
+      margin-bottom: 8px;
+    }
+    .score-reasons ul {
+      list-style: none;
+      padding: 0; margin: 0;
+      display: flex; flex-direction: column; gap: 5px;
+    }
+    .score-reasons li {
+      font-size: .82rem;
+      color: var(--slate);
+      line-height: 1.45;
+      padding-left: 14px;
+      position: relative;
+    }
+    .score-reasons li::before {
+      content: '·';
+      position: absolute; left: 3px;
+      color: #B7791F;
+      font-weight: 900; font-size: 1rem; line-height: 1.2;
+    }
+
+    /* Fix it for me */
+    .fix-btn {
+      width: 100%; padding: 11px; margin-top: 12px;
+      background: var(--slate); color: var(--white);
+      border: none; border-radius: 8px;
+      font-size: .85rem; font-weight: 700; cursor: pointer;
+      transition: background .15s;
+    }
+    .fix-btn:hover { background: var(--slate-l); }
+    .fix-applied-banner {
+      background: rgba(58,90,64,.07);
+      border: 1.5px solid var(--forest);
+      border-radius: 12px; padding: 13px 16px; margin-bottom: 16px; display: none;
+    }
+    .fix-applied-title {
+      font-size: .7rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .6px; color: var(--forest); margin-bottom: 8px;
+    }
+    .fix-applied-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 5px; }
+    .fix-applied-list li {
+      font-size: .82rem; color: var(--slate); line-height: 1.45;
+      padding-left: 18px; position: relative;
+    }
+    .fix-applied-list li::before {
+      content: '✓'; position: absolute; left: 0;
+      color: var(--forest); font-weight: 900; font-size: .8rem; line-height: 1.6;
+    }
+
+    /* Responsive */
+    @media (max-width: 540px) {
+      .site-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .site-card-img-wrap { height: 90px; }
+      .metrics-row { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .metric-val { font-size: 1.35rem; }
+      .step { padding: 20px 16px; }
+      .step-h { font-size: 1.2rem; }
+      .chips { gap: 6px; }
+      .chip { padding: 8px 11px; font-size: .82rem; }
+      .rsec { padding: 18px 16px; }
+    }
+    /* ── LANDING SCREEN ───────────────────────────── */
+    #s0 {
+      background: transparent;
+      border-radius: 0;
+      box-shadow: none;
+      padding: 0;
+      min-height: calc(100vh - 56px);
+    }
+    #s0.on {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      text-align: center;
+    }
+    .land-title-top {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--slate);
+      line-height: 1.1;
+      letter-spacing: -.6px;
+    }
+    .land-title-bottom-wrap {
+      position: relative;
+      width: 100%;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .land-title-bottom {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--slate);
+      line-height: 1.1;
+      letter-spacing: -.6px;
+    }
+    .land-eyebrow {
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translateX(108px) rotate(-5.4deg);
+      transform-origin: left center;
+      font-family: 'Segoe Script', 'Brush Script MT', 'Apple Chancery', cursive;
+      font-size: .92rem;
+      font-weight: normal;
+      color: var(--red);
+      opacity: .85;
+      white-space: nowrap;
+      text-shadow: .5px .6px 0 rgba(197,48,48,.22), -.3px .3px 0 rgba(197,48,48,.13);
+    }
+    .land-kicker {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--slate-l);
+      margin-bottom: 18px;
+    }
+    .land-sub {
+      font-size: .92rem;
+      color: var(--slate-ll);
+      line-height: 1.7;
+      max-width: 360px;
+      margin-bottom: 48px;
+    }
+    .btn-land {
+      padding: 15px 34px;
+      border: none;
+      border-radius: 100px;
+      background: var(--terra);
+      color: var(--white);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: -.1px;
+      transition: background .2s, transform .1s;
+      margin-bottom: 14px;
+    }
+    .btn-land:hover { background: var(--terra-d); }
+    .btn-land:active { transform: scale(.97); }
+    .land-fine {
+      font-size: .72rem;
+      color: var(--slate-ll);
+      letter-spacing: .2px;
+    }
+    @media (max-width: 480px) {
+      .land-title-top, .land-title-bottom { font-size: 1.95rem; letter-spacing: -.4px; }
+      .land-kicker { font-size: 1rem; }
+      .land-sub { font-size: .88rem; }
+    }
+
+    /* ── LANDING HERO IMAGE ──────────────────────── */
+    .land-hero-img {
+      width: 100%;
+      height: 230px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 0 0 22px 22px;
+      flex-shrink: 0;
+    }
+    .land-hero-img img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center top;
+    }
+    .land-hero-img::after {
+      content: '';
+      position: absolute;
+      inset-x: 0; bottom: 0;
+      height: 90px;
+      background: linear-gradient(to bottom, transparent, var(--cream));
+      pointer-events: none;
+    }
+    .land-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      padding: 24px 24px 40px;
+      text-align: center;
+    }
+    @media (max-width: 480px) {
+      .land-hero-img { height: 185px; }
+    }
+
+    @media print {
+      .hdr, .action-row, .nav, #wizard { display: none !important; }
+      body { background: white; }
+      .rsec, .metric-card { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="hdr">
+  <a href="https://www.hoponsintra.com" class="hdr-logo" target="_blank"><span>HopOn</span> Sintra</a>
+  <span class="hdr-tag">Day Planner</span>
+</header>
+
+<!-- ═══════════════ WIZARD ═══════════════ -->
+<div class="wrap" id="wizard">
+
+  <div id="prog-wrap" style="display:none">
+    <div class="prog-meta">
+      <span id="prog-label">Step 1 of 7</span>
+      <span id="prog-name">Your Group</span>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:14%"></div></div>
+  </div>
+
+  <!-- STEP 0 · Landing -->
+  <div class="step on" id="s0">
+    <div class="land-hero-img">
+      <img src="https://dwiznaefeqnduglmcivr.supabase.co/storage/v1/object/sign/make-3bd0ade8-images/1762977905581_pena-palace-3.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmFjMWMyYy1lNjZlLTQwYWEtYjcwNS1kNTcwYzA5NGZmYzMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtYWtlLTNiZDBhZGU4LWltYWdlcy8xNzYyOTc3OTA1NTgxX3BlbmEtcGFsYWNlLTMuanBnIiwiaWF0IjoxNzYyOTc3OTA1LCJleHAiOjIwNzgzMzc5MDV9.yMxtg8g3UvVUzf-xdAwUmGyjRATPWQwdvRlpIa8D7eY" alt="Pena Palace in Sintra" loading="eager">
+    </div>
+    <div class="land-inner">
+      <div class="land-title-top">Sintra Day Trip</div>
+      <div class="land-title-bottom-wrap">
+        <span class="land-title-bottom">Calculator</span>
+        <span class="land-eyebrow">by HopOn Sintra</span>
+      </div>
+      <div class="land-kicker">Know before you go.</div>
+      <div class="land-sub">Find out if your plan is realistic, what the day will cost, and what a Sintra tour guide would tell you to do differently.</div>
+      <button class="btn-land" onclick="go(1)">Check my plan →</button>
+      <div class="land-fine">Free &nbsp;·&nbsp; no sign-up &nbsp;·&nbsp; shareable result</div>
+    </div>
+  </div>
+
+  <!-- STEP 1 · Group -->
+  <div class="step" id="s1">
+    <div class="step-h">Who's coming?</div>
+    <div class="step-sub">Tell us about your group — pricing tiers and transport limits depend on this.</div>
+    <div class="counters">
+      <div class="counter">
+        <div class="counter-info"><strong>Adults</strong><small>18–64 years</small></div>
+        <div class="counter-ctrl">
+          <button class="cbtn" onclick="adj('adults',-1)">−</button>
+          <span class="cval" id="v-adults">0</span>
+          <button class="cbtn" onclick="adj('adults',1)">+</button>
+        </div>
+      </div>
+      <div class="counter">
+        <div class="counter-info"><strong>Children</strong><small>6–17 years</small></div>
+        <div class="counter-ctrl">
+          <button class="cbtn" onclick="adj('children',-1)">−</button>
+          <span class="cval" id="v-children">0</span>
+          <button class="cbtn" onclick="adj('children',1)">+</button>
+        </div>
+      </div>
+      <div class="counter">
+        <div class="counter-info"><strong>Seniors</strong><small>65+ years</small></div>
+        <div class="counter-ctrl">
+          <button class="cbtn" onclick="adj('seniors',-1)">−</button>
+          <span class="cval" id="v-seniors">0</span>
+          <button class="cbtn" onclick="adj('seniors',1)">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="nav"><div></div><button class="btn-next" onclick="go(2)">Continue →</button></div>
+  </div>
+
+  <!-- STEP 2 · Month + Day Type -->
+  <div class="step" id="s2">
+    <div class="step-h">When are you visiting?</div>
+    <div class="step-sub">Season and day of week have a huge impact on crowds — this shapes your whole plan.</div>
+    <div class="fgroup">
+      <div class="flabel">Month of visit</div>
+      <select class="sel" id="inp-month" onchange="S.month=+this.value; checkWarn()">
+        <option value="">Select month…</option>
+        <option value="1">January</option><option value="2">February</option>
+        <option value="3">March</option><option value="4">April</option>
+        <option value="5">May</option><option value="6">June</option>
+        <option value="7">July</option><option value="8">August</option>
+        <option value="9">September</option><option value="10">October</option>
+        <option value="11">November</option><option value="12">December</option>
+      </select>
+    </div>
+    <div class="fgroup">
+      <div class="flabel">Day of week</div>
+      <div class="toggle-row">
+        <div class="tgl" id="t-weekday" onclick="pickDay('weekday')">📅 Weekday<em>Mon – Thu</em></div>
+        <div class="tgl" id="t-weekend" onclick="pickDay('weekend')">🎉 Weekend / Fri<em>Fri – Sun</em></div>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="btn-back" onclick="go(1)">← Back</button>
+      <button class="btn-next" onclick="go(3)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 · Time window -->
+  <div class="step" id="s3">
+    <div class="step-h">What's your time window?</div>
+    <div class="step-sub">We'll build your day exactly around these hours — and enforce hard limits.</div>
+
+    <div class="fgroup">
+      <div class="flabel">Arrival time in Sintra</div>
+      <div class="chips" id="arr-chips">
+        <div class="chip" onclick="pickTime('arr','08:30',this)">08:30</div>
+        <div class="chip" onclick="pickTime('arr','09:00',this)">09:00</div>
+        <div class="chip" onclick="pickTime('arr','10:00',this)">10:00</div>
+        <div class="chip" onclick="pickTime('arr','11:00',this)">11:00</div>
+        <div class="chip" onclick="pickTime('arr','12:00',this)">12:00</div>
+        <div class="chip" id="arr-other-chip" onclick="pickTime('arr','other',this)">Other</div>
+      </div>
+      <input type="time" class="time-inp hidden" id="arr-custom" onchange="setCustomTime('arr',this.value)">
+      <div class="abox abox-warn" id="arr-warn">
+        ⚠️ After 10:00 in peak season (May–Oct) means full-force crowds at every monument. An earlier train transforms the experience.
+      </div>
+    </div>
+
+    <div class="fgroup">
+      <div class="flabel">Departure time from Sintra</div>
+      <div class="chips" id="dep-chips">
+        <div class="chip" onclick="pickTime('dep','13:00',this)">13:00</div>
+        <div class="chip" onclick="pickTime('dep','15:00',this)">15:00</div>
+        <div class="chip" onclick="pickTime('dep','17:00',this)">17:00</div>
+        <div class="chip" onclick="pickTime('dep','19:00',this)">19:00</div>
+        <div class="chip" onclick="pickTime('dep','flexible',this)">Flexible</div>
+        <div class="chip" id="dep-other-chip" onclick="pickTime('dep','other',this)">Other</div>
+      </div>
+      <input type="time" class="time-inp hidden" id="dep-custom" onchange="setCustomTime('dep',this.value)">
+      <div class="abox abox-bad hidden" id="dep-bad">Departure must be after arrival.</div>
+    </div>
+
+    <div class="nav">
+      <button class="btn-back" onclick="go(2)">← Back</button>
+      <button class="btn-next" onclick="go(4)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4 · History interest -->
+  <div class="step" id="s4">
+    <div class="step-h">How into history & architecture are you?</div>
+    <div class="step-sub">This shapes which sites we prioritise and what information we surface.</div>
+    <div class="cards" id="cards-history">
+      <div class="card" data-val="love" onclick="pickCard('history','love',this)">
+        <div class="card-ico">📖</div>
+        <div class="card-txt"><strong>I love it — I read every plaque</strong><small>We'll surface the layered history, hidden symbolism, and architecture details</small></div>
+      </div>
+      <div class="card" data-val="interested" onclick="pickCard('history','interested',this)">
+        <div class="card-ico">🧭</div>
+        <div class="card-txt"><strong>Interested but not obsessive</strong><small>Balanced recommendations with historical context where it matters</small></div>
+      </div>
+      <div class="card" data-val="vibes" onclick="pickCard('history','vibes',this)">
+        <div class="card-ico">📷</div>
+        <div class="card-txt"><strong>I'm here for the views and vibes</strong><small>We'll push the most photogenic and atmospheric spots</small></div>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="btn-back" onclick="go(3)">← Back</button>
+      <button class="btn-next" onclick="go(5)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- STEP 5 · Crowd tolerance -->
+  <div class="step" id="s5">
+    <div class="step-h">How do you feel about crowds?</div>
+    <div class="step-sub">Sintra spans packed tourist hotspots and completely empty hidden gems — your call.</div>
+    <div class="cards" id="cards-crowd">
+      <div class="card" data-val="fine" onclick="pickCard('crowd','fine',this)">
+        <div class="card-ico">👥</div>
+        <div class="card-txt"><strong>Fine with it — I want the iconic spots</strong><small>Queue up for Pena, tick the bucket list, enjoy the energy</small></div>
+      </div>
+      <div class="card" data-val="some" onclick="pickCard('crowd','some',this)">
+        <div class="card-ico">🕐</div>
+        <div class="card-txt"><strong>Some crowds OK, rather not queue</strong><small>We'll suggest approaches that skip or minimise the worst waits</small></div>
+      </div>
+      <div class="card" data-val="hate" onclick="pickCard('crowd','hate',this)">
+        <div class="card-ico">🫣</div>
+        <div class="card-txt"><strong>I hate crowds — show me what others miss</strong><small>We'll build the version of Sintra that 95% of visitors never see</small></div>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="btn-back" onclick="go(4)">← Back</button>
+      <button class="btn-next" onclick="go(6)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- STEP 6 · Sites -->
+  <div class="step" id="s6">
+    <div class="step-h">Which sites would you like to visit?</div>
+    <div class="step-sub">Tap to add a site to your day. Tap again to remove it.</div>
+    <div class="suggest-cta">
+      <div class="suggest-cta-txt">Not sure where to start? We'll pick the best sites based on your answers.</div>
+      <button class="btn-suggest" id="btn-suggest" onclick="suggestSites()">💡 Suggest for me</button>
+    </div>
+    <div class="site-grid" id="site-list"></div>
+    <div class="nav">
+      <button class="btn-back" onclick="go(5)">← Back</button>
+      <button class="btn-next" onclick="go(7)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- STEP 7 · Transport -->
+  <div class="step" id="s7">
+    <div class="step-h">How will you get around?</div>
+    <div class="step-sub">Transport affects timing, which sites are reachable, and your overall stress level.</div>
+    <div class="radios">
+      <div class="radio" onclick="pickTransport('walking',this)">
+        <div class="rdot"></div>
+        <div><strong>🚶 Walking</strong><small>Free · Steep hills — allow more time for each leg · Not recommended for Monserrate or Capuchos</small></div>
+      </div>
+      <div class="radio" onclick="pickTransport('car',this)">
+        <div class="rdot"></div>
+        <div><strong>🚗 Own car</strong><small>Park at Portela / Loulé / S. Pedro · +15 min each way to town · Cannot access Regaleira road</small></div>
+      </div>
+      <div class="radio" onclick="pickTransport('bus',this)">
+        <div class="rdot"></div>
+        <div><strong>🚌 Hop-on hop-off bus (434 / 435) — €11/day</strong><small>Covers Pena · Moorish Castle · Monserrate · Town loop · Does not reach Regaleira or Capuchos · Plan around the timetable</small></div>
+      </div>
+      <div class="radio" onclick="pickTransport('tuk',this)">
+        <div class="rdot"></div>
+        <div><strong>🛺 HopOn Sintra tuk-tuk / vintage Jeep — €15/day</strong><small>All monuments including Monserrate and Capuchos · Always seated · Local guide · Flexible routing · Max 7pp per vehicle</small></div>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="btn-back" onclick="go(6)">← Back</button>
+      <div></div>
+    </div>
+    <button class="btn-calc" onclick="calculate()">🔮 Calculate my day →</button>
+  </div>
+
+</div><!-- /wizard -->
+
+<!-- ═══════════════ RESULTS ═══════════════ -->
+<div class="wrap" id="results">
+
+  <div class="action-row">
+    <button class="abtn" onclick="backToWizard()">← Edit inputs</button>
+    <button class="abtn" onclick="window.print()">🖨️ Print</button>
+    <button class="abtn" onclick="copyPlan()">📋 Copy itinerary</button>
+  </div>
+
+  <div class="res-hdr">
+    <div class="res-title" id="r-title">Your Sintra Day Plan</div>
+    <div class="res-sub" id="r-sub"></div>
+  </div>
+
+  <!-- Key metrics -->
+  <div class="metrics-row">
+    <div class="metric-card">
+      <div class="metric-lbl">Score</div>
+      <div class="metric-val" id="m-score">—</div>
+      <div class="metric-sub" id="m-score-lbl"></div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-lbl">Total Cost</div>
+      <div class="metric-val" id="m-cost">—</div>
+      <div class="metric-sub" id="m-cost-pp"></div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-lbl">Walking</div>
+      <div class="metric-val" id="m-walk-time">—</div>
+      <div class="metric-sub" id="m-walk-km">— on foot</div>
+    </div>
+  </div>
+
+  <!-- Fix applied banner -->
+  <div class="fix-applied-banner" id="fix-applied">
+    <div class="fix-applied-title">Plan updated</div>
+    <ul class="fix-applied-list" id="fix-applied-list"></ul>
+  </div>
+
+  <!-- Score reasons (shown only when score < 7) -->
+  <div class="score-reasons" id="score-reasons">
+    <div class="score-reasons-title">Why this score</div>
+    <ul id="score-reasons-list"></ul>
+    <button class="fix-btn" onclick="fixPlan()">✨ Fix it for me</button>
+  </div>
+
+  <!-- Overtime warning (shown only when plan exceeds departure time) -->
+  <div class="overtime-banner" id="r-overtime">
+    ⚠️ <span id="r-overtime-msg"></span>
+  </div>
+
+  <!-- Itinerary -->
+  <div class="rsec collapsible" id="sec-itinerary">
+    <div class="rsec-h" onclick="toggleSection('sec-itinerary')">
+      Your Itinerary <span class="collapse-icon">▼</span>
+    </div>
+    <div class="collapsible-body">
+      <div class="tl" id="r-timeline"></div>
+    </div>
+  </div>
+
+  <!-- Cost breakdown -->
+  <div class="rsec collapsible" id="sec-cost">
+    <div class="rsec-h" onclick="toggleSection('sec-cost')">
+      Cost Breakdown<span id="cost-rec-note" style="font-size:.72rem;font-weight:400;color:var(--slate-ll);margin-left:8px;"></span> <span class="collapse-icon">▼</span>
+    </div>
+    <div class="collapsible-body">
+      <table class="ctable" id="r-cost"></table>
+    </div>
+  </div>
+
+  <!-- Tips + recommendations -->
+  <div class="rsec">
+    <div class="rsec-h">Tips for Your Day</div>
+    <div class="tips" id="r-tips"></div>
+    <div id="r-tour-recs"></div>
+  </div>
+
+</div><!-- /results -->
+
+<script>
+// ─────────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────────
+const S = {
+  adults: 0, children: 0, seniors: 0,
+  month: null, dayType: null,
+  arr: null, dep: null,
+  history: null, crowd: null,
+  sites: {
+    pena:      'skip',
+    moorish:   'skip',
+    regaleira: 'skip',
+    monserrate:'skip',
+    biester:   'skip',
+    national:  'skip',
+    capuchos:  'skip',
+    town:      'skip',
+    cabo:      'skip'
+  },
+  transport: null
+};
+
+const MONTH_NAMES = ['','January','February','March','April','May','June','July','August','September','October','November','December'];
+const STEP_NAMES  = ['Your Group','When You Visit','Time Window','History Interest','Crowd Preference','Sites to Visit','Transport'];
+
+let currentStep = 0;
+
+// ─────────────────────────────────────────────────────────────
+// STEP NAV
+// ─────────────────────────────────────────────────────────────
+function go(n) {
+  if (n > currentStep && !validate(currentStep)) return;
+  if (n === 6) {
+    if (currentStep === 5) {
+      // Arriving at sites step going forward — always start blank
+      Object.keys(S.sites).forEach(k => { S.sites[k] = 'skip'; });
+    }
+    buildSiteList();
+  }
+  document.getElementById(`s${currentStep}`).classList.remove('on');
+  currentStep = n;
+  document.getElementById(`s${currentStep}`).classList.add('on');
+  // Progress bar only visible on steps 1–7
+  const progWrap = document.getElementById('prog-wrap');
+  if (n === 0) {
+    progWrap.style.display = 'none';
+  } else {
+    progWrap.style.display = 'block';
+    document.getElementById('prog-fill').style.width = ((n / 7) * 100) + '%';
+    document.getElementById('prog-label').textContent = `Step ${n} of 7`;
+    document.getElementById('prog-name').textContent = STEP_NAMES[n - 1];
+  }
+  window.scrollTo(0, 0);
+}
+
+function validate(step) {
+  if (step === 0) return true;
+  if (step === 1) {
+    if (S.adults + S.children + S.seniors < 1) { alert('Please add at least one person.'); return false; }
+  }
+  if (step === 2) {
+    if (!S.month)   { alert('Please select a month.');          return false; }
+    if (!S.dayType) { alert('Please select weekday or weekend.'); return false; }
+  }
+  if (step === 3) {
+    if (!S.arr) { alert('Please select your arrival time.');   return false; }
+    if (!S.dep) { alert('Please select your departure time.'); return false; }
+    if (S.dep !== 'flexible') {
+      if (t2m(S.dep) <= t2m(S.arr)) {
+        document.getElementById('dep-bad').classList.remove('hidden');
+        return false;
+      }
+    }
+    document.getElementById('dep-bad').classList.add('hidden');
+  }
+  if (step === 4) { if (!S.history) { alert('Please select your history interest.'); return false; } }
+  if (step === 5) { if (!S.crowd)   { alert('Please select your crowd preference.'); return false; } }
+  if (step === 6) {
+    const anySelected = Object.values(S.sites).some(v => v !== 'skip');
+    if (!anySelected) { alert('Please select at least one site to visit.'); return false; }
+  }
+  if (step === 7) { if (!S.transport) { alert('Please select a transport mode.'); return false; } }
+  return true;
+}
+
+function backToWizard() {
+  document.getElementById('results').classList.remove('on');
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('wizard').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+function toggleSection(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+// ─────────────────────────────────────────────────────────────
+// STEP 1 – counters
+// ─────────────────────────────────────────────────────────────
+function adj(field, d) {
+  S[field] = Math.max(0, S[field] + d);
+  document.getElementById(`v-${field}`).textContent = S[field];
+}
+
+// ─────────────────────────────────────────────────────────────
+// STEP 2
+// ─────────────────────────────────────────────────────────────
+function pickDay(v) {
+  S.dayType = v;
+  document.getElementById('t-weekday').classList.toggle('on', v === 'weekday');
+  document.getElementById('t-weekend').classList.toggle('on', v === 'weekend');
+}
+
+// ─────────────────────────────────────────────────────────────
+// STEP 3 – time
+// ─────────────────────────────────────────────────────────────
+function pickTime(field, val, el) {
+  document.querySelectorAll(`#${field}-chips .chip`).forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  const custom = document.getElementById(`${field}-custom`);
+  if (val === 'other') {
+    custom.classList.remove('hidden');
+    S[field] = null;
+  } else {
+    custom.classList.add('hidden');
+    S[field] = val;
+    if (field === 'arr') checkWarn();
+  }
+}
+
+function setCustomTime(field, val) {
+  S[field] = val;
+  if (field === 'arr') checkWarn();
+}
+
+function checkWarn() {
+  if (!S.arr || S.arr === 'other') return;
+  const peak = S.month >= 5 && S.month <= 10;
+  const late = t2m(S.arr) >= 10 * 60;
+  const w = document.getElementById('arr-warn');
+  (peak && late) ? w.classList.add('show') : w.classList.remove('show');
+}
+
+// ─────────────────────────────────────────────────────────────
+// STEPS 4–5 – personality cards
+// ─────────────────────────────────────────────────────────────
+function pickCard(type, val, el) {
+  const key = type === 'history' ? 'history' : 'crowd';
+  S[key] = val;
+  document.querySelectorAll(`#cards-${type} .card`).forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+}
+
+// ─────────────────────────────────────────────────────────────
+// STEP 6 – site cards (built dynamically, image-based)
+// ─────────────────────────────────────────────────────────────
+const SITE_DEFS = {
+  pena: {
+    name: 'Pena Palace',
+    emoji: '🏰',
+    img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Pena_palace_from_above.jpg/480px-Pena_palace_from_above.jpg',
+    color: '#7B5EA7',
+    badges: [{ cls:'badge-ico', txt:'Iconic' }],
+    price: 'From €12',
+    note: 'Fairytale palace · 2 hr visit · Pre-book in peak season',
+    subOpts: [
+      { val:'full',    lbl:'Palace + Gardens' },
+      { val:'gardens', lbl:'Gardens only' }
+    ],
+    defaultVal: 'full'
+  },
+  moorish: {
+    name: 'Moorish Castle',
+    emoji: '🏯',
+    img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Castelo_dos_Mouros_em_Sintra.jpg/480px-Castelo_dos_Mouros_em_Sintra.jpg',
+    color: '#6B7E8C',
+    badges: [],
+    price: 'Adult €12',
+    note: 'Castle walls + panoramic views · 1.5 hr · Dogs welcome',
+    defaultVal: 'visit'
+  },
+  regaleira: {
+    name: 'Quinta da Regaleira',
+    emoji: '🌀',
+    img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Regaleira-1.jpg/480px-Regaleira-1.jpg',
+    color: '#4A7A5A',
+    badges: [{ cls:'badge-ico', txt:'Must-see' }],
+    price: 'Adult €20',
+    note: 'Initiation Well · Masonic tunnels · 1.5 hr · Pre-book',
+    defaultVal: 'visit'
+  },
+  monserrate: {
+    name: 'Monserrate Palace',
+    emoji: '🌿',
+    img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Monserrate_Palace%2C_Sintra%2C_Portugal%2C_2012.jpg/480px-Monserrate_Palace%2C_Sintra%2C_Portugal%2C_2012.jpg',
+    color: '#5A7A3A',
+    badges: [{ cls:'badge-gem', txt:'Hidden gem' }],
+    price: 'Adult €12',
+    note: 'Best gardens in Sintra · Moorish-Gothic palace · Almost no crowds',
+    defaultVal: 'visit'
+  },
+  biester: {
+    name: 'Biester Palace',
+    emoji: '🌲',
+    img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Quinta_de_Biester%2C_Sintra.jpg/480px-Quinta_de_Biester%2C_Sintra.jpg',
+    color: '#6B8C6B',
+    badges: [{ cls:'badge-gem', txt:'Secret find' }],
+    price: 'Adult €16',
+    note: 'Very peaceful · 50m from Regaleira · Barely visited · 1.5 hr',
+    defaultVal: 'visit'
+  },
+  national: {
+    name: 'National Palace',
+    emoji: '🏛️',
+    img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/National_Palace_of_Sintra%2C_Portugal.jpg/480px-National_Palace_of_Sintra%2C_Portugal.jpg',
+    color: '#8C7A4A',
+    badges: [],
+    price: 'Adult €13',
+    note: 'Most historically significant palace · In town centre · 1.5 hr',
+    defaultVal: 'visit'
+  },
+  capuchos: {
+    name: 'Convento dos Capuchos',
+    emoji: '🪨',
+    img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Convento_dos_Capuchos%2C_Sintra_%28Portugal%29.jpg/480px-Convento_dos_Capuchos%2C_Sintra_%28Portugal%29.jpg',
+    color: '#7A6B4A',
+    badges: [{ cls:'badge-gem', txt:'Hidden gem' }],
+    price: 'Adult €11',
+    note: '16th-century hermit monastery carved into rock · ~1 hr · Unique atmosphere',
+    defaultVal: 'visit'
+  },
+  town: {
+    name: 'Sintra Town Centre',
+    emoji: '🍰',
+    img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Sintra_Portugal.jpg/480px-Sintra_Portugal.jpg',
+    color: '#C1694F',
+    badges: [],
+    price: 'Lunch ~€20pp',
+    note: 'Pastries · Shops · Restaurants · Travesseiros',
+    subOpts: [
+      { val:'lunch',   lbl:'Lunch break' },
+      { val:'passing', lbl:'Quick stop' }
+    ],
+    defaultVal: 'lunch'
+  },
+  cabo: {
+    name: 'Cabo da Roca',
+    emoji: '🌊',
+    img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Cabo_da_Roca%2C_Portugal_%28May_2009%29.jpg/480px-Cabo_da_Roca%2C_Portugal_%28May_2009%29.jpg',
+    color: '#3A6B8C',
+    badges: [{ cls:'badge-dep', txt:'Last stop only' }],
+    price: 'Free (viewpoint)',
+    note: 'Westernmost point of continental Europe · 2 hr · Afternoon only',
+    defaultVal: 'yes'
+  }
+};
+
+function getSiteOrder() {
+  let order = ['pena','moorish','regaleira','monserrate','biester','national','capuchos','town','cabo'];
+
+  if (S.history === 'love') {
+    order = order.filter(s => !['national','biester'].includes(s));
+    order = ['national','biester',...order];
+  } else if (S.history === 'vibes') {
+    order = order.filter(s => s !== 'national');
+    const townIdx = order.indexOf('town');
+    order.splice(townIdx, 0, 'national');
+  }
+
+  if (S.crowd === 'hate') {
+    const gems = ['capuchos','monserrate','biester','national'].filter(s => order.includes(s));
+    const rest = order.filter(s => !gems.includes(s) && !['pena','town','cabo'].includes(s));
+    order = [...gems, ...rest, 'pena', 'town', 'cabo'];
+  }
+
+  return order;
+}
+
+function buildSiteList() {
+  const order = getSiteOrder();
+  const container = document.getElementById('site-list');
+  container.innerHTML = '';
+
+  order.forEach(key => {
+    const def = SITE_DEFS[key];
+    const curVal = S.sites[key];
+    const isSel = curVal !== 'skip';
+
+    // Personalised badges
+    const badges = [...def.badges];
+    if (S.history === 'love' && (key === 'national' || key === 'biester'))
+      badges.push({ cls:'badge-you', txt:'Top pick for you' });
+    if (S.crowd === 'hate' && (key === 'monserrate' || key === 'biester' || key === 'capuchos'))
+      badges.push({ cls:'badge-you', txt:'Perfect for you' });
+    const badgesHtml = badges.map(b => `<span class="badge ${b.cls}">${b.txt}</span>`).join('');
+
+    // Sub-options HTML (Pena + Town only)
+    let subHtml = '';
+    if (def.subOpts) {
+      const opts = def.subOpts.map(o =>
+        `<div class="site-sub-opt${curVal === o.val ? ' on' : ''}" data-site="${key}" data-sub="${o.val}"
+          onclick="event.stopPropagation();setSiteSubOpt('${key}','${o.val}',this)">${o.lbl}</div>`
+      ).join('');
+      subHtml = `<div class="site-card-sub">${opts}</div>`;
+    }
+
+    const div = document.createElement('div');
+    div.className = `site-card${isSel ? ' sel' : ''}`;
+    div.id = `site-card-${key}`;
+    div.onclick = () => toggleSite(key);
+    div.innerHTML = `
+      <div class="site-card-img-wrap">
+        <img class="site-card-img" src="${def.img}" alt="${def.name}"
+          onerror="this.style.display='none'">
+        <div class="site-card-img-fallback" style="background:${def.color}22">${def.emoji}</div>
+        <div class="site-card-badges">${badgesHtml}</div>
+        <div class="site-card-check">✓</div>
+      </div>
+      <div class="site-card-body">
+        <div class="site-card-name">${def.name}</div>
+        <div class="site-card-price">${def.price}</div>
+        <div class="site-card-note">${def.note}</div>
+      </div>
+      ${subHtml}`;
+    container.appendChild(div);
+  });
+}
+
+function toggleSite(key) {
+  const def = SITE_DEFS[key];
+  const isSelected = S.sites[key] !== 'skip';
+  S.sites[key] = isSelected ? 'skip' : def.defaultVal;
+  const card = document.getElementById(`site-card-${key}`);
+  if (!card) return;
+  card.classList.toggle('sel', !isSelected);
+  // Reset sub-opt highlights when deselecting
+  if (isSelected) {
+    card.querySelectorAll('.site-sub-opt').forEach(b => b.classList.remove('on'));
+    if (def.subOpts) {
+      const first = card.querySelector(`[data-sub="${def.subOpts[0].val}"]`);
+      if (first) first.classList.add('on');
+    }
+  }
+}
+
+function suggestSites() {
+  // Transport may not be chosen yet (Step 7 comes after this).
+  // Use 'bus' as a conservative stand-in so buildItinerary() gives realistic times.
+  const savedTransport = S.transport;
+  if (!S.transport) S.transport = 'bus';
+
+  // Reset all sites
+  Object.keys(S.sites).forEach(k => { S.sites[k] = 'skip'; });
+
+  // Build a priority-ordered candidate list based on crowd preference.
+  // Order = most important to least important for this user type.
+  let priority;
+  if (S.crowd === 'hate') {
+    priority = [
+      ['capuchos',   'visit'],
+      ['monserrate', 'visit'],
+      ['biester',    'visit'],
+      ['national',   'visit'],
+      ['town',       'lunch'],
+    ];
+  } else if (S.crowd === 'some') {
+    priority = [
+      ['pena',       'full'],
+      ['moorish',    'visit'],
+      ['regaleira',  'visit'],
+      ['town',       'lunch'],
+      ['monserrate', 'visit'],
+      ['national',   'visit'],
+      ['biester',    'visit'],
+    ];
+  } else {
+    priority = [
+      ['pena',       'full'],
+      ['moorish',    'visit'],
+      ['regaleira',  'visit'],
+      ['national',   'visit'],
+      ['town',       'lunch'],
+      ['monserrate', 'visit'],
+      ['biester',    'visit'],
+    ];
+  }
+
+  // History lovers: bring national + biester up the list if they're buried low
+  if (S.history === 'love') {
+    ['biester', 'national'].forEach(s => {
+      const idx = priority.findIndex(c => c[0] === s);
+      if (idx > 2) {
+        const item = priority.splice(idx, 1)[0];
+        priority.splice(2, 0, item);
+      } else if (idx === -1) {
+        priority.splice(2, 0, [s, 'visit']);
+      }
+    });
+  }
+
+  // Greedy: add each site, check if the plan still fits. Skip it if it runs over.
+  for (const [site, mode] of priority) {
+    S.sites[site] = mode;
+    const { overTimeMins } = buildItinerary();
+    if (overTimeMins > 0) {
+      S.sites[site] = 'skip'; // doesn't fit — drop it
+    }
+  }
+
+  // Fallback: if nothing fit at all, add the single top-priority site regardless
+  const anySelected = Object.values(S.sites).some(v => v !== 'skip');
+  if (!anySelected) {
+    const [site, mode] = priority[0];
+    S.sites[site] = mode;
+  }
+
+  // Restore transport to whatever it was before (null/undefined if not yet chosen)
+  S.transport = savedTransport;
+
+  buildSiteList();
+  const btn = document.getElementById('btn-suggest');
+  if (btn) { btn.textContent = '✓ Suggested!'; btn.disabled = true; setTimeout(() => { btn.textContent = '💡 Suggest for me'; btn.disabled = false; }, 2000); }
+}
+
+function setSiteSubOpt(key, val, el) {
+  S.sites[key] = val;
+  document.querySelectorAll(`[data-site="${key}"][data-sub]`).forEach(b =>
+    b.classList.toggle('on', b.dataset.sub === val));
+  // Ensure card is marked selected
+  const card = document.getElementById(`site-card-${key}`);
+  if (card) card.classList.add('sel');
+}
+
+// ─────────────────────────────────────────────────────────────
+// STEP 7 – transport
+// ─────────────────────────────────────────────────────────────
+function pickTransport(val, el) {
+  S.transport = val;
+  document.querySelectorAll('.radio').forEach(r => r.classList.remove('on'));
+  el.classList.add('on');
+}
+
+// ─────────────────────────────────────────────────────────────
+// TIME UTILS
+// ─────────────────────────────────────────────────────────────
+function t2m(t) {
+  if (!t || t === 'flexible') return null;
+  const [h, m] = t.split(':').map(Number);
+  return h * 60 + m;
+}
+function m2t(m) {
+  return `${String(Math.floor(m / 60)).padStart(2,'0')}:${String(m % 60).padStart(2,'0')}`;
+}
+function addM(t, m) { return m2t(t2m(t) + m); }
+
+function depMins() {
+  if (S.dep === 'flexible') return 20 * 60;
+  return t2m(S.dep);
+}
+
+function availHours() {
+  const a = t2m(S.arr);
+  const d = depMins();
+  if (!a || !d) return 8;
+  return (d - a) / 60;
+}
+
+// ─────────────────────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────────────────────
+function isPeak()    { return S.month >= 5 && S.month <= 10; }
+function isVLow()    { return S.month >= 1 && S.month <= 3; }
+function groupSize() { return S.adults + S.children + S.seniors; }
+
+// Prices — used by ticketCost() and buildCost()
+// fam = family ticket covering 2 adults + up to 4 children (maxKids:4)
+const PRICES = {
+  pena: {
+    full:    { a:20, y:18, s:18, fam:{ price:80, maxKids:4 } },
+    gardens: { a:12, y:10, s:10, fam:{ price:44, maxKids:4 } }
+  },
+  moorish:   { visit: { a:12, y:10, s:10, fam:{ price:42, maxKids:4 } } },
+  regaleira: { visit: { a:20, y:20, s:20 } },
+  monserrate:{ visit: { a:12, y:10, s:10, fam:{ price:42, maxKids:4 } } },
+  biester:   { visit: { a:16, y:12, s:12 } },
+  national:  { visit: { a:13, y:10, s:10, fam:{ price:44, maxKids:4 } } },
+  capuchos:  { visit: { a:11, y:9,  s:9,  fam:{ price:29, maxKids:4 } } }
+};
+
+function ticketCost(site, optOverride) {
+  const opt = optOverride || S.sites[site];
+  const tier = PRICES[site] && PRICES[site][opt];
+  if (!tier) return 0;
+  return S.adults * tier.a + S.children * tier.y + S.seniors * tier.s;
+}
+
+function siteVisitMins(site) {
+  if (site === 'pena' && S.sites.pena === 'gardens') return 90;
+  if (site === 'town') return S.sites.town === 'lunch' ? 90 : 20;
+  if (site === 'capuchos') return 60;
+  const m = { pena:120, moorish:90, regaleira:90, monserrate:90, biester:90, national:90 };
+  return m[site] || 90;
+}
+
+function queueMins(site) {
+  if (site === 'pena') {
+    if (S.sites.pena === 'gardens') return 0;
+    return isPeak() ? 35 : 15;
+  }
+  if (site === 'regaleira') return 15;
+  return 0;
+}
+
+function siteName(site) {
+  return {
+    pena:'Pena Palace', moorish:'Moorish Castle', regaleira:'Quinta da Regaleira',
+    monserrate:'Monserrate Palace', biester:'Biester Palace', national:'National Palace',
+    capuchos:'Convento dos Capuchos', town:'Sintra Town Centre', cabo:'Cabo da Roca'
+  }[site] || site;
+}
+
+// ─────────────────────────────────────────────────────────────
+// FEASIBILITY SCORE
+// ─────────────────────────────────────────────────────────────
+function calcScore() {
+  let score = 10;
+  const avail = availHours();
+  const dep = S.dep;
+  const peak = isPeak();
+
+  if (dep === '13:00') score = Math.min(score, 6);
+  else if (dep === '15:00') score = Math.min(score, 7);
+  else if (dep === '17:00') score = Math.min(score, 9);
+
+  if (avail < 3) score = Math.min(score, 7);
+
+  const selected = ['pena','moorish','regaleira','monserrate','biester','national','capuchos']
+    .filter(k => S.sites[k] !== 'skip');
+  let totalMins = selected.reduce((sum, k) => sum + siteVisitMins(k) + queueMins(k), 0);
+  if (S.sites.town !== 'skip') totalMins += siteVisitMins('town');
+  if (S.sites.cabo !== 'skip') totalMins += 150;
+  totalMins += selected.length * 20;
+
+  const ratio = totalMins / (avail * 60);
+  if      (ratio > 1.5) score -= 6;
+  else if (ratio > 1.3) score -= 4;
+  else if (ratio > 1.1) score -= 3;
+  else if (ratio > 1.0) score -= 2;
+  else if (ratio > 0.9) score -= 1;
+
+  if (peak && t2m(S.arr) >= 11 * 60) score -= 2;
+  else if (peak && t2m(S.arr) >= 10 * 60) score -= 1;
+
+  if (peak && S.dayType === 'weekend') score -= 1;
+
+  if (S.transport === 'bus') {
+    if (S.sites.regaleira !== 'skip') score -= 1;
+    if (S.sites.capuchos !== 'skip') score -= 1;
+  }
+
+  if (S.children > 0 && S.transport === 'walking') score -= 1;
+  if (groupSize() > 7 && S.transport === 'tuk') score -= 1;
+
+  if (S.crowd === 'hate' && S.sites.pena === 'full' && S.sites.regaleira !== 'skip' && peak) score -= 1;
+
+  if (S.dayType === 'weekend' && peak) score -= 0.5;
+
+  return Math.max(1, Math.min(10, Math.round(score)));
+}
+
+function scoreInfo(n) {
+  if (n <= 2) return { lbl:'Impossible',     color:'#C53030' };
+  if (n <= 4) return { lbl:'Very Difficult',  color:'#C05621' };
+  if (n <= 6) return { lbl:'Tight',           color:'#B7791F' };
+  if (n <= 8) return { lbl:'Comfortable',     color:'#276749' };
+  return           { lbl:'Ideal',            color:'#2B6CB0' };
+}
+
+function buildScoreReasons() {
+  const reasons = [];
+  const avail = availHours();
+  const peak  = isPeak();
+
+  // Departure cap
+  if (S.dep === '13:00') reasons.push('Leaving by 13:00 leaves very little time — most monuments need 1–2 hrs each');
+  else if (S.dep === '15:00') reasons.push('Leaving by 15:00 is only a short half-day in Sintra');
+
+  // Very short window
+  if (avail < 3) reasons.push('Under 3 hours is extremely tight for visiting any monument properly');
+
+  // Itinerary overload (mirrors calcScore ratio logic)
+  const selected = ['pena','moorish','regaleira','monserrate','biester','national','capuchos']
+    .filter(k => S.sites[k] !== 'skip');
+  let totalMins = selected.reduce((sum, k) => sum + siteVisitMins(k) + queueMins(k), 0);
+  if (S.sites.town !== 'skip') totalMins += siteVisitMins('town');
+  if (S.sites.cabo !== 'skip') totalMins += 150;
+  totalMins += selected.length * 20;
+  const ratio = totalMins / (avail * 60);
+  if      (ratio > 1.5) reasons.push('The selected sites need over 50% more time than you have — the plan is heavily overloaded');
+  else if (ratio > 1.3) reasons.push('The selected sites need significantly more time than your window allows');
+  else if (ratio > 1.1) reasons.push('Selected sites need more time than available — something will feel rushed');
+  else if (ratio > 1.0) reasons.push('Plan slightly exceeds your available time');
+
+  // Late arrival in peak
+  if (peak && t2m(S.arr) >= 11 * 60)
+    reasons.push(`Arriving at ${S.arr} in peak season means full crowds and long queues at every monument`);
+  else if (peak && t2m(S.arr) >= 10 * 60)
+    reasons.push(`Arriving at ${S.arr} in peak season means queues are already building`);
+
+  // Peak weekend
+  if (peak && S.dayType === 'weekend')
+    reasons.push('Peak season weekend — Sintra\'s busiest possible combination');
+
+  // Bus limitations
+  if (S.transport === 'bus') {
+    if (S.sites.regaleira !== 'skip') reasons.push('Hop-on hop-off bus makes Regaleira timing unpredictable');
+    if (S.sites.capuchos  !== 'skip') reasons.push('Hop-on hop-off bus does not reach Capuchos');
+  }
+
+  // Walking with kids
+  if (S.children > 0 && S.transport === 'walking')
+    reasons.push('Walking Sintra\'s steep hills with children adds significant time and effort');
+
+  // Oversized tuk group
+  if (groupSize() > 7 && S.transport === 'tuk')
+    reasons.push('Group too large for one vehicle — coordinating two tuk-tuks adds delays');
+
+  // Crowd contradiction
+  if (S.crowd === 'hate' && S.sites.pena === 'full' && S.sites.regaleira !== 'skip' && peak)
+    reasons.push('Crowd preference conflicts with choosing Sintra\'s two most crowded sites in peak season');
+
+  return reasons;
+}
+
+function fixPlan() {
+  const changes = [];
+
+  // Fix 1: Bus + hilltop or Capuchos → switch to HopOn tuk (faster, guide, open-top)
+  if (S.transport === 'bus') {
+    const needsRealTransport = ['pena','moorish','capuchos'].some(s => S.sites[s] !== 'skip');
+    if (needsRealTransport) {
+      S.transport = 'tuk';
+      changes.push('Switched to HopOn Sintra — open-top vehicles, local driver-guide, faster connections with no timetable to wait for');
+    }
+  }
+
+  // Fix 2: Crowd hater with full Pena interior in peak → gardens only
+  if (S.crowd === 'hate' && S.sites.pena === 'full' && isPeak()) {
+    S.sites.pena = 'gardens';
+    changes.push('Switched Pena Palace to gardens-only — no queue, no time slot, same panoramic views, far fewer people');
+  }
+
+  // Fix 3: Walking + children → upgrade to HopOn tuk
+  if (S.children > 0 && S.transport === 'walking') {
+    S.transport = 'tuk';
+    changes.push('Switched to HopOn Sintra tuk-tuk — Sintra\'s climbs are tough for children on foot and a guide keeps the group moving');
+  }
+
+  // Fix 4: Plan still overloaded after other fixes → drop lowest-priority sites
+  let { overTimeMins } = buildItinerary();
+  if (overTimeMins > 0) {
+    const dropOrder = ['cabo','capuchos','monserrate','biester','national','moorish','town','regaleira','pena'];
+    for (const site of dropOrder) {
+      if (overTimeMins <= 0) break;
+      if (S.sites[site] !== 'skip') {
+        const nm = SITE_DEFS[site] ? SITE_DEFS[site].name : site;
+        S.sites[site] = 'skip';
+        changes.push(`Removed ${nm} — didn't fit your time window`);
+        overTimeMins = buildItinerary().overTimeMins;
+      }
+    }
+  }
+
+  // Populate the fix-applied banner
+  const banner   = document.getElementById('fix-applied');
+  const bannerList = document.getElementById('fix-applied-list');
+  if (changes.length > 0) {
+    bannerList.innerHTML = changes.map(c => `<li>${c}</li>`).join('');
+    banner.style.display = 'block';
+  }
+
+  // Re-run the full calculation with the updated plan (flag so banner isn't cleared)
+  calculate._fromFix = true;
+  calculate();
+  window.scrollTo(0, 0);
+}
+
+// ─────────────────────────────────────────────────────────────
+// ITINERARY BUILDER
+// ─────────────────────────────────────────────────────────────
+function buildItinerary() {
+  const items = [];
+  let cur = t2m(S.arr);
+  const dMins = depMins();
+  const excludedSites = []; // always empty — full plan is always shown
+  let walkMins = 0;
+  let walkKm   = 0;
+
+  // Arrival
+  const arrivalExtra = S.transport === 'car' ? 15 : 5;
+  const arrivalNote  = S.transport === 'car'
+    ? 'Park at Portela / Loulé / S. Pedro · 15 min walk to town'
+    : 'Train station · Town centre is a 15 min walk';
+  items.push({ type:'event', time:m2t(cur), name:'Arrive in Sintra', detail:arrivalNote, dur:arrivalExtra });
+  walkMins += 5; walkKm += 0.4;
+  cur += arrivalExtra;
+
+  const order = buildItinOrder();
+
+  order.forEach(({ site, val, leg }) => {
+    // Track walking legs
+    const alwaysWalkSites = ['national', 'regaleira', 'biester', 'town', 'capuchos'];
+    if (S.transport === 'walking' || alwaysWalkSites.includes(site) || leg.mins <= 7) {
+      walkMins += leg.mins;
+      walkKm   += (leg.km || 0);
+    }
+
+    if (leg.mins > 0) {
+      items.push({ type:'leg', time:m2t(cur), name:leg.label, detail:leg.note, dur:leg.mins });
+      cur += leg.mins;
+    }
+
+    const q = queueMins(site);
+    if (q > 0) {
+      items.push({ type:'queue', time:m2t(cur), name:`Entry queue — ${siteName(site)}`, dur:q,
+        detail: isPeak() ? 'Peak season queue · Pre-booking strongly recommended' : 'Entry queue' });
+      cur += q;
+    }
+
+    const vm = siteVisitMins(site);
+    const costStr = site === 'town'
+      ? (val === 'lunch' ? `Lunch estimate: ~€${20 * groupSize()} (€20pp)` : null)
+      : (val !== 'skip' ? `€${ticketCost(site, val)} total (group)` : null);
+
+    let vname = siteName(site);
+    if (site === 'pena') vname += val === 'gardens' ? ' — Gardens only' : ' — Full ticket';
+    if (site === 'town') vname += val === 'lunch' ? ' — Lunch' : ' — Quick stop';
+
+    items.push({ type:'event', time:m2t(cur), name:vname, detail:siteDetail(site, val), dur:vm,
+      depTime: m2t(cur + vm), cost: costStr });
+    cur += vm;
+  });
+
+  // Cabo — always last
+  if (S.sites.cabo !== 'skip') {
+    const caboLeg = caboTransportLeg();
+    if (S.transport === 'walking') { walkMins += caboLeg.mins; walkKm += 30; }
+    items.push({ type:'leg', time:m2t(cur), name:caboLeg.label, detail:caboLeg.note, dur:caboLeg.mins });
+    cur += caboLeg.mins;
+    items.push({ type:'event', time:m2t(cur), name:'Cabo da Roca + Coastline',
+      detail:'Westernmost point of continental Europe · Secret coastal spots · ~2hrs', dur:120,
+      depTime: m2t(cur + 120),
+      cost: 'HopOn coast tour €100/group (recommended) — or free at the viewpoint only' });
+    cur += 120;
+  }
+
+  // Departure marker
+  const depTime = S.dep === 'flexible' ? m2t(cur + 10) : S.dep;
+  items.push({ type:'event', time:depTime, name:'Depart Sintra',
+    detail:'Train to Lisbon Rossio (~40 min) · Avoid 18:30–20:00 rush hour if possible', dur:0 });
+
+  // How far past the departure time does this plan run?
+  const overTimeMins = (dMins && cur > dMins) ? Math.round(cur - dMins) : 0;
+
+  return { items, excludedSites, walkMins, walkKm, overTimeMins };
+}
+
+// ─────────────────────────────────────────────────────────────
+// ITINERARY ORDER  (Pena-first when full ticket)
+// ─────────────────────────────────────────────────────────────
+function buildItinOrder() {
+  const order = [];
+  const si = S.sites;
+  const penaFull = si.pena === 'full';
+
+  if (penaFull) {
+    // ── UPHILL FIRST ─────────────────────────────────
+    // Pena straight from arrival — beat the queues at opening
+    order.push({ site:'pena', val:si.pena, leg:{
+      mins: uphillMins(), km: 5.0,
+      label: legLabel('pena', uphillMins()),
+      note: '+224m elevation from town · Aim to arrive at opening'
+    }});
+
+    // Moorish Castle — always walk from Pena (300m path, ~8 min, quicker than any transport)
+    if (si.moorish !== 'skip') {
+      order.push({ site:'moorish', val:'visit', leg:{
+        mins: 8, km: 0.3,
+        label: 'Walk to Moorish Castle',
+        note: '300m path · ~8 min · Quicker than waiting for transport'
+      }});
+    }
+
+    // Coming downhill: Regaleira (transport down, last bit on foot — road is blocked)
+    if (si.regaleira !== 'skip') {
+      const fromMoorish = si.moorish !== 'skip';
+      const dMins = fromMoorish
+        ? (S.transport === 'walking' ? 40 : 25)
+        : (S.transport === 'walking' ? 35 : 20);
+      const dKm = fromMoorish ? 3.2 : 2.8;
+      order.push({ site:'regaleira', val:'visit', leg:{
+        mins: dMins, km: dKm,
+        label: downhillToRegLabel(),
+        note: fromMoorish ? 'Heading downhill from Moorish Castle · Last section on foot (road blocked to vehicles)' : 'Coming down from Pena area · Last section on foot (road blocked to vehicles)'
+      }});
+    }
+
+    // Biester (50m from Regaleira)
+    if (si.biester !== 'skip') {
+      const fromReg = si.regaleira !== 'skip';
+      order.push({ site:'biester', val:'visit', leg:{
+        mins: fromReg ? 2 : 30, km: fromReg ? 0.05 : 1.5,
+        label: legLabel('biester', fromReg ? 2 : 30),
+        note: fromReg ? '50m from Regaleira entrance' : 'From town — allow 30 min'
+      }});
+    }
+
+    // National Palace (town level)
+    if (si.national !== 'skip') {
+      const fromReg = si.regaleira !== 'skip' || si.biester !== 'skip';
+      order.push({ site:'national', val:'visit', leg:{
+        mins: fromReg ? 10 : 15, km: fromReg ? 0.7 : 1.2,
+        label: legLabel('national', 10),
+        note: fromReg ? 'Walk from Regaleira area into town centre' : '15 min walk from station through town'
+      }});
+    }
+
+    // Town
+    if (si.town !== 'skip') {
+      const fromNational = si.national !== 'skip';
+      order.push({ site:'town', val:si.town, leg:{
+        mins: fromNational ? 3 : 5, km: fromNational ? 0.2 : 0.3,
+        label: legLabel('town', 5),
+        note: 'Town centre'
+      }});
+    }
+
+  } else {
+    // ── TOWN-FIRST ORDER (Pena gardens / no Pena) ────
+
+    // National Palace (flat, close to station)
+    if (si.national !== 'skip') {
+      order.push({ site:'national', val:'visit', leg:{
+        mins: 15, km: 1.2,
+        label: legLabel('national', 15),
+        note: '15 min walk from station through town centre'
+      }});
+    }
+
+    // Regaleira
+    if (si.regaleira !== 'skip') {
+      const fromNational = si.national !== 'skip';
+      const regMins = fromNational ? 7 : 10;
+      order.push({ site:'regaleira', val:'visit', leg:{
+        mins: regMins, km: fromNational ? 0.6 : 0.7,
+        label: legLabel('regaleira', regMins),
+        note: fromNational ? 'Short walk from National Palace' : 'From town centre · 700m flat route'
+      }});
+    }
+
+    // Biester
+    if (si.biester !== 'skip') {
+      const fromReg = si.regaleira !== 'skip';
+      order.push({ site:'biester', val:'visit', leg:{
+        mins: fromReg ? 2 : 30, km: fromReg ? 0.05 : 1.5,
+        label: legLabel('biester', fromReg ? 2 : 30),
+        note: fromReg ? '50m from Regaleira entrance' : 'From town — allow 30 min'
+      }});
+    }
+
+    // Pena (gardens only — no time slot pressure)
+    if (si.pena !== 'skip') {
+      const fromBiester = si.biester !== 'skip';
+      const fromReg     = si.regaleira !== 'skip' && !fromBiester;
+      let pMins = 40, pNote = '+224m elevation from town · Very steep climb', pKm = 5.0;
+      if (fromBiester) { pMins = uphillMins(); pNote = 'Path from Biester · +118m elevation'; pKm = 2.2; }
+      else if (fromReg){ pMins = 35; pNote = 'From Regaleira, uphill path'; pKm = 3.5; }
+      order.push({ site:'pena', val:si.pena, leg:{ mins:pMins, km:pKm, label:legLabel('pena', pMins), note:pNote }});
+    }
+
+    // Moorish Castle — always walk from Pena (300m path, ~8 min), or uphill from town
+    if (si.moorish !== 'skip') {
+      const fromPena = si.pena !== 'skip';
+      if (fromPena) {
+        order.push({ site:'moorish', val:'visit', leg:{
+          mins: 8, km: 0.3,
+          label: 'Walk to Moorish Castle',
+          note: '300m path · ~8 min · Quicker than waiting for transport'
+        }});
+      } else {
+        order.push({ site:'moorish', val:'visit', leg:{
+          mins: 35, km: 3.8,
+          label: legLabel('moorish', 35),
+          note: 'Uphill from town — allow 35 min'
+        }});
+      }
+    }
+
+    // Town (after coming down from hills)
+    if (si.town !== 'skip') {
+      const needsReturn    = si.pena !== 'skip' || si.moorish !== 'skip';
+      const comingFromHill = si.regaleira !== 'skip' || si.biester !== 'skip';
+      const returnMins = needsReturn ? downhillMins() : (comingFromHill ? 10 : 5);
+      const returnNote = needsReturn
+        ? `Heading back down from Pena area · ${downhillDesc()}`
+        : comingFromHill ? 'Walk back to town centre' : 'Short walk';
+      const returnKm = needsReturn ? 4.0 : (comingFromHill ? 0.7 : 0.3);
+      const returnLabel = needsReturn ? downhillToTownLabel() : legLabel('town', returnMins);
+      order.push({ site:'town', val:si.town, leg:{ mins:returnMins, km:returnKm, label:returnLabel, note:returnNote }});
+    }
+  }
+
+  // ── AFTERNOON: Monserrate ─────────────────────────
+  if (si.monserrate !== 'skip') {
+    const tMin = monserrateTransitMins();
+    order.push({ site:'monserrate', val:'visit', leg:{
+      mins: tMin, km: 4.2,
+      label: legLabel('monserrate', tMin),
+      note: monserrateTransitNote()
+    }});
+  }
+
+  // ── AFTERNOON: Capuchos ───────────────────────────
+  if (si.capuchos !== 'skip') {
+    const fromMonserrate = si.monserrate !== 'skip';
+    const tMin = fromMonserrate ? capuchosFromMonserrateMins() : capuchosFromTownMins();
+    const tNote = fromMonserrate ? 'From Monserrate Palace · forest path' : capuchosTransitNote();
+    order.push({ site:'capuchos', val:'visit', leg:{
+      mins: tMin, km: fromMonserrate ? 3.0 : 4.0,
+      label: legLabel('capuchos', tMin),
+      note: tNote
+    }});
+  }
+
+  return order;
+}
+
+// ─────────────────────────────────────────────────────────────
+// TRANSPORT HELPERS
+// ─────────────────────────────────────────────────────────────
+function uphillMins() {
+  if (S.transport === 'walking') return 40;
+  if (S.transport === 'tuk')     return 20;
+  if (S.transport === 'bus')     return 25;
+  return 25; // car
+}
+
+function downhillMins() {
+  if (S.transport === 'walking') return 35;
+  if (S.transport === 'tuk' || S.transport === 'bus') return 25;
+  return 25;
+}
+
+function downhillDesc() {
+  if (S.transport === 'bus') return 'Bus 434 downhill';
+  if (S.transport === 'tuk') return 'HopOn tuk-tuk / vintage Jeep down';
+  return 'Walk downhill';
+}
+
+// Label for the downhill leg from Pena/Moorish area to Regaleira
+// (road to Regaleira is vehicle-blocked for the last section)
+function downhillToRegLabel() {
+  if (S.transport === 'walking') return 'Walk to Quinta da Regaleira';
+  if (S.transport === 'tuk')     return 'HopOn tuk-tuk down · Walk to Regaleira';
+  if (S.transport === 'bus')     return 'Bus 434 down · Walk to Regaleira';
+  return 'Drive down · Walk to Regaleira';
+}
+
+// Label for the downhill leg from Pena/Moorish area back to Town
+function downhillToTownLabel() {
+  if (S.transport === 'walking') return 'Walk down to town';
+  if (S.transport === 'tuk')     return 'HopOn tuk-tuk down to town';
+  if (S.transport === 'bus')     return 'Bus 434 down to town';
+  return 'Drive down to town';
+}
+
+function monserrateTransitMins() {
+  if (S.transport === 'walking') return 55;
+  if (S.transport === 'bus')     return 30;
+  if (S.transport === 'tuk')     return 20;
+  return 25;
+}
+
+function monserrateTransitNote() {
+  if (S.transport === 'walking') return 'Two steep hills — strenuous on foot · ~4 km';
+  if (S.transport === 'bus')     return 'Bus 435 — runs every ~2hrs, plan around the timetable';
+  if (S.transport === 'tuk')     return 'HopOn tuk-tuk / vintage Jeep via the outside route';
+  return 'Drive — park near the entrance · road through Sintra is blocked';
+}
+
+function capuchosFromTownMins() {
+  if (S.transport === 'walking') return 55;
+  if (S.transport === 'tuk')     return 25;
+  if (S.transport === 'car')     return 15;
+  return 999; // bus cannot reach — will be flagged in tips
+}
+
+function capuchosFromMonserrateMins() {
+  if (S.transport === 'walking') return 35;
+  if (S.transport === 'tuk')     return 15;
+  if (S.transport === 'car')     return 10;
+  return 999;
+}
+
+function capuchosTransitNote() {
+  if (S.transport === 'tuk') return 'HopOn tuk-tuk / vintage Jeep — through the forest road';
+  if (S.transport === 'car') return 'Short drive · ~15 min from Sintra town';
+  if (S.transport === 'bus') return '⚠️ Bus 434/435 does not reach Capuchos';
+  return 'Strenuous on foot — very long uphill · ~4 km';
+}
+
+function caboTransportLeg() {
+  if (S.transport === 'car') return { label:'Drive to Cabo da Roca', note:'~25 min drive', mins:25 };
+  if (S.transport === 'tuk') return { label:'HopOn coast tour departure', note:'Vintage Jeep via coastal road to secret spots', mins:20 };
+  return { label:'Uber / taxi to coast', note:'~€20 from Sintra town · ~25 min', mins:30 };
+}
+
+function legLabel(site, mins) {
+  const alwaysWalk = ['national', 'regaleira', 'biester', 'town', 'capuchos'];
+  if (alwaysWalk.includes(site) || (mins !== undefined && mins <= 7)) {
+    return `Walk to ${siteName(site)}`;
+  }
+  // Private cars cannot drive to hilltop monuments — road is restricted
+  const hillSites = ['pena', 'moorish'];
+  if (S.transport === 'car' && hillSites.includes(site)) {
+    return `Park & travel to ${siteName(site)}`;
+  }
+  const t = { walking:'Walk to', car:'Drive to', bus:'Bus to', tuk:'HopOn tuk-tuk to' }[S.transport] || 'Travel to';
+  return `${t} ${siteName(site)}`;
+}
+
+function siteDetail(site, val) {
+  if (site === 'pena' && val === 'full') return `Full palace + gardens · ${siteVisitMins(site)/60}hrs · Shuttle from gate: €${(4.5 * groupSize()).toFixed(2)} optional`;
+  if (site === 'pena' && val === 'gardens') return 'Gardens only · No time slot needed · 1.5hrs to explore freely';
+  if (site === 'moorish')    return 'Castle walls + views · 1.5hrs · Dogs allowed · No pre-booking';
+  if (site === 'regaleira')  return 'Initiation Well · Masonic tunnels · Chapel · 1.5hrs';
+  if (site === 'monserrate') return 'Extraordinary gardens · Moorish-Gothic palace · Almost no crowds · 1.5hrs';
+  if (site === 'biester')    return 'Peaceful Gothic palace · Barely visited · 1.5hrs';
+  if (site === 'national')   return 'Most historically significant palace in Sintra · In town centre · 1.5hrs';
+  if (site === 'capuchos')   return '16th-century hermit monastery carved into rock · Unique atmosphere · 1hr';
+  if (site === 'town' && val === 'lunch')   return 'Restaurant lunch · Shops · Souvenirs · 1.5hrs';
+  if (site === 'town' && val === 'passing') return 'Pastries · Quick look around · 20 min';
+  return '';
+}
+
+// ─────────────────────────────────────────────────────────────
+// COST BREAKDOWN
+// ─────────────────────────────────────────────────────────────
+function buildCost(excludedSites = []) {
+  const rows = [];
+  let total = 0;
+  const n = groupSize();
+  let totalSavings = 0;
+
+  // Family ticket eligibility: exactly 2 adults + 2 or more children
+  const canFamilyTicket = S.adults === 2 && S.children >= 2;
+
+  rows.push({ sec: 'TICKETS' });
+  const ticketSites = ['pena','moorish','regaleira','monserrate','biester','national','capuchos'];
+  let anyTicket = false;
+
+  ticketSites.forEach(site => {
+    const v = S.sites[site];
+    if (v === 'skip') return;
+    if (excludedSites.includes(site)) return;
+
+    const tier = PRICES[site] && PRICES[site][v];
+    if (!tier) return;
+
+    const standardCost = S.adults * tier.a + S.children * tier.y + S.seniors * tier.s;
+    if (standardCost === 0) return;
+    anyTicket = true;
+
+    let lbl = siteName(site);
+    if (site === 'pena') lbl += v === 'gardens' ? ' (Gardens only)' : ' (Full ticket)';
+
+    // Check if family ticket saves money
+    let finalCost = standardCost;
+    let saving = 0;
+    let ticketNote = null;
+
+    if (canFamilyTicket && tier.fam) {
+      const { price: famBase, maxKids } = tier.fam;
+      const kidsInFam  = Math.min(S.children, maxKids);
+      const extraKids  = Math.max(0, S.children - maxKids);
+      const famTotal   = famBase + extraKids * tier.y + S.seniors * tier.s;
+      if (famTotal < standardCost) {
+        saving    = standardCost - famTotal;
+        finalCost = famTotal;
+        totalSavings += saving;
+        const extraStr = extraKids > 0
+          ? ` + ${extraKids} child ticket${extraKids > 1 ? 's' : ''}`
+          : '';
+        ticketNote = `Family ticket (2A + ${kidsInFam}C)${extraStr} · 💰 You save €${saving.toFixed(0)}`;
+      }
+    }
+
+    rows.push({ lbl, amt: finalCost, saving, note: ticketNote });
+    total += finalCost;
+
+    if (site === 'pena' && v === 'full') {
+      rows.push({ lbl: 'Pena Palace shuttle (optional) — gate → door', amt: 4.5 * n, note: 'Optional, €4.50/person, saves 15 min walk' });
+    }
+  });
+
+  if (!anyTicket) rows.push({ lbl: 'No paid monument tickets selected', amt: 0 });
+
+  // If family tickets were used, add a summary savings row
+  if (totalSavings > 0) {
+    rows.push({ savingsRow: true, totalSavings });
+  }
+
+  rows.push({ sec: 'TRANSPORT' });
+  if (S.transport === 'bus') {
+    const c = 11 * n; rows.push({ lbl: `Hop-on hop-off bus 434/435 — €11 × ${n}`, amt: c }); total += c;
+  } else if (S.transport === 'tuk') {
+    const c = 15 * n; rows.push({ lbl: `HopOn Sintra tuk-tuk / vintage Jeep — €15 × ${n}`, amt: c }); total += c;
+  } else if (S.transport === 'walking') {
+    rows.push({ lbl: 'Walking — free', amt: 0 });
+  } else {
+    rows.push({ lbl: 'Own car (parking costs vary)', amt: 0, note: 'Budget €5–15 for parking' });
+  }
+
+  if (S.sites.town === 'lunch' && !excludedSites.includes('town')) {
+    rows.push({ sec: 'FOOD' });
+    const c = 20 * n;
+    rows.push({ lbl: `Lunch in Sintra town — ~€20pp × ${n}`, amt: c }); total += c;
+  }
+
+  if (S.sites.cabo !== 'skip' && !excludedSites.includes('cabo')) {
+    rows.push({ sec: 'EXTRAS' });
+    rows.push({ lbl: 'HopOn coast tour (recommended) — per group', amt: 100, note: '~2hrs, vintage Jeep, secret coastal spots' });
+    total += 100;
+  }
+
+  const pp = n > 0 ? Math.round(total / n) : 0;
+  rows.push({ totRow: true, total, pp, n });
+  return { rows, total, pp };
+}
+
+// ─────────────────────────────────────────────────────────────
+// TIPS ENGINE
+// ─────────────────────────────────────────────────────────────
+function buildTips({ excludedSites = [] } = {}) {
+  const tips = [];
+  const peak = isPeak();
+  const mo   = MONTH_NAMES[S.month];
+  const avail = availHours();
+  const n = groupSize();
+
+  const penaInPlan  = S.sites.pena  !== 'skip' && !excludedSites.includes('pena');
+  const regInPlan   = S.sites.regaleira !== 'skip' && !excludedSites.includes('regaleira');
+  const capInPlan   = S.sites.capuchos !== 'skip' && !excludedSites.includes('capuchos');
+
+  // 434 bus → HopOn upgrade pitch (always first)
+  if (S.transport === 'bus') {
+    tips.push({ cls:'warn', ico:'🚌', html:`Before you book the 434 hop-on hop-off bus, consider a <a href="https://www.hoponsintra.com" target="_blank"><strong>HopOn Sintra day ticket</strong></a> — the price is nearly the same, but the experience is significantly better: <strong>open-top vintage vehicles</strong> instead of a packed coach, <strong>a local driver-guide</strong> who knows the routes and the stories, <strong>faster connections</strong> between monuments with no fixed timetable to wait for, and <strong>door-to-door drops</strong> at entrances the bus can't reach. Worth comparing before you commit.` });
+  }
+
+  // Pre-booking — Pena
+  if (penaInPlan && S.sites.pena === 'full' && peak) {
+    tips.push({ cls:'crit', ico:'🎟️', html:`Pre-book Pena Palace <strong>now</strong> — in ${mo}, walk-ups face a 2hr+ delay for a ticket slot. Book at <a href="https://www.parquesdesintra.pt" target="_blank">parquesdesintra.pt</a> or switch to <strong>gardens-only</strong> (no time slot, no queue, same iconic views).` });
+  } else if (penaInPlan && S.sites.pena === 'full' && !peak) {
+    tips.push({ cls:'warn', ico:'🎟️', html:`Pre-booking Pena Palace is still recommended off-peak — it guarantees your slot and skips the ticket queue. Book at <a href="https://www.parquesdesintra.pt" target="_blank">parquesdesintra.pt</a>.` });
+  } else if (penaInPlan && S.sites.pena === 'gardens') {
+    tips.push({ cls:'info', ico:'✅', html:`Good call on Pena gardens-only — enter through the gardens gate with no time slot and no queue. The views are genuinely spectacular and you avoid the worst of the interior crowds.` });
+  }
+
+  // Pre-booking — Regaleira (context-aware: afternoon if Pena full-ticket is first)
+  if (regInPlan && peak) {
+    const regIsAfternoon = S.sites.pena === 'full';
+    const slotAdvice = regIsAfternoon
+      ? 'book an afternoon slot (around 14:00–15:00 — you will be coming down from Pena first)'
+      : 'choose the earliest morning slot available';
+    tips.push({ cls:'crit', ico:'⏰', html:`Quinta da Regaleira sells out weeks ahead in ${mo}. Pre-book at <a href="https://www.regaleira.pt" target="_blank">regaleira.pt</a> — ${slotAdvice}.` });
+  }
+
+  // Car + hilltop monuments — private cars cannot drive up
+  const hillInPlan = ['pena','moorish'].some(s => S.sites[s] !== 'skip');
+  if (S.transport === 'car' && hillInPlan) {
+    tips.push({ cls:'crit', ico:'🚗', html:`<strong>Private cars cannot drive up to the hilltop monuments</strong> — the road through Sintra is restricted to authorised vehicles only. Park at Portela, Loulé, or S. Pedro (€5–15) and use the 434 bus or <a href="https://www.hoponsintra.com" target="_blank">HopOn Sintra tuk-tuk / vintage Jeep</a> to reach Pena Palace and Moorish Castle.` });
+  }
+
+  // All-walkable plan with paid transport — save your money
+  const farSites = ['pena', 'moorish', 'monserrate', 'capuchos'];
+  const allWalkable = farSites.every(s => S.sites[s] === 'skip' || excludedSites.includes(s));
+  if (allWalkable && S.transport !== 'walking') {
+    tips.push({ cls:'info', ico:'🚶', html:`Everything on your plan is within easy walking distance of Sintra town centre — there's no hilltop monument that needs transport. Skip the hop-on hop-off day ticket and save yourself €10–15 per person; you'll be on foot the whole time regardless.` });
+  }
+
+  // Capuchos + bus
+  if (capInPlan && S.transport === 'bus') {
+    tips.push({ cls:'crit', ico:'🚌', html:`The hop-on hop-off bus (434/435) does <strong>not</strong> reach Convento dos Capuchos. You'll need a taxi, Uber, or our tuk-tuk / vintage Jeep service to get there.` });
+  }
+
+  // Capuchos note (positive)
+  if (capInPlan && S.transport !== 'bus') {
+    tips.push({ cls:'info', ico:'🪨', html:`Convento dos Capuchos is one of the most atmospheric places in all of Sintra — a 16th-century hermit monastery carved directly into the rock. Almost no one visits it. Give it the full hour; rushing it misses the point.` });
+  }
+
+  // Walking + children
+  if (S.children > 0 && S.transport === 'walking') {
+    tips.push({ cls:'warn', ico:'👶', html:`Sintra's hills are genuinely brutal for young children — the climb to Pena is +224m of exposed steep stairs in the sun. The HopOn tuk-tuk / vintage Jeep (€15/day) keeps energy for the monuments themselves.` });
+  }
+
+  // Monserrate + walking
+  if (S.sites.monserrate !== 'skip' && !excludedSites.includes('monserrate') && S.transport === 'walking') {
+    tips.push({ cls:'crit', ico:'⛰️', html:`Monserrate is almost an hour on foot from town with two steep hills, and the road through Sintra is blocked to regular cars. It's one of Sintra's greatest hidden gems but needs the right transport. Our tuk-tuk / vintage Jeep accesses it via the outside route.` });
+  }
+
+  // Cabo + bus
+  if (S.sites.cabo !== 'skip' && !excludedSites.includes('cabo') && S.transport === 'bus') {
+    tips.push({ cls:'crit', ico:'🌊', html:`The hop-on hop-off bus does <strong>not</strong> reach Cabo da Roca. You'll need an Uber (~€20 from town) or our coast tour to get there.` });
+  }
+
+  // Half-day
+  if (avail < 4) {
+    tips.push({ cls:'warn', ico:'⌛', html:`With under 4 hours, one monument done properly beats three rushed ones. Focus on what matters most to you — and consider our 1.5hr Introduction to Sintra tour which covers the highlights efficiently with a local guide.` });
+  }
+
+  // Weekend peak
+  if (S.dayType === 'weekend' && peak) {
+    tips.push({ cls:'warn', ico:'📅', html:`Weekends in ${mo} are Sintra's busiest days — trains create crowd bursts, and Sundays bring extra local visitors. Arriving before 09:30 is strongly advised.` });
+  }
+
+  // Groups of 6+ lunch
+  if (n >= 6 && S.sites.town === 'lunch' && !excludedSites.includes('town')) {
+    tips.push({ cls:'warn', ico:'🍽️', html:`Groups of 6+ need a restaurant reservation in Sintra — walk-ins will be turned away or wait 45+ min. Book a table before your visit.` });
+  }
+
+  // Large group tuk-tuk
+  if (n > 7 && S.transport === 'tuk') {
+    tips.push({ cls:'warn', ico:'🛺', html:`Your group of ${n} needs 2 HopOn vehicles (max 7 per vehicle). Contact us in advance to arrange back-to-back coordination — both drivers stay in sync throughout the day.` });
+  }
+
+  // History nerd
+  if (S.history === 'love') {
+    tips.push({ cls:'info', ico:'🏛️', html:`As someone who reads every plaque — Regaleira's Masonic and Templar symbolism runs far deeper than any signage shows. The National Palace's history spans every Portuguese royal dynasty since the 14th century. A private guided tour unlocks layers no plaque mentions.` });
+  }
+
+  // Crowd contradiction
+  if (S.crowd === 'hate' && S.sites.pena === 'full' && S.sites.regaleira !== 'skip' && peak) {
+    tips.push({ cls:'crit', ico:'⚠️', html:`Contradiction: you said you hate crowds — but Pena Palace interior and Regaleira in ${mo} are two of the most crowded experiences in Portugal. Consider Pena gardens-only (no queue) and book Regaleira for the very first morning slot.` });
+  }
+
+  // Crowd hater positive
+  if (S.crowd === 'hate') {
+    tips.push({ cls:'info', ico:'🫣', html:`The Sintra most tourists never see is genuinely the best version of it — Monserrate, Biester, and Capuchos are quieter, more atmospheric, and more rewarding than the Instagram queues. You've made good choices.` });
+  }
+
+  // Late arrival peak
+  if (peak && t2m(S.arr) >= 11 * 60) {
+    tips.push({ cls:'warn', ico:'🌅', html:`Arriving at ${S.arr} in peak season means crowds are at full force at every monument. If there's any chance of an earlier train, it transforms the entire experience.` });
+  }
+
+  // Departure tips
+  if (S.dep === '13:00') {
+    tips.push({ cls:'warn', ico:'🚉', html:`Leaving by 13:00 limits you to 1 monument maximum. The National Palace (15 min from the station) or Regaleira (10 min walk) are the most practical choices — Pena requires transport and eats the entire window.` });
+  }
+  if (S.dep === '15:00') {
+    tips.push({ cls:'warn', ico:'⏱️', html:`Leaving by 15:00 gives you roughly a half-day. Two monuments done properly is the realistic maximum — prioritise those closest to the station (National Palace, Regaleira) unless transport to Pena is pre-arranged.` });
+  }
+
+  return tips;
+}
+
+// ─────────────────────────────────────────────────────────────
+// TOUR RECOMMENDATIONS
+// ─────────────────────────────────────────────────────────────
+function buildTourRecs() {
+  const avail  = availHours();
+  const peak   = isPeak();
+  const recs   = [];
+
+  const TOURS = {
+    intro: {
+      durationHrs: 1.5,
+      ico: '⚡',
+      name: 'Introduction to Sintra',
+      meta: '1.5 hrs · From €25/person · Daily departures',
+      desc: 'The fastest way to experience the best of Sintra — Pena Palace viewpoints, Moorish Castle walls, and the historic town centre with a local guide. Perfect when time is short.',
+      url: 'https://www.hoponsintra.com'
+    },
+    half: {
+      durationHrs: 4,
+      ico: '🌿',
+      name: 'Half-Day Sintra Tour',
+      meta: '4 hrs · From €45/person · Morning & afternoon slots',
+      desc: 'Covers the main monuments and hidden corners with a knowledgeable local guide — Pena, Moorish Castle, Regaleira, and the historic centre. Includes transport between sites.',
+      url: 'https://www.hoponsintra.com'
+    },
+    full: {
+      durationHrs: 8,
+      ico: '🌟',
+      name: 'Full-Day Sintra Tour',
+      meta: '8 hrs · From €75/person · Private & group options',
+      desc: 'Everything Sintra has to offer in one day — palaces, hidden monasteries, the Atlantic coast, and secret viewpoints most visitors never find. Includes Monserrate and Cabo da Roca.',
+      url: 'https://www.hoponsintra.com'
+    },
+    gems: {
+      durationHrs: 4.5,
+      ico: '🪨',
+      name: 'Hidden Gems Tour',
+      meta: '4–5 hrs · From €55/person · Small groups only',
+      desc: 'Biester Palace, Convento dos Capuchos, Monserrate — the Sintra that 95% of visitors never see. No queues, no crowds, and stories that no guidebook contains.',
+      url: 'https://www.hoponsintra.com'
+    }
+  };
+
+  const fits = t => t.durationHrs <= avail;
+
+  // Short on time → Introduction (only if 1.5 hrs available)
+  if (avail < 3.5 && fits(TOURS.intro)) recs.push(TOURS.intro);
+
+  // Hidden gems seekers — only if they actually have 4–5 hrs
+  if ((S.crowd === 'hate' || S.history === 'love' ||
+       S.sites.capuchos !== 'skip' || S.sites.biester !== 'skip') && fits(TOURS.gems)) {
+    recs.push(TOURS.gems);
+  }
+
+  // Half day — only if window allows it and gems not already recommended
+  if (avail >= 3.5 && avail < 6 && !recs.includes(TOURS.gems) && fits(TOURS.half)) {
+    recs.push(TOURS.half);
+  }
+
+  // Full day — only if window is genuinely long enough
+  if ((avail >= 6 || S.sites.cabo !== 'skip') && fits(TOURS.full)) {
+    if (!recs.some(r => r === TOURS.full)) recs.push(TOURS.full);
+  }
+
+  // Fallback: always show at least one — pick the longest tour that actually fits
+  if (recs.length === 0) {
+    const fallback = [TOURS.full, TOURS.half, TOURS.gems, TOURS.intro].find(fits);
+    recs.push(fallback || TOURS.intro);
+  }
+
+  // Cap at 3
+  return recs.slice(0, 3);
+}
+
+// ─────────────────────────────────────────────────────────────
+// RENDER
+// ─────────────────────────────────────────────────────────────
+function calculate() {
+  if (!validate(7)) return;
+
+  document.getElementById('wizard').style.display = 'none';
+  const res = document.getElementById('results');
+  res.style.display = 'block';
+  res.classList.add('on');
+  // Reset fix-applied banner only on fresh wizard submissions (not when called from fixPlan)
+  if (!calculate._fromFix) document.getElementById('fix-applied').style.display = 'none';
+  calculate._fromFix = false;
+  window.scrollTo(0, 0);
+
+  // Header
+  const n = groupSize();
+  const dep = S.dep === 'flexible' ? 'Flexible' : S.dep;
+  document.getElementById('r-title').textContent = `Sintra Day Plan — ${MONTH_NAMES[S.month]}`;
+  document.getElementById('r-sub').textContent = `${n} person${n !== 1 ? 's' : ''} · ${S.dayType === 'weekend' ? 'Weekend' : 'Weekday'} · ${S.arr} → ${dep}`;
+
+  // Itinerary
+  const { items, excludedSites, walkMins, walkKm, overTimeMins } = buildItinerary();
+
+  // Overtime banner
+  const overtimeBanner = document.getElementById('r-overtime');
+  if (overTimeMins > 60) {
+    const hrs  = Math.floor(overTimeMins / 60);
+    const mins = overTimeMins % 60;
+    const timeStr = hrs > 0 ? `${hrs}h ${mins > 0 ? ' ' + mins + 'min' : ''}`.trim() : `${mins} min`;
+    document.getElementById('r-overtime-msg').innerHTML =
+      `<strong>This plan runs ${timeStr} over your available time.</strong> ` +
+      `All your selected sites are shown in full — on the day, you'll need to either start earlier, stay later, or choose which sites to skip.`;
+    overtimeBanner.style.display = 'block';
+  } else {
+    overtimeBanner.style.display = 'none';
+  }
+  const tl = document.getElementById('r-timeline');
+  tl.innerHTML = '';
+
+  // Pre-process: merge queue items into the following event
+  const processed = [];
+  for (let i = 0; i < items.length; i++) {
+    if (items[i].type === 'queue') {
+      // Attach queue duration to the next event
+      if (i + 1 < items.length && items[i + 1].type === 'event') {
+        items[i + 1]._queueMins = items[i].dur;
+      }
+      continue; // skip rendering queue as its own row
+    }
+    processed.push(items[i]);
+  }
+
+  processed.forEach(item => {
+    const d = document.createElement('div');
+    d.className = 'tl-item';
+    if (item.type === 'leg') {
+      // Compact single-line leg row — no description text
+      d.innerHTML = `
+        <div class="tl-dot sm"></div>
+        <div class="tl-card leg">
+          <div class="tl-leg-row">
+            <span class="tl-leg-arrow">→</span>
+            <span class="tl-leg-dest">${item.name}</span>
+            <span class="tl-leg-dur">${item.dur} min</span>
+          </div>
+        </div>`;
+    } else {
+      // Event: time range + name + optional queue note + cost (no long description)
+      const qNote = item._queueMins
+        ? `<div class="tl-queue-note">+ ${item._queueMins} min entry queue</div>` : '';
+      d.innerHTML = `
+        <div class="tl-dot"></div>
+        <div class="tl-card">
+          <div class="tl-time">${item.time}${item.depTime ? ' – ' + item.depTime : ''}</div>
+          <div class="tl-name">${item.name}</div>
+          ${qNote}
+          ${item.cost ? `<div class="tl-cost">${item.cost}</div>` : ''}
+        </div>`;
+    }
+    tl.appendChild(d);
+  });
+
+  // Score
+  const score = calcScore();
+  const si = scoreInfo(score);
+
+  // Cost
+  const { rows: costRows, total: costTotal, pp: costPP } = buildCost(excludedSites);
+
+  // Metrics row
+  const walkMinsDisplay = walkMins > 0 ? `${walkMins}min` : '<5min';
+  const walkKmDisplay   = walkKm  > 0 ? `${walkKm.toFixed(1)}km`  : '<0.5km';
+  const scoreEl = document.getElementById('m-score');
+  scoreEl.textContent = `${score}/10`;
+  scoreEl.style.color = si.color;
+  document.getElementById('m-score-lbl').textContent = si.lbl;
+
+  // Score reasons + fix button (only when score < 7)
+  const reasonsEl   = document.getElementById('score-reasons');
+  const reasonsList = document.getElementById('score-reasons-list');
+  if (score < 7) {
+    const reasons = buildScoreReasons();
+    reasonsList.innerHTML = reasons.map(r => `<li>${r}</li>`).join('');
+    reasonsEl.style.display = 'block';
+  } else {
+    reasonsEl.style.display = 'none';
+  }
+
+  // "Recommendations included" label on cost header
+  const hasRecommendedService = S.sites.cabo !== 'skip';
+  document.getElementById('cost-rec-note').textContent =
+    hasRecommendedService ? '· recommendations included' : '';
+
+  const costEl = document.getElementById('m-cost');
+  costEl.textContent = `€${costTotal}`;
+  document.getElementById('m-cost-pp').textContent = n > 1 ? `~€${costPP}/pp` : 'total';
+  document.getElementById('m-walk-time').textContent = walkMinsDisplay;
+  document.getElementById('m-walk-km').textContent   = `${walkKmDisplay} on foot`;
+
+  // Cost table
+  const ctable = document.getElementById('r-cost');
+  ctable.innerHTML = '';
+  costRows.forEach(row => {
+    const tr = document.createElement('tr');
+    if (row.sec) {
+      tr.className = 'sec';
+      tr.innerHTML = `<td colspan="2">${row.sec}</td>`;
+    } else if (row.totRow) {
+      tr.className = 'tot';
+      tr.innerHTML = `<td>TOTAL (${row.n} ${row.n === 1 ? 'person' : 'people'})</td><td>€${row.total.toFixed(2)}<br><small style="font-weight:500;color:var(--slate-ll)">~€${row.pp}/person</small></td>`;
+    } else if (row.savingsRow) {
+      tr.className = 'savings-row';
+      tr.innerHTML = `<td colspan="2">💰 Total saved with family tickets: <strong>€${row.totalSavings.toFixed(0)}</strong></td>`;
+    } else {
+      // Ticket note in green if it contains savings info, otherwise muted
+      const noteColor = row.saving > 0 ? 'var(--forest)' : 'var(--slate-ll)';
+      tr.innerHTML = `
+        <td>${row.lbl}${row.note ? `<br><small style="color:${noteColor};font-weight:${row.saving > 0 ? '700' : '400'}">${row.note}</small>` : ''}</td>
+        <td>${row.amt === 0 ? 'Free' : '€' + row.amt.toFixed(2)}</td>`;
+    }
+    ctable.appendChild(tr);
+  });
+
+  // Tips
+  const tips = buildTips({ excludedSites });
+  const tipsEl = document.getElementById('r-tips');
+  tipsEl.innerHTML = '';
+  if (tips.length === 0) {
+    tipsEl.innerHTML = '<div class="tip info"><div class="tip-ico">✅</div><div class="tip-txt">Your plan looks solid. Make sure to pre-book any time-slotted monuments before your visit.</div></div>';
+  }
+  tips.forEach(({ cls, ico, html }) => {
+    const d = document.createElement('div');
+    d.className = `tip ${cls || ''}`;
+    d.innerHTML = `<div class="tip-ico">${ico}</div><div class="tip-txt">${html}</div>`;
+    tipsEl.appendChild(d);
+  });
+
+  // Tour recommendations
+  const tourRecs = buildTourRecs();
+  const tourRecsEl = document.getElementById('r-tour-recs');
+  tourRecsEl.innerHTML = '';
+  if (tourRecs.length > 0) {
+    tourRecsEl.innerHTML = `<div class="tour-recs-hdr">Based on your plan, these tours might complete your day perfectly</div>`;
+    const recsDiv = document.createElement('div');
+    recsDiv.className = 'tour-recs';
+    tourRecs.forEach(t => {
+      const a = document.createElement('a');
+      a.className = 'tour-rec';
+      a.href = t.url;
+      a.target = '_blank';
+      a.innerHTML = `
+        <div class="tour-rec-icon">${t.ico}</div>
+        <div class="tour-rec-info">
+          <div class="tour-rec-name">${t.name}</div>
+          <div class="tour-rec-meta">${t.meta}<br>${t.desc}</div>
+        </div>
+        <div class="tour-rec-arr">→</div>`;
+      recsDiv.appendChild(a);
+    });
+    tourRecsEl.appendChild(recsDiv);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// COPY ITINERARY
+// ─────────────────────────────────────────────────────────────
+function copyPlan() {
+  const { items, excludedSites } = buildItinerary();
+  const { rows: costRows, total, pp } = buildCost(excludedSites);
+  const n = groupSize();
+  const dep = S.dep === 'flexible' ? 'Flexible' : S.dep;
+
+  let txt = `SINTRA DAY PLAN — ${MONTH_NAMES[S.month]}\n`;
+  txt += `${n} person${n !== 1 ? 's' : ''} · ${S.dayType} · ${S.arr} → ${dep}\n`;
+  txt += `Generated by HopOn Sintra Day Planner · www.hoponsintra.com\n\n`;
+  txt += `ITINERARY\n${'─'.repeat(40)}\n`;
+  items.forEach(item => {
+    if (item.type === 'leg' || item.type === 'queue') {
+      txt += `  ${item.time}  ${item.name} (${item.dur} min)\n`;
+    } else {
+      txt += `${item.time}  ${item.name}\n`;
+      if (item.detail) txt += `          ${item.detail}\n`;
+      if (item.cost)   txt += `          ${item.cost}\n`;
+    }
+  });
+
+  txt += `\nCOST BREAKDOWN\n${'─'.repeat(40)}\n`;
+  costRows.forEach(row => {
+    if (row.sec)     txt += `\n${row.sec}\n`;
+    else if (row.totRow) txt += `\nTOTAL: €${row.total.toFixed(2)}  (~€${row.pp}/person)\n`;
+    else txt += `${row.lbl}: ${row.amt === 0 ? 'Free' : '€' + row.amt.toFixed(2)}\n`;
+  });
+
+  navigator.clipboard.writeText(txt).then(() => {
+    alert('Itinerary copied to clipboard!');
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = txt; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    alert('Itinerary copied to clipboard!');
+  });
+}
+</script>
+</body>
+</html>

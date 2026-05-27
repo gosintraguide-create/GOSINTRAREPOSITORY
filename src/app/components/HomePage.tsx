@@ -1,11 +1,17 @@
 import image_71ee40946db4b4bf36ff2a3323e15fbad96b7af0 from 'figma:asset/71ee40946db4b4bf36ff2a3323e15fbad96b7af0.png'
 import image_8fa5e0f9f1551c4c27ecf6c304e93b992f85fb68 from 'figma:asset/8fa5e0f9f1551c4c27ecf6c304e93b992f85fb68.png'
 import image_72471611660200b2275398b6c3d4ca944a3262f9 from 'figma:asset/72471611660200b2275398b6c3d4ca944a3262f9.png'
-import { SunsetSpecialCarousel } from "./SunsetSpecialCarousel";
-import { RouteOverview } from "./RouteOverview";
 import { ProductCard } from "./ProductCard";
 import { HeroSection } from "./HeroSectionNew";
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
+
+// Lazy-load below-fold heavy sections so they don't block the initial render
+const SunsetSpecialCarousel = lazy(() =>
+  import("./SunsetSpecialCarousel").then((m) => ({ default: m.SunsetSpecialCarousel }))
+);
+const RouteOverview = lazy(() =>
+  import("./RouteOverview").then((m) => ({ default: m.RouteOverview }))
+);
 import { useOutletContext } from "react-router";
 import {
   loadContentWithLanguage,
@@ -474,7 +480,9 @@ export function HomePage() {
 
       {/* Today's Special: Sunset Drive Carousel */}
       {sunsetSpecialEnabled && content?.homepage?.sunsetSpecial?.enabled && (
-        <SunsetSpecialCarousel onNavigate={onNavigate} language={language} />
+        <Suspense fallback={null}>
+          <SunsetSpecialCarousel onNavigate={onNavigate} language={language} />
+        </Suspense>
       )}
 
       {/* Debug info - remove this after checking */}
@@ -485,7 +493,9 @@ export function HomePage() {
       )}
 
       {/* Route Overview Section */}
-      <RouteOverview language={language} onNavigate={onNavigate} />
+      <Suspense fallback={null}>
+        <RouteOverview language={language} onNavigate={onNavigate} />
+      </Suspense>
 
       {/* Quick Links Section */}
       <section className="bg-gradient-to-br from-primary via-primary/95 to-primary/90 py-16 sm:py-20 lg:py-24">

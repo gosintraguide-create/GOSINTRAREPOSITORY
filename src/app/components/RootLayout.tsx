@@ -10,6 +10,7 @@ import { useEditableContent } from "../lib/useEditableContent";
 import { ScrollToTop } from "./ScrollToTop";
 import { loadArticlesFromServer, loadCategoriesFromServer } from "../lib/blogManager";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
+import { preloadTranslation, onLocaleLoad } from "../lib/translations/loader";
 
 // Lazy load LiveChatWidget to avoid initial bundle bloat
 const LiveChatWidget = lazy(() => import("./LiveChatWidget").then(m => ({ default: m.LiveChatWidget })));
@@ -29,6 +30,9 @@ export function RootLayout() {
   const [language, setLanguage] = useState<string>("en");
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isLanguageInitialized, setIsLanguageInitialized] = useState(false);
+  // Incremented when a non-English locale finishes loading → triggers re-render
+  // so components calling getTranslation(language) get the real locale text.
+  const [, forceTranslationUpdate] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
   const matches = useMatches();
@@ -145,6 +149,17 @@ export function RootLayout() {
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Pre-load the active locale whenever language changes (no-op for English)
+  useEffect(() => {
+    preloadTranslation(language);
+  }, [language]);
+
+  // Subscribe to locale-load events so components re-render with the correct
+  // translation once the async JSON chunk finishes downloading.
+  useEffect(() => {
+    return onLocaleLoad(() => forceTranslationUpdate((n) => n + 1));
   }, []);
 
   // Update html lang attribute when language changes
