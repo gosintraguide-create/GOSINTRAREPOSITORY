@@ -799,8 +799,35 @@
     </div>
   </div>
 
-  <!-- STEP 7 · Transport -->
+  <!-- STEP 7 · Historical Centre -->
   <div class="step" id="s7">
+    <div class="step-h">Sintra Historical Centre</div>
+    <div class="step-sub">Sintra's charming town centre is a natural stop on your route. Would you like to pause here?</div>
+    <div class="cards" id="town-opts">
+      <div class="card" id="tc-lunch" onclick="toggleTownOpt('lunch')">
+        <div class="card-ico">🍽️</div>
+        <div class="card-txt">
+          <strong>Sit-down lunch</strong>
+          <small>~€20–25 per person · about 1 hour · Travesseiros, local restaurants &amp; cafés</small>
+        </div>
+      </div>
+      <div class="card" id="tc-browse" onclick="toggleTownOpt('browse')">
+        <div class="card-ico">🛍️</div>
+        <div class="card-txt">
+          <strong>Browse shops &amp; explore</strong>
+          <small>Free · about 45 minutes · Local crafts, pastry shops, narrow streets</small>
+        </div>
+      </div>
+    </div>
+    <div class="step-sub" style="font-size:.82rem;margin-top:-6px;color:var(--slate-ll);">Select both, one, or neither — tap Continue to skip the town centre entirely.</div>
+    <div class="nav">
+      <button class="btn-back" onclick="go(6)">← Back</button>
+      <button class="btn-next" onclick="go(8)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- STEP 8 · Transport -->
+  <div class="step" id="s8">
     <div class="step-h">How will you get around?</div>
     <div class="step-sub">Transport affects timing, which sites are reachable, and your overall stress level.</div>
     <div class="radios">
@@ -822,7 +849,7 @@
       </div>
     </div>
     <div class="nav">
-      <button class="btn-back" onclick="go(6)">← Back</button>
+      <button class="btn-back" onclick="go(7)">← Back</button>
       <div></div>
     </div>
     <button class="btn-calc" onclick="calculate()">🔮 Calculate my day →</button>
@@ -927,14 +954,15 @@ const S = {
     biester:   'skip',
     national:  'skip',
     capuchos:  'skip',
-    town:      'skip',
     cabo:      'skip'
   },
+  townLunch:  false,   // sit-down lunch in town (~€20-25pp, ~60 min)
+  townBrowse: false,   // browse shops & explore (~45 min, free)
   transport: null
 };
 
 const MONTH_NAMES = ['','January','February','March','April','May','June','July','August','September','October','November','December'];
-const STEP_NAMES  = ['Your Group','When You Visit','Time Window','History Interest','Crowd Preference','Sites to Visit','Transport'];
+const STEP_NAMES  = ['Your Group','When You Visit','Time Window','History Interest','Crowd Preference','Sites to Visit','Historical Centre','Transport'];
 
 let currentStep = 0;
 
@@ -995,20 +1023,26 @@ function go(n) {
     if (currentStep === 5) {
       // Arriving at sites step going forward — always start blank
       Object.keys(S.sites).forEach(k => { S.sites[k] = 'skip'; });
+      // Reset historical centre choices too
+      S.townLunch = false; S.townBrowse = false;
+      const lc = document.getElementById('tc-lunch');
+      const bc = document.getElementById('tc-browse');
+      if (lc) lc.classList.remove('on');
+      if (bc) bc.classList.remove('on');
     }
     buildSiteList();
   }
   document.getElementById(`s${currentStep}`).classList.remove('on');
   currentStep = n;
   document.getElementById(`s${currentStep}`).classList.add('on');
-  // Progress bar only visible on steps 1–7
+  // Progress bar only visible on steps 1–8
   const progWrap = document.getElementById('prog-wrap');
   if (n === 0) {
     progWrap.style.display = 'none';
   } else {
     progWrap.style.display = 'block';
-    document.getElementById('prog-fill').style.width = ((n / 7) * 100) + '%';
-    document.getElementById('prog-label').textContent = `Step ${n} of 7`;
+    document.getElementById('prog-fill').style.width = ((n / 8) * 100) + '%';
+    document.getElementById('prog-label').textContent = `Step ${n} of 8`;
     document.getElementById('prog-name').textContent = STEP_NAMES[n - 1];
   }
   window.scrollTo(0, 0);
@@ -1040,7 +1074,8 @@ function validate(step) {
     const anySelected = Object.values(S.sites).some(v => v !== 'skip');
     if (!anySelected) { alert('Please select at least one site to visit.'); return false; }
   }
-  if (step === 7) { if (!S.transport) { alert('Please select a transport mode.'); return false; } }
+  // Step 7 (Historical Centre) — no validation required; both, one, or neither is valid
+  if (step === 8) { if (!S.transport) { alert('Please select a transport mode.'); return false; } }
   return true;
 }
 
@@ -1190,20 +1225,6 @@ const SITE_DEFS = {
     note: '16th-century hermit monastery carved into rock · ~1 hr · Unique atmosphere',
     defaultVal: 'visit'
   },
-  town: {
-    name: 'Sintra Town Centre',
-    emoji: '🍰',
-    img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Sintra_Portugal.jpg/480px-Sintra_Portugal.jpg',
-    color: '#C1694F',
-    badges: [],
-    price: 'Lunch ~€20pp',
-    note: 'Pastries · Shops · Restaurants · Travesseiros',
-    subOpts: [
-      { val:'lunch',   lbl:'Lunch break' },
-      { val:'passing', lbl:'Quick stop' }
-    ],
-    defaultVal: 'lunch'
-  },
   cabo: {
     name: 'Cabo da Roca',
     emoji: '🌊',
@@ -1217,21 +1238,22 @@ const SITE_DEFS = {
 };
 
 function getSiteOrder() {
-  let order = ['pena','moorish','regaleira','monserrate','biester','national','capuchos','town','cabo'];
+  let order = ['pena','moorish','regaleira','monserrate','biester','national','capuchos','cabo'];
 
   if (S.history === 'love') {
     order = order.filter(s => !['national','biester'].includes(s));
     order = ['national','biester',...order];
   } else if (S.history === 'vibes') {
     order = order.filter(s => s !== 'national');
-    const townIdx = order.indexOf('town');
-    order.splice(townIdx, 0, 'national');
+    const caboIdx = order.indexOf('cabo');
+    if (caboIdx >= 0) order.splice(caboIdx, 0, 'national');
+    else order.push('national');
   }
 
   if (S.crowd === 'hate') {
     const gems = ['capuchos','monserrate','biester','national'].filter(s => order.includes(s));
-    const rest = order.filter(s => !gems.includes(s) && !['pena','town','cabo'].includes(s));
-    order = [...gems, ...rest, 'pena', 'town', 'cabo'];
+    const rest = order.filter(s => !gems.includes(s) && !['pena','cabo'].includes(s));
+    order = [...gems, ...rest, 'pena', 'cabo'];
   }
 
   return order;
@@ -1322,14 +1344,12 @@ function suggestSites() {
       ['monserrate', 'visit'],
       ['biester',    'visit'],
       ['national',   'visit'],
-      ['town',       'lunch'],
     ];
   } else if (S.crowd === 'some') {
     priority = [
       ['pena',       'full'],
       ['moorish',    'visit'],
       ['regaleira',  'visit'],
-      ['town',       'lunch'],
       ['monserrate', 'visit'],
       ['national',   'visit'],
       ['biester',    'visit'],
@@ -1340,7 +1360,6 @@ function suggestSites() {
       ['moorish',    'visit'],
       ['regaleira',  'visit'],
       ['national',   'visit'],
-      ['town',       'lunch'],
       ['monserrate', 'visit'],
       ['biester',    'visit'],
     ];
@@ -1393,7 +1412,20 @@ function setSiteSubOpt(key, val, el) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// STEP 7 – transport
+// STEP 7 – historical centre
+// ─────────────────────────────────────────────────────────────
+function toggleTownOpt(opt) {
+  if (opt === 'lunch') {
+    S.townLunch = !S.townLunch;
+    document.getElementById('tc-lunch').classList.toggle('on', S.townLunch);
+  } else {
+    S.townBrowse = !S.townBrowse;
+    document.getElementById('tc-browse').classList.toggle('on', S.townBrowse);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// STEP 8 – transport
 // ─────────────────────────────────────────────────────────────
 function pickTransport(val, el) {
   S.transport = val;
@@ -1457,7 +1489,6 @@ function ticketCost(site, optOverride) {
 
 function siteVisitMins(site) {
   if (site === 'pena' && S.sites.pena === 'gardens') return 90;
-  if (site === 'town') return S.sites.town === 'lunch' ? 90 : 20;
   if (site === 'capuchos') return 60;
   const m = { pena:120, moorish:90, regaleira:90, monserrate:90, biester:90, national:90 };
   return m[site] || 90;
@@ -1476,7 +1507,7 @@ function siteName(site) {
   return {
     pena:'Pena Palace', moorish:'Moorish Castle', regaleira:'Quinta da Regaleira',
     monserrate:'Monserrate Palace', biester:'Biester Palace', national:'National Palace',
-    capuchos:'Convento dos Capuchos', town:'Sintra Town Centre', cabo:'Cabo da Roca'
+    capuchos:'Convento dos Capuchos', cabo:'Cabo da Roca'
   }[site] || site;
 }
 
@@ -1498,7 +1529,7 @@ function calcScore() {
   const selected = ['pena','moorish','regaleira','monserrate','biester','national','capuchos']
     .filter(k => S.sites[k] !== 'skip');
   let totalMins = selected.reduce((sum, k) => sum + siteVisitMins(k) + queueMins(k), 0);
-  if (S.sites.town !== 'skip') totalMins += siteVisitMins('town');
+  if (S.townLunch || S.townBrowse) totalMins += (S.townLunch ? 60 : 0) + (S.townBrowse ? 45 : 0);
   if (S.sites.cabo !== 'skip') totalMins += 150;
   totalMins += selected.length * 20;
 
@@ -1553,7 +1584,7 @@ function buildScoreReasons() {
   const selected = ['pena','moorish','regaleira','monserrate','biester','national','capuchos']
     .filter(k => S.sites[k] !== 'skip');
   let totalMins = selected.reduce((sum, k) => sum + siteVisitMins(k) + queueMins(k), 0);
-  if (S.sites.town !== 'skip') totalMins += siteVisitMins('town');
+  if (S.townLunch || S.townBrowse) totalMins += (S.townLunch ? 60 : 0) + (S.townBrowse ? 45 : 0);
   if (S.sites.cabo !== 'skip') totalMins += 150;
   totalMins += selected.length * 20;
   const ratio = totalMins / (avail * 60);
@@ -1620,7 +1651,7 @@ function fixPlan() {
   // Fix 4: Plan still overloaded after other fixes → drop lowest-priority sites
   let { overTimeMins } = buildItinerary();
   if (overTimeMins > 0) {
-    const dropOrder = ['cabo','capuchos','monserrate','biester','national','moorish','town','regaleira','pena'];
+    const dropOrder = ['cabo','capuchos','monserrate','biester','national','moorish','regaleira','pena'];
     for (const site of dropOrder) {
       if (overTimeMins <= 0) break;
       if (S.sites[site] !== 'skip') {
@@ -1670,7 +1701,7 @@ function buildItinerary() {
 
   order.forEach(({ site, val, leg }) => {
     // Track walking legs
-    const alwaysWalkSites = ['national', 'regaleira', 'biester', 'town', 'capuchos'];
+    const alwaysWalkSites = ['national', 'regaleira', 'biester', 'capuchos'];
     if (S.transport === 'walking' || alwaysWalkSites.includes(site) || leg.mins <= 7) {
       walkMins += leg.mins;
       walkKm   += (leg.km || 0);
@@ -1689,18 +1720,56 @@ function buildItinerary() {
     }
 
     const vm = siteVisitMins(site);
-    const costStr = site === 'town'
-      ? (val === 'lunch' ? `Lunch estimate: ~€${20 * groupSize()} (€20pp)` : null)
-      : (val !== 'skip' ? `€${ticketCost(site, val)} total (group)` : null);
+    const costStr = val !== 'skip' ? `€${ticketCost(site, val)} total (group)` : null;
 
     let vname = siteName(site);
     if (site === 'pena') vname += val === 'gardens' ? ' — Gardens only' : ' — Full ticket';
-    if (site === 'town') vname += val === 'lunch' ? ' — Lunch' : ' — Quick stop';
 
     items.push({ type:'event', time:m2t(cur), name:vname, detail:siteDetail(site, val), dur:vm,
       depTime: m2t(cur + vm), cost: costStr });
     cur += vm;
   });
+
+  // Historical Centre — inserted after monuments, before Cabo
+  if (S.townLunch || S.townBrowse) {
+    const townMins = (S.townLunch ? 60 : 0) + (S.townBrowse ? 45 : 0);
+
+    // Determine return-to-town leg based on the last monument in the order
+    const lastSite = order.length > 0 ? order[order.length - 1].site : null;
+    const fromHilltop = lastSite === 'pena' || lastSite === 'moorish';
+    const fromFarWest = lastSite === 'monserrate' || lastSite === 'capuchos';
+    const fromReg     = lastSite === 'regaleira' || lastSite === 'biester';
+
+    let toTownMins = 5, toTownLabel = 'Walk to town centre', toTownNote = '';
+    if (fromHilltop) {
+      toTownMins  = downhillMins();
+      toTownLabel = downhillToTownLabel();
+      toTownNote  = downhillDesc();
+    } else if (fromFarWest) {
+      toTownMins  = S.transport === 'walking' ? 55 : 25;
+      toTownLabel = S.transport === 'tuk'     ? 'HopOn tuk-tuk back to town' :
+                    S.transport === 'bus'     ? 'Bus 434 back to town' :
+                    S.transport === 'walking' ? 'Walk back to town' : 'Drive back to town';
+      toTownNote  = 'Heading back to Sintra town centre';
+    } else if (fromReg) {
+      toTownMins  = 10;
+      toTownLabel = 'Walk to town centre';
+      toTownNote  = '10 min walk from Regaleira area';
+    }
+
+    if (toTownMins > 0) {
+      walkMins += S.transport === 'walking' ? toTownMins : Math.min(toTownMins, 5);
+      walkKm   += 0.3;
+      items.push({ type:'leg', time:m2t(cur), name:toTownLabel, detail:toTownNote, dur:toTownMins });
+      cur += toTownMins;
+    }
+
+    const townDetail = [S.townLunch && 'Sit-down lunch (~1 hr)', S.townBrowse && 'Browse shops (~45 min)'].filter(Boolean).join(' · ');
+    const townCost   = S.townLunch ? `Lunch estimate: ~€${20 * groupSize()} (€20pp)` : null;
+    items.push({ type:'event', time:m2t(cur), name:'Sintra Historical Centre',
+      detail: townDetail, dur: townMins, depTime: m2t(cur + townMins), cost: townCost });
+    cur += townMins;
+  }
 
   // Cabo — always last
   if (S.sites.cabo !== 'skip') {
@@ -1786,16 +1855,6 @@ function buildItinOrder() {
       }});
     }
 
-    // Town
-    if (si.town !== 'skip') {
-      const fromNational = si.national !== 'skip';
-      order.push({ site:'town', val:si.town, leg:{
-        mins: fromNational ? 3 : 5, km: fromNational ? 0.2 : 0.3,
-        label: legLabel('town', 5),
-        note: 'Town centre'
-      }});
-    }
-
   } else {
     // ── TOWN-FIRST ORDER (Pena gardens / no Pena) ────
 
@@ -1857,18 +1916,6 @@ function buildItinOrder() {
       }
     }
 
-    // Town (after coming down from hills)
-    if (si.town !== 'skip') {
-      const needsReturn    = si.pena !== 'skip' || si.moorish !== 'skip';
-      const comingFromHill = si.regaleira !== 'skip' || si.biester !== 'skip';
-      const returnMins = needsReturn ? downhillMins() : (comingFromHill ? 10 : 5);
-      const returnNote = needsReturn
-        ? `Heading back down from Pena area · ${downhillDesc()}`
-        : comingFromHill ? 'Walk back to town centre' : 'Short walk';
-      const returnKm = needsReturn ? 4.0 : (comingFromHill ? 0.7 : 0.3);
-      const returnLabel = needsReturn ? downhillToTownLabel() : legLabel('town', returnMins);
-      order.push({ site:'town', val:si.town, leg:{ mins:returnMins, km:returnKm, label:returnLabel, note:returnNote }});
-    }
   }
 
   // ── AFTERNOON: Monserrate ─────────────────────────
@@ -1977,7 +2024,7 @@ function caboTransportLeg() {
 }
 
 function legLabel(site, mins) {
-  const alwaysWalk = ['national', 'regaleira', 'biester', 'town', 'capuchos'];
+  const alwaysWalk = ['national', 'regaleira', 'biester', 'capuchos'];
   if (alwaysWalk.includes(site) || (mins !== undefined && mins <= 7)) {
     return `Walk to ${siteName(site)}`;
   }
@@ -1999,8 +2046,6 @@ function siteDetail(site, val) {
   if (site === 'biester')    return 'Peaceful Gothic palace · Barely visited · 1.5hrs';
   if (site === 'national')   return 'Most historically significant palace in Sintra · In town centre · 1.5hrs';
   if (site === 'capuchos')   return '16th-century hermit monastery carved into rock · Unique atmosphere · 1hr';
-  if (site === 'town' && val === 'lunch')   return 'Restaurant lunch · Shops · Souvenirs · 1.5hrs';
-  if (site === 'town' && val === 'passing') return 'Pastries · Quick look around · 20 min';
   return '';
 }
 
@@ -2082,7 +2127,7 @@ function buildCost(excludedSites = []) {
     rows.push({ lbl: 'Own car (parking costs vary)', amt: 0, note: 'Budget €5–15 for parking' });
   }
 
-  if (S.sites.town === 'lunch' && !excludedSites.includes('town')) {
+  if (S.townLunch) {
     rows.push({ sec: 'FOOD' });
     const c = 20 * n;
     rows.push({ lbl: `Lunch in Sintra town — ~€20pp × ${n}`, amt: c }); total += c;
@@ -2185,7 +2230,7 @@ function buildTips({ excludedSites = [] } = {}) {
   }
 
   // Groups of 6+ lunch
-  if (n >= 6 && S.sites.town === 'lunch' && !excludedSites.includes('town')) {
+  if (n >= 6 && S.townLunch) {
     tips.push({ cls:'warn', ico:'🍽️', html:`Groups of 6+ need a restaurant reservation in Sintra — walk-ins will be turned away or wait 45+ min. Book a table before your visit.` });
   }
 
