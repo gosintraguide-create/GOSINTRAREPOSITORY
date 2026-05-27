@@ -179,15 +179,23 @@ async function main() {
 
   const server = await startServer();
 
-  // @sparticuz/chromium provides a statically-linked Chromium binary that
-  // works in restricted Linux environments (Vercel build, Lambda, etc.)
-  // without needing system libraries like libgbm or libnss3.
+  // Required for @sparticuz/chromium v120+ in headless/no-GPU environments
+  // (Vercel build containers, Lambda, etc.) — must be set before executablePath()
+  chromium.setHeadlessMode = true;
+  chromium.setGraphicsMode = false;
+
   const executablePath = await chromium.executablePath();
   const browser = await puppeteer.launch({
-    args:            chromium.args,
+    args: [
+      ...chromium.args,
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',   // prevents /dev/shm OOM in containers
+      '--disable-gpu',
+    ],
     defaultViewport: chromium.defaultViewport,
     executablePath,
-    headless:        chromium.headless,
+    headless: true,
   });
 
   const page = await browser.newPage();
