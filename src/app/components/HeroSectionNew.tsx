@@ -323,7 +323,9 @@ export function HeroSection({
     editableContent?.homepage?.productCards?.travelGuide?.images?.[0]?.src ?? null;
 
   // ── Social proof — editable from admin panel ─────────────────────────────
-  const PROOF_DEFAULTS = { rating: 4.9, reviewCount: 523 };
+  // Keep in sync with admin panel values — mismatched defaults cause CLS on
+  // first visit (localStorage cold) when the DB sync returns different values.
+  const PROOF_DEFAULTS = { rating: 5, reviewCount: 2 };
   const [socialProof, setSocialProof] = useState(() => {
     const cms = loadComprehensiveContentForLanguage(language);
     return cms.homepage?.socialProof ?? PROOF_DEFAULTS;

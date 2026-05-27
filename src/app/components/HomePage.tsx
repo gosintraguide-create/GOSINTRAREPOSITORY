@@ -115,7 +115,18 @@ export function HomePage() {
   };
 
   const [basePrice, setBasePrice] = useState(getInitialPrice);
-  const [priceLoaded, setPriceLoaded] = useState(false);
+  // Start priceLoaded = true if localStorage already has a price — prevents
+  // the "From €25 → From €[real]" layout shift on pages with warm caches.
+  const [priceLoaded, setPriceLoaded] = useState(() => {
+    try {
+      const saved = localStorage.getItem("admin-pricing");
+      if (saved) {
+        const p = JSON.parse(saved);
+        return !!p.basePrice;
+      }
+    } catch (_) {}
+    return false;
+  });
   const [lowestTourPrice] = useState<number | null>(getLowestTourPrice);
   const [legacyContent, setLegacyContent] =
     useState<WebsiteContent>(() => loadContentWithLanguage(language));
