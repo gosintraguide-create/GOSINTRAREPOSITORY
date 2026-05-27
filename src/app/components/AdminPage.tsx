@@ -34,6 +34,7 @@ import {
   Archive,
   ArchiveRestore,
   Car,
+  Calculator,
 } from "lucide-react";
 import { DestinationTracker } from "./DestinationTracker";
 import { Button } from "./ui/button";
@@ -90,6 +91,7 @@ import { BookingLogs } from "./BookingLogs";
 import { PrivateTourManager } from "./PrivateTourManager";
 import { TourRequestsManagement } from "./TourRequestsManagement";
 import { TourCalendar } from "./TourCalendar";
+import { PlannerImagesEditor } from "./PlannerImagesEditor";
 import {
   LineChart,
   Line,
@@ -2158,6 +2160,23 @@ export function AdminPage() {
                       </div>
                     </Button>
 
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-3"
+                      onClick={() => {
+                        setActiveTab("planner-images");
+                        setMoreMenuOpen(false);
+                      }}
+                    >
+                      <Calculator className="h-5 w-5" />
+                      <div className="flex flex-col items-start">
+                        <span>Day Planner Images</span>
+                        <span className="text-xs text-muted-foreground">
+                          Monument photos in the calculator
+                        </span>
+                      </div>
+                    </Button>
+
                     <div className="my-3 h-px bg-border" />
 
                     {/* Section: Settings */}
@@ -3612,6 +3631,11 @@ export function AdminPage() {
           {/* ====== IMAGES TAB ====== */}
           <TabsContent value="images" className="space-y-6">
             <ImageManager />
+          </TabsContent>
+
+          {/* ====== PLANNER IMAGES TAB ====== */}
+          <TabsContent value="planner-images" className="space-y-6">
+            <PlannerImagesEditor />
           </TabsContent>
 
           {/* ====== CONTENT TAB ====== */}

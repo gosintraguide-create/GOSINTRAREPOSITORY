@@ -586,6 +586,20 @@ export interface ComprehensiveContent {
     };
   };
 
+  // Day Planner — per-site images shown in the calculator
+  dayPlanner?: {
+    siteImages: {
+      pena:       string;
+      moorish:    string;
+      regaleira:  string;
+      monserrate: string;
+      biester:    string;
+      national:   string;
+      capuchos:   string;
+      cabo:       string;
+    };
+  };
+
   // Admin Settings (persisted across sessions and devices)
   adminSettings?: {
     autoTranslateEnabled: boolean;
@@ -1763,6 +1777,18 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
   adminSettings: {
     autoTranslateEnabled: false,
     enabledLanguages: ['en', 'pt', 'es', 'fr', 'de', 'nl', 'it'], // All languages enabled by default
+  },
+  dayPlanner: {
+    siteImages: {
+      pena:       '',
+      moorish:    '',
+      regaleira:  '',
+      monserrate: '',
+      biester:    '',
+      national:   '',
+      capuchos:   '',
+      cabo:       '',
+    },
   },
 };
 

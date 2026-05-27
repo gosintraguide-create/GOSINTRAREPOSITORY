@@ -994,6 +994,10 @@ const _SLUG_MAP = {
 
 // Pre-fetches CMS content and updates SITE_DEFS images; then kicks off
 // browser preloading so images are cached well before step 6 appears.
+//
+// Priority: dayPlanner.siteImages[key]  (set via admin "Day Planner Images")
+//         → attractions.attractionDetails[slug].cardImage / heroImage / gallery[0]
+//         → static Unsplash fallback already in SITE_DEFS
 (async function loadCmsImages() {
   try {
     const res = await fetch(_CMS_URL, {
@@ -1001,8 +1005,19 @@ const _SLUG_MAP = {
     });
     if (res.ok) {
       const json = await res.json();
-      const details = (json.content || json).attractionDetails || {};
+      const content = json.content || json;
+
+      // 1. Dedicated planner images (highest priority — set via admin "Day Planner Images")
+      const plannerImgs = (content.dayPlanner && content.dayPlanner.siteImages) || {};
+      const plannerSet = new Set();
+      for (const [key, url] of Object.entries(plannerImgs)) {
+        if (url && SITE_DEFS[key]) { SITE_DEFS[key].img = url; plannerSet.add(key); }
+      }
+
+      // 2. Attraction detail images (fallback for any key not covered by planner images)
+      const details = (content.attractions && content.attractions.attractionDetails) || {};
       for (const [key, slug] of Object.entries(_SLUG_MAP)) {
+        if (plannerSet.has(key)) continue; // planner image already applied
         const d = details[slug];
         if (!d) continue;
         const img = d.cardImage || d.heroImage
