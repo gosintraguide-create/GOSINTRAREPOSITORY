@@ -168,11 +168,12 @@
       width: 100%; height: 100%; object-fit: cover;
       transition: transform .3s;
       display: block;
+      position: relative; z-index: 1; /* sits above the fallback colour */
     }
     .site-card:hover .site-card-img { transform: scale(1.04); }
     .site-card-img-fallback {
-      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-      font-size: 2.8rem;
+      position: absolute; inset: 0;
+      z-index: 0; /* behind the image; shows only if image fails to load */
     }
     .site-card-check {
       position: absolute; top: 8px; right: 8px; width: 28px; height: 28px;
@@ -938,6 +939,54 @@ const STEP_NAMES  = ['Your Group','When You Visit','Time Window','History Intere
 let currentStep = 0;
 
 // ─────────────────────────────────────────────────────────────
+// CMS IMAGE FETCH
+// Pulls attraction images from the same Supabase API as the main
+// site so the planner always shows the admin-uploaded photos.
+// Falls back to the static URLs already in SITE_DEFS on any error.
+// ─────────────────────────────────────────────────────────────
+const _CMS_URL   = 'https://dwiznaefeqnduglmcivr.supabase.co/functions/v1/make-server-3bd0ade8/comprehensive-content';
+const _CMS_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR3aXpuYWVmZXFuZHVnbG1jaXZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxNzc5NzYsImV4cCI6MjA3NTc1Mzk3Nn0.cTO16eeGusYnwjVwVVt1i4M8gQZ_MtDxyv9wYFHBVLo';
+
+// Planner key → attraction slug used in the CMS
+const _SLUG_MAP = {
+  pena:       'pena-palace',
+  moorish:    'moorish-castle',
+  regaleira:  'quinta-regaleira',
+  monserrate: 'monserrate-palace',
+  national:   'sintra-palace',
+  capuchos:   'convento-capuchos',
+  cabo:       'cabo-da-roca',
+};
+
+// Pre-fetches CMS content and updates SITE_DEFS images; then kicks off
+// browser preloading so images are cached well before step 6 appears.
+(async function loadCmsImages() {
+  try {
+    const res = await fetch(_CMS_URL, {
+      headers: { Authorization: `Bearer ${_CMS_TOKEN}` }
+    });
+    if (res.ok) {
+      const json = await res.json();
+      const details = (json.content || json).attractionDetails || {};
+      for (const [key, slug] of Object.entries(_SLUG_MAP)) {
+        const d = details[slug];
+        if (!d) continue;
+        const img = d.cardImage || d.heroImage
+                 || (Array.isArray(d.gallery) && d.gallery[0])
+                 || d.imageUrl;
+        if (img) SITE_DEFS[key].img = img;
+      }
+    }
+  } catch (_) { /* silently keep static fallbacks */ }
+
+  // Preload all site images regardless of where they came from —
+  // browser will have them cached by the time the user reaches step 6.
+  for (const def of Object.values(SITE_DEFS)) {
+    if (def.img) { const im = new Image(); im.src = def.img; }
+  }
+})();
+
+// ─────────────────────────────────────────────────────────────
 // STEP NAV
 // ─────────────────────────────────────────────────────────────
 function go(n) {
@@ -1224,7 +1273,7 @@ function buildSiteList() {
       <div class="site-card-img-wrap">
         <img class="site-card-img" src="${def.img}" alt="${def.name}"
           onerror="this.style.display='none'">
-        <div class="site-card-img-fallback" style="background:${def.color}22">${def.emoji}</div>
+        <div class="site-card-img-fallback" style="background:${def.color}22"></div>
         <div class="site-card-badges">${badgesHtml}</div>
         <div class="site-card-check">✓</div>
       </div>
