@@ -472,14 +472,13 @@
       background: transparent;
       border-radius: 0;
       box-shadow: none;
-      padding: 0 24px;
+      padding: 0;
       min-height: calc(100vh - 56px);
     }
     #s0.on {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      align-items: stretch;
       text-align: center;
     }
     .land-title-top {
@@ -557,8 +556,7 @@
 
     /* ── LANDING HERO IMAGE ──────────────────────── */
     .land-hero-img {
-      width: calc(100% + 48px);
-      margin: 0 -24px 28px;
+      width: 100%;
       height: 230px;
       position: relative;
       overflow: hidden;
@@ -577,6 +575,15 @@
       height: 90px;
       background: linear-gradient(to bottom, transparent, var(--cream));
       pointer-events: none;
+    }
+    .land-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      padding: 24px 24px 40px;
+      text-align: center;
     }
     @media (max-width: 480px) {
       .land-hero-img { height: 185px; }
@@ -612,15 +619,17 @@
     <div class="land-hero-img">
       <img src="https://dwiznaefeqnduglmcivr.supabase.co/storage/v1/object/sign/make-3bd0ade8-images/1762977905581_pena-palace-3.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmFjMWMyYy1lNjZlLTQwYWEtYjcwNS1kNTcwYzA5NGZmYzMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtYWtlLTNiZDBhZGU4LWltYWdlcy8xNzYyOTc3OTA1NTgxX3BlbmEtcGFsYWNlLTMuanBnIiwiaWF0IjoxNzYyOTc3OTA1LCJleHAiOjIwNzgzMzc5MDV9.yMxtg8g3UvVUzf-xdAwUmGyjRATPWQwdvRlpIa8D7eY" alt="Pena Palace in Sintra" loading="eager">
     </div>
-    <div class="land-title-top">Sintra Day Trip</div>
-    <div class="land-title-bottom-wrap">
-      <span class="land-title-bottom">Calculator</span>
-      <span class="land-eyebrow">by HopOn Sintra</span>
+    <div class="land-inner">
+      <div class="land-title-top">Sintra Day Trip</div>
+      <div class="land-title-bottom-wrap">
+        <span class="land-title-bottom">Calculator</span>
+        <span class="land-eyebrow">by HopOn Sintra</span>
+      </div>
+      <div class="land-kicker">Know before you go.</div>
+      <div class="land-sub">Find out if your plan is realistic, what the day will cost, and what a Sintra tour guide would tell you to do differently.</div>
+      <button class="btn-land" onclick="go(1)">Check my plan →</button>
+      <div class="land-fine">Free &nbsp;·&nbsp; no sign-up &nbsp;·&nbsp; shareable result</div>
     </div>
-    <div class="land-kicker">Know before you go.</div>
-    <div class="land-sub">Find out if your plan is realistic, what the day will cost, and what a Sintra tour guide would tell you to do differently.</div>
-    <button class="btn-land" onclick="go(1)">Check my plan →</button>
-    <div class="land-fine">Free &nbsp;·&nbsp; no sign-up &nbsp;·&nbsp; shareable result</div>
   </div>
 
   <!-- STEP 1 · Group -->
