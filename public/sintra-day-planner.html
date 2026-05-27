@@ -480,16 +480,59 @@
       border-radius: 0;
       box-shadow: none;
       padding: 0;
-      min-height: calc(100vh - 56px);
+      /* Snap exactly to viewport so the page never scrolls on the landing screen */
+      height: calc(100vh - 56px);
+      min-height: 480px;
     }
     #s0.on {
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
+      /* Grid: image row takes 40% of screen height; content row takes the rest */
+      display: grid;
+      grid-template-rows: 40% 1fr;
       text-align: center;
     }
+
+    /* ── LANDING HERO IMAGE ──────────────────────── */
+    .land-hero-img {
+      width: 100%;
+      height: 100%;            /* fills its 40% grid row exactly */
+      position: relative;
+      overflow: hidden;
+      border-radius: 0 0 22px 22px;
+    }
+    .land-hero-img img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center top;
+    }
+    .land-hero-img::after {
+      content: '';
+      position: absolute;
+      inset-x: 0; bottom: 0;
+      height: 72px;
+      background: linear-gradient(to bottom, transparent, var(--cream));
+      pointer-events: none;
+    }
+
+    /* ── LANDING CONTENT ─────────────────────────── */
+    .land-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      /* space-evenly distributes slack equally between every element,
+         so the layout stays balanced regardless of screen height */
+      justify-content: space-evenly;
+      padding: 4px 24px 16px;
+      text-align: center;
+    }
+    /* Group: heading block */
+    .land-heading-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
     .land-title-top {
-      font-size: 2.5rem;
+      font-size: 2.4rem;
       font-weight: 900;
       color: var(--slate);
       line-height: 1.1;
@@ -499,10 +542,9 @@
       position: relative;
       width: 100%;
       text-align: center;
-      margin-bottom: 16px;
     }
     .land-title-bottom {
-      font-size: 2.5rem;
+      font-size: 2.4rem;
       font-weight: 900;
       color: var(--slate);
       line-height: 1.1;
@@ -523,20 +565,27 @@
       text-shadow: .5px .6px 0 rgba(197,48,48,.22), -.3px .3px 0 rgba(197,48,48,.13);
     }
     .land-kicker {
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       font-weight: 600;
       color: var(--slate-l);
-      margin-bottom: 18px;
+      margin-top: 6px;
     }
+    /* Group: body text */
     .land-sub {
-      font-size: .92rem;
+      font-size: .9rem;
       color: var(--slate-ll);
-      line-height: 1.7;
-      max-width: 360px;
-      margin-bottom: 48px;
+      line-height: 1.65;
+      max-width: 340px;
+    }
+    /* Group: CTA */
+    .land-cta-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
     }
     .btn-land {
-      padding: 15px 34px;
+      padding: 14px 32px;
       border: none;
       border-radius: 100px;
       background: var(--terra);
@@ -546,7 +595,6 @@
       cursor: pointer;
       letter-spacing: -.1px;
       transition: background .2s, transform .1s;
-      margin-bottom: 14px;
     }
     .btn-land:hover { background: var(--terra-d); }
     .btn-land:active { transform: scale(.97); }
@@ -555,45 +603,19 @@
       color: var(--slate-ll);
       letter-spacing: .2px;
     }
-    @media (max-width: 480px) {
-      .land-title-top, .land-title-bottom { font-size: 1.95rem; letter-spacing: -.4px; }
-      .land-kicker { font-size: 1rem; }
-      .land-sub { font-size: .88rem; }
-    }
 
-    /* ── LANDING HERO IMAGE ──────────────────────── */
-    .land-hero-img {
-      width: 100%;
-      height: 230px;
-      position: relative;
-      overflow: hidden;
-      border-radius: 0 0 22px 22px;
-      flex-shrink: 0;
-    }
-    .land-hero-img img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-      object-position: center top;
-    }
-    .land-hero-img::after {
-      content: '';
-      position: absolute;
-      inset-x: 0; bottom: 0;
-      height: 90px;
-      background: linear-gradient(to bottom, transparent, var(--cream));
-      pointer-events: none;
-    }
-    .land-inner {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      flex: 1;
-      padding: 24px 24px 40px;
-      text-align: center;
-    }
+    /* Mobile tweaks */
     @media (max-width: 480px) {
-      .land-hero-img { height: 185px; }
+      .land-title-top, .land-title-bottom { font-size: 1.9rem; letter-spacing: -.4px; }
+      .land-kicker { font-size: 1rem; }
+      .land-sub { font-size: .87rem; }
+      .land-inner { padding: 2px 20px 12px; }
+    }
+    /* Very small screens (SE, old Android) */
+    @media (max-height: 580px) {
+      #s0.on { grid-template-rows: 36% 1fr; }
+      .land-title-top, .land-title-bottom { font-size: 1.7rem; }
+      .btn-land { padding: 12px 28px; font-size: .95rem; }
     }
 
     @media print {
@@ -627,15 +649,19 @@
       <img src="https://dwiznaefeqnduglmcivr.supabase.co/storage/v1/object/sign/make-3bd0ade8-images/1762977905581_pena-palace-3.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmFjMWMyYy1lNjZlLTQwYWEtYjcwNS1kNTcwYzA5NGZmYzMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtYWtlLTNiZDBhZGU4LWltYWdlcy8xNzYyOTc3OTA1NTgxX3BlbmEtcGFsYWNlLTMuanBnIiwiaWF0IjoxNzYyOTc3OTA1LCJleHAiOjIwNzgzMzc5MDV9.yMxtg8g3UvVUzf-xdAwUmGyjRATPWQwdvRlpIa8D7eY" alt="Pena Palace in Sintra" loading="eager">
     </div>
     <div class="land-inner">
-      <div class="land-title-top">Sintra Day Trip</div>
-      <div class="land-title-bottom-wrap">
-        <span class="land-title-bottom">Calculator</span>
-        <span class="land-eyebrow">by HopOn Sintra</span>
+      <div class="land-heading-group">
+        <div class="land-title-top">Sintra Day Trip</div>
+        <div class="land-title-bottom-wrap">
+          <span class="land-title-bottom">Calculator</span>
+          <span class="land-eyebrow">by HopOn Sintra</span>
+        </div>
+        <div class="land-kicker">Know before you go.</div>
       </div>
-      <div class="land-kicker">Know before you go.</div>
       <div class="land-sub">Find out if your plan is realistic, what the day will cost, and what a Sintra tour guide would tell you to do differently.</div>
-      <button class="btn-land" onclick="go(1)">Check my plan →</button>
-      <div class="land-fine">Free &nbsp;·&nbsp; no sign-up &nbsp;·&nbsp; shareable result</div>
+      <div class="land-cta-group">
+        <button class="btn-land" onclick="go(1)">Check my plan →</button>
+        <div class="land-fine">Free &nbsp;·&nbsp; no sign-up &nbsp;·&nbsp; shareable result</div>
+      </div>
     </div>
   </div>
 
