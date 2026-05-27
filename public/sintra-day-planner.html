@@ -555,6 +555,33 @@
       .land-sub { font-size: .88rem; }
     }
 
+    /* ── LANDING HERO IMAGE ──────────────────────── */
+    .land-hero-img {
+      width: calc(100% + 48px);
+      margin: 0 -24px 28px;
+      height: 230px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 0 0 22px 22px;
+      flex-shrink: 0;
+    }
+    .land-hero-img img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center 35%;
+    }
+    .land-hero-img::after {
+      content: '';
+      position: absolute;
+      inset-x: 0; bottom: 0;
+      height: 90px;
+      background: linear-gradient(to bottom, transparent, var(--cream));
+      pointer-events: none;
+    }
+    @media (max-width: 480px) {
+      .land-hero-img { height: 185px; }
+    }
+
     @media print {
       .hdr, .action-row, .nav, #wizard { display: none !important; }
       body { background: white; }
@@ -582,6 +609,9 @@
 
   <!-- STEP 0 · Landing -->
   <div class="step on" id="s0">
+    <div class="land-hero-img">
+      <img src="https://dwiznaefeqnduglmcivr.supabase.co/storage/v1/object/sign/make-3bd0ade8-images/1762977905581_pena-palace-3.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmFjMWMyYy1lNjZlLTQwYWEtYjcwNS1kNTcwYzA5NGZmYzMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtYWtlLTNiZDBhZGU4LWltYWdlcy8xNzYyOTc3OTA1NTgxX3BlbmEtcGFsYWNlLTMuanBnIiwiaWF0IjoxNzYyOTc3OTA1LCJleHAiOjIwNzgzMzc5MDV9.yMxtg8g3UvVUzf-xdAwUmGyjRATPWQwdvRlpIa8D7eY" alt="Pena Palace in Sintra" loading="eager">
+    </div>
     <div class="land-title-top">Sintra Day Trip</div>
     <div class="land-title-bottom-wrap">
       <span class="land-title-bottom">Calculator</span>
@@ -602,7 +632,7 @@
         <div class="counter-info"><strong>Adults</strong><small>18–64 years</small></div>
         <div class="counter-ctrl">
           <button class="cbtn" onclick="adj('adults',-1)">−</button>
-          <span class="cval" id="v-adults">2</span>
+          <span class="cval" id="v-adults">0</span>
           <button class="cbtn" onclick="adj('adults',1)">+</button>
         </div>
       </div>
@@ -875,7 +905,7 @@
 // STATE
 // ─────────────────────────────────────────────────────────────
 const S = {
-  adults: 2, children: 0, seniors: 0,
+  adults: 0, children: 0, seniors: 0,
   month: null, dayType: null,
   arr: null, dep: null,
   history: null, crowd: null,
