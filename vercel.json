@@ -1,11 +1,13 @@
-{
+﻿{
   "redirects": [
     { "source": "/hop-on-service", "destination": "/hop-on-hop-off-sintra", "permanent": true },
     { "source": "/blog", "destination": "/travel-guide", "permanent": true },
     { "source": "/blog/:slug*", "destination": "/travel-guide/:slug*", "permanent": true },
     { "source": "/quinta-regaleira", "destination": "/attractions/quinta-regaleira", "permanent": true },
     { "source": "/convento-capuchos", "destination": "/attractions/convento-capuchos", "permanent": true },
-    { "source": "/", "has": [{ "type": "query", "key": "lang" }], "destination": "/", "permanent": false }
+    { "source": "/", "has": [{ "type": "query", "key": "lang" }], "destination": "/", "permanent": false },
+    { "source": "/sintra-day-planner", "destination": "/sintra-day-planner.html", "permanent": true },
+    { "source": "/day-planner", "destination": "/sintra-day-planner.html", "permanent": true }
   ],
   "rewrites": [
     {
@@ -13,7 +15,7 @@
       "destination": "https://dwiznaefeqnduglmcivr.supabase.co/functions/v1/make-server-3bd0ade8/sitemap.xml"
     },
     {
-      "source": "/((?!api|assets|sw\\.js|manifest\\.json|offline\\.html|robots\\.txt|.*\\.(?:png|jpg|jpeg|svg|ico|webp|woff|woff2|ttf|eot|otf|js|css)).*)",
+      "source": "/((?!api|assets|sw\\.js|manifest\\.json|offline\\.html|robots\\.txt|sintra-day-planner\\.html|.*\\.(?:png|jpg|jpeg|svg|ico|webp|woff|woff2|ttf|eot|otf|js|css|html)).*)",
       "destination": "/index.html"
     }
   ],
