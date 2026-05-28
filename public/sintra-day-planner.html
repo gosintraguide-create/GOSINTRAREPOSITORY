@@ -196,18 +196,51 @@
     .site-card-name { font-weight: 800; font-size: .85rem; color: var(--slate); margin-bottom: 3px; line-height: 1.25; }
     .site-card-price { font-size: .75rem; color: var(--terra); font-weight: 700; margin-bottom: 3px; }
     .site-card-note { font-size: .7rem; color: var(--slate-ll); line-height: 1.35; flex: 1; }
-    .site-card-sub {
-      display: none; padding: 8px 12px 10px; border-top: 1px solid var(--cream-d);
-      gap: 6px; background: var(--cream);
+    /* Pena selected-option tag shown on the card */
+    .site-pena-tag {
+      display: none; margin-top: 5px; font-size: .68rem; font-weight: 700;
+      color: var(--terra); background: rgba(185,90,65,.1); border-radius: 5px;
+      padding: 2px 8px; align-self: flex-start;
     }
-    .site-card.sel .site-card-sub { display: flex; }
-    .site-sub-opt {
-      flex: 1; padding: 5px 6px; border: 1.5px solid var(--cream-d); border-radius: 7px;
-      font-size: .7rem; font-weight: 700; text-align: center; cursor: pointer;
-      background: var(--white); color: var(--slate); transition: all .15s;
+    .site-card.sel .site-pena-tag { display: inline-block; }
+    /* Pena option bottom sheet */
+    .pena-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.45);
+      z-index: 200; opacity: 0; pointer-events: none; transition: opacity .22s;
     }
-    .site-sub-opt:hover { border-color: var(--terra); }
-    .site-sub-opt.on { background: var(--terra); border-color: var(--terra); color: white; }
+    .pena-overlay.open { opacity: 1; pointer-events: all; }
+    .pena-sheet {
+      position: fixed; bottom: 0; left: 0; right: 0; max-width: 520px; margin: 0 auto;
+      background: var(--white); border-radius: 20px 20px 0 0;
+      padding: 22px 20px 40px; z-index: 201;
+      transform: translateY(100%); transition: transform .26s cubic-bezier(.32,.72,0,1);
+    }
+    .pena-sheet.open { transform: translateY(0); }
+    .pena-sheet-drag {
+      width: 36px; height: 4px; background: var(--cream-d); border-radius: 2px;
+      margin: 0 auto 18px;
+    }
+    .pena-sheet-title {
+      font-size: 1.05rem; font-weight: 800; color: var(--slate);
+      text-align: center; margin-bottom: 4px;
+    }
+    .pena-sheet-sub {
+      font-size: .82rem; color: var(--slate-ll);
+      text-align: center; margin-bottom: 18px; line-height: 1.5;
+    }
+    .pena-sheet-opts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+    .pena-opt {
+      width: 100%; text-align: left; padding: 14px 16px; border-radius: 12px;
+      border: 2px solid var(--cream-d); background: var(--white); cursor: pointer;
+      transition: border-color .15s, background .15s;
+    }
+    .pena-opt.on { border-color: var(--terra); background: rgba(185,90,65,.06); }
+    .pena-opt-name { font-weight: 700; font-size: .9rem; color: var(--slate); margin-bottom: 2px; }
+    .pena-opt-detail { font-size: .75rem; color: var(--slate-ll); }
+    .pena-skip-btn {
+      display: block; width: 100%; padding: 10px 0; background: none; border: none;
+      color: var(--slate-ll); font-size: .8rem; cursor: pointer; text-align: center;
+    }
     .badge { font-size: .6rem; font-weight: 700; padding: 2px 7px; border-radius: 20px; color: white; white-space: nowrap; display: inline-block; }
     .badge-ico  { background: var(--terra); }
     .badge-gem  { background: var(--forest); }
@@ -1206,10 +1239,6 @@ const SITE_DEFS = {
     badges: [{ cls:'badge-ico', txt:'Iconic' }],
     price: 'From €12',
     note: 'Fairytale palace · 2 hr visit · Pre-book in peak season',
-    subOpts: [
-      { val:'full',    lbl:'Palace + Gardens' },
-      { val:'gardens', lbl:'Gardens only' }
-    ],
     defaultVal: 'full'
   },
   moorish: {
@@ -1324,15 +1353,12 @@ function buildSiteList() {
       badges.push({ cls:'badge-you', txt:'Perfect for you' });
     const badgesHtml = badges.map(b => `<span class="badge ${b.cls}">${b.txt}</span>`).join('');
 
-    // Sub-options HTML (Pena + Town only)
-    let subHtml = '';
-    if (def.subOpts) {
-      const opts = def.subOpts.map(o =>
-        `<div class="site-sub-opt${curVal === o.val ? ' on' : ''}" data-site="${key}" data-sub="${o.val}"
-          onclick="event.stopPropagation();setSiteSubOpt('${key}','${o.val}',this)">${o.lbl}</div>`
-      ).join('');
-      subHtml = `<div class="site-card-sub">${opts}</div>`;
-    }
+    // Pena: show selected option as a tag on the card body
+    const penaTagText = key === 'pena'
+      ? (curVal === 'full' ? 'Palace + Gardens' : curVal === 'gardens' ? 'Gardens only' : '')
+      : '';
+    const penaTagHtml = key === 'pena'
+      ? `<div class="site-pena-tag">${penaTagText}</div>` : '';
 
     const div = document.createElement('div');
     div.className = `site-card${isSel ? ' sel' : ''}`;
@@ -1350,27 +1376,20 @@ function buildSiteList() {
         <div class="site-card-name">${def.name}</div>
         <div class="site-card-price">${def.price}</div>
         <div class="site-card-note">${def.note}</div>
-      </div>
-      ${subHtml}`;
+        ${penaTagHtml}
+      </div>`;
     container.appendChild(div);
   });
 }
 
 function toggleSite(key) {
+  if (key === 'pena') { openPenaSheet(); return; }
   const def = SITE_DEFS[key];
   const isSelected = S.sites[key] !== 'skip';
   S.sites[key] = isSelected ? 'skip' : def.defaultVal;
   const card = document.getElementById(`site-card-${key}`);
   if (!card) return;
   card.classList.toggle('sel', !isSelected);
-  // Reset sub-opt highlights when deselecting
-  if (isSelected) {
-    card.querySelectorAll('.site-sub-opt').forEach(b => b.classList.remove('on'));
-    if (def.subOpts) {
-      const first = card.querySelector(`[data-sub="${def.subOpts[0].val}"]`);
-      if (first) first.classList.add('on');
-    }
-  }
 }
 
 function suggestSites() {
@@ -1449,13 +1468,40 @@ function suggestSites() {
   if (btn) { btn.textContent = '✓ Suggested!'; btn.disabled = true; setTimeout(() => { btn.textContent = '💡 Suggest for me'; btn.disabled = false; }, 2000); }
 }
 
-function setSiteSubOpt(key, val, el) {
-  S.sites[key] = val;
-  document.querySelectorAll(`[data-site="${key}"][data-sub]`).forEach(b =>
-    b.classList.toggle('on', b.dataset.sub === val));
-  // Ensure card is marked selected
-  const card = document.getElementById(`site-card-${key}`);
-  if (card) card.classList.add('sel');
+// ─── Pena Palace option sheet ────────────────────────────────
+function openPenaSheet() {
+  const overlay = document.getElementById('pena-overlay');
+  const sheet   = document.getElementById('pena-sheet');
+  if (!overlay || !sheet) return;
+  const cur = S.sites.pena;
+  overlay.classList.add('open');
+  sheet.classList.add('open');
+  // Highlight whichever option is currently active
+  sheet.querySelectorAll('.pena-opt').forEach(b =>
+    b.classList.toggle('on', b.dataset.val === cur));
+}
+
+function closePenaSheet() {
+  document.getElementById('pena-overlay').classList.remove('open');
+  document.getElementById('pena-sheet').classList.remove('open');
+}
+
+function pickPenaOpt(val) {
+  S.sites.pena = val;
+  const card = document.getElementById('site-card-pena');
+  if (card) {
+    card.classList.add('sel');
+    const tag = card.querySelector('.site-pena-tag');
+    if (tag) tag.textContent = val === 'full' ? 'Palace + Gardens' : 'Gardens only';
+  }
+  closePenaSheet();
+}
+
+function skipPena() {
+  S.sites.pena = 'skip';
+  const card = document.getElementById('site-card-pena');
+  if (card) card.classList.remove('sel');
+  closePenaSheet();
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -2615,5 +2661,23 @@ function copyPlan() {
   });
 }
 </script>
+  <!-- Pena Palace option sheet -->
+  <div id="pena-overlay" class="pena-overlay" onclick="closePenaSheet()"></div>
+  <div id="pena-sheet" class="pena-sheet">
+    <div class="pena-sheet-drag"></div>
+    <div class="pena-sheet-title">🏰 Pena Palace</div>
+    <p class="pena-sheet-sub">How would you like to visit?</p>
+    <div class="pena-sheet-opts">
+      <button class="pena-opt" data-val="full" onclick="pickPenaOpt('full')">
+        <div class="pena-opt-name">Palace + Gardens</div>
+        <div class="pena-opt-detail">Adult €20 · ~2 hrs · Pre-book recommended · Shuttle from gate optional</div>
+      </button>
+      <button class="pena-opt" data-val="gardens" onclick="pickPenaOpt('gardens')">
+        <div class="pena-opt-name">Gardens only</div>
+        <div class="pena-opt-detail">Adult €12 · ~1.5 hrs · No time slot needed · Far fewer crowds</div>
+      </button>
+    </div>
+    <button class="pena-skip-btn" onclick="skipPena()">Skip Pena Palace</button>
+  </div>
 </body>
 </html>
