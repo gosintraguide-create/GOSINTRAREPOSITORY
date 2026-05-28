@@ -317,7 +317,7 @@ export function AttractionsPage() {
                   className="group h-full cursor-pointer overflow-hidden transition-all hover:shadow-xl"
                   onClick={() => handleExploreClick(attraction.id)}
                 >
-                  <div className="relative aspect-video overflow-hidden">
+                  <div className="relative aspect-[4/3] overflow-hidden">
                     <ImageWithFallback
                       src={attraction.imageUrl || ""}
                       alt={`${attraction.name} - Sintra attraction`}
@@ -326,41 +326,31 @@ export function AttractionsPage() {
                       width={400}
                       height={300}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
 
                     {attraction.duration && (
                       <Badge className="absolute left-4 top-4 bg-primary text-white">
                         {attraction.duration}
                       </Badge>
                     )}
+                    {attraction.price != null && (
+                      <Badge className="absolute right-4 top-4 bg-black/50 text-white backdrop-blur-sm">
+                        {attraction.price > 0 ? `€${attraction.price}` : (t.free || "Free")}
+                      </Badge>
+                    )}
                   </div>
 
-                  <div className="flex h-full flex-col p-6">
-                    <div className="mb-3 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                      {attraction.duration && (
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
-                          {attraction.duration}
-                        </div>
-                      )}
-                      {attraction.price != null && (
-                        <div className="flex items-center gap-1">
-                          <Ticket className="h-4 w-4" />
-                          {attraction.price > 0 ? `€${attraction.price}` : (t.free || "Free")}
-                        </div>
-                      )}
-                    </div>
-
-                    <h3 className="mb-3 text-foreground group-hover:text-primary">
+                  <div className="flex h-full flex-col p-4 sm:p-5">
+                    <h3 className="mb-2 text-foreground group-hover:text-primary">
                       {attraction.name}
                     </h3>
 
-                    <p className="mb-4 flex-1 line-clamp-3 text-muted-foreground">
+                    <p className="mb-4 flex-1 line-clamp-2 text-sm text-muted-foreground">
                       {attraction.description}
                     </p>
 
                     <div className="flex items-center gap-2 text-primary">
-                      <span>{t.exploreMore || "Explore"}</span>
+                      <span className="text-sm">{t.exploreMore || "Explore"}</span>
                       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-2" />
                     </div>
                   </div>

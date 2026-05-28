@@ -383,7 +383,7 @@ export function AttractionDetailPage() {
       </div>
 
       {/* Hero Section */}
-      <section className="relative h-[50vh] min-h-[400px] sm:h-[60vh] sm:min-h-[500px] overflow-hidden">
+      <section className="relative h-[50vh] min-h-[360px] sm:h-[58vh] sm:min-h-[440px] overflow-hidden">
         <ImageWithFallback
           src={attraction.heroImage || attraction.imageUrl || ""}
           fallbackSrc={attraction.imageUrl}
@@ -391,43 +391,51 @@ export function AttractionDetailPage() {
           className="h-full w-full object-cover"
           loading="eager"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent" />
 
         <div className="absolute inset-0 flex items-end">
-          <div className="w-full pb-8 sm:pb-12 md:pb-16 lg:pb-20">
+          <div className="w-full pb-7 sm:pb-10">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <h1 className="mb-4 sm:mb-6 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
                 {attraction.name}
               </h1>
-
-              <p className="max-w-2xl text-lg sm:text-xl md:text-2xl text-white/95 mb-6 sm:mb-8 leading-relaxed">
-                {attraction.shortDescription}
-              </p>
-
-              <div className="flex flex-wrap gap-2 sm:gap-3">
-                <div className="flex items-center gap-1.5 rounded-lg bg-white/15 px-3 py-1.5 backdrop-blur-md border border-white/20">
-                  <Ticket className="h-3.5 w-3.5 text-white/90" />
-                  <span className="text-sm font-medium text-white/90">
-                    €{getCurrentPrice()}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5 rounded-lg bg-white/15 px-3 py-1.5 backdrop-blur-md border border-white/20">
-                  <Clock className="h-3.5 w-3.5 text-white/90" />
-                  <span className="text-sm font-medium text-white/90">
-                    {attraction.duration}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5 rounded-lg bg-white/15 px-3 py-1.5 backdrop-blur-md border border-white/20">
-                  <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
-                  <span className="text-sm font-medium text-white/90">
-                    {tAttr.mustSee}
-                  </span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Sub-hero: description + info pills */}
+      <div className="border-b border-border/50 bg-background px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          {attraction.shortDescription && (
+            <p className="mb-4 max-w-3xl text-base sm:text-lg leading-relaxed text-muted-foreground">
+              {attraction.shortDescription}
+            </p>
+          )}
+          <div className="flex flex-wrap gap-2 sm:gap-3">
+            <div className="flex items-center gap-1.5 rounded-lg bg-secondary px-3 py-1.5">
+              <Ticket className="h-3.5 w-3.5 text-foreground/60" />
+              <span className="text-sm font-medium text-foreground">
+                €{getCurrentPrice()}
+              </span>
+            </div>
+            {attraction.duration && (
+              <div className="flex items-center gap-1.5 rounded-lg bg-secondary px-3 py-1.5">
+                <Clock className="h-3.5 w-3.5 text-foreground/60" />
+                <span className="text-sm font-medium text-foreground">
+                  {attraction.duration}
+                </span>
+              </div>
+            )}
+            <div className="flex items-center gap-1.5 rounded-lg bg-secondary px-3 py-1.5">
+              <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+              <span className="text-sm font-medium text-foreground">
+                {tAttr.mustSee}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Main Content */}
       <section className="py-8 sm:py-12 md:py-16 lg:py-20">
