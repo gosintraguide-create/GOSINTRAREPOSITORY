@@ -602,14 +602,14 @@
       <div>
         <p class="kicker">O que é</p>
         <h2 class="sec-title">Uma noite<br>inesquecível</h2>
-        <p class="sec-body">
+        <p class="sec-body about-body-p">
           Imagina um ecrã de cinema no coração da floresta de Sintra, sob um
           céu estrelado, rodeado de luzes festão e da magia da natureza.
           Cinema no Mato é uma experiência única que combina o melhor do
           cinema ao ar livre com um jantar especialmente preparado para a
           ocasião.
         </p>
-        <p class="sec-body" style="margin-top:14px">
+        <p class="sec-body about-body-p" style="margin-top:14px">
           Sessões íntimas com lugares limitados, para garantir que cada
           convidado vive algo verdadeiramente especial. Traz o teu cobertor,
           fica à vontade — o resto fica connosco.
@@ -643,7 +643,7 @@
   <div class="container">
     <p class="kicker">Tudo incluído</p>
     <h2 class="sec-title">O que está incluído</h2>
-    <div class="includes-grid">
+    <div class="includes-grid" id="includes-grid">
       <div class="inc-card"><div class="inc-icon">🎬</div><div class="inc-title">Cinema ao Ar Livre</div><p class="inc-desc">Projeção em ecrã grande na floresta com som de alta qualidade e cadeiras confortáveis para toda a noite.</p></div>
       <div class="inc-card"><div class="inc-icon">🍽️</div><div class="inc-title">Jantar Incluído</div><p class="inc-desc">Um jantar especialmente preparado, servido antes do início do filme. Menu sazonal com produtos locais.</p></div>
       <div class="inc-card"><div class="inc-icon">🌿</div><div class="inc-title">Floresta de Sintra</div><p class="inc-desc">No coração da floresta mágica de Sintra, com luzes festão a criar uma atmosfera única.</p></div>
@@ -720,7 +720,7 @@
         </div>
         <div class="qty-row">
           <div>
-            <div class="qty-lbl">Crianças <small style="font-weight:400;color:var(--cream-dim)">(6–12 anos)</small></div>
+            <div class="qty-lbl">Crianças <small class="child-age-label" style="font-weight:400;color:var(--cream-dim)">(6–12 anos)</small></div>
             <div class="qty-sub" id="child-price-lbl">€20 por pessoa · jantar incl.</div>
           </div>
           <div class="qty-ctrl">
@@ -780,8 +780,8 @@
 // ── CONFIG ────────────────────────────────────────────────────
 // Edit EVENTS to add/remove/update sessions.
 // Each session shows up as a card on the page and in the booking modal.
-const ADULT_PRICE = 35;
-const CHILD_PRICE = 20;
+let ADULT_PRICE = 35;
+let CHILD_PRICE = 20;
 
 const EVENTS = [
   {
@@ -852,6 +852,97 @@ const S = {
   stripe: null, elements: null,
   clientSecret: null, piId: null, ref: null,
 };
+
+// ── CMS FETCH ─────────────────────────────────────────────────
+// Pull live content from the admin CMS and override local defaults.
+// Falls back silently to the hardcoded values above if the API is unavailable.
+(async function loadCMS() {
+  try {
+    const r = await fetch(API + '/comprehensive-content', {
+      headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+ANON },
+    });
+    const data = await r.json();
+    const cnm = data?.content?.cinemaNoMato;
+    if (!cnm) return;
+
+    // Pricing
+    if (cnm.pricing) {
+      if (cnm.pricing.adultPrice)  ADULT_PRICE = cnm.pricing.adultPrice;
+      if (cnm.pricing.childPrice)  CHILD_PRICE = cnm.pricing.childPrice;
+      if (cnm.pricing.childAgeLabel) {
+        const el = document.querySelector('.child-age-label');
+        if (el) el.textContent = '(' + cnm.pricing.childAgeLabel + ')';
+      }
+    }
+
+    // Sessions — replace local EVENTS with CMS published sessions
+    if (Array.isArray(cnm.sessions) && cnm.sessions.length > 0) {
+      const published = cnm.sessions.filter(s => s.published);
+      if (published.length > 0) {
+        EVENTS.length = 0;
+        published.forEach(s => EVENTS.push(s));
+        // Re-select first event in state
+        S.ev = EVENTS[0];
+      }
+    }
+
+    // Hero text
+    if (cnm.hero) {
+      if (cnm.hero.tagline)  document.querySelectorAll('.hero-eyebrow').forEach(el => { el.textContent = cnm.hero.tagline; });
+      if (cnm.hero.prodLine) document.querySelectorAll('.hero-prod').forEach(el => { el.textContent = cnm.hero.prodLine; });
+      if (cnm.hero.image) {
+        const img = document.querySelector('.hero-img');
+        if (img) img.src = cnm.hero.image;
+      }
+    }
+
+    // About text
+    if (cnm.about) {
+      const bodies = document.querySelectorAll('.about-body-p');
+      if (bodies[0] && cnm.about.body1) bodies[0].textContent = cnm.about.body1;
+      if (bodies[1] && cnm.about.body2) bodies[1].textContent = cnm.about.body2;
+    }
+
+    // Includes
+    if (Array.isArray(cnm.includes) && cnm.includes.length > 0) {
+      const grid = document.getElementById('includes-grid');
+      if (grid) {
+        grid.innerHTML = cnm.includes.map(inc => `
+          <div class="inc-card">
+            <div class="inc-icon">${inc.icon}</div>
+            <div class="inc-title">${inc.title}</div>
+            <p class="inc-desc">${inc.desc}</p>
+          </div>`).join('');
+      }
+    }
+
+    // FAQ
+    if (Array.isArray(cnm.faq) && cnm.faq.length > 0) {
+      FAQS.length = 0;
+      cnm.faq.forEach(f => FAQS.push(f));
+    }
+
+    // Footer
+    if (cnm.footer) {
+      if (cnm.footer.brandSub) {
+        const el = document.querySelector('.foot-sub');
+        if (el) el.innerHTML = cnm.footer.brandSub.replace(/\n/g,'<br>');
+      }
+      if (cnm.footer.newsletterText) {
+        const el = document.querySelector('.nl-fine');
+        if (el) el.textContent = cnm.footer.newsletterText;
+      }
+    }
+
+    // Rebuild dynamic sections now that data is updated
+    buildCards();
+    buildFAQs();
+    buildPicker();
+    tick();
+  } catch (_) {
+    // CMS unavailable — hardcoded fallbacks remain active
+  }
+})();
 
 // ── BOOT ──────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {

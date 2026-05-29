@@ -586,6 +586,44 @@ export interface ComprehensiveContent {
     };
   };
 
+  // Cinema no Mato — standalone event site
+  cinemaNoMato?: {
+    hero: {
+      image:   string;  // hero background image URL
+      tagline: string;  // pill above the title
+      prodLine: string; // "Uma produção Hop On Sintra e A do Mato"
+    };
+    about: {
+      body1: string;
+      body2: string;
+    };
+    pricing: {
+      adultPrice:    number;
+      childPrice:    number;
+      childAgeLabel: string; // e.g. "6–12 anos"
+    };
+    sessions: Array<{
+      id:        string;
+      date:      string;  // YYYY-MM-DD
+      display:   string;  // "5 de Julho de 2026"
+      day:       string;  // "5"
+      month:     string;  // "JUL"
+      weekday:   string;  // "Sábado"
+      time:      string;  // "21:00"
+      film:      string;
+      filmImage: string;
+      venue:     string;
+      seats:     number;
+      published: boolean;
+    }>;
+    includes: Array<{ icon: string; title: string; desc: string }>;
+    faq:      Array<{ q: string; a: string }>;
+    footer: {
+      brandSub:       string;
+      newsletterText: string;
+    };
+  };
+
   // Day Planner — per-site images shown in the calculator
   dayPlanner?: {
     siteImages: {
@@ -1788,6 +1826,44 @@ export const DEFAULT_COMPREHENSIVE_CONTENT: ComprehensiveContent = {
       national:   '',
       capuchos:   '',
       cabo:       '',
+    },
+  },
+  cinemaNoMato: {
+    hero: {
+      image:    '',
+      tagline:  'Cinema ao ar livre · Jantar incluído · Sintra',
+      prodLine: 'Uma produção Hop On Sintra & A do Mato',
+    },
+    about: {
+      body1: 'Imagina um ecrã de cinema no coração da floresta de Sintra, sob um céu estrelado, rodeado de luzes festão e da magia da natureza. Cinema no Mato é uma experiência única que combina o melhor do cinema ao ar livre com um jantar especialmente preparado para a ocasião.',
+      body2: 'Sessões íntimas com lugares limitados, para garantir que cada convidado vive algo verdadeiramente especial. Traz o teu cobertor, fica à vontade — o resto fica connosco.',
+    },
+    pricing: {
+      adultPrice:    35,
+      childPrice:    20,
+      childAgeLabel: '6–12 anos',
+    },
+    sessions: [],
+    includes: [
+      { icon: '🎬', title: 'Cinema ao Ar Livre',     desc: 'Projeção em ecrã grande na floresta com som de alta qualidade e cadeiras confortáveis para toda a noite.' },
+      { icon: '🍽️', title: 'Jantar Incluído',        desc: 'Um jantar especialmente preparado, servido antes do início do filme. Menu sazonal com produtos locais.' },
+      { icon: '🌿', title: 'Floresta de Sintra',     desc: 'No coração da floresta mágica de Sintra, com luzes festão a criar uma atmosfera única.' },
+      { icon: '🥂', title: 'Bebida de Boas-Vindas',  desc: 'À chegada, recebe uma bebida de boas-vindas para começar a noite com o pé direito.' },
+      { icon: '🪑', title: 'Lugar Garantido',        desc: 'O teu lugar está reservado. Sem filas, sem pressa — chega e desfruta.' },
+      { icon: '📧', title: 'Confirmação Imediata',   desc: 'Após o pagamento recebes um email de confirmação com os detalhes e o teu bilhete.' },
+    ],
+    faq: [
+      { q: 'O jantar está incluído no preço?',           a: 'Sim, o jantar está totalmente incluído no bilhete. Serás servido antes do início do filme com um menu sazonal preparado com produtos locais da região.' },
+      { q: 'Onde se realiza o Cinema no Mato?',          a: 'As sessões realizam-se na Quinta da Floresta, em Sintra. O endereço exato e indicações de acesso serão partilhados por email após a confirmação da reserva.' },
+      { q: 'O que acontece se chover?',                  a: 'Em caso de chuva intensa, a sessão poderá ser remarcada ou realizada em espaço coberto alternativo. Serás notificado por email com pelo menos 24 horas de antecedência.' },
+      { q: 'Posso levar crianças?',                      a: 'Sim! Crianças dos 6 aos 12 anos têm bilhete com preço reduzido. Crianças com menos de 6 anos entram gratuitamente, mas o jantar não está incluído.' },
+      { q: 'Que filme é exibido?',                       a: 'A programação é anunciada cerca de 2 semanas antes de cada sessão. Segue-nos no Instagram para seres o primeiro a saber.' },
+      { q: 'Como recebo o meu bilhete?',                 a: 'Imediatamente após o pagamento recebes um email de confirmação com todos os detalhes e o teu bilhete em PDF.' },
+      { q: 'Posso cancelar ou alterar a minha reserva?', a: 'Cancelamentos até 7 dias antes da sessão têm reembolso total. Para alterações ou casos específicos, contacta-nos por email: hoponsintra@gmail.com' },
+    ],
+    footer: {
+      brandSub:       'Uma produção Hop On Sintra & A do Mato\nSintra, Portugal',
+      newsletterText: 'Avisamos quando há nova sessão. Sem spam, prometemos.',
     },
   },
 };

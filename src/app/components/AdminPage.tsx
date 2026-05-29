@@ -35,6 +35,7 @@ import {
   ArchiveRestore,
   Car,
   Calculator,
+  Clapperboard,
 } from "lucide-react";
 import { DestinationTracker } from "./DestinationTracker";
 import { Button } from "./ui/button";
@@ -92,6 +93,7 @@ import { PrivateTourManager } from "./PrivateTourManager";
 import { TourRequestsManagement } from "./TourRequestsManagement";
 import { TourCalendar } from "./TourCalendar";
 import { PlannerImagesEditor } from "./PlannerImagesEditor";
+import { CinemaNoMatoEditor } from "./CinemaNoMatoEditor";
 import {
   LineChart,
   Line,
@@ -2177,6 +2179,23 @@ export function AdminPage() {
                       </div>
                     </Button>
 
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-3"
+                      onClick={() => {
+                        setActiveTab("cinema-no-mato");
+                        setMoreMenuOpen(false);
+                      }}
+                    >
+                      <Clapperboard className="h-5 w-5" />
+                      <div className="flex flex-col items-start">
+                        <span>Cinema no Mato</span>
+                        <span className="text-xs text-muted-foreground">
+                          Sessões, preços, hero e conteúdo
+                        </span>
+                      </div>
+                    </Button>
+
                     <div className="my-3 h-px bg-border" />
 
                     {/* Section: Settings */}
@@ -3636,6 +3655,11 @@ export function AdminPage() {
           {/* ====== PLANNER IMAGES TAB ====== */}
           <TabsContent value="planner-images" className="space-y-6">
             <PlannerImagesEditor />
+          </TabsContent>
+
+          {/* ====== CINEMA NO MATO TAB ====== */}
+          <TabsContent value="cinema-no-mato" className="space-y-6">
+            <CinemaNoMatoEditor />
           </TabsContent>
 
           {/* ====== CONTENT TAB ====== */}
