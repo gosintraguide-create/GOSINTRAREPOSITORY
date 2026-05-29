@@ -86,7 +86,7 @@
       overflow: hidden;
     }
 
-    /* CSS-art fallback (matches illustration palette) */
+    /* CSS-art fallback (matches illustration palette) — hidden once real image loads */
     #hero::before {
       content: '';
       position: absolute; inset: 0; z-index: 0;
@@ -96,12 +96,39 @@
         linear-gradient(180deg, #071525 0%, #0D2233 50%, #0B2518 100%);
     }
 
-    /* String-lights decoration */
+    /* String-lights decoration — hidden once real image loads */
     #hero::after {
       content: '💡  💡    💡  💡    💡  💡    💡  💡    💡  💡';
       position: absolute; top: 38%; left: 0; right: 0; z-index: 1;
       text-align: center; font-size: 1.1rem; letter-spacing: 18px;
       opacity: .55; pointer-events: none;
+    }
+
+    /* ── has-img mode: real image loaded ──────────────── */
+    /* Hide CSS-art fallback and string lights */
+    #hero.has-img::before,
+    #hero.has-img::after { display: none; }
+
+    /* The illustration already contains the title — hide the HTML overlay text */
+    #hero.has-img .hero-eyebrow,
+    #hero.has-img .hero-title,
+    #hero.has-img .hero-prod { display: none; }
+
+    /* Anchor the CTA buttons at the bottom of the hero */
+    #hero.has-img .hero-inner {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding-top: 0;
+      padding-bottom: 56px;
+    }
+
+    /* Lighten the bottom vignette so the illustration reads clearly */
+    #hero.has-img .hero-vignette {
+      background: linear-gradient(to bottom,
+        transparent 0%,
+        transparent 55%,
+        rgba(7,21,37,.6) 82%,
+        rgba(7,21,37,.88) 100%);
     }
 
     .hero-img {
@@ -892,10 +919,19 @@ const S = {
       if (cnm.hero.prodLine) document.querySelectorAll('.hero-prod').forEach(el => { el.textContent = cnm.hero.prodLine; });
       if (cnm.hero.image) {
         const img = document.querySelector('.hero-img');
-        if (img) { img.src = cnm.hero.image; img.style.display = ''; }
-        // Also update the about-visual image with the same hero
+        if (img) {
+          img.style.display = '';
+          img.onload = () => document.getElementById('hero').classList.add('has-img');
+          img.onerror = () => {};          // remove the hide-on-error once we have a real URL
+          img.src = cnm.hero.image;        // triggers load/error
+        }
+        // Mirror to about-visual
         const aboutImg = document.querySelector('.about-visual img');
-        if (aboutImg) { aboutImg.src = cnm.hero.image; aboutImg.style.display = ''; aboutImg.style.opacity = '1'; }
+        if (aboutImg) {
+          aboutImg.style.display = '';
+          aboutImg.onerror = () => {};
+          aboutImg.src = cnm.hero.image;
+        }
       }
     }
 
