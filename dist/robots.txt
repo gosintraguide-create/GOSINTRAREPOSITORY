@@ -15,6 +15,7 @@ Disallow: /terms-of-service
 
 # Public-facing standalone tools — must be indexed
 Allow: /sintra-day-planner.html
+Allow: /cinema-no-mato.html
 
 # Block all other standalone HTML utility files at root
 Disallow: /*.html$
