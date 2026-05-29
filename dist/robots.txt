@@ -13,7 +13,10 @@ Disallow: /404
 Disallow: /privacy-policy
 Disallow: /terms-of-service
 
-# Block all standalone HTML utility files at root
+# Public-facing standalone tools — must be indexed
+Allow: /sintra-day-planner.html
+
+# Block all other standalone HTML utility files at root
 Disallow: /*.html$
 
 Sitemap: https://www.hoponsintra.com/sitemap.xml
