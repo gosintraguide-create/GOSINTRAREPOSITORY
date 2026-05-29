@@ -892,7 +892,10 @@ const S = {
       if (cnm.hero.prodLine) document.querySelectorAll('.hero-prod').forEach(el => { el.textContent = cnm.hero.prodLine; });
       if (cnm.hero.image) {
         const img = document.querySelector('.hero-img');
-        if (img) img.src = cnm.hero.image;
+        if (img) { img.src = cnm.hero.image; img.style.display = ''; }
+        // Also update the about-visual image with the same hero
+        const aboutImg = document.querySelector('.about-visual img');
+        if (aboutImg) { aboutImg.src = cnm.hero.image; aboutImg.style.display = ''; aboutImg.style.opacity = '1'; }
       }
     }
 
