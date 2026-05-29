@@ -575,8 +575,8 @@ export function HomePage() {
             </button>
           </div>
 
-          {/* Day Planner CTA */}
-          <div className="mt-8 flex justify-center">
+          {/* Day Planner + Cinema no Mato CTAs */}
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
             <a
               href="/sintra-day-planner"
               target="_blank"
@@ -585,6 +585,15 @@ export function HomePage() {
             >
               <Calendar className="h-4 w-4" />
               Plan your day in Sintra
+              <ArrowRight className="h-4 w-4" />
+            </a>
+            <a
+              href="/cinema-no-mato.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-full border-2 border-white/30 bg-white/10 px-6 py-3 text-sm font-medium text-white backdrop-blur-sm transition-all hover:border-white/60 hover:bg-white/20"
+            >
+              🎬 Cinema no Mato
               <ArrowRight className="h-4 w-4" />
             </a>
           </div>
