@@ -49,6 +49,7 @@ export async function generateSitemap(): Promise<string> {
   const staticPages = [
     { path: '/', changefreq: 'daily', priority: '1.0', lastmod: '2025-04-01' },
     { path: '/hop-on-hop-off-sintra', changefreq: 'weekly', priority: '0.9', lastmod: '2025-03-01' },
+    { path: '/sintra-day-planner.html', changefreq: 'monthly', priority: '0.8', lastmod: '2026-05-29' },
     { path: '/attractions', changefreq: 'weekly', priority: '0.9', lastmod: '2025-03-01' },
     { path: '/private-tours', changefreq: 'weekly', priority: '0.9', lastmod: '2025-03-01' },
     { path: '/travel-guide', changefreq: 'weekly', priority: '0.9', lastmod: '2025-03-01' },
