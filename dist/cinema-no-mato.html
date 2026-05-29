@@ -14,6 +14,21 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /*
+      DROP THE FONT FILE HERE:
+        public/fonts/SupersonicRocketship.ttf
+      Download free from: https://www.dafont.com/supersonic-rocketship.font
+      Once the file is in that folder, push it — the logo switches automatically.
+    */
+    @font-face {
+      font-family: 'Supersonic Rocketship';
+      src: url('/fonts/SupersonicRocketship.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+  </style>
   <script src="https://js.stripe.com/v3/"></script>
 
   <style>
@@ -82,11 +97,11 @@
     #hero {
       position: relative;
       height: 100dvh; min-height: 580px;
-      display: flex; align-items: center; justify-content: center;
+      display: flex; align-items: flex-end; justify-content: center;
       overflow: hidden;
     }
 
-    /* CSS-art fallback (matches illustration palette) — hidden once real image loads */
+    /* CSS-art fallback background — hidden once real image loads */
     #hero::before {
       content: '';
       position: absolute; inset: 0; z-index: 0;
@@ -96,84 +111,84 @@
         linear-gradient(180deg, #071525 0%, #0D2233 50%, #0B2518 100%);
     }
 
-    /* String-lights decoration — hidden once real image loads */
+    /* String-lights fallback — hidden once real image loads */
     #hero::after {
       content: '💡  💡    💡  💡    💡  💡    💡  💡    💡  💡';
-      position: absolute; top: 38%; left: 0; right: 0; z-index: 1;
+      position: absolute; top: 42%; left: 0; right: 0; z-index: 2;
       text-align: center; font-size: 1.1rem; letter-spacing: 18px;
       opacity: .55; pointer-events: none;
     }
 
-    /* ── has-img mode: real image loaded ──────────────── */
-    /* Hide CSS-art fallback and string lights */
-    #hero.has-img::before,
-    #hero.has-img::after { display: none; }
-
-    /* The illustration already contains the title — hide the HTML overlay text */
-    #hero.has-img .hero-eyebrow,
-    #hero.has-img .hero-title,
-    #hero.has-img .hero-prod { display: none; }
-
-    /* Anchor the CTA buttons at the bottom of the hero */
-    #hero.has-img .hero-inner {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      padding-top: 0;
-      padding-bottom: 56px;
-    }
-
-    /* Lighten the bottom vignette so the illustration reads clearly */
-    #hero.has-img .hero-vignette {
-      background: linear-gradient(to bottom,
-        transparent 0%,
-        transparent 55%,
-        rgba(7,21,37,.6) 82%,
-        rgba(7,21,37,.88) 100%);
-    }
-
     .hero-img {
       position: absolute; inset: 0; width: 100%; height: 100%;
-      object-fit: cover; object-position: center bottom; z-index: 1;
+      object-fit: cover; object-position: center center; z-index: 1;
     }
 
     .hero-vignette {
       position: absolute; inset: 0; z-index: 2;
       background: linear-gradient(to bottom,
-        rgba(7,21,37,.15) 0%,
-        rgba(7,21,37,.1)  45%,
-        rgba(7,21,37,.75) 85%,
-        rgba(7,21,37,.92) 100%);
+        transparent 0%,
+        transparent 50%,
+        rgba(7,21,37,.55) 80%,
+        rgba(7,21,37,.85) 100%);
     }
 
+    /* ── LOGO LAYER — always on top, scales with viewport ── */
+    .hero-logo {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -56%);   /* slightly above centre */
+      z-index: 4;
+      text-align: center;
+      line-height: .88;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .hero-logo-line {
+      display: block;
+      font-family: 'Supersonic Rocketship', 'Bangers', cursive;
+      font-size: clamp(3.8rem, 14vw, 11rem);
+      font-weight: normal;
+      color: #FFA131;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      /* subtle drop shadow for readability over any background */
+      text-shadow:
+        0 3px 0 rgba(0,0,0,.35),
+        0 6px 24px rgba(0,0,0,.4);
+    }
+
+    /* ── Bottom bar: eyebrow + prod line + CTAs ─────── */
     .hero-inner {
-      position: relative; z-index: 3;
-      text-align: center; padding: 0 24px;
-      padding-top: 60px; /* nav */
+      position: relative; z-index: 4;
+      width: 100%;
+      text-align: center;
+      padding: 0 24px 52px;
     }
 
     .hero-eyebrow {
       display: inline-block;
-      font-size: .7rem; letter-spacing: 4px; text-transform: uppercase;
-      color: var(--amber); border: 1px solid var(--border-a);
-      padding: 5px 14px; border-radius: 50px; margin-bottom: 20px;
-    }
-
-    .hero-title {
-      font-family: 'Bangers', cursive;
-      font-size: clamp(4.5rem, 16vw, 10rem);
-      letter-spacing: 4px; line-height: .92; color: var(--amber);
-      text-shadow: 0 6px 40px rgba(0,0,0,.5);
-      margin-bottom: 14px;
+      font-size: .68rem; letter-spacing: 4px; text-transform: uppercase;
+      color: var(--cream); border: 1px solid rgba(255,255,255,.25);
+      background: rgba(7,21,37,.45);
+      padding: 5px 14px; border-radius: 50px; margin-bottom: 10px;
+      backdrop-filter: blur(6px);
     }
 
     .hero-prod {
-      font-size: .72rem; letter-spacing: 2.5px; text-transform: uppercase;
-      color: var(--cream); opacity: .65; margin-bottom: 36px;
+      font-size: .68rem; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--cream); opacity: .55; margin-bottom: 20px;
+      display: block;
     }
 
     .hero-btns {
       display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
     }
+
+    /* ── has-img: hide CSS-art fallback only ──────────── */
+    #hero.has-img::before,
+    #hero.has-img::after { display: none; }
 
     .btn-hero-primary {
       background: var(--amber); color: var(--navy); border: none;
@@ -605,10 +620,17 @@
        alt="Cinema no Mato — cinema ao ar livre na floresta de Sintra"
        loading="eager" onerror="this.style.display='none'" />
   <div class="hero-vignette"></div>
+
+  <!-- Logo layer — independent, always scales with viewport -->
+  <div class="hero-logo" aria-label="Cinema no Mato">
+    <span class="hero-logo-line">CINEMA</span>
+    <span class="hero-logo-line">NO MATO</span>
+  </div>
+
+  <!-- Bottom bar — eyebrow, prod line, CTA buttons -->
   <div class="hero-inner">
     <span class="hero-eyebrow">Cinema ao ar livre · Jantar incluído · Sintra</span>
-    <h1 class="hero-title bangers">CINEMA<br>NO MATO</h1>
-    <p class="hero-prod">Uma produção Hop On Sintra &amp; A do Mato</p>
+    <span class="hero-prod">Uma produção Hop On Sintra &amp; A do Mato</span>
     <div class="hero-btns">
       <button class="btn-hero-primary" onclick="openModal()">Reservar lugar</button>
       <a href="#sessoes" class="btn-hero-ghost">Ver sessões</a>
