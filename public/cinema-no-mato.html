@@ -363,51 +363,84 @@
 
     .sess-overlay-body { padding: 16px 12px 60px; max-width: 1100px; margin: 0 auto; }
 
-    /* ── Mini tile grid — 4 cols on mobile, more on wider screens ── */
+    /* ── Poster card grid — 2 cols mobile → 3 tablet → 4 desktop ── */
     .mini-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
     }
-    @media (min-width: 540px)  { .mini-grid { grid-template-columns: repeat(5, 1fr); } }
-    @media (min-width: 768px)  { .mini-grid { grid-template-columns: repeat(6, 1fr); } }
-    @media (min-width: 1024px) { .mini-grid { grid-template-columns: repeat(8, 1fr); } }
+    @media (min-width: 600px)  { .mini-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 900px)  { .mini-grid { grid-template-columns: repeat(4, 1fr); gap: 18px; } }
 
-    /* Mini tile card */
-    .stile {
+    /* Poster card */
+    .smov {
       background: var(--navy-card); border: 1px solid var(--border);
-      border-radius: 10px; overflow: hidden; cursor: pointer;
-      transition: border-color .15s, transform .15s;
+      border-radius: 12px; overflow: hidden; cursor: pointer;
+      transition: transform .2s, border-color .2s, box-shadow .2s;
       display: flex; flex-direction: column;
     }
-    .stile:hover { border-color: var(--border-a); transform: translateY(-2px); }
+    .smov:hover { transform: translateY(-4px); border-color: var(--border-a); box-shadow: 0 14px 36px rgba(0,0,0,.45); }
 
-    .stile-top {
+    /* Portrait poster image */
+    .smov-poster {
+      position: relative; aspect-ratio: 2/3; overflow: hidden;
       background: linear-gradient(160deg, #153B25, #0F2C1E);
-      padding: 10px 4px 8px; text-align: center; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3.5rem;
     }
-    .stile-wday  { font-size: .52rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--amber); font-weight: 700; }
-    .stile-day   { font-family: 'Bangers', cursive; font-size: 2rem; line-height: 1; color: var(--cream); letter-spacing: 1px; }
-    .stile-month { font-size: .55rem; font-weight: 700; color: var(--cream-dim); text-transform: uppercase; margin-top: 1px; }
+    .smov-poster img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; object-position: center top;
+    }
+    /* soft bottom fade so badges are always readable */
+    .smov-poster::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,.25) 0%, transparent 35%);
+      pointer-events: none;
+    }
 
-    .stile-film {
-      padding: 5px 6px 0; font-size: .6rem; color: var(--cream-dim);
-      text-align: center; overflow: hidden; text-overflow: ellipsis;
-      white-space: nowrap; flex: 1;
+    /* Date badge — top right, white pill like the reference */
+    .smov-date {
+      position: absolute; top: 10px; right: 10px; z-index: 2;
+      background: #fff; color: #111;
+      border-radius: 7px; padding: 4px 9px;
+      text-align: center; min-width: 44px; line-height: 1;
+    }
+    .smov-date-wday  { display: block; font-size: .5rem; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700; }
+    .smov-date-month { display: block; font-size: .5rem; letter-spacing: 1px;   text-transform: uppercase; font-weight: 700; }
+    .smov-date-num   { display: block; font-family: 'Bangers', cursive; font-size: 1.6rem; letter-spacing: 1px; }
+
+    /* Sold-out badge — top left */
+    .smov-sold {
+      position: absolute; top: 10px; left: 10px; z-index: 2;
+      background: rgba(0,0,0,.82); color: #fff;
+      font-size: .52rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 4px 8px; border-radius: 5px;
     }
 
-    .stile-foot {
-      padding: 6px;
+    /* Info section below poster */
+    .smov-body { padding: 10px 12px 4px; }
+
+    .smov-title {
+      font-family: 'Supersonic Rocketship', 'Bangers', cursive;
+      font-size: clamp(1rem, 3.5vw, 1.35rem);
+      letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--amber); line-height: 1.1; margin-bottom: 5px;
     }
-    .btn-stile {
-      display: block; width: 100%;
+
+    .smov-film { font-size: .72rem; color: var(--cream); font-weight: 500; margin-bottom: 2px; }
+    .smov-meta { font-size: .65rem; color: var(--cream-dim); line-height: 1.6; }
+
+    /* Reserve button */
+    .smov-foot { padding: 8px 12px 12px; }
+    .btn-smov {
+      display: block; width: 100%; padding: 8px;
       background: var(--amber); color: var(--navy); border: none;
-      padding: 5px 4px; border-radius: 20px;
-      font-weight: 700; font-size: .6rem; cursor: pointer;
+      border-radius: 8px; font-weight: 700; font-size: .75rem; cursor: pointer;
       transition: background .15s;
     }
-    .btn-stile:hover { background: var(--amber-hi); }
-    .btn-stile.full  { background: var(--navy-light); color: var(--cream-dim); cursor: not-allowed; }
+    .btn-smov:hover  { background: var(--amber-hi); }
+    .btn-smov.sold   { background: var(--navy-light); color: var(--cream-dim); cursor: not-allowed; }
 
     /* ── INCLUDES ───────────────────────────────────── */
     .includes-grid {
@@ -1159,9 +1192,9 @@ function buildCards() {
   if (btn) btn.style.display = EVENTS.length > 0 ? 'inline-flex' : 'none';
 }
 
-// ── ALL SESSIONS OVERLAY — mini tile grid ─────────────────────
+// ── ALL SESSIONS OVERLAY — poster card grid ───────────────────
 function buildAllSessions() {
-  const g = document.getElementById('all-sessions-grid');
+  const g  = document.getElementById('all-sessions-grid');
   const ct = document.getElementById('sess-count');
   if (ct) ct.textContent = EVENTS.length ? `${EVENTS.length} sessão${EVENTS.length !== 1 ? 'ões' : ''}` : '';
 
@@ -1171,18 +1204,36 @@ function buildAllSessions() {
   }
 
   g.innerHTML = EVENTS.map(ev => {
-    const full = ev.seats <= 0;
-    const wday = ev.weekday ? ev.weekday.slice(0, 3).toUpperCase() : '';
+    const full  = ev.seats <= 0;
+    const low   = ev.seats > 0 && ev.seats <= 8;
+    const wday  = ev.weekday ? ev.weekday.slice(0, 3).toUpperCase() : '';
+    const img   = ev.filmImage || '';
+    const title = ev.film && ev.film !== 'A anunciar' ? ev.film.toUpperCase() : 'A ANUNCIAR';
+    const dateShort = `${ev.day} ${ev.month}`;
+    const seatsLabel = full ? 'Esgotado' : low ? `⚡ ${ev.seats} lugares` : `${ev.seats} lugares`;
+
     return `
-    <div class="stile" onclick="${full ? '' : `openModal('${ev.id}')`}">
-      <div class="stile-top">
-        <div class="stile-wday">${wday}</div>
-        <div class="stile-day">${ev.day}</div>
-        <div class="stile-month">${ev.month}</div>
+    <div class="smov">
+      <div class="smov-poster">
+        ${img ? `<img src="${img}" alt="${ev.film || 'Cinema no Mato'}" loading="lazy" onerror="this.style.opacity='0'" />` : '🎬'}
+        <div class="smov-date">
+          <span class="smov-date-wday">${wday}</span>
+          <span class="smov-date-num">${ev.day}</span>
+          <span class="smov-date-month">${ev.month}</span>
+        </div>
+        ${full ? '<div class="smov-sold">Esgotado</div>' : ''}
       </div>
-      <div class="stile-film">${ev.film || 'A anunciar'}</div>
-      <div class="stile-foot">
-        <button class="btn-stile${full ? ' full' : ''}" ${full ? 'disabled' : ''} onclick="event.stopPropagation();${full ? '' : `openModal('${ev.id}')`}">
+      <div class="smov-body">
+        <div class="smov-title">${title}</div>
+        <div class="smov-film">${ev.film || 'A anunciar'}</div>
+        <div class="smov-meta">
+          📍 ${ev.venue}<br>
+          📅 ${ev.weekday}, ${ev.display} · ${ev.time}h
+        </div>
+        ${!full ? `<p style="font-size:.62rem;color:${low?'#FF8C42':'var(--cream-dim)'};margin-top:4px">${seatsLabel}</p>` : ''}
+      </div>
+      <div class="smov-foot">
+        <button class="btn-smov${full?' sold':''}" ${full?'disabled':''} onclick="openModal('${ev.id}')">
           ${full ? 'Esgotado' : 'Reservar'}
         </button>
       </div>
