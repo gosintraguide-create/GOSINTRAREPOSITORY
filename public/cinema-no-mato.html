@@ -554,6 +554,51 @@
     .nl-btn:hover { background: var(--amber-hi); }
     .nl-fine { font-size: .68rem; color: var(--cream-dim); margin-top: 8px; }
 
+    /* ── MODAL STEP 1 HERO ──────────────────────────── */
+    .ms1-hero-wrap {
+      display: none;
+      position: relative; width: 100%; height: 220px;
+      border-radius: 18px 18px 0 0; overflow: hidden;
+      flex-shrink: 0;
+    }
+    .ms1-hero-wrap img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    .ms1-hero-wrap::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(13,31,53,.25) 0%, rgba(13,31,53,.82) 100%);
+    }
+    .ms1-hero-close {
+      position: absolute; top: 14px; right: 14px; z-index: 2;
+      background: rgba(13,31,53,.65); border: 1.5px solid rgba(255,255,255,.2);
+      color: var(--cream); font-size: 1.2rem; line-height: 1;
+      width: 34px; height: 34px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; backdrop-filter: blur(4px);
+      transition: background .15s;
+    }
+    .ms1-hero-close:hover { background: rgba(13,31,53,.9); }
+    .modal-sheet.step1 .modal-drag { display: none; }
+    .modal-sheet.step1 .modal-hd   { display: none; }
+    .modal-sheet.step1 .ms1-hero-wrap { display: block; }
+
+    .ms1-film-title {
+      font-family: 'Supersonic Rocketship', cursive;
+      font-size: 1.5rem; color: var(--cream);
+      margin-bottom: 6px; line-height: 1.1;
+    }
+    .ms1-synopsis {
+      font-size: .82rem; color: var(--cream-dim); line-height: 1.7;
+      margin-bottom: 18px;
+    }
+    .ms1-session-pill {
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(245,166,35,.07); border: 1px solid var(--border-a);
+      border-radius: 11px; padding: 11px 14px; margin-bottom: 18px;
+    }
+    .ms1-pill-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--amber); flex-shrink: 0; }
+    .ms1-pill-text { font-size: .82rem; color: var(--cream); line-height: 1.6; }
+
     /* ── MODAL ──────────────────────────────────────── */
     .modal-bg {
       position: fixed; inset: 0; z-index: 500;
@@ -564,6 +609,7 @@
     @media (min-width: 600px) {
       .modal-bg { align-items: center; }
       .modal-sheet { border-radius: 18px !important; }
+      .ms1-hero-wrap { border-radius: 18px 18px 0 0; }
     }
 
     .modal-sheet {
@@ -892,6 +938,10 @@
 <div class="modal-bg" id="modal-bg" onclick="bgClick(event)">
   <div class="modal-sheet" id="modal-sheet">
     <div class="modal-drag"></div>
+    <div class="ms1-hero-wrap" id="ms1-hero-wrap">
+      <img id="ms1-hero-img" src="" alt="" />
+      <button class="ms1-hero-close" onclick="closeModal()" aria-label="Fechar">×</button>
+    </div>
     <div class="modal-hd">
       <div class="modal-htitle">RESERVAR BILHETE</div>
       <button class="modal-x" onclick="closeModal()" aria-label="Fechar">×</button>
@@ -904,11 +954,14 @@
     </div>
     <div class="modal-body">
 
-      <!-- Step 1 — Session + qty -->
+      <!-- Step 1 — Film info + qty -->
       <div class="m-step" id="ms1">
-        <div class="st-title">Escolhe a Sessão</div>
-        <div class="st-sub">Seleciona a data e o número de lugares</div>
-        <div id="ev-picker"></div>
+        <div class="ms1-film-title" id="ms1-film-title">Cinema no Mato</div>
+        <div class="ms1-synopsis" id="ms1-synopsis"></div>
+        <div class="ms1-session-pill" id="ms1-session-pill">
+          <div class="ms1-pill-dot"></div>
+          <div class="ms1-pill-text" id="ms1-pill-text"></div>
+        </div>
         <div class="qty-row">
           <div><div class="qty-lbl">Adultos</div><div class="qty-sub" id="adult-price-lbl">€35 por pessoa · jantar incl.</div></div>
           <div class="qty-ctrl">
@@ -992,6 +1045,7 @@ const EVENTS = [
     weekday: 'Sábado',
     time:    '21:00',
     film:    'A anunciar',
+    synopsis: 'O filme será anunciado cerca de 2 semanas antes da sessão. Segue-nos no Instagram para seres o primeiro a saber.',
     venue:   'Quinta da Floresta, Sintra',
     seats:   48,
   },
@@ -1004,6 +1058,7 @@ const EVENTS = [
     weekday: 'Sábado',
     time:    '21:00',
     film:    'A anunciar',
+    synopsis: 'O filme será anunciado cerca de 2 semanas antes da sessão. Segue-nos no Instagram para seres o primeiro a saber.',
     venue:   'Quinta da Floresta, Sintra',
     seats:   50,
   },
@@ -1016,6 +1071,7 @@ const EVENTS = [
     weekday: 'Sábado',
     time:    '21:00',
     film:    'A anunciar',
+    synopsis: 'O filme será anunciado cerca de 2 semanas antes da sessão. Segue-nos no Instagram para seres o primeiro a saber.',
     venue:   'Quinta da Floresta, Sintra',
     seats:   50,
   },
@@ -1386,7 +1442,22 @@ function renderModal() {
     if (n < S.step) p.classList.add('done');
     if (n === S.step) p.classList.add('active');
   });
+  document.getElementById('modal-sheet').classList.toggle('step1', S.step === 1);
+  if (S.step === 1) buildStep1();
   document.getElementById('modal-sheet').scrollTop = 0;
+}
+
+function buildStep1() {
+  if (!S.ev) return;
+  const img      = S.ev.filmImage || './cinema-no-mato-hero.jpg';
+  const title    = S.ev.film && S.ev.film !== 'A anunciar' ? S.ev.film : 'Cinema no Mato';
+  const synopsis = S.ev.synopsis || 'Uma noite de cinema ao ar livre na floresta de Sintra, com jantar incluído.';
+  document.getElementById('ms1-hero-img').src = img;
+  document.getElementById('ms1-hero-img').alt = title;
+  document.getElementById('ms1-film-title').textContent = title;
+  document.getElementById('ms1-synopsis').textContent   = synopsis;
+  document.getElementById('ms1-pill-text').innerHTML =
+    `${S.ev.weekday}, ${S.ev.display} · ${S.ev.time}h<br>${S.ev.venue}`;
 }
 
 // ── STEP NAVIGATION ───────────────────────────────────────────
