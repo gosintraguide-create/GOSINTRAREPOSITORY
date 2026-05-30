@@ -140,10 +140,13 @@
       transform: translate(-50%, -50%);
       z-index: 4;
       text-align: center;
-      line-height: 1.05;   /* clear gap between the two lines */
-      pointer-events: none;
+      line-height: 1.05;
+      pointer-events: none;   /* text isn't clickable */
       user-select: none;
     }
+
+    /* re-enable clicks for the buttons inside the logo block */
+    .hero-logo .hero-btns { pointer-events: all; margin-top: clamp(1.4rem, 4vw, 2.2rem); }
 
     .hero-logo-line {
       display: block;
@@ -158,29 +161,6 @@
       text-shadow:
         0 3px 0 rgba(0,0,0,.3),
         0 6px 20px rgba(0,0,0,.35);
-    }
-
-    /* ── Bottom bar: eyebrow + prod line + CTAs ─────── */
-    .hero-inner {
-      position: relative; z-index: 4;
-      width: 100%;
-      text-align: center;
-      padding: 0 24px 52px;
-    }
-
-    .hero-eyebrow {
-      display: inline-block;
-      font-size: .68rem; letter-spacing: 4px; text-transform: uppercase;
-      color: var(--cream); border: 1px solid rgba(255,255,255,.25);
-      background: rgba(7,21,37,.45);
-      padding: 5px 14px; border-radius: 50px; margin-bottom: 10px;
-      backdrop-filter: blur(6px);
-    }
-
-    .hero-prod {
-      font-size: .68rem; letter-spacing: 2px; text-transform: uppercase;
-      color: var(--cream); opacity: .55; margin-bottom: 20px;
-      display: block;
     }
 
     .hero-btns {
@@ -622,16 +602,10 @@
        loading="eager" onerror="this.style.display='none'" />
   <div class="hero-vignette"></div>
 
-  <!-- Logo layer — independent, always scales with viewport -->
+  <!-- Logo + buttons — one cohesive block, always anchored together -->
   <div class="hero-logo" aria-label="Cinema no Mato">
     <span class="hero-logo-line">CINEMA</span>
     <span class="hero-logo-line">NO MATO</span>
-  </div>
-
-  <!-- Bottom bar — eyebrow, prod line, CTA buttons -->
-  <div class="hero-inner">
-    <span class="hero-eyebrow">Cinema ao ar livre · Jantar incluído · Sintra</span>
-    <span class="hero-prod">Uma produção Hop On Sintra &amp; A do Mato</span>
     <div class="hero-btns">
       <button class="btn-hero-primary" onclick="openModal()">Reservar lugar</button>
       <a href="#sessoes" class="btn-hero-ghost">Ver sessões</a>
