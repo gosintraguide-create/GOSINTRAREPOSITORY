@@ -317,6 +317,37 @@
     .btn-reserve:hover { background: var(--amber-hi); }
     .btn-reserve:disabled { background: var(--navy-light); color: var(--cream-dim); cursor: not-allowed; }
 
+    /* ── Skeleton shimmer ── */
+    @keyframes shimmer {
+      0%   { background-position: -400px 0; }
+      100% { background-position:  400px 0; }
+    }
+    .skel {
+      background: var(--navy); border: 1px solid var(--border);
+      border-radius: var(--rad); overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    .skel-img {
+      height: 190px;
+      background: linear-gradient(90deg, #112740 25%, #1a3a56 50%, #112740 75%);
+      background-size: 800px 100%;
+      animation: shimmer 1.4s infinite linear;
+    }
+    .skel-body { padding: 18px 18px 0; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+    .skel-line {
+      border-radius: 6px;
+      background: linear-gradient(90deg, #112740 25%, #1a3a56 50%, #112740 75%);
+      background-size: 800px 100%;
+      animation: shimmer 1.4s infinite linear;
+    }
+    .skel-foot {
+      height: 54px; margin-top: 14px;
+      border-top: 1px solid var(--border);
+      background: linear-gradient(90deg, #112740 25%, #1a3a56 50%, #112740 75%);
+      background-size: 800px 100%;
+      animation: shimmer 1.4s infinite linear;
+    }
+
     /* "Ver todas as sessões" link */
     .btn-ver-todas {
       display: inline-flex; align-items: center; gap: 8px;
@@ -1120,18 +1151,21 @@ const S = {
     }
 
     // Rebuild dynamic sections now that data is updated
+    cmsReady = true;
     buildCards();
     buildFAQs();
     buildPicker();
     tick();
   } catch (_) {
     // CMS unavailable — hardcoded fallbacks remain active
+    cmsReady = true;
+    buildCards();
   }
 })();
 
 // ── BOOT ──────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  buildCards();
+  buildCards(); // renders skeletons until cmsReady
   buildFAQs();
   buildPicker();
   tick();
@@ -1176,8 +1210,25 @@ function sessionCardHtml(ev) {
 }
 
 // ── HOME: next 3 sessions ─────────────────────────────────────
+let cmsReady = false;
+
+function skeletonCards(n) {
+  return Array.from({length: n}, () => `
+  <div class="skel">
+    <div class="skel-img"></div>
+    <div class="skel-body">
+      <div class="skel-line" style="height:22px;width:60%"></div>
+      <div class="skel-line" style="height:13px;width:90%"></div>
+      <div class="skel-line" style="height:13px;width:75%"></div>
+      <div class="skel-line" style="height:13px;width:55%"></div>
+    </div>
+    <div class="skel-foot"></div>
+  </div>`).join('');
+}
+
 function buildCards() {
   const g    = document.getElementById('sessions-grid');
+  if (!cmsReady) { g.innerHTML = skeletonCards(3); return; }
   const next = EVENTS.slice(0, 3);
 
   if (!EVENTS.length) {
