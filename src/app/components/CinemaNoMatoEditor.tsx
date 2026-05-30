@@ -31,6 +31,7 @@ interface CinemaSession {
   weekday:   string;
   time:      string;
   film:      string;
+  synopsis:  string;
   filmImage: string;
   venue:     string;
   seats:     number;
@@ -69,7 +70,7 @@ function newId() { return 'cnm-' + Date.now(); }
 
 const BLANK_SESSION: Omit<CinemaSession, 'id'> = {
   date: '', display: '', day: '', month: '', weekday: '',
-  time: '21:00', film: '', filmImage: '', venue: 'Quinta da Floresta, Sintra',
+  time: '21:00', film: '', synopsis: '', filmImage: '', venue: 'Quinta da Floresta, Sintra',
   seats: 50, published: true,
 };
 
@@ -319,27 +320,6 @@ export function CinemaNoMatoEditor() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader><CardTitle className="text-base">Textos do Hero</CardTitle></CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-1.5">
-                <Label>Tagline (píula acima do título)</Label>
-                <Input
-                  value={data.hero.tagline}
-                  onChange={e => patch(p => ({ ...p, hero: { ...p.hero, tagline: e.target.value } }))}
-                  placeholder="Cinema ao ar livre · Jantar incluído · Sintra"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label>Linha de produção</Label>
-                <Input
-                  value={data.hero.prodLine}
-                  onChange={e => patch(p => ({ ...p, hero: { ...p.hero, prodLine: e.target.value } }))}
-                  placeholder="Uma produção Hop On Sintra & A do Mato"
-                />
-              </div>
-            </CardContent>
-          </Card>
         </div>
       )}
 
@@ -569,6 +549,17 @@ export function CinemaNoMatoEditor() {
                 value={sessionDraft.film}
                 onChange={e => patchDraft('film', e.target.value)}
                 placeholder="Deixa em branco para «A anunciar»"
+              />
+            </div>
+
+            {/* Synopsis */}
+            <div className="space-y-1.5">
+              <Label>Sinopse</Label>
+              <Textarea
+                rows={3}
+                value={sessionDraft.synopsis}
+                onChange={e => patchDraft('synopsis', e.target.value)}
+                placeholder="Breve descrição do filme — aparece na modal de compra."
               />
             </div>
 
