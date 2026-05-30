@@ -1154,9 +1154,9 @@ function sessionCardHtml(ev) {
     <div class="scard-body">
       <div class="scard-title">Cinema no Mato</div>
       <div class="scard-meta">
-        📅 ${ev.weekday}, ${ev.display}<br>
-        🕘 ${ev.time}h &nbsp;·&nbsp; 📍 ${ev.venue}<br>
-        🎬 Filme: ${ev.film || 'A anunciar'}
+        ${ev.weekday}, ${ev.display}<br>
+        ${ev.time}h &nbsp;·&nbsp; ${ev.venue}<br>
+        Filme: ${ev.film || 'A anunciar'}
       </div>
     </div>
     <div class="scard-foot">
@@ -1227,8 +1227,8 @@ function buildAllSessions() {
         <div class="smov-title">${title}</div>
         <div class="smov-film">${ev.film || 'A anunciar'}</div>
         <div class="smov-meta">
-          📍 ${ev.venue}<br>
-          📅 ${ev.weekday}, ${ev.display} · ${ev.time}h
+          ${ev.venue}<br>
+          ${ev.weekday}, ${ev.display} · ${ev.time}h
         </div>
         ${!full ? `<p style="font-size:.62rem;color:${low?'#FF8C42':'var(--cream-dim)'};margin-top:4px">${seatsLabel}</p>` : ''}
       </div>
