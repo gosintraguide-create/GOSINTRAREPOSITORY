@@ -11,10 +11,9 @@
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="canonical" href="https://www.hoponsintra.com/cinema-no-mato.html" />
 
-  <!-- Preload local hero so the browser fetches it before anything else,
-       eliminating the flash of the CSS-art fallback on first load.
-       Drop cinema-no-mato-hero.jpg into public/ and it loads from CDN instantly. -->
+  <!-- Preload hero image and font so both are ready on first paint -->
   <link rel="preload" href="./cinema-no-mato-hero.jpg" as="image" />
+  <link rel="preload" href="/fonts/SupersonicRocketship.ttf" as="font" type="font/ttf" crossorigin />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -31,7 +30,7 @@
       src: url('/fonts/SupersonicRocketship.ttf') format('truetype');
       font-weight: normal;
       font-style: normal;
-      font-display: swap;
+      font-display: block; /* block period prevents Bangers→Supersonic swap flash */
     }
   </style>
   <script src="https://js.stripe.com/v3/"></script>
@@ -641,7 +640,7 @@
 </nav>
 
 <!-- ── HERO ─────────────────────────────────────────────── -->
-<section id="hero">
+<section id="hero" class="has-img">
   <!--
     HERO IMAGE: Save the hero illustration as "cinema-no-mato-hero.jpg"
     in the same folder as this file, or update the src below.
@@ -650,7 +649,7 @@
        alt="Cinema no Mato — cinema ao ar livre na floresta de Sintra"
        loading="eager"
        onload="document.getElementById('hero').classList.add('has-img')"
-       onerror="this.style.opacity='0'" />
+       onerror="document.getElementById('hero').classList.remove('has-img');this.style.opacity='0'" />
   <div class="hero-vignette"></div>
 
   <!-- Logo + buttons — one cohesive block, always anchored together -->
