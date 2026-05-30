@@ -1149,7 +1149,6 @@ function sessionCardHtml(ev) {
     <div class="scard-top">
       <img src="${img}" alt="${ev.film || 'Cinema no Mato'}" loading="lazy" onerror="this.style.opacity='0'" />
       <div class="scard-badge"><b>${ev.day}</b>${ev.month}</div>
-      <span style="position:relative;z-index:1;font-size:3rem">🎬</span>
     </div>
     <div class="scard-body">
       <div class="scard-title">Cinema no Mato</div>
@@ -1215,7 +1214,7 @@ function buildAllSessions() {
     return `
     <div class="smov">
       <div class="smov-poster">
-        ${img ? `<img src="${img}" alt="${ev.film || 'Cinema no Mato'}" loading="lazy" onerror="this.style.opacity='0'" />` : '🎬'}
+        ${img ? `<img src="${img}" alt="${ev.film || 'Cinema no Mato'}" loading="lazy" onerror="this.style.opacity='0'" />` : ''}
         <div class="smov-date">
           <span class="smov-date-wday">${wday}</span>
           <span class="smov-date-num">${ev.day}</span>
