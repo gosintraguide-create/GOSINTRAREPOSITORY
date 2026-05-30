@@ -1362,7 +1362,9 @@ function toggleFaq(i) { document.getElementById('fi'+i).classList.toggle('open')
 
 // ── EVENT PICKER (modal step 1) ───────────────────────────────
 function buildPicker() {
-  document.getElementById('ev-picker').innerHTML = EVENTS.map(ev => {
+  const el = document.getElementById('ev-picker');
+  if (!el) return;
+  el.innerHTML = EVENTS.map(ev => {
     const full = ev.seats <= 0;
     const sel  = S.ev?.id === ev.id;
     return `
