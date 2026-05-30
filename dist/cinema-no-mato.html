@@ -334,30 +334,80 @@
       background: var(--navy);
       transform: translateX(100%);
       transition: transform .3s cubic-bezier(.32,.72,0,1);
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
+      overflow-y: auto; -webkit-overflow-scrolling: touch;
     }
     .sess-overlay.open { transform: translateX(0); }
 
     .sess-overlay-bar {
       position: sticky; top: 0; z-index: 10;
-      display: flex; align-items: center; gap: 16px;
-      padding: 16px 24px;
-      background: rgba(13,31,53,.95); backdrop-filter: blur(12px);
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 16px;
+      background: rgba(13,31,53,.97); backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
     }
     .sess-overlay-back {
       background: none; border: 1.5px solid var(--border);
-      color: var(--cream); font-size: .82rem; font-weight: 600;
-      padding: 7px 16px; border-radius: 50px; cursor: pointer;
-      transition: border-color .15s;
+      color: var(--cream); font-size: .8rem; font-weight: 600;
+      padding: 6px 14px; border-radius: 50px; cursor: pointer;
+      transition: border-color .15s; white-space: nowrap;
     }
     .sess-overlay-back:hover { border-color: var(--cream); }
     .sess-overlay-title {
       font-family: 'Supersonic Rocketship', 'Bangers', cursive;
-      font-size: 1.5rem; letter-spacing: 2px; color: var(--amber);
+      font-size: 1.3rem; letter-spacing: 2px; color: var(--amber);
     }
-    .sess-overlay-body { padding: 32px 24px 60px; max-width: 1100px; margin: 0 auto; }
+    .sess-overlay-count {
+      margin-left: auto; font-size: .72rem;
+      color: var(--cream-dim); white-space: nowrap;
+    }
+
+    .sess-overlay-body { padding: 16px 12px 60px; max-width: 1100px; margin: 0 auto; }
+
+    /* ── Mini tile grid — 4 cols on mobile, more on wider screens ── */
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    @media (min-width: 540px)  { .mini-grid { grid-template-columns: repeat(5, 1fr); } }
+    @media (min-width: 768px)  { .mini-grid { grid-template-columns: repeat(6, 1fr); } }
+    @media (min-width: 1024px) { .mini-grid { grid-template-columns: repeat(8, 1fr); } }
+
+    /* Mini tile card */
+    .stile {
+      background: var(--navy-card); border: 1px solid var(--border);
+      border-radius: 10px; overflow: hidden; cursor: pointer;
+      transition: border-color .15s, transform .15s;
+      display: flex; flex-direction: column;
+    }
+    .stile:hover { border-color: var(--border-a); transform: translateY(-2px); }
+
+    .stile-top {
+      background: linear-gradient(160deg, #153B25, #0F2C1E);
+      padding: 10px 4px 8px; text-align: center; flex-shrink: 0;
+    }
+    .stile-wday  { font-size: .52rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--amber); font-weight: 700; }
+    .stile-day   { font-family: 'Bangers', cursive; font-size: 2rem; line-height: 1; color: var(--cream); letter-spacing: 1px; }
+    .stile-month { font-size: .55rem; font-weight: 700; color: var(--cream-dim); text-transform: uppercase; margin-top: 1px; }
+
+    .stile-film {
+      padding: 5px 6px 0; font-size: .6rem; color: var(--cream-dim);
+      text-align: center; overflow: hidden; text-overflow: ellipsis;
+      white-space: nowrap; flex: 1;
+    }
+
+    .stile-foot {
+      padding: 6px;
+    }
+    .btn-stile {
+      display: block; width: 100%;
+      background: var(--amber); color: var(--navy); border: none;
+      padding: 5px 4px; border-radius: 20px;
+      font-weight: 700; font-size: .6rem; cursor: pointer;
+      transition: background .15s;
+    }
+    .btn-stile:hover { background: var(--amber-hi); }
+    .btn-stile.full  { background: var(--navy-light); color: var(--cream-dim); cursor: not-allowed; }
 
     /* ── INCLUDES ───────────────────────────────────── */
     .includes-grid {
@@ -773,9 +823,10 @@
   <div class="sess-overlay-bar">
     <button class="sess-overlay-back" onclick="closeSessOverlay()">← Voltar</button>
     <div class="sess-overlay-title">Todas as Sessões</div>
+    <span class="sess-overlay-count" id="sess-count"></span>
   </div>
   <div class="sess-overlay-body">
-    <div class="sessions-grid" id="all-sessions-grid"></div>
+    <div class="mini-grid" id="all-sessions-grid"></div>
   </div>
 </div>
 
@@ -1108,12 +1159,35 @@ function buildCards() {
   if (btn) btn.style.display = EVENTS.length > 0 ? 'inline-flex' : 'none';
 }
 
-// ── ALL SESSIONS OVERLAY ──────────────────────────────────────
+// ── ALL SESSIONS OVERLAY — mini tile grid ─────────────────────
 function buildAllSessions() {
   const g = document.getElementById('all-sessions-grid');
-  g.innerHTML = EVENTS.length
-    ? EVENTS.map(sessionCardHtml).join('')
-    : '<p style="color:var(--cream-dim);font-size:.9rem">Novas sessões em breve.</p>';
+  const ct = document.getElementById('sess-count');
+  if (ct) ct.textContent = EVENTS.length ? `${EVENTS.length} sessão${EVENTS.length !== 1 ? 'ões' : ''}` : '';
+
+  if (!EVENTS.length) {
+    g.innerHTML = '<p style="color:var(--cream-dim);font-size:.9rem;grid-column:1/-1">Novas sessões em breve.</p>';
+    return;
+  }
+
+  g.innerHTML = EVENTS.map(ev => {
+    const full = ev.seats <= 0;
+    const wday = ev.weekday ? ev.weekday.slice(0, 3).toUpperCase() : '';
+    return `
+    <div class="stile" onclick="${full ? '' : `openModal('${ev.id}')`}">
+      <div class="stile-top">
+        <div class="stile-wday">${wday}</div>
+        <div class="stile-day">${ev.day}</div>
+        <div class="stile-month">${ev.month}</div>
+      </div>
+      <div class="stile-film">${ev.film || 'A anunciar'}</div>
+      <div class="stile-foot">
+        <button class="btn-stile${full ? ' full' : ''}" ${full ? 'disabled' : ''} onclick="event.stopPropagation();${full ? '' : `openModal('${ev.id}')`}">
+          ${full ? 'Esgotado' : 'Reservar'}
+        </button>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function openSessOverlay() {
