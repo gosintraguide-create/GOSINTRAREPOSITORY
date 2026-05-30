@@ -18,9 +18,10 @@ interface ImageSelectorProps {
   value: string;
   onChange: (url: string) => void;
   description?: string;
+  folder?: string;
 }
 
-export function ImageSelector({ label, value, onChange, description }: ImageSelectorProps) {
+export function ImageSelector({ label, value, onChange, description, folder }: ImageSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [images, setImages] = useState<UploadedImage[]>([]);
   const [loading, setLoading] = useState(false);
@@ -41,7 +42,8 @@ export function ImageSelector({ label, value, onChange, description }: ImageSele
 
       const result = await response.json();
       if (result.success && result.images) {
-        setImages(result.images);
+        const all: UploadedImage[] = result.images;
+        setImages(folder ? all.filter(img => img.name.startsWith(folder + '/')) : all);
       } else {
         console.error("Failed to load images:", result.error);
       }

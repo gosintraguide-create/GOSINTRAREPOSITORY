@@ -15,6 +15,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from "./ui/dialog";
 import { ImageSelector } from "./ImageSelector";
+import { ImageManager } from "./ImageManager";
 import { toast } from "sonner";
 import {
   loadComprehensiveContent,
@@ -85,7 +86,9 @@ const DEFAULT: CinemaData = {
 };
 
 // ── main component ────────────────────────────────────────────
-type Section = 'sessions' | 'hero' | 'pricing' | 'copy';
+const CNM_FOLDER = 'cinema-no-mato';
+
+type Section = 'sessions' | 'hero' | 'pricing' | 'copy' | 'images';
 
 export function CinemaNoMatoEditor() {
   const [data,       setData]       = useState<CinemaData>(DEFAULT);
@@ -186,6 +189,7 @@ export function CinemaNoMatoEditor() {
   // ── render ─────────────────────────────────────────────────
   const sectionBtns: { id: Section; label: string; icon: React.ReactNode }[] = [
     { id: 'sessions', label: 'Sessões',  icon: <CalendarIcon className="h-4 w-4" /> },
+    { id: 'images',   label: 'Imagens',  icon: <ImageIcon className="h-4 w-4" /> },
     { id: 'hero',     label: 'Hero',     icon: <ImageIcon className="h-4 w-4" /> },
     { id: 'pricing',  label: 'Preços',   icon: <DollarSign className="h-4 w-4" /> },
     { id: 'copy',     label: 'Conteúdo', icon: <FileText className="h-4 w-4" /> },
@@ -303,6 +307,16 @@ export function CinemaNoMatoEditor() {
         </div>
       )}
 
+      {/* ── IMAGES ─────────────────────────────────────────── */}
+      {section === 'images' && (
+        <div className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Imagens exclusivas do Cinema no Mato. Separadas das imagens do resto do site.
+          </p>
+          <ImageManager folder={CNM_FOLDER} />
+        </div>
+      )}
+
       {/* ── HERO ───────────────────────────────────────────── */}
       {section === 'hero' && (
         <div className="space-y-6 max-w-2xl">
@@ -316,6 +330,7 @@ export function CinemaNoMatoEditor() {
                 label=""
                 value={data.hero.image}
                 onChange={url => patch(p => ({ ...p, hero: { ...p.hero, image: url } }))}
+                folder={CNM_FOLDER}
               />
             </CardContent>
           </Card>
@@ -571,6 +586,7 @@ export function CinemaNoMatoEditor() {
                 label=""
                 value={sessionDraft.filmImage}
                 onChange={url => patchDraft('filmImage', url)}
+                folder={CNM_FOLDER}
               />
             </div>
 

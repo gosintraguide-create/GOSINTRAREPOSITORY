@@ -14,7 +14,9 @@ interface UploadedImage {
   size: number;
 }
 
-export function ImageManager() {
+interface ImageManagerProps { folder?: string; }
+
+export function ImageManager({ folder }: ImageManagerProps = {}) {
   const [images, setImages] = useState<UploadedImage[]>([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -42,7 +44,8 @@ export function ImageManager() {
 
       const result = await response.json();
       if (result.success && result.images) {
-        setImages(result.images);
+        const all: UploadedImage[] = result.images;
+        setImages(folder ? all.filter(img => img.name.startsWith(folder + '/')) : all);
       } else {
         console.error("Failed to load images:", result.error);
       }
@@ -116,7 +119,7 @@ export function ImageManager() {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                fileName: file.name,
+                fileName: folder ? `${folder}/${file.name}` : file.name,
                 fileData: base64,
                 fileType: file.type,
               }),
