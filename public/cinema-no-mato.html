@@ -11,6 +11,11 @@
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="canonical" href="https://www.hoponsintra.com/cinema-no-mato.html" />
 
+  <!-- Preload local hero so the browser fetches it before anything else,
+       eliminating the flash of the CSS-art fallback on first load.
+       Drop cinema-no-mato-hero.jpg into public/ and it loads from CDN instantly. -->
+  <link rel="preload" href="./cinema-no-mato-hero.jpg" as="image" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -313,6 +318,48 @@
     .btn-reserve:hover { background: var(--amber-hi); }
     .btn-reserve:disabled { background: var(--navy-light); color: var(--cream-dim); cursor: not-allowed; }
 
+    /* "Ver todas as sessões" link */
+    .btn-ver-todas {
+      display: inline-flex; align-items: center; gap: 8px;
+      margin-top: 28px;
+      background: none; border: 1.5px solid var(--border-a);
+      color: var(--amber); font-size: .88rem; font-weight: 600;
+      padding: 10px 24px; border-radius: 50px; cursor: pointer;
+      transition: background .15s, border-color .15s;
+    }
+    .btn-ver-todas:hover { background: rgba(245,166,35,.08); border-color: var(--amber); }
+
+    /* ── ALL SESSIONS OVERLAY ───────────────────────── */
+    .sess-overlay {
+      position: fixed; inset: 0; z-index: 450;
+      background: var(--navy);
+      transform: translateX(100%);
+      transition: transform .3s cubic-bezier(.32,.72,0,1);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .sess-overlay.open { transform: translateX(0); }
+
+    .sess-overlay-bar {
+      position: sticky; top: 0; z-index: 10;
+      display: flex; align-items: center; gap: 16px;
+      padding: 16px 24px;
+      background: rgba(13,31,53,.95); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .sess-overlay-back {
+      background: none; border: 1.5px solid var(--border);
+      color: var(--cream); font-size: .82rem; font-weight: 600;
+      padding: 7px 16px; border-radius: 50px; cursor: pointer;
+      transition: border-color .15s;
+    }
+    .sess-overlay-back:hover { border-color: var(--cream); }
+    .sess-overlay-title {
+      font-family: 'Supersonic Rocketship', 'Bangers', cursive;
+      font-size: 1.5rem; letter-spacing: 2px; color: var(--amber);
+    }
+    .sess-overlay-body { padding: 32px 24px 60px; max-width: 1100px; margin: 0 auto; }
+
     /* ── INCLUDES ───────────────────────────────────── */
     .includes-grid {
       display: grid;
@@ -590,7 +637,7 @@
     <li><a href="#sobre">Sobre</a></li>
     <li><a href="#faq">FAQ</a></li>
   </ul>
-  <button class="nav-cta" onclick="openModal()">Comprar Bilhetes</button>
+  <button class="nav-cta" onclick="document.getElementById('sessoes').scrollIntoView({behavior:'smooth'})">Comprar Bilhetes</button>
 </nav>
 
 <!-- ── HERO ─────────────────────────────────────────────── -->
@@ -601,7 +648,9 @@
   -->
   <img class="hero-img" src="./cinema-no-mato-hero.jpg"
        alt="Cinema no Mato — cinema ao ar livre na floresta de Sintra"
-       loading="eager" onerror="this.style.display='none'" />
+       loading="eager"
+       onload="document.getElementById('hero').classList.add('has-img')"
+       onerror="this.style.opacity='0'" />
   <div class="hero-vignette"></div>
 
   <!-- Logo + buttons — one cohesive block, always anchored together -->
@@ -653,13 +702,18 @@
   </div>
 </section>
 
-<!-- ── SESSIONS ──────────────────────────────────────────── -->
+<!-- ── SESSIONS (next 3) ─────────────────────────────────── -->
 <section id="sessoes" class="section section-alt">
   <div class="container">
     <p class="kicker">Calendário</p>
     <h2 class="sec-title">Próximas Sessões</h2>
     <p class="sec-body">Lugares limitados a 50 por sessão. Reserva com antecedência para garantires o teu lugar.</p>
     <div class="sessions-grid" id="sessions-grid"></div>
+    <div style="text-align:center">
+      <button class="btn-ver-todas" id="btn-ver-todas" onclick="openSessOverlay()" style="display:none">
+        Ver todas as sessões →
+      </button>
+    </div>
   </div>
 </section>
 
@@ -713,6 +767,17 @@
     </div>
   </div>
 </footer>
+
+<!-- ── ALL SESSIONS OVERLAY ──────────────────────────────── -->
+<div class="sess-overlay" id="sess-overlay">
+  <div class="sess-overlay-bar">
+    <button class="sess-overlay-back" onclick="closeSessOverlay()">← Voltar</button>
+    <div class="sess-overlay-title">Todas as Sessões</div>
+  </div>
+  <div class="sess-overlay-body">
+    <div class="sessions-grid" id="all-sessions-grid"></div>
+  </div>
+</div>
 
 <!-- ── PURCHASE MODAL ────────────────────────────────────── -->
 <div class="modal-bg" id="modal-bg" onclick="bgClick(event)">
@@ -918,10 +983,9 @@ const S = {
       if (cnm.hero.image) {
         const img = document.querySelector('.hero-img');
         if (img) {
-          img.style.display = '';
-          img.onload = () => document.getElementById('hero').classList.add('has-img');
-          img.onerror = () => {};          // remove the hide-on-error once we have a real URL
-          img.src = cnm.hero.image;        // triggers load/error
+          img.style.opacity = '';
+          // onload is already set on the element; just update src
+          img.src = cnm.hero.image;
         }
         // Mirror to about-visual
         const aboutImg = document.querySelector('.about-visual img');
@@ -991,47 +1055,76 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('nav').classList.toggle('scrolled', scrollY > 50));
 });
 
-// ── SESSION CARDS ─────────────────────────────────────────────
+// ── SESSION CARD HTML ─────────────────────────────────────────
+function sessionCardHtml(ev) {
+  const full = ev.seats <= 0;
+  const low  = ev.seats > 0 && ev.seats <= 8;
+  const img  = ev.filmImage || './cinema-no-mato-hero.jpg';
+  return `
+  <div class="scard${full?' scard-full':''}">
+    <div class="scard-top">
+      <img src="${img}" alt="${ev.film || 'Cinema no Mato'}" loading="lazy" onerror="this.style.opacity='0'" />
+      <div class="scard-badge"><b>${ev.day}</b>${ev.month}</div>
+      <span style="position:relative;z-index:1;font-size:3rem">🎬</span>
+    </div>
+    <div class="scard-body">
+      <div class="scard-title">Cinema no Mato</div>
+      <div class="scard-meta">
+        📅 ${ev.weekday}, ${ev.display}<br>
+        🕘 ${ev.time}h &nbsp;·&nbsp; 📍 ${ev.venue}<br>
+        🎬 Filme: ${ev.film || 'A anunciar'}
+      </div>
+    </div>
+    <div class="scard-foot">
+      <div>
+        <div class="scard-price">€${ADULT_PRICE}</div>
+        <small style="font-size:.67rem;color:var(--cream-dim)">por adulto · jantar incl.</small>
+      </div>
+      <div class="scard-right">
+        <span class="scard-seats${low?' low':''}">
+          ${full ? 'Esgotado' : low ? `⚡ ${ev.seats} lugares` : `${ev.seats} lugares`}
+        </span>
+        <button class="btn-reserve" ${full?'disabled':''} onclick="openModal('${ev.id}')">
+          ${full ? 'Esgotado' : 'Reservar'}
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── HOME: next 3 sessions ─────────────────────────────────────
 function buildCards() {
-  const g = document.getElementById('sessions-grid');
+  const g    = document.getElementById('sessions-grid');
+  const next = EVENTS.slice(0, 3);
+
   if (!EVENTS.length) {
     g.innerHTML = '<p style="color:var(--cream-dim);font-size:.9rem;padding:12px 0">Novas sessões em breve. Subscreve a newsletter para seres avisado!</p>';
-    return;
+  } else {
+    g.innerHTML = next.map(sessionCardHtml).join('');
   }
-  g.innerHTML = EVENTS.map(ev => {
-    const full = ev.seats <= 0;
-    const low  = ev.seats > 0 && ev.seats <= 8;
-    return `
-    <div class="scard${full?' scard-full':''}">
-      <div class="scard-top">
-        <img src="./cinema-no-mato-hero.jpg" alt="" loading="lazy" onerror="this.style.display='none'" />
-        <div class="scard-badge"><b>${ev.day}</b>${ev.month}</div>
-        <span style="position:relative;z-index:1;font-size:3rem">🎬</span>
-      </div>
-      <div class="scard-body">
-        <div class="scard-title">Cinema no Mato</div>
-        <div class="scard-meta">
-          📅 ${ev.weekday}, ${ev.display}<br>
-          🕘 ${ev.time}h &nbsp;·&nbsp; 📍 ${ev.venue}<br>
-          🎬 Filme: ${ev.film}
-        </div>
-      </div>
-      <div class="scard-foot">
-        <div>
-          <div class="scard-price">€${ADULT_PRICE}</div>
-          <small class="scard-price small" style="font-size:.67rem;color:var(--cream-dim)">por adulto · jantar incl.</small>
-        </div>
-        <div class="scard-right">
-          <span class="scard-seats${low?' low':''}">
-            ${full ? 'Esgotado' : low ? `⚡ ${ev.seats} lugares` : `${ev.seats} lugares`}
-          </span>
-          <button class="btn-reserve" ${full?'disabled':''} onclick="openModal('${ev.id}')">
-            ${full ? 'Esgotado' : 'Reservar'}
-          </button>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
+
+  // Show "Ver todas" only when there are more than 3
+  const btn = document.getElementById('btn-ver-todas');
+  if (btn) btn.style.display = EVENTS.length > 3 ? 'inline-flex' : 'none';
+}
+
+// ── ALL SESSIONS OVERLAY ──────────────────────────────────────
+function buildAllSessions() {
+  const g = document.getElementById('all-sessions-grid');
+  g.innerHTML = EVENTS.length
+    ? EVENTS.map(sessionCardHtml).join('')
+    : '<p style="color:var(--cream-dim);font-size:.9rem">Novas sessões em breve.</p>';
+}
+
+function openSessOverlay() {
+  buildAllSessions();
+  document.getElementById('sess-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSessOverlay() {
+  document.getElementById('sess-overlay').classList.remove('open');
+  document.body.style.overflow = '';
 }
 
 // ── FAQ ───────────────────────────────────────────────────────
