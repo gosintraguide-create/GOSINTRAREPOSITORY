@@ -136,14 +136,11 @@
     /* ── LOGO LAYER — always on top, scales with viewport ── */
     .hero-logo {
       position: absolute;
-      /* anchor the vertical centre of the block at 30% from top
-         so the logo sits in the upper third of the hero, like the image */
       top: 30%; left: 50%;
       transform: translate(-50%, -50%);
       z-index: 4;
       text-align: center;
-      /* very tight — lines nearly touching, matching the reference */
-      line-height: .82;
+      line-height: 1.05;   /* clear gap between the two lines */
       pointer-events: none;
       user-select: none;
     }
@@ -151,13 +148,13 @@
     .hero-logo-line {
       display: block;
       font-family: 'Supersonic Rocketship', 'Bangers', cursive;
-      font-size: clamp(3.2rem, 13vw, 10rem);
+      /* higher vw + bigger minimum so it fills the screen on mobile */
+      font-size: clamp(4rem, 17vw, 10rem);
       font-weight: normal;
       color: #FFA131;
       text-transform: uppercase;
       letter-spacing: .02em;
-      /* prevent "NO MATO" ever wrapping to two lines on small screens */
-      white-space: nowrap;
+      white-space: nowrap;  /* CINEMA and NO MATO each stay on one line always */
       text-shadow:
         0 3px 0 rgba(0,0,0,.3),
         0 6px 20px rgba(0,0,0,.35);
