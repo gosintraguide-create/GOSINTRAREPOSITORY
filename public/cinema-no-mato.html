@@ -1465,7 +1465,6 @@ async function next(n) {
   if (n === 2) {
     if (!S.ev) { alert('Por favor, seleciona uma sessão.'); return; }
     if (S.adults + S.children < 1) { alert('Seleciona pelo menos 1 bilhete.'); return; }
-    document.getElementById('ev-s2').innerHTML = evSummaryHtml();
   }
 
   if (n === 3) {
@@ -1473,7 +1472,6 @@ async function next(n) {
     S.name  = document.getElementById('f-name').value.trim();
     S.email = document.getElementById('f-email').value.trim();
     S.phone = document.getElementById('f-phone').value.trim();
-    document.getElementById('ev-s3').innerHTML = evSummaryHtml();
     S.step = 3; renderModal();
     await initStripe(); return;
   }
