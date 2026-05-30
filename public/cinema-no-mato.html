@@ -771,8 +771,7 @@
     <span class="hero-logo-line">CINEMA</span>
     <span class="hero-logo-line">NO MATO</span>
     <div class="hero-btns">
-      <a href="#sessoes" class="btn-hero-primary">Ver sessões</a>
-      <button class="btn-hero-ghost" onclick="openSessOverlay()">Todas as sessões →</button>
+      <a href="#sessoes" class="btn-hero-primary" onclick="event.preventDefault();document.getElementById('sessoes').scrollIntoView({behavior:'smooth'})">Ver sessões</a>
     </div>
   </div>
   <div class="hero-chevron">
