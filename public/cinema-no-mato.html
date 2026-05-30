@@ -1175,21 +1175,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ── SESSION CARD HTML ─────────────────────────────────────────
 function sessionCardHtml(ev) {
-  const full = ev.seats <= 0;
-  const low  = ev.seats > 0 && ev.seats <= 8;
-  const img  = ev.filmImage || './cinema-no-mato-hero.jpg';
+  const full  = ev.seats <= 0;
+  const low   = ev.seats > 0 && ev.seats <= 10;
+  const img   = ev.filmImage || './cinema-no-mato-hero.jpg';
+  const title = ev.film && ev.film !== 'A anunciar' ? ev.film : 'Cinema no Mato';
   return `
   <div class="scard${full?' scard-full':''}">
     <div class="scard-top">
-      <img src="${img}" alt="${ev.film || 'Cinema no Mato'}" loading="lazy" onerror="this.style.opacity='0'" />
+      <img src="${img}" alt="${title}" loading="lazy" onerror="this.style.opacity='0'" />
       <div class="scard-badge"><b>${ev.day}</b>${ev.month}</div>
     </div>
     <div class="scard-body">
-      <div class="scard-title">Cinema no Mato</div>
+      <div class="scard-title">${title}</div>
       <div class="scard-meta">
         ${ev.weekday}, ${ev.display}<br>
-        ${ev.time}h &nbsp;·&nbsp; ${ev.venue}<br>
-        Filme: ${ev.film || 'A anunciar'}
+        ${ev.time}h &nbsp;·&nbsp; ${ev.venue}
       </div>
     </div>
     <div class="scard-foot">
@@ -1198,9 +1198,7 @@ function sessionCardHtml(ev) {
         <small style="font-size:.67rem;color:var(--cream-dim)">por adulto · jantar incl.</small>
       </div>
       <div class="scard-right">
-        <span class="scard-seats${low?' low':''}">
-          ${full ? 'Esgotado' : low ? `⚡ ${ev.seats} lugares` : `${ev.seats} lugares`}
-        </span>
+        ${low || full ? `<span class="scard-seats${low?' low':''}">${full ? 'Esgotado' : `⚡ ${ev.seats} lugares`}</span>` : ''}
         <button class="btn-reserve" ${full?'disabled':''} onclick="openModal('${ev.id}')">
           ${full ? 'Esgotado' : 'Reservar'}
         </button>
