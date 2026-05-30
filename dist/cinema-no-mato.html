@@ -658,6 +658,7 @@
     <span class="hero-logo-line">NO MATO</span>
     <div class="hero-btns">
       <a href="#sessoes" class="btn-hero-primary">Ver sessões</a>
+      <button class="btn-hero-ghost" onclick="openSessOverlay()">Todas as sessões →</button>
     </div>
   </div>
   <div class="hero-chevron">
@@ -709,7 +710,7 @@
     <p class="sec-body">Lugares limitados a 50 por sessão. Reserva com antecedência para garantires o teu lugar.</p>
     <div class="sessions-grid" id="sessions-grid"></div>
     <div style="text-align:center">
-      <button class="btn-ver-todas" id="btn-ver-todas" onclick="openSessOverlay()" style="display:none">
+      <button class="btn-ver-todas" id="btn-ver-todas" onclick="openSessOverlay()">
         Ver todas as sessões →
       </button>
     </div>
@@ -1102,9 +1103,9 @@ function buildCards() {
     g.innerHTML = next.map(sessionCardHtml).join('');
   }
 
-  // Show "Ver todas" only when there are more than 3
+  // Show "Ver todas" whenever there are any sessions
   const btn = document.getElementById('btn-ver-todas');
-  if (btn) btn.style.display = EVENTS.length > 3 ? 'inline-flex' : 'none';
+  if (btn) btn.style.display = EVENTS.length > 0 ? 'inline-flex' : 'none';
 }
 
 // ── ALL SESSIONS OVERLAY ──────────────────────────────────────
