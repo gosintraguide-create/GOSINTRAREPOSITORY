@@ -7,12 +7,12 @@
   <meta name="description" content="Cinema ao ar livre com jantar incluído na floresta de Sintra. Uma produção Hop On Sintra e A do Mato. Lugares limitados — reserva já o teu." />
   <meta property="og:title" content="Cinema no Mato — Cinema ao Ar Livre com Jantar" />
   <meta property="og:description" content="Uma noite mágica no coração da floresta de Sintra, com cinema ao ar livre e jantar incluído." />
-  <meta property="og:image" content="./cinema-no-mato-hero.jpg" />
+  <meta property="og:image" content="./cinema-no-mato-hero.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="canonical" href="https://www.hoponsintra.com/cinema-no-mato.html" />
 
   <!-- Preload hero image and font so both are ready on first paint -->
-  <link rel="preload" href="./cinema-no-mato-hero.jpg" as="image" />
+  <link rel="preload" href="./cinema-no-mato-hero.png" as="image" />
   <link rel="preload" href="/fonts/SupersonicRocketship.ttf" as="font" type="font/ttf" crossorigin />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -801,10 +801,10 @@
 <!-- ── HERO ─────────────────────────────────────────────── -->
 <section id="hero" class="has-img">
   <!--
-    HERO IMAGE: Save the hero illustration as "cinema-no-mato-hero.jpg"
+    HERO IMAGE: Save the hero illustration as "cinema-no-mato-hero.png"
     in the same folder as this file, or update the src below.
   -->
-  <img class="hero-img" src="./cinema-no-mato-hero.jpg"
+  <img class="hero-img" src="./cinema-no-mato-hero.png"
        alt="Cinema no Mato — cinema ao ar livre na floresta de Sintra"
        loading="eager"
        onload="document.getElementById('hero').classList.add('has-img')"
@@ -852,7 +852,7 @@
         </div>
       </div>
       <div class="about-visual">
-        <img src="./cinema-no-mato-hero.jpg" alt="Cinema no Mato" style="object-position:center center"
+        <img src="./cinema-no-mato-hero.png" alt="Cinema no Mato" style="object-position:center center"
              onerror="this.outerHTML='🎬'" />
       </div>
     </div>
@@ -1225,7 +1225,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function sessionCardHtml(ev) {
   const full  = ev.seats <= 0;
   const low   = ev.seats > 0 && ev.seats <= 10;
-  const img   = ev.filmImage || './cinema-no-mato-hero.jpg';
+  const img   = ev.filmImage || './cinema-no-mato-hero.png';
   const title = ev.film && ev.film !== 'A anunciar' ? ev.film : 'Cinema no Mato';
   return `
   <div class="scard${full?' scard-full':''}">
@@ -1449,7 +1449,7 @@ function renderModal() {
 
 function buildStep1() {
   if (!S.ev) return;
-  const img      = S.ev.filmImage || './cinema-no-mato-hero.jpg';
+  const img      = S.ev.filmImage || './cinema-no-mato-hero.png';
   const title    = S.ev.film && S.ev.film !== 'A anunciar' ? S.ev.film : 'Cinema no Mato';
   const synopsis = S.ev.synopsis || 'Uma noite de cinema ao ar livre na floresta de Sintra, com jantar incluído.';
   document.getElementById('ms1-hero-img').src = img;
