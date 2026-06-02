@@ -3,28 +3,20 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { fileURLToPath } from "url";
 import { dirname, resolve } from "path";
-import { copyFileSync, existsSync } from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export default defineConfig({
   plugins: [
-    react(), 
+    react(),
     tailwindcss(),
-    {
-      name: 'copy-sitemap',
-      closeBundle() {
-        const sourcePath = resolve(__dirname, 'public/sitemap.xml');
-        const destPath = resolve(__dirname, 'dist/sitemap.xml');
-        if (existsSync(sourcePath)) {
-          copyFileSync(sourcePath, destPath);
-          console.log('✅ Sitemap copied to dist/sitemap.xml');
-        }
-      }
-    }
   ],
-  publicDir: "public", // Ensure public folder is copied to build output (includes sitemap.xml)
+  // NOTE: The sitemap is NOT a static file. In production /sitemap.xml is rewritten
+  // (see vercel.json) to the Supabase edge function at
+  // supabase/functions/make-server-3bd0ade8/index.ts, which is the single source of
+  // truth and emits canonical URLs. Do not reintroduce a static sitemap here.
+  publicDir: "public", // Ensure public folder is copied to build output
   base: "/", // Ensure base path is set correctly for deployment
   resolve: {
     alias: {
