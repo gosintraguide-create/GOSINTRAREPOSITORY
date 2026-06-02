@@ -325,7 +325,7 @@ export function HeroSection({
   // ── Social proof — editable from admin panel ─────────────────────────────
   // Keep in sync with admin panel values — mismatched defaults cause CLS on
   // first visit (localStorage cold) when the DB sync returns different values.
-  const PROOF_DEFAULTS = { rating: 5, reviewCount: 2 };
+  const PROOF_DEFAULTS = { rating: 5, reviewCount: 7 };
   const [socialProof, setSocialProof] = useState(() => {
     const cms = loadComprehensiveContentForLanguage(language);
     return cms.homepage?.socialProof ?? PROOF_DEFAULTS;
@@ -658,7 +658,6 @@ export function HeroSection({
             badge="Great Value"
             badgeVariant="primary"
             pills={["Hop on & off", "All attractions", "Guaranteed seat"]}
-            quote={"\"Saw everything at our own pace — best transport decision we made in Portugal.\""}
             ctaButtonLabel="Buy a day pass"
             onBookClick={() => onNavigate("buy-ticket")}
             ctaLabel={t.hero.daypassCta}
@@ -678,7 +677,6 @@ export function HeroSection({
             badge="Most Popular"
             badgeVariant="accent"
             pills={["Up to 6 people", "Custom stops", "Half or full day"]}
-            quote={"\"Best day of our whole Portugal trip. Our guide knew every hidden corner.\""}
             ctaButtonLabel="Book a private tour"
             onClick={() => onNavigate("private-tours")}
             fromPrice={lowestTourPrice ?? null}
