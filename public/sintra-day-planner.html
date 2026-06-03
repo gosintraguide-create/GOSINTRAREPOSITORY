@@ -408,6 +408,18 @@
     .collapsible-body { display: none; }
     .rsec.collapsible.open .collapsible-body { display: block; }
 
+    /* ── REVIEW-MY-PLAN CTA ───────────────────────── */
+    .review-cta { background: var(--slate); color: var(--cream); border-radius: 16px; padding: 24px; margin-top: 20px; text-align: center; }
+    .review-title { font-size: 1.25rem; font-weight: 800; margin-bottom: 6px; }
+    .review-sub { font-size: .9rem; line-height: 1.5; color: rgba(246,241,233,.8); max-width: 460px; margin: 0 auto 18px; }
+    .review-btns { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+    .review-btn { display: inline-flex; align-items: center; gap: 8px; border: none; border-radius: 10px; padding: 12px 20px; font-size: .9rem; font-weight: 700; cursor: pointer; transition: opacity .15s, transform .15s; }
+    .review-btn:active { transform: scale(.98); }
+    .review-btn.wa { background: #25D366; color: #fff; }
+    .review-btn.em { background: var(--terra); color: #fff; }
+    .review-btn:hover { opacity: .92; }
+    .review-fine { margin-top: 14px; font-size: .75rem; color: rgba(246,241,233,.6); }
+
     /* ── SIMPLIFIED TIMELINE ──────────────────────── */
     .tl-card.leg { background: var(--cream); box-shadow: none; padding: 7px 13px; }
     .tl-leg-row { display: flex; align-items: center; gap: 8px; }
@@ -690,9 +702,9 @@
         </div>
         <div class="land-kicker">Know before you go.</div>
       </div>
-      <div class="land-sub">Find out if your plan is realistic, what the day will cost, and what a Sintra tour guide would tell you to do differently.</div>
+      <div class="land-sub">Find out how much you will pay, how long it will take, and if your plan is realistic, get tips based on your plan.</div>
       <div class="land-cta-group">
-        <button class="btn-land" onclick="go(1)">Check my plan →</button>
+        <button class="btn-land" onclick="go(1)">Start →</button>
         <div class="land-fine">Free &nbsp;·&nbsp; no sign-up &nbsp;·&nbsp; shareable result</div>
       </div>
     </div>
@@ -994,10 +1006,25 @@
   </div>
 
   <!-- Tips + recommendations -->
-  <div class="rsec">
-    <div class="rsec-h">Tips for Your Day</div>
-    <div class="tips" id="r-tips"></div>
-    <div id="r-tour-recs"></div>
+  <div class="rsec collapsible" id="sec-tips">
+    <div class="rsec-h" onclick="toggleSection('sec-tips')">
+      Tips for Your Day <span class="collapse-icon">▼</span>
+    </div>
+    <div class="collapsible-body">
+      <div class="tips" id="r-tips"></div>
+      <div id="r-tour-recs"></div>
+    </div>
+  </div>
+
+  <!-- Free plan review CTA -->
+  <div class="review-cta">
+    <div class="review-title">Want a local to look this over?</div>
+    <div class="review-sub">Send your plan to our Sintra team for a <strong>free, no-obligation review</strong>. Ask anything, and we'll tell you what works, what won't on the day, and how to make the most of your time. No pressure to book.</div>
+    <div class="review-btns">
+      <button class="review-btn wa" onclick="reviewPlan('whatsapp')">💬 Review my plan on WhatsApp</button>
+      <button class="review-btn em" onclick="reviewPlan('email')">✉️ Email my plan</button>
+    </div>
+    <div class="review-fine">Free &amp; non-binding · we usually reply within a few hours</div>
   </div>
 
 </div><!-- /results -->
@@ -1559,18 +1586,19 @@ function isVLow()    { return S.month >= 1 && S.month <= 3; }
 function groupSize() { return S.adults + S.children + S.seniors; }
 
 // Prices — used by ticketCost() and buildCost()
-// fam = family ticket covering 2 adults + up to 4 children (maxKids:4)
+// fam = official family ticket covering 2 adults + 2 children (maxKids:2);
+// extra children beyond 2 are charged at the youth price.
 const PRICES = {
   pena: {
-    full:    { a:20, y:18, s:18, fam:{ price:80, maxKids:4 } },
-    gardens: { a:12, y:10, s:10, fam:{ price:44, maxKids:4 } }
+    full:    { a:20, y:18, s:18, fam:{ price:65, maxKids:2 } },
+    gardens: { a:12, y:10, s:10, fam:{ price:40, maxKids:2 } }
   },
-  moorish:   { visit: { a:12, y:10, s:10, fam:{ price:42, maxKids:4 } } },
+  moorish:   { visit: { a:12, y:10, s:10, fam:{ price:33, maxKids:2 } } },
   regaleira: { visit: { a:20, y:20, s:20 } },
-  monserrate:{ visit: { a:12, y:10, s:10, fam:{ price:42, maxKids:4 } } },
+  monserrate:{ visit: { a:12, y:10, s:10, fam:{ price:33, maxKids:2 } } },
   biester:   { visit: { a:16, y:12, s:12 } },
-  national:  { visit: { a:13, y:10, s:10, fam:{ price:44, maxKids:4 } } },
-  capuchos:  { visit: { a:11, y:9,  s:9,  fam:{ price:29, maxKids:4 } } }
+  national:  { visit: { a:13, y:10, s:10, fam:{ price:35, maxKids:2 } } },
+  capuchos:  { visit: { a:11, y:9,  s:9,  fam:{ price:29, maxKids:2 } } }
 };
 
 function ticketCost(site, optOverride) {
@@ -1643,6 +1671,15 @@ function calcScore() {
     if (S.sites.capuchos !== 'skip') score -= 1;
   }
 
+  // Private cars can only reach Cabo da Roca and Convento dos Capuchos. Every other
+  // monument requires local transport — drivers sit in traffic, get turned back, then
+  // lose an hour+ on parking and finding another way up. Heavy penalty.
+  if (S.transport === 'car') {
+    const carBlockedSites = ['pena','moorish','regaleira','monserrate','biester','national']
+      .filter(s => S.sites[s] !== 'skip');
+    if (carBlockedSites.length) score -= 4;
+  }
+
   if (S.children > 0 && S.transport === 'walking') score -= 1;
   if (groupSize() > 7 && S.transport === 'tuk') score -= 1;
 
@@ -1702,6 +1739,10 @@ function buildScoreReasons() {
     if (S.sites.capuchos  !== 'skip') reasons.push('Hop-on hop-off bus does not reach Capuchos');
   }
 
+  // Private car towards sites it cannot reach
+  if (S.transport === 'car' && ['pena','moorish','regaleira','monserrate','biester','national'].some(s => S.sites[s] !== 'skip'))
+    reasons.push('Private cars can only reach Cabo da Roca and Convento dos Capuchos — every other monument needs local transport. You risk queuing in traffic only to be turned back, then losing an hour or more on parking and finding another way up');
+
   // Walking with kids
   if (S.children > 0 && S.transport === 'walking')
     reasons.push('Walking Sintra\'s steep hills with children adds significant time and effort');
@@ -1727,6 +1768,13 @@ function fixPlan() {
       S.transport = 'tuk';
       changes.push('Switched to HopOn Sintra — open-top vehicles, local driver-guide, faster connections with no timetable to wait for');
     }
+  }
+
+  // Fix 1b: Car towards sites it can't reach (anything but Cabo da Roca / Capuchos) → HopOn tuk
+  if (S.transport === 'car' &&
+      ['pena','moorish','regaleira','monserrate','biester','national'].some(s => S.sites[s] !== 'skip')) {
+    S.transport = 'tuk';
+    changes.push('Switched to HopOn Sintra — a private car only reaches Cabo da Roca and Capuchos; the open-top tuk-tuk / vintage Jeep takes you straight to every other monument with no parking or restricted-road problems');
   }
 
   // Fix 2: Crowd hater with full Pena interior in peak → gardens only
@@ -2240,7 +2288,7 @@ function buildCost(excludedSites = []) {
 // ─────────────────────────────────────────────────────────────
 // TIPS ENGINE
 // ─────────────────────────────────────────────────────────────
-function buildTips({ excludedSites = [] } = {}) {
+function buildTips({ excludedSites = [], walkMins = 0 } = {}) {
   const tips = [];
   const peak = isPeak();
   const mo   = MONTH_NAMES[S.month];
@@ -2274,10 +2322,11 @@ function buildTips({ excludedSites = [] } = {}) {
     tips.push({ cls:'crit', ico:'⏰', html:`Quinta da Regaleira sells out weeks ahead in ${mo}. Pre-book at <a href="https://www.regaleira.pt" target="_blank">regaleira.pt</a> — ${slotAdvice}.` });
   }
 
-  // Car + hilltop monuments — private cars cannot drive up
-  const hillInPlan = ['pena','moorish'].some(s => S.sites[s] !== 'skip');
-  if (S.transport === 'car' && hillInPlan) {
-    tips.push({ cls:'crit', ico:'🚗', html:`<strong>Private cars cannot drive up to the hilltop monuments</strong> — the road through Sintra is restricted to authorised vehicles only. Park at Portela, Loulé, or S. Pedro (€5–15) and use the 434 bus or <a href="https://www.hoponsintra.com" target="_blank">HopOn Sintra tuk-tuk / vintage Jeep</a> to reach Pena Palace and Moorish Castle.` });
+  // Car — only Cabo da Roca and Capuchos are reachable; everything else needs local transport
+  const carBlockedInPlan = ['pena','moorish','regaleira','monserrate','biester','national']
+    .some(s => S.sites[s] !== 'skip' && !excludedSites.includes(s));
+  if (S.transport === 'car' && carBlockedInPlan) {
+    tips.push({ cls:'crit', ico:'🚗', html:`<strong>A private car only gets you to Cabo da Roca and Convento dos Capuchos</strong> — every other monument on your plan needs local transport. The roads through Sintra are restricted to authorised vehicles, so you'd queue in traffic only to be turned back, then lose an hour or more parking and finding another way up. Park at Portela, Loulé, or S. Pedro (€5–15) and use <a href="https://www.hoponsintra.com" target="_blank">HopOn Sintra tuk-tuk / vintage Jeep</a> to reach the monuments.` });
   }
 
   // All-walkable plan with paid transport — save your money
@@ -2285,6 +2334,11 @@ function buildTips({ excludedSites = [] } = {}) {
   const allWalkable = farSites.every(s => S.sites[s] === 'skip' || excludedSites.includes(s));
   if (allWalkable && S.transport !== 'walking') {
     tips.push({ cls:'info', ico:'🚶', html:`Everything on your plan is within easy walking distance of Sintra town centre — there's no hilltop monument that needs transport. Skip the hop-on hop-off day ticket and save yourself €10–15 per person; you'll be on foot the whole time regardless.` });
+  }
+
+  // Heavy total walking → recommend HopOn hop-on hop-off
+  if (walkMins > 35 && S.transport !== 'tuk' && !allWalkable) {
+    tips.push({ cls:'warn', ico:'🚶', html:`Your plan has <strong>${walkMins} min of walking</strong> across Sintra's steep hills. Save your legs for the monuments themselves with a <a href="https://www.hoponsintra.com" target="_blank"><strong>HopOn Sintra hop-on hop-off day ticket</strong></a> (€15/day) — open-top vintage vehicles with a local driver-guide, hop on and off at every monument, and no timetable to wait for.` });
   }
 
   // Capuchos + bus
@@ -2582,7 +2636,7 @@ function calculate() {
   });
 
   // Tips
-  const tips = buildTips({ excludedSites });
+  const tips = buildTips({ excludedSites, walkMins });
   const tipsEl = document.getElementById('r-tips');
   tipsEl.innerHTML = '';
   if (tips.length === 0) {
@@ -2659,6 +2713,48 @@ function copyPlan() {
     document.execCommand('copy'); document.body.removeChild(ta);
     alert('Itinerary copied to clipboard!');
   });
+}
+
+// ─────────────────────────────────────────────────────────────
+// FREE PLAN REVIEW (WhatsApp / email)
+// ─────────────────────────────────────────────────────────────
+const REVIEW_WHATSAPP = '351932967279';
+const REVIEW_EMAIL    = 'hoponsintra@gmail.com';
+const TRANSPORT_LABELS = { walking:'Walking', bus:'434/435 bus', car:'Private car', tuk:'HopOn tuk-tuk / vintage Jeep' };
+
+function buildReviewMessage() {
+  const n   = groupSize();
+  const dep = S.dep === 'flexible' ? 'Flexible' : S.dep;
+  const { excludedSites } = buildItinerary();
+  const { total, pp } = buildCost(excludedSites);
+  const score = calcScore();
+
+  const siteOrder = ['pena','moorish','regaleira','monserrate','biester','national','capuchos','cabo'];
+  const sites = siteOrder.filter(s => S.sites[s] && S.sites[s] !== 'skip').map(s => siteName(s));
+
+  const ppl = [];
+  if (S.adults)   ppl.push(`${S.adults} adult${S.adults > 1 ? 's' : ''}`);
+  if (S.children) ppl.push(`${S.children} child${S.children > 1 ? 'ren' : ''}`);
+  if (S.seniors)  ppl.push(`${S.seniors} senior${S.seniors > 1 ? 's' : ''}`);
+
+  let m = `Hi HopOn Sintra! I built this plan with your day-trip calculator and would love a free, no-obligation review:\n\n`;
+  m += `📅 ${MONTH_NAMES[S.month]} · ${S.dayType} · ${S.arr} → ${dep}\n`;
+  m += `👥 ${ppl.join(', ') || '—'}\n`;
+  m += `🎟️ Sites: ${sites.join(', ') || '—'}\n`;
+  m += `🚍 Transport: ${TRANSPORT_LABELS[S.transport] || S.transport || '—'}\n`;
+  m += `💶 Estimated total: €${total.toFixed(0)} (~€${pp}/person)\n`;
+  m += `⭐ Plan score: ${score}/10\n\n`;
+  m += `My questions:\n- `;
+  return m;
+}
+
+function reviewPlan(channel) {
+  const msg = buildReviewMessage();
+  if (channel === 'email') {
+    window.location.href = `mailto:${REVIEW_EMAIL}?subject=${encodeURIComponent('Sintra day plan — free review request')}&body=${encodeURIComponent(msg)}`;
+  } else {
+    window.open(`https://wa.me/${REVIEW_WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
+  }
 }
 </script>
   <!-- Pena Palace option sheet -->
