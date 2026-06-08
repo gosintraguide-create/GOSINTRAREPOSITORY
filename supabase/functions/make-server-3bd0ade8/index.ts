@@ -589,10 +589,12 @@ async function sendPushNotification(
   const topic = Deno.env.get("NTFY_TOPIC");
   if (!topic) return; // silently skip if not configured
   try {
+    // HTTP headers must be ASCII-only — strip emoji/non-ASCII from title
+    const asciiTitle = title.replace(/[^\x20-\x7E]/g, "").trim();
     const res = await fetch(`https://ntfy.sh/${topic}`, {
       method: "POST",
       headers: {
-        "Title": title,
+        "Title": asciiTitle,
         "Priority": priority,
         "Tags": tags.join(","),
         "Content-Type": "text/plain",
@@ -652,7 +654,7 @@ app.post("/make-server-3bd0ade8/test-push", async (c) => {
     const res = await fetch(`https://ntfy.sh/${topic}`, {
       method: "POST",
       headers: {
-        "Title": "🧪 HopOn Sintra — test push",
+        "Title": "HopOn Sintra - test push",
         "Priority": "high",
         "Tags": "white_check_mark",
         "Content-Type": "text/plain",
