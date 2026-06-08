@@ -251,6 +251,10 @@ export function AdminPage() {
   const [ticketPurchasesEnabled, setTicketPurchasesEnabled] =
     useState(true);
 
+  // System reset state
+  const [resetting, setResetting] = useState(false);
+  const [resetResult, setResetResult] = useState<{ success: boolean; deletedCount?: number; details?: any; error?: string } | null>(null);
+
   // Test booking state
   const [testBookingLoading, setTestBookingLoading] = useState(false);
   const [testBookingResult, setTestBookingResult] = useState<{ ok: boolean; message: string; bookingId?: string } | null>(null);
@@ -915,6 +919,42 @@ export function AdminPage() {
     } catch (error) {
       console.error("Error saving availability:", error);
       toast.error("Failed to save availability to database");
+    }
+  };
+
+  const resetAllData = async () => {
+    const confirmed = window.confirm(
+      "⚠️ DANGER: This will permanently delete ALL data including:\n\n" +
+      "• All bookings and revenue records\n" +
+      "• All pickup requests\n" +
+      "• All check-ins and destination tracking\n" +
+      "• All chat conversations\n" +
+      "• Reset booking IDs to AA-1000\n\n" +
+      "This action CANNOT be undone!\n\nAre you absolutely sure?",
+    );
+    if (!confirmed) return;
+    const doubleConfirm = window.confirm("🔴 FINAL WARNING: Click OK to permanently delete all data. Last chance to cancel!");
+    if (!doubleConfirm) return;
+    setResetting(true);
+    setResetResult(null);
+    try {
+      const res = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/admin/reset-all-data`,
+        { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${publicAnonKey}` } },
+      );
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setResetResult({ success: true, deletedCount: data.deletedCount, details: data.details });
+        toast.success(`System reset complete — deleted ${data.deletedCount} items.`);
+        loadBookings();
+      } else {
+        throw new Error(data.error || "Failed to reset system");
+      }
+    } catch (err: any) {
+      setResetResult({ success: false, error: err.message || "Network error" });
+      toast.error(`Reset failed: ${err.message}`);
+    } finally {
+      setResetting(false);
     }
   };
 
@@ -3857,6 +3897,39 @@ export function AdminPage() {
             {/* Diagnostics + cleanup */}
             <BookingDiagnostics />
             <DatabaseCleanup adminPassword="Sintra2025" />
+
+            {/* System reset */}
+            <Card className="border-red-300 p-4 sm:p-6">
+              <div className="mb-1 flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 text-red-600" />
+                <h2 className="text-sm sm:text-base font-medium text-red-700">System Reset</h2>
+              </div>
+              <p className="mb-4 text-sm text-muted-foreground">
+                Permanently deletes all bookings, pickup requests, check-ins, and chat history, and resets booking IDs to AA-1000. Use once before going live. Requires double confirmation.
+              </p>
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                <Button
+                  onClick={resetAllData}
+                  disabled={resetting}
+                  variant="outline"
+                  size="sm"
+                  className="gap-2 border-red-300 text-red-600 hover:bg-red-50"
+                >
+                  {resetting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                  {resetting ? "Resetting…" : "Reset all data"}
+                </Button>
+                {resetResult && (
+                  <div className={`flex items-start gap-2 rounded-lg px-3 py-2 text-sm ${resetResult.success ? "bg-green-50 text-green-800" : "bg-red-50 text-red-800"}`}>
+                    {resetResult.success ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" /> : <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />}
+                    <span>
+                      {resetResult.success
+                        ? `Done — deleted ${resetResult.deletedCount} items. System ready for production.`
+                        : resetResult.error}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>
