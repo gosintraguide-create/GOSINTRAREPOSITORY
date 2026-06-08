@@ -252,6 +252,8 @@ export function AdminPage() {
   // Test booking state
   const [testBookingLoading, setTestBookingLoading] = useState(false);
   const [testBookingResult, setTestBookingResult] = useState<{ ok: boolean; message: string; bookingId?: string } | null>(null);
+  const [testPushLoading, setTestPushLoading] = useState(false);
+  const [testPushResult, setTestPushResult] = useState<{ ok: boolean; message: string } | null>(null);
 
   // Notification state
   const [lastPickupCount, setLastPickupCount] = useState(0);
@@ -911,6 +913,27 @@ export function AdminPage() {
     } catch (error) {
       console.error("Error saving availability:", error);
       toast.error("Failed to save availability to database");
+    }
+  };
+
+  const runTestPush = async () => {
+    setTestPushLoading(true);
+    setTestPushResult(null);
+    try {
+      const res = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/test-push`,
+        { method: "POST", headers: { Authorization: `Bearer ${publicAnonKey}` } },
+      );
+      const data = await res.json();
+      if (data.success) {
+        setTestPushResult({ ok: true, message: "Push sent! Check your ntfy app — it should arrive in a few seconds." });
+      } else {
+        setTestPushResult({ ok: false, message: data.error || "Push failed" });
+      }
+    } catch (err: any) {
+      setTestPushResult({ ok: false, message: err.message || "Network error" });
+    } finally {
+      setTestPushLoading(false);
     }
   };
 
@@ -2381,31 +2404,54 @@ export function AdminPage() {
                 <h2 className="text-foreground text-sm sm:text-base">Test Notifications</h2>
               </div>
               <p className="mb-4 text-sm text-muted-foreground">
-                Fires a real booking through the full stack — API, push notification (ntfy), and owner email — so you can confirm the alert pipeline works end-to-end. The booking is marked as a test and no customer email is sent.
+                Use <strong>Test push</strong> to verify your phone receives ntfy alerts. Use <strong>Send test booking</strong> to fire the full pipeline — API, push, and owner email.
               </p>
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                <Button
-                  onClick={runTestBooking}
-                  disabled={testBookingLoading}
-                  variant="outline"
-                  className="gap-2 border-dashed"
-                >
-                  {testBookingLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <FlaskConical className="h-4 w-4" />
+              <div className="flex flex-col gap-3">
+                {/* Push-only test */}
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                  <Button
+                    onClick={runTestPush}
+                    disabled={testPushLoading}
+                    variant="outline"
+                    size="sm"
+                    className="gap-2 border-dashed"
+                  >
+                    {testPushLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                    {testPushLoading ? "Sending…" : "Test push only"}
+                  </Button>
+                  {testPushResult && (
+                    <div className={`flex items-start gap-2 rounded-lg px-3 py-2 text-sm ${testPushResult.ok ? "bg-green-50 text-green-800" : "bg-red-50 text-red-800"}`}>
+                      {testPushResult.ok ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" /> : <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />}
+                      <span>{testPushResult.message}</span>
+                    </div>
                   )}
-                  {testBookingLoading ? "Firing…" : "Send test booking"}
-                </Button>
-                {testBookingResult && (
-                  <div className={`flex items-start gap-2 rounded-lg px-3 py-2 text-sm ${testBookingResult.ok ? "bg-green-50 text-green-800" : "bg-red-50 text-red-800"}`}>
-                    {testBookingResult.ok ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" /> : <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />}
-                    <span>
-                      {testBookingResult.message}
-                      {testBookingResult.bookingId && <span className="ml-1 font-mono text-xs opacity-70">({testBookingResult.bookingId})</span>}
-                    </span>
-                  </div>
-                )}
+                </div>
+                {/* Full booking test */}
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                  <Button
+                    onClick={runTestBooking}
+                    disabled={testBookingLoading}
+                    variant="outline"
+                    size="sm"
+                    className="gap-2 border-dashed"
+                  >
+                    {testBookingLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <FlaskConical className="h-4 w-4" />
+                    )}
+                    {testBookingLoading ? "Firing…" : "Send test booking"}
+                  </Button>
+                  {testBookingResult && (
+                    <div className={`flex items-start gap-2 rounded-lg px-3 py-2 text-sm ${testBookingResult.ok ? "bg-green-50 text-green-800" : "bg-red-50 text-red-800"}`}>
+                      {testBookingResult.ok ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" /> : <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />}
+                      <span>
+                        {testBookingResult.message}
+                        {testBookingResult.bookingId && <span className="ml-1 font-mono text-xs opacity-70">({testBookingResult.bookingId})</span>}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
             </Card>
 

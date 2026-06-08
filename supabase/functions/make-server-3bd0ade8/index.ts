@@ -642,6 +642,34 @@ async function sendOwnerNotification(subject: string, html: string) {
 // Health check
 app.get("/make-server-3bd0ade8/health", (c) => c.json({ status: "ok", timestamp: new Date().toISOString() }));
 
+// Test push notification — fires a real ntfy push and returns the result
+app.post("/make-server-3bd0ade8/test-push", async (c) => {
+  const topic = Deno.env.get("NTFY_TOPIC");
+  if (!topic) {
+    return c.json({ success: false, error: "NTFY_TOPIC secret is not set. Add it in Supabase → Project Settings → Edge Functions → Secrets." }, 500);
+  }
+  try {
+    const res = await fetch(`https://ntfy.sh/${topic}`, {
+      method: "POST",
+      headers: {
+        "Title": "🧪 HopOn Sintra — test push",
+        "Priority": "high",
+        "Tags": "white_check_mark",
+        "Content-Type": "text/plain",
+      },
+      body: "Push notifications are working! 🎉",
+    });
+    const responseText = await res.text().catch(() => "");
+    if (res.ok) {
+      return c.json({ success: true, topic: topic.slice(0, 4) + "****", ntfyStatus: res.status });
+    } else {
+      return c.json({ success: false, error: `ntfy returned ${res.status}: ${responseText}`, topic: topic.slice(0, 4) + "****" }, 500);
+    }
+  } catch (err: any) {
+    return c.json({ success: false, error: err.message }, 500);
+  }
+});
+
 // Create Booking
 app.post("/make-server-3bd0ade8/bookings", async (c) => {
   try {
