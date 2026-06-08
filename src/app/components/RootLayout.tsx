@@ -522,7 +522,7 @@ export function RootLayout() {
 
       <div className="flex min-h-screen flex-col bg-background">
         {/* Sticky wrapper keeps InfoBar + Header pinned together at the top */}
-        <div className="sticky top-0 z-50" data-site-header>
+        <div className={`sticky top-0 z-50${getCurrentPage() === "driver-portal" ? " hidden md:block" : ""}`} data-site-header>
           {!["admin", "driver-portal", "diagnostics"].includes(getCurrentPage()) && (
             <InfoBar language={language} />
           )}
@@ -533,12 +533,18 @@ export function RootLayout() {
             onNavigate={handleNavigate}
           />
         </div>
-        <main id="main-content" className="flex-1">
+        <main id="main-content" className={`flex-1${getCurrentPage() === "driver-portal" ? " flex flex-col md:block" : ""}`}>
           <Suspense fallback={<div className="flex h-[50vh] w-full items-center justify-center"><LoadingIndicator type="spinner" fullScreen={false} /></div>}>
             <Outlet context={{ language, onNavigate: handleNavigate }} />
           </Suspense>
         </main>
-        <Footer onNavigate={handleNavigate} language={language} />
+        {getCurrentPage() === "driver-portal" ? (
+          <div className="hidden md:block">
+            <Footer onNavigate={handleNavigate} language={language} />
+          </div>
+        ) : (
+          <Footer onNavigate={handleNavigate} language={language} />
+        )}
       </div>
 
       {/* Scroll-to-top button - mobile optimized */}
