@@ -310,7 +310,7 @@ export function AttractionsPage() {
             </Badge>
           </div>
 
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
             {attractions.map((attraction) => (
               <div key={attraction.id}>
                 <Card
@@ -340,17 +340,17 @@ export function AttractionsPage() {
                     )}
                   </div>
 
-                  <div className="flex h-full flex-col p-4 sm:p-5">
-                    <h3 className="mb-2 text-xl font-bold text-foreground group-hover:text-primary">
+                  <div className="flex h-full flex-col p-3 sm:p-5">
+                    <h3 className="mb-1 text-lg font-bold text-foreground group-hover:text-primary sm:mb-2 sm:text-xl">
                       {attraction.name}
                     </h3>
 
-                    <p className="mb-4 flex-1 line-clamp-2 text-sm text-muted-foreground">
+                    <p className="mb-3 flex-1 line-clamp-1 text-xs text-muted-foreground sm:mb-4 sm:line-clamp-2 sm:text-sm">
                       {attraction.description}
                     </p>
 
                     <div className="flex items-center gap-2 text-primary">
-                      <span className="text-sm">{t.exploreMore || "Explore"}</span>
+                      <span className="text-xs sm:text-sm">{t.exploreMore || "Explore"}</span>
                       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-2" />
                     </div>
                   </div>
