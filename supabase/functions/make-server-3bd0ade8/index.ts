@@ -575,6 +575,39 @@ async function sendBookingEmail(booking: any, qrCodes: string[]) {
   }
 }
 
+// ── PUSH NOTIFICATION (ntfy.sh) ──────────────────────────────────────────────
+// Sends an instant push notification to the owner's phone via ntfy.sh.
+// Set the NTFY_TOPIC secret in Supabase → Project Settings → Edge Functions → Secrets.
+// Choose a hard-to-guess topic name, e.g. "hoponsintra-alerts-a7x9q2"
+// Install the ntfy app (iOS / Android) and subscribe to the same topic.
+async function sendPushNotification(
+  title: string,
+  message: string,
+  priority: "default" | "high" | "urgent" = "high",
+  tags: string[] = [],
+) {
+  const topic = Deno.env.get("NTFY_TOPIC");
+  if (!topic) return; // silently skip if not configured
+  try {
+    const res = await fetch(`https://ntfy.sh/${topic}`, {
+      method: "POST",
+      headers: {
+        "Title": title,
+        "Priority": priority,
+        "Tags": tags.join(","),
+        "Content-Type": "text/plain",
+      },
+      body: message,
+    });
+    if (!res.ok) {
+      console.error(`❌ ntfy push failed (${res.status}):`, await res.text().catch(() => ""));
+    }
+  } catch (err) {
+    console.error("ntfy push error:", err);
+  }
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 // Send owner notification email on any purchase
 async function sendOwnerNotification(subject: string, html: string) {
   const resendApiKey = Deno.env.get("RESEND_API_KEY");
@@ -730,6 +763,15 @@ app.post("/make-server-3bd0ade8/bookings", async (c) => {
     const passengerCount = booking.passengers?.length || 1;
     const customerName = booking.contactInfo?.name || booking.fullName || "Guest";
     const customerEmail = booking.contactInfo?.email || booking.email || "—";
+
+    // Push notification (instant, to phone)
+    await sendPushNotification(
+      `🎟️ New booking — ${booking.selectedDate}`,
+      `${passengerCount} day pass${passengerCount > 1 ? "es" : ""}\nCustomer: ${customerName}\nPickup: ${booking.pickupLocation ?? "—"} at ${booking.timeSlot ?? "—"}\nTotal: €${booking.totalPrice ?? "—"}`,
+      "urgent",
+      ["ticket", "moneybag"],
+    );
+
     await sendOwnerNotification(
       `🎟️ New Booking: ${passengerCount} Day Pass${passengerCount > 1 ? "es" : ""} – ${booking.selectedDate}`,
       `<h2>New Day Pass Booking</h2>
@@ -888,6 +930,25 @@ app.post("/make-server-3bd0ade8/pickup-requests", async (c) => {
     const activeRequests = (await kv.get("active_pickup_requests")) || [];
     activeRequests.push(requestId);
     await kv.set("active_pickup_requests", activeRequests);
+
+    // Push + email notification to owner
+    await sendPushNotification(
+      `🚗 Pickup request — ${pickupLocation ?? "unknown location"}`,
+      `Group of ${groupSize}\nFrom: ${pickupLocation ?? "—"} → ${destination ?? "—"}\nCustomer: ${customerName ?? "—"} (${customerPhone ?? "no phone"})`,
+      "urgent",
+      ["car", "rotating_light"],
+    );
+    await sendOwnerNotification(
+      `🚗 Pickup Request — ${pickupLocation ?? "unknown"} → ${destination ?? "unknown"}`,
+      `<h2>New Pickup Request</h2>
+<ul>
+  <li><strong>Request ID:</strong> ${requestId}</li>
+  <li><strong>Customer:</strong> ${customerName ?? "—"} (${customerPhone ?? "—"})</li>
+  <li><strong>From:</strong> ${pickupLocation ?? "—"}</li>
+  <li><strong>To:</strong> ${destination ?? "—"}</li>
+  <li><strong>Group size:</strong> ${groupSize}</li>
+</ul>`,
+    );
 
     console.log(`🚗 Pickup created: ${requestId}`);
     return c.json({ success: true, request: pickupRequest });
@@ -2363,6 +2424,14 @@ app.post("/make-server-3bd0ade8/stripe-webhook", async (c) => {
         const passengerCount = booking.passengers?.length || 1;
         const customerName = booking.contactInfo?.name || booking.fullName || "Guest";
         const customerEmail = booking.contactInfo?.email || booking.email || "—";
+        try {
+          await sendPushNotification(
+            `🎟️ New booking (webhook) — ${booking.selectedDate}`,
+            `${passengerCount} day pass${passengerCount > 1 ? "es" : ""}\nCustomer: ${customerName}\nPickup: ${booking.pickupLocation ?? "—"} at ${booking.timeSlot ?? "—"}\nTotal: €${booking.totalPrice ?? "—"}`,
+            "urgent",
+            ["ticket", "moneybag"],
+          );
+        } catch {}
         try {
           await sendOwnerNotification(
             `🎟️ New Booking (webhook): ${passengerCount} Day Pass${passengerCount > 1 ? "es" : ""} – ${booking.selectedDate}`,
