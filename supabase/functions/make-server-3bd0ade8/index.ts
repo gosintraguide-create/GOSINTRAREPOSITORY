@@ -1116,6 +1116,28 @@ app.post("/make-server-3bd0ade8/bookings/lookup", async (c) => {
   }
 });
 
+// PATCH /bookings/:id/status — manually set status (confirmed | completed | cancelled)
+app.patch("/make-server-3bd0ade8/bookings/:id/status", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const { status } = await c.req.json();
+    const allowed = ["confirmed", "completed", "cancelled"];
+    if (!allowed.includes(status)) {
+      return c.json({ success: false, error: `Invalid status. Must be one of: ${allowed.join(", ")}` }, 400);
+    }
+    let booking: any = await kv.get(id);
+    if (!booking) booking = await kv.get(`booking_${id}`);
+    if (!booking) return c.json({ success: false, error: "Booking not found" }, 404);
+    booking.status = status;
+    booking.statusUpdatedAt = new Date().toISOString();
+    await kv.set(id, booking);
+    return c.json({ success: true, booking });
+  } catch (err) {
+    console.error("Error updating booking status:", err);
+    return c.json({ success: false, error: "Failed to update status" }, 500);
+  }
+});
+
 // GET /bookings/:id/full — return full booking by ID (SunsetSpecialPurchasePage)
 app.get("/make-server-3bd0ade8/bookings/:id/full", async (c) => {
   try {

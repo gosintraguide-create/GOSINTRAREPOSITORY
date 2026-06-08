@@ -1662,17 +1662,20 @@ export function AdminPage() {
       };
     }
 
+    // Exclude cancelled bookings from all metrics
+    const activeBookings = bookings.filter((b) => b.status !== "cancelled");
+
     // Total metrics
-    const totalRevenue = bookings.reduce(
+    const totalRevenue = activeBookings.reduce(
       (sum, b) => sum + (b.totalPrice || 0),
       0,
     );
-    const totalBookings = bookings.length;
-    const totalPassengers = bookings.reduce(
+    const totalBookings = activeBookings.length;
+    const totalPassengers = activeBookings.reduce(
       (sum, b) => sum + (b.passengers?.length || 0),
       0,
     );
-    const averageBookingValue = totalRevenue / totalBookings;
+    const averageBookingValue = totalBookings > 0 ? totalRevenue / totalBookings : 0;
 
     // Check-in statistics
     let totalCheckedIn = 0;
@@ -1680,7 +1683,7 @@ export function AdminPage() {
     let fullyCheckedIn = 0;
     let partiallyCheckedIn = 0;
 
-    bookings.forEach((booking) => {
+    activeBookings.forEach((booking) => {
       const total = booking.passengers?.length || 0;
       const checked = (booking.checkIns || []).filter(
         (checkInArray: any[]) =>
@@ -1702,10 +1705,9 @@ export function AdminPage() {
         ? (totalCheckedIn / totalPassengers) * 100
         : 0;
 
-    // Today's stats
+    // Today's stats (active only)
     const today = new Date().toISOString().split("T")[0];
-    const todaysBookings = bookings.filter((b) => {
-      // Handle both YYYY-MM-DD format and ISO timestamp format
+    const todaysBookings = activeBookings.filter((b) => {
       const bookingDate = b.selectedDate?.split("T")[0] || b.passDate;
       return bookingDate === today;
     });
@@ -1736,7 +1738,7 @@ export function AdminPage() {
       if (seenDates.has(dateStr)) continue;
       seenDates.add(dateStr);
       
-      const dayRevenue = bookings
+      const dayRevenue = activeBookings
         .filter((b) => {
           const bookingDate = b.selectedDate?.split("T")[0] || b.passDate;
           return bookingDate === dateStr;
@@ -1757,7 +1759,7 @@ export function AdminPage() {
       const monthStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
       if (seenMonths.has(monthStr)) continue;
       seenMonths.add(monthStr);
-      const monthRevenue = bookings
+      const monthRevenue = activeBookings
         .filter((b) => {
           const bookingDate = b.selectedDate?.split("T")[0] || b.passDate;
           return bookingDate?.startsWith(monthStr);
@@ -1771,20 +1773,16 @@ export function AdminPage() {
     }
 
     // Bookings by ticket type
-    const standardCount = bookings.filter(
-      (b) => !b.isGuidedTour,
-    ).length;
-    const guidedCount = bookings.filter(
-      (b) => b.isGuidedTour,
-    ).length;
+    const standardCount = activeBookings.filter((b) => !b.isGuidedTour).length;
+    const guidedCount = activeBookings.filter((b) => b.isGuidedTour).length;
     const bookingsByTicketType = [
       { id: "Standard", type: "Standard", count: standardCount },
       { id: "Guided", type: "Guided", count: guidedCount },
-    ].filter(item => item.count > 0); // Only include types with bookings
+    ].filter(item => item.count > 0);
 
     // Popular attractions
     const attractionCounts: { [key: string]: number } = {};
-    bookings.forEach((booking) => {
+    activeBookings.forEach((booking) => {
       (booking.attractions || []).forEach((attr: string) => {
         attractionCounts[attr] =
           (attractionCounts[attr] || 0) + 1;
@@ -1801,7 +1799,7 @@ export function AdminPage() {
     const upcomingStr = upcomingDate
       .toISOString()
       .split("T")[0];
-    const upcomingBookings = bookings
+    const upcomingBookings = activeBookings
       .filter((b) => {
         const bookingDate = b.selectedDate?.split("T")[0] || b.passDate;
         return bookingDate >= today && bookingDate <= upcomingStr;
@@ -1814,7 +1812,7 @@ export function AdminPage() {
       .slice(0, 5);
 
     // Recent bookings
-    const recentBookings = [...bookings]
+    const recentBookings = [...activeBookings]
       .sort(
         (a, b) =>
           new Date(b.createdAt || 0).getTime() -
