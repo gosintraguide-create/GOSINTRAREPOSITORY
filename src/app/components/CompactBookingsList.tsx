@@ -150,9 +150,6 @@ export function CompactBookingsList({ bookings, onRefresh }: CompactBookingsList
         ) return false;
       }
 
-      // Date filter — cancelled and completed are always visible regardless of date
-      if (effectiveStatus === "cancelled" || effectiveStatus === "completed") return true;
-
       const bookingDate = booking.selectedDate;
       const bookingTime = new Date(bookingDate).getTime();
       if (bookingFilter === "today") return bookingDate === today;
