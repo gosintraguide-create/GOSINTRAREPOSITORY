@@ -372,19 +372,32 @@ export function CompactBookingsList({ bookings, onRefresh }: CompactBookingsList
                           </div>
                         </div>
 
-                        {/* Date + time (always shown expanded) */}
-                        <div>
-                          <p className="text-xs text-muted-foreground mb-1">Date &amp; Time</p>
-                          <div className="flex items-center gap-3 text-sm text-foreground">
-                            <div className="flex items-center gap-1.5">
-                              <CalendarIcon className="h-3.5 w-3.5 text-muted-foreground" />
-                              <span>{formattedDate}</span>
+                        {/* Tour date + departure slot + booked-at */}
+                        <div className="space-y-1.5">
+                          <div className="flex items-center gap-4">
+                            <div>
+                              <p className="text-xs text-muted-foreground">Tour date</p>
+                              <div className="flex items-center gap-1.5 text-sm text-foreground mt-0.5">
+                                <CalendarIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                                <span>{formattedDate}</span>
+                              </div>
                             </div>
-                            <div className="flex items-center gap-1.5">
-                              <Clock className="h-3.5 w-3.5 text-muted-foreground" />
-                              <span className="font-medium">{booking.timeSlot || "—"}</span>
+                            <div>
+                              <p className="text-xs text-muted-foreground">Departure</p>
+                              <div className="flex items-center gap-1.5 text-sm text-foreground mt-0.5">
+                                <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                                <span className="font-medium">{booking.timeSlot || "—"}</span>
+                              </div>
                             </div>
                           </div>
+                          {booking.createdAt && (
+                            <p className="text-xs text-muted-foreground">
+                              Booked{" "}
+                              {new Date(booking.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                              {" at "}
+                              {new Date(booking.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
+                            </p>
+                          )}
                         </div>
 
                         {/* Pickup location */}
