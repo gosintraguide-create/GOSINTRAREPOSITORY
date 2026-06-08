@@ -62,7 +62,7 @@ const STATUS_CONFIG: Record<string, { label: string; badge: string }> = {
 };
 
 export function CompactBookingsList({ bookings, onRefresh }: CompactBookingsListProps) {
-  const [bookingFilter, setBookingFilter] = useState<"upcoming" | "today" | "all" | "date">("upcoming");
+  const [bookingFilter, setBookingFilter] = useState<"upcoming" | "today" | "all" | "date">("today");
   const [statusFilter, setStatusFilter] = useState<"all" | "confirmed" | "completed" | "cancelled">("all");
   const [selectedCalendarDate, setSelectedCalendarDate] = useState<Date | undefined>(undefined);
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -160,7 +160,17 @@ export function CompactBookingsList({ bookings, onRefresh }: CompactBookingsList
       return true;
     });
 
+    const isPending = (b: any) => {
+      const s = localStatuses[b.id] ?? b.status ?? "confirmed";
+      return s !== "completed" && s !== "cancelled";
+    };
+
     filtered.sort((a, b) => {
+      // Pending always floats to the top
+      const pA = isPending(a) ? 0 : 1;
+      const pB = isPending(b) ? 0 : 1;
+      if (pA !== pB) return pA - pB;
+      // Within same group: newest first
       const tA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
       const tB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
       return tB - tA;
@@ -170,6 +180,11 @@ export function CompactBookingsList({ bookings, onRefresh }: CompactBookingsList
   };
 
   const filteredBookings = getFilteredBookings();
+
+  const todayStr = new Date().toISOString().split("T")[0];
+  const todayTotalCount = bookings.filter(
+    (b) => b?.selectedDate === todayStr,
+  ).length;
 
   const toggleExpand = (id: string) =>
     setExpandedBookingId(expandedBookingId === id ? null : id);
@@ -206,9 +221,18 @@ export function CompactBookingsList({ bookings, onRefresh }: CompactBookingsList
               size="sm"
               variant={bookingFilter === f ? "default" : "outline"}
               onClick={() => { setBookingFilter(f); setSelectedCalendarDate(undefined); }}
-              className={bookingFilter === f ? "bg-primary capitalize" : "capitalize"}
+              className={`gap-1.5 ${bookingFilter === f ? "bg-primary capitalize" : "capitalize"}`}
             >
               {f === "all" ? "All Time" : f.charAt(0).toUpperCase() + f.slice(1)}
+              {f === "today" && todayTotalCount > 0 && (
+                <span className={`inline-flex items-center justify-center rounded-full px-1.5 py-0.5 text-xs font-medium min-w-[1.25rem] ${
+                  bookingFilter === "today"
+                    ? "bg-white/20 text-white"
+                    : "bg-secondary text-muted-foreground"
+                }`}>
+                  {todayTotalCount}
+                </span>
+              )}
             </Button>
           ))}
 
@@ -310,6 +334,8 @@ export function CompactBookingsList({ bookings, onRefresh }: CompactBookingsList
               (checkedInCount === totalPassengers && totalPassengers > 0 ? "completed" : "confirmed");
 
             const isCancelled = effectiveStatus === "cancelled";
+            const isCompleted = effectiveStatus === "completed";
+            const isPending = !isCancelled && !isCompleted;
 
             // Pickup location (bookings store it as `pickupLocation`)
             const pickup = booking.pickupLocation || booking.firstPickupLocation;
@@ -317,7 +343,13 @@ export function CompactBookingsList({ bookings, onRefresh }: CompactBookingsList
             return (
               <Card
                 key={booking.id}
-                className={`border-border transition-opacity ${isCancelled ? "opacity-60" : ""} ${isNewBooking(booking) ? "border-l-4 border-l-accent" : ""}`}
+                className={`border-border overflow-hidden transition-opacity ${isCancelled ? "opacity-60" : ""} ${
+                  isPending
+                    ? "border-l-4 border-l-accent"
+                    : isNewBooking(booking)
+                    ? "border-l-4 border-l-accent"
+                    : ""
+                }`}
               >
                 {/* ── Compact header ── */}
                 <button
@@ -325,11 +357,23 @@ export function CompactBookingsList({ bookings, onRefresh }: CompactBookingsList
                   className="w-full p-4 text-left hover:bg-secondary/20 transition-colors"
                 >
                   <div className="flex items-center justify-between gap-4">
-                    {/* Left: ID · Name · Date · Time · Pickup */}
+                    {/* Left: ID · pending pill · Name · Date · Time · Pickup */}
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 flex-1 min-w-0">
                       <span className={`font-mono text-lg font-semibold ${isCancelled ? "text-muted-foreground line-through" : "text-primary"}`}>
                         #{bookingIdShort}
                       </span>
+                      {/* Pending pill — inline, filled, accent */}
+                      {isPending && checkedInCount === 0 && (
+                        <Badge className="bg-accent text-white border-0 text-xs px-2 py-0.5 gap-1">
+                          <Clock className="h-3 w-3" /> Pending
+                        </Badge>
+                      )}
+                      {/* Partial check-in pill */}
+                      {isPending && checkedInCount > 0 && checkedInCount < totalPassengers && (
+                        <Badge variant="outline" className="bg-yellow-100 text-yellow-700 border-yellow-300 gap-1 text-xs">
+                          <AlertCircle className="h-3 w-3" /> {checkedInCount}/{totalPassengers}
+                        </Badge>
+                      )}
                       {isNewBooking(booking) && (
                         <Badge className="bg-accent text-white gap-1 text-xs">
                           <Sparkles className="h-3 w-3" /> NEW
@@ -357,23 +401,16 @@ export function CompactBookingsList({ bookings, onRefresh }: CompactBookingsList
                       )}
                     </div>
 
-                    {/* Right: status badge + chevron */}
+                    {/* Right: non-pending status badge + chevron */}
                     <div className="flex items-center gap-3 shrink-0">
-                      {isCancelled ? (
+                      {isCancelled && (
                         <Badge variant="outline" className={STATUS_CONFIG.cancelled.badge + " gap-1"}>
                           <Ban className="h-3 w-3" /> Cancelled
                         </Badge>
-                      ) : effectiveStatus === "completed" ? (
+                      )}
+                      {isCompleted && (
                         <Badge variant="outline" className={STATUS_CONFIG.completed.badge + " gap-1"}>
                           <CheckCircle2 className="h-3 w-3" /> Completed
-                        </Badge>
-                      ) : checkedInCount > 0 && checkedInCount < totalPassengers ? (
-                        <Badge variant="outline" className="bg-yellow-100 text-yellow-700 border-yellow-300 gap-1">
-                          <AlertCircle className="h-3 w-3" /> {checkedInCount}/{totalPassengers}
-                        </Badge>
-                      ) : (
-                        <Badge variant="outline" className="bg-slate-100 text-slate-700 border-slate-300 gap-1">
-                          <Clock className="h-3 w-3" /> Pending
                         </Badge>
                       )}
                       {isExpanded ? <ChevronUp className="h-5 w-5 text-muted-foreground" /> : <ChevronDown className="h-5 w-5 text-muted-foreground" />}

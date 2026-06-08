@@ -1657,6 +1657,14 @@ export function AdminPage() {
     }
   }, [isAuthenticated]);
 
+  // Pending bookings for today — drives the Bookings tab badge
+  const pendingTodayCount = (() => {
+    const today = new Date().toISOString().split("T")[0];
+    return bookings.filter(
+      (b) => b?.selectedDate === today && b?.status !== "cancelled" && b?.status !== "completed",
+    ).length;
+  })();
+
   // ====== METRICS & ANALYTICS CALCULATIONS ======
   const metrics = useMemo(() => {
     if (!bookings || bookings.length === 0) {
@@ -2094,9 +2102,9 @@ export function AdminPage() {
                 >
                   <Package className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   <span>Bookings</span>
-                  {newBookingsCount > 0 && (
-                    <span className="ml-1 flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full bg-blue-500 text-xs text-white animate-pulse">
-                      {newBookingsCount}
+                  {pendingTodayCount > 0 && (
+                    <span className="ml-1 flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full bg-accent text-xs text-white">
+                      {pendingTodayCount}
                     </span>
                   )}
                 </TabsTrigger>
