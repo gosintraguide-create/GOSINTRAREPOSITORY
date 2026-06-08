@@ -1408,7 +1408,13 @@ app.post("/make-server-3bd0ade8/tour-bookings/create", async (c) => {
       }
     }
 
-    // Notify owner of new private tour booking
+    // Notify owner of new private tour booking — push + email
+    await sendPushNotification(
+      `New private tour booking - ${body.tourTitle || tourId}`,
+      `${customerInfo?.numberOfPeople ?? 1} people on ${tourDate}\nCustomer: ${customerInfo?.name ?? "—"} (${customerInfo?.email ?? "—"})\nTotal: €${body.amount ?? "—"}`,
+      "urgent",
+      ["castle", "moneybag"],
+    );
     await sendOwnerNotification(
       `🏰 New Private Tour Booking – ${body.tourTitle || tourId}`,
       `<h2>New Private Tour Booking</h2>
