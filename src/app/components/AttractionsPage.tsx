@@ -317,14 +317,14 @@ export function AttractionsPage() {
                   className="group h-full cursor-pointer overflow-hidden transition-all hover:shadow-xl"
                   onClick={() => handleExploreClick(attraction.id)}
                 >
-                  <div className="relative aspect-[4/3] overflow-hidden">
+                  <div className="relative aspect-square shrink-0 overflow-hidden">
                     <ImageWithFallback
                       src={attraction.imageUrl || ""}
                       alt={`${attraction.name} - Sintra attraction`}
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                       loading="lazy"
                       width={400}
-                      height={300}
+                      height={400}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
 
@@ -341,7 +341,7 @@ export function AttractionsPage() {
                   </div>
 
                   <div className="flex h-full flex-col p-4 sm:p-5">
-                    <h3 className="mb-2 text-foreground group-hover:text-primary">
+                    <h3 className="mb-2 text-xl font-bold text-foreground group-hover:text-primary">
                       {attraction.name}
                     </h3>
 
