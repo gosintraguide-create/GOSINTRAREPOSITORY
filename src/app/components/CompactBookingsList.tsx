@@ -63,6 +63,7 @@ const STATUS_CONFIG: Record<string, { label: string; badge: string }> = {
 
 export function CompactBookingsList({ bookings, onRefresh }: CompactBookingsListProps) {
   const [bookingFilter, setBookingFilter] = useState<"upcoming" | "today" | "all" | "date">("upcoming");
+  const [statusFilter, setStatusFilter] = useState<"all" | "confirmed" | "completed" | "cancelled">("all");
   const [selectedCalendarDate, setSelectedCalendarDate] = useState<Date | undefined>(undefined);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [expandedBookingId, setExpandedBookingId] = useState<string | null>(null);
@@ -133,6 +134,14 @@ export function CompactBookingsList({ bookings, onRefresh }: CompactBookingsList
 
     let filtered = bookings.filter((booking) => {
       if (!booking || !booking.id || !booking.selectedDate) return false;
+
+      // Resolve effective status (optimistic local override)
+      const effectiveStatus = localStatuses[booking.id] ?? booking.status ?? "confirmed";
+
+      // Status chip filter
+      if (statusFilter !== "all" && effectiveStatus !== statusFilter) return false;
+
+      // Search
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         if (
@@ -140,6 +149,10 @@ export function CompactBookingsList({ bookings, onRefresh }: CompactBookingsList
           !booking.contactInfo?.name?.toLowerCase().includes(q)
         ) return false;
       }
+
+      // Date filter — cancelled and completed are always visible regardless of date
+      if (effectiveStatus === "cancelled" || effectiveStatus === "completed") return true;
+
       const bookingDate = booking.selectedDate;
       const bookingTime = new Date(bookingDate).getTime();
       if (bookingFilter === "today") return bookingDate === today;
@@ -228,6 +241,27 @@ export function CompactBookingsList({ bookings, onRefresh }: CompactBookingsList
               <X className="h-3.5 w-3.5" /> Clear
             </Button>
           )}
+        </div>
+
+        {/* Status filter */}
+        <div className="flex gap-2 flex-wrap items-center">
+          <span className="text-xs text-muted-foreground font-medium">Status:</span>
+          {([
+            { value: "all", label: "All" },
+            { value: "confirmed", label: "Confirmed" },
+            { value: "completed", label: "Completed" },
+            { value: "cancelled", label: "Cancelled" },
+          ] as const).map(({ value, label }) => (
+            <Button
+              key={value}
+              size="sm"
+              variant={statusFilter === value ? "default" : "outline"}
+              onClick={() => setStatusFilter(value)}
+              className={`text-xs h-7 px-2.5 ${statusFilter === value ? "bg-primary" : ""}`}
+            >
+              {label}
+            </Button>
+          ))}
         </div>
 
         <div className="ml-auto text-sm text-muted-foreground">{filteredBookings.length} booking(s)</div>
