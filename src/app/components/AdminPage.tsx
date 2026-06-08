@@ -36,6 +36,8 @@ import {
   Car,
   Calculator,
   Clapperboard,
+  FlaskConical,
+  Loader2,
 } from "lucide-react";
 import { DestinationTracker } from "./DestinationTracker";
 import { Button } from "./ui/button";
@@ -246,6 +248,10 @@ export function AdminPage() {
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [ticketPurchasesEnabled, setTicketPurchasesEnabled] =
     useState(true);
+
+  // Test booking state
+  const [testBookingLoading, setTestBookingLoading] = useState(false);
+  const [testBookingResult, setTestBookingResult] = useState<{ ok: boolean; message: string; bookingId?: string } | null>(null);
 
   // Notification state
   const [lastPickupCount, setLastPickupCount] = useState(0);
@@ -905,6 +911,48 @@ export function AdminPage() {
     } catch (error) {
       console.error("Error saving availability:", error);
       toast.error("Failed to save availability to database");
+    }
+  };
+
+  const runTestBooking = async () => {
+    setTestBookingLoading(true);
+    setTestBookingResult(null);
+    try {
+      const today = new Date();
+      const dateStr = today.toISOString().split("T")[0];
+      const res = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/bookings`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${publicAnonKey}` },
+          body: JSON.stringify({
+            isTestBooking: true,
+            skipEmail: true,           // don't send a real customer email
+            selectedDate: dateStr,
+            timeSlot: "09:00",
+            pickupLocation: "sintra-train-station",
+            passengers: [{ name: "Test Guest", type: "Adult" }],
+            contactInfo: { name: "Test Guest", email: "test@hoponsintra.com", phone: "+351000000000" },
+            totalPrice: 15,
+            pricing: { adultCount: 1, childCount: 0, adultPrice: 15, childPrice: 0, adultTotal: 15, childTotal: 0, passTotal: 15, guidedTourTotal: 0, attractionsTotal: 0 },
+            selectedAttractions: [],
+          }),
+        },
+      );
+      const data = await res.json();
+      if (data.success && data.booking) {
+        setTestBookingResult({ ok: true, message: "Test booking created — check your phone for the push notification and your email for the owner alert.", bookingId: data.booking.id });
+        toast.success("Test booking fired", { description: data.booking.id });
+        loadBookings(); // refresh list
+      } else {
+        setTestBookingResult({ ok: false, message: data.error || "API returned success:false" });
+        toast.error("Test booking failed", { description: data.error });
+      }
+    } catch (err: any) {
+      setTestBookingResult({ ok: false, message: err.message || "Network error" });
+      toast.error("Test booking error");
+    } finally {
+      setTestBookingLoading(false);
     }
   };
 
@@ -2327,6 +2375,41 @@ export function AdminPage() {
               bookings={bookings}
               onRefresh={loadBookings}
             />
+
+            {/* ── Test Notifications ── */}
+            <Card className="border-border p-4 sm:p-6">
+              <div className="mb-4 flex items-center gap-2">
+                <FlaskConical className="h-4 w-4 text-muted-foreground" />
+                <h2 className="text-foreground text-sm sm:text-base">Test Notifications</h2>
+              </div>
+              <p className="mb-4 text-sm text-muted-foreground">
+                Fires a real booking through the full stack — API, push notification (ntfy), and owner email — so you can confirm the alert pipeline works end-to-end. The booking is marked as a test and no customer email is sent.
+              </p>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <Button
+                  onClick={runTestBooking}
+                  disabled={testBookingLoading}
+                  variant="outline"
+                  className="gap-2 border-dashed"
+                >
+                  {testBookingLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <FlaskConical className="h-4 w-4" />
+                  )}
+                  {testBookingLoading ? "Firing…" : "Send test booking"}
+                </Button>
+                {testBookingResult && (
+                  <div className={`flex items-start gap-2 rounded-lg px-3 py-2 text-sm ${testBookingResult.ok ? "bg-green-50 text-green-800" : "bg-red-50 text-red-800"}`}>
+                    {testBookingResult.ok ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" /> : <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />}
+                    <span>
+                      {testBookingResult.message}
+                      {testBookingResult.bookingId && <span className="ml-1 font-mono text-xs opacity-70">({testBookingResult.bookingId})</span>}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </Card>
 
             {/* Availability — here because it's changed per operational day */}
             <Card className="border-border p-4 sm:p-6 lg:p-8">
