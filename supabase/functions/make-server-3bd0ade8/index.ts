@@ -575,6 +575,35 @@ async function sendBookingEmail(booking: any, qrCodes: string[]) {
   }
 }
 
+// Send owner notification email on any purchase
+async function sendOwnerNotification(subject: string, html: string) {
+  const resendApiKey = Deno.env.get("RESEND_API_KEY");
+  if (!resendApiKey) {
+    console.error("⚠️ RESEND_API_KEY not set — owner notification skipped");
+    return;
+  }
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${resendApiKey}` },
+      body: JSON.stringify({
+        from: "Hop On Sintra <bookings@hoponsintra.com>",
+        to: ["hoponsintra@gmail.com"],
+        subject,
+        html,
+      }),
+    });
+    if (res.ok) {
+      console.log("📧 Owner notification sent:", subject);
+    } else {
+      const body = await res.text().catch(() => "(unreadable)");
+      console.error(`❌ Owner notification rejected by Resend (${res.status}):`, body);
+    }
+  } catch (err) {
+    console.error("Owner notification failed:", err);
+  }
+}
+
 // ========== ROUTES ==========
 
 // Health check
@@ -696,6 +725,24 @@ app.post("/make-server-3bd0ade8/bookings", async (c) => {
     } else {
       emailResult.skipped = true;
     }
+
+    // Notify owner of new day-pass purchase
+    const passengerCount = booking.passengers?.length || 1;
+    const customerName = booking.contactInfo?.name || booking.fullName || "Guest";
+    const customerEmail = booking.contactInfo?.email || booking.email || "—";
+    await sendOwnerNotification(
+      `🎟️ New Booking: ${passengerCount} Day Pass${passengerCount > 1 ? "es" : ""} – ${booking.selectedDate}`,
+      `<h2>New Day Pass Booking</h2>
+<ul>
+  <li><strong>Booking ID:</strong> ${booking.id}</li>
+  <li><strong>Customer:</strong> ${customerName} (${customerEmail})</li>
+  <li><strong>Date:</strong> ${booking.selectedDate}</li>
+  <li><strong>Passengers:</strong> ${passengerCount}</li>
+  <li><strong>Total:</strong> €${booking.totalPrice ?? "—"}</li>
+  <li><strong>Pickup:</strong> ${booking.pickupLocation ?? "—"}</li>
+  <li><strong>Time Slot:</strong> ${booking.timeSlot ?? "—"}</li>
+</ul>`,
+    );
 
     return c.json({ success: true, booking, emailSent: emailResult.success });
   } catch (error) {
@@ -1248,6 +1295,21 @@ app.post("/make-server-3bd0ade8/tour-bookings/create", async (c) => {
       }
     }
 
+    // Notify owner of new private tour booking
+    await sendOwnerNotification(
+      `🏰 New Private Tour Booking – ${body.tourTitle || tourId}`,
+      `<h2>New Private Tour Booking</h2>
+<ul>
+  <li><strong>Booking ID:</strong> ${newBooking.id}</li>
+  <li><strong>Tour:</strong> ${body.tourTitle || tourId}</li>
+  <li><strong>Date:</strong> ${tourDate}</li>
+  <li><strong>Customer:</strong> ${customerInfo?.name ?? "—"} (${customerInfo?.email ?? "—"})</li>
+  <li><strong>People:</strong> ${customerInfo?.numberOfPeople ?? 1}</li>
+  <li><strong>Total:</strong> €${body.amount ?? "—"}</li>
+  ${customerInfo?.specialRequests ? `<li><strong>Special Requests:</strong> ${customerInfo.specialRequests}</li>` : ""}
+</ul>`,
+    );
+
     return c.json({ success: true, booking: newBooking });
   } catch (error) {
     return c.json({ success: false, error: String(error) }, 500);
@@ -1741,6 +1803,24 @@ Password: ${tempPassword}</p>
         console.error("Driver sale email failed:", emailErr);
       }
     }
+
+    // Notify owner of new driver sale
+    const drivers = (await kvWithRetry.get("drivers_list") as any[]) || [];
+    const driver = drivers.find((d: any) => d.id === driverId);
+    await sendOwnerNotification(
+      `🚌 Driver Sale: ${qty} Ticket${qty > 1 ? "s" : ""} – ${selectedDate}`,
+      `<h2>New Driver Sale</h2>
+<ul>
+  <li><strong>Booking ID:</strong> ${bookingId}</li>
+  <li><strong>Driver:</strong> ${driver?.name ?? driverId}</li>
+  <li><strong>Customer:</strong> ${firstName} ${lastName}${customerEmail ? ` (${customerEmail})` : ""}</li>
+  <li><strong>Date:</strong> ${selectedDate}</li>
+  <li><strong>Tickets:</strong> ${qty}</li>
+  <li><strong>Amount:</strong> €${amount} (${paymentMethod})</li>
+  <li><strong>Time Slot:</strong> ${timeSlot ?? "—"}</li>
+  <li><strong>Pickup:</strong> ${pickupLocation ?? "—"}</li>
+</ul>`,
+    );
 
     return c.json({
       success: true,
@@ -2274,9 +2354,30 @@ app.post("/make-server-3bd0ade8/stripe-webhook", async (c) => {
           }
         } catch {}
 
-        // Send confirmation email
+        // Send confirmation email to customer
         try {
           await sendBookingEmail(booking, qrCodes);
+        } catch {}
+
+        // Notify owner — this is the path most likely to fire without the client present
+        const passengerCount = booking.passengers?.length || 1;
+        const customerName = booking.contactInfo?.name || booking.fullName || "Guest";
+        const customerEmail = booking.contactInfo?.email || booking.email || "—";
+        try {
+          await sendOwnerNotification(
+            `🎟️ New Booking (webhook): ${passengerCount} Day Pass${passengerCount > 1 ? "es" : ""} – ${booking.selectedDate}`,
+            `<h2>New Day Pass Booking — via Stripe webhook</h2>
+<p style="color:#c53030;font-weight:bold">⚠️ This booking was completed by the Stripe webhook safety net — the customer's browser likely closed before the app could process the response. Everything is fine; they are fully booked.</p>
+<ul>
+  <li><strong>Booking ID:</strong> ${booking.id}</li>
+  <li><strong>Customer:</strong> ${customerName} (${customerEmail})</li>
+  <li><strong>Date:</strong> ${booking.selectedDate}</li>
+  <li><strong>Passengers:</strong> ${passengerCount}</li>
+  <li><strong>Total:</strong> €${booking.totalPrice ?? "—"}</li>
+  <li><strong>Pickup:</strong> ${booking.pickupLocation ?? "—"}</li>
+  <li><strong>Time Slot:</strong> ${booking.timeSlot ?? "—"}</li>
+</ul>`,
+          );
         } catch {}
 
         console.log(`✅ Webhook created booking ${bookingId} for PI ${piId}`);
@@ -2384,6 +2485,9 @@ app.get("/make-server-3bd0ade8/sitemap.xml", async (c) => {
     { loc: `${BASE_URL}/travel-guide`,   changefreq: "weekly",  priority: "0.9", lastmod: today },
     { loc: `${BASE_URL}/about`,          changefreq: "monthly", priority: "0.7", lastmod: today },
     { loc: `${BASE_URL}/route-map`,      changefreq: "monthly", priority: "0.7", lastmod: today },
+    // Public-facing standalone tools — robots.txt explicitly allows these for indexing
+    { loc: `${BASE_URL}/sintra-day-planner.html`, changefreq: "monthly", priority: "0.8", lastmod: today },
+    { loc: `${BASE_URL}/cinema-no-mato.html`,     changefreq: "weekly",  priority: "0.8", lastmod: today },
   ];
 
   // Dynamic URLs collected from KV
