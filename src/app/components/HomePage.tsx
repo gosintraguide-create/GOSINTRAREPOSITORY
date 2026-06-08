@@ -308,7 +308,6 @@ export function HomePage() {
         }
       } else {
         // Android or other platforms without prompt
-        console.log('[HomePage] No install prompt available on this device');
         alert(
           'To install: Open your browser menu and look for "Add to Home screen" or "Install app"',
         );
@@ -317,22 +316,14 @@ export function HomePage() {
     }
 
     try {
-      console.log('[HomePage] Showing install prompt...');
-      
       // Show the install prompt
       await deferredPrompt.prompt();
-      
-      console.log('[HomePage] Prompt shown, waiting for user choice...');
 
       // Wait for the user's response
       const { outcome } = await deferredPrompt.userChoice;
 
-      console.log('[HomePage] User choice:', outcome);
-
-      if (outcome === "accepted") {
-        console.log("[HomePage] User accepted the install prompt");
-      } else {
-        console.log("[HomePage] User dismissed the install prompt");
+      if (outcome !== "accepted") {
+        // User dismissed — no action needed
       }
 
       // Clear the deferred prompt

@@ -2,8 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-  <title>Sintra Day Planner — HopOn Sintra</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sintra Day Trip Calculator — HopOn Sintra</title>
+  <meta name="description" content="Find out exactly how much your Sintra day trip will cost, how long it takes, and if your plan is realistic. Free tool by HopOn Sintra — no sign-up required." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://www.hoponsintra.com/sintra-day-planner.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Hop On Sintra" />
+  <meta property="og:title" content="Sintra Day Trip Calculator — HopOn Sintra" />
+  <meta property="og:description" content="Find out exactly how much your Sintra day trip will cost, how long it takes, and if your plan is realistic. Free tool — no sign-up required." />
+  <meta property="og:url" content="https://www.hoponsintra.com/sintra-day-planner.html" />
+  <meta property="og:image" content="https://dwiznaefeqnduglmcivr.supabase.co/storage/v1/object/public/make-3bd0ade8-images/IMG_1829-1778931539038.JPEG" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Sintra Day Trip Calculator — HopOn Sintra" />
+  <meta name="twitter:description" content="Free trip planner: cost, timing, feasibility — before you go." />
+  <meta name="twitter:image" content="https://dwiznaefeqnduglmcivr.supabase.co/storage/v1/object/public/make-3bd0ade8-images/IMG_1829-1778931539038.JPEG" />
   <style>
     :root {
       --terra: #C1694F;
@@ -23,8 +36,6 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html {
       scroll-behavior: smooth;
-      /* Prevent pinch-zoom at the CSS level (belt-and-suspenders with viewport meta) */
-      touch-action: pan-y;
     }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
@@ -1605,7 +1616,15 @@ function ticketCost(site, optOverride) {
   const opt = optOverride || S.sites[site];
   const tier = PRICES[site] && PRICES[site][opt];
   if (!tier) return 0;
-  return S.adults * tier.a + S.children * tier.y + S.seniors * tier.s;
+  const standard = S.adults * tier.a + S.children * tier.y + S.seniors * tier.s;
+  // Apply family ticket when eligible (2 adults + ≥2 children) and cheaper
+  if (tier.fam && S.adults === 2 && S.children >= 2) {
+    const { price: famBase, maxKids } = tier.fam;
+    const extraKids = Math.max(0, S.children - maxKids);
+    const famTotal  = famBase + extraKids * tier.y + S.seniors * tier.s;
+    if (famTotal < standard) return famTotal;
+  }
+  return standard;
 }
 
 function siteVisitMins(site) {

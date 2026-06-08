@@ -522,9 +522,6 @@ export function BuyTicketPage() {
   const handlePaymentSuccess = async (
     confirmedPaymentIntentId: string,
   ) => {
-    console.log(
-      `🎉 Payment succeeded! Payment Intent ID: ${confirmedPaymentIntentId}`,
-    );
     setIsSubmitting(true);
 
     try {
@@ -593,10 +590,6 @@ export function BuyTicketPage() {
         paymentIntentId: confirmedPaymentIntentId,
       };
 
-      console.log(
-        `📤 Attempting to create booking with payment intent: ${confirmedPaymentIntentId}`,
-      );
-
       // Create booking via API with retry logic
       let response;
       let lastError;
@@ -604,9 +597,6 @@ export function BuyTicketPage() {
 
       for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
-          console.log(
-            `🔄 Booking creation attempt ${attempt}/${maxRetries}`,
-          );
           response = await createBooking(bookingData);
 
           // If we get a response, break the retry loop
@@ -620,7 +610,6 @@ export function BuyTicketPage() {
 
           // Only retry if it's a network error and we haven't hit max retries
           if (attempt < maxRetries) {
-            console.log(`⏳ Waiting 1 second before retry...`);
             await new Promise((resolve) =>
               setTimeout(resolve, 1000),
             );
@@ -637,15 +626,6 @@ export function BuyTicketPage() {
           )
         );
       }
-
-      console.log("📥 Full booking response:", response);
-      console.log("📥 Response structure check:", {
-        hasSuccess: !!response.success,
-        hasData: !!response.data,
-        dataSuccess: response.data?.success,
-        hasBooking: !!response.data?.booking,
-        bookingId: response.data?.booking?.id,
-      });
 
       // Check both outer and inner success flags
       if (
@@ -718,10 +698,6 @@ export function BuyTicketPage() {
         );
 
         // Navigate to confirmation page with booking data
-        console.log(
-          "🔄 Navigating to confirmation page with booking:",
-          response.data.booking.id,
-        );
         analytics.purchaseCompleted(
           response.data.booking.id,
           totalPrice,
