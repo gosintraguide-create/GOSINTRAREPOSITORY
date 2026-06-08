@@ -2132,6 +2132,13 @@ export function AdminPage() {
                   <BarChart3 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   <span>Analytics</span>
                 </TabsTrigger>
+                <TabsTrigger
+                  value="dev"
+                  className="flex items-center gap-1.5 text-xs sm:text-sm px-2 sm:px-3"
+                >
+                  <FlaskConical className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <span>Dev</span>
+                </TabsTrigger>
               </TabsList>
 
               <Sheet
@@ -2351,15 +2358,15 @@ export function AdminPage() {
                       variant="ghost"
                       className="w-full justify-start gap-3"
                       onClick={() => {
-                        setActiveTab("cleanup");
+                        setActiveTab("dev");
                         setMoreMenuOpen(false);
                       }}
                     >
-                      <Trash2 className="h-5 w-5" />
+                      <FlaskConical className="h-5 w-5" />
                       <div className="flex flex-col items-start">
-                        <span>Database Cleanup</span>
+                        <span>Dev / Testing</span>
                         <span className="text-xs text-muted-foreground">
-                          Remove old data and optimize
+                          Test push, bookings, diagnostics, cleanup
                         </span>
                       </div>
                     </Button>
@@ -2396,64 +2403,6 @@ export function AdminPage() {
               bookings={bookings}
               onRefresh={loadBookings}
             />
-
-            {/* ── Test Notifications ── */}
-            <Card className="border-border p-4 sm:p-6">
-              <div className="mb-4 flex items-center gap-2">
-                <FlaskConical className="h-4 w-4 text-muted-foreground" />
-                <h2 className="text-foreground text-sm sm:text-base">Test Notifications</h2>
-              </div>
-              <p className="mb-4 text-sm text-muted-foreground">
-                Use <strong>Test push</strong> to verify your phone receives ntfy alerts. Use <strong>Send test booking</strong> to fire the full pipeline — API, push, and owner email.
-              </p>
-              <div className="flex flex-col gap-3">
-                {/* Push-only test */}
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                  <Button
-                    onClick={runTestPush}
-                    disabled={testPushLoading}
-                    variant="outline"
-                    size="sm"
-                    className="gap-2 border-dashed"
-                  >
-                    {testPushLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                    {testPushLoading ? "Sending…" : "Test push only"}
-                  </Button>
-                  {testPushResult && (
-                    <div className={`flex items-start gap-2 rounded-lg px-3 py-2 text-sm ${testPushResult.ok ? "bg-green-50 text-green-800" : "bg-red-50 text-red-800"}`}>
-                      {testPushResult.ok ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" /> : <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />}
-                      <span>{testPushResult.message}</span>
-                    </div>
-                  )}
-                </div>
-                {/* Full booking test */}
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                  <Button
-                    onClick={runTestBooking}
-                    disabled={testBookingLoading}
-                    variant="outline"
-                    size="sm"
-                    className="gap-2 border-dashed"
-                  >
-                    {testBookingLoading ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <FlaskConical className="h-4 w-4" />
-                    )}
-                    {testBookingLoading ? "Firing…" : "Send test booking"}
-                  </Button>
-                  {testBookingResult && (
-                    <div className={`flex items-start gap-2 rounded-lg px-3 py-2 text-sm ${testBookingResult.ok ? "bg-green-50 text-green-800" : "bg-red-50 text-red-800"}`}>
-                      {testBookingResult.ok ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" /> : <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />}
-                      <span>
-                        {testBookingResult.message}
-                        {testBookingResult.bookingId && <span className="ml-1 font-mono text-xs opacity-70">({testBookingResult.bookingId})</span>}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </Card>
 
             {/* Availability — here because it's changed per operational day */}
             <Card className="border-border p-4 sm:p-6 lg:p-8">
@@ -3821,6 +3770,74 @@ export function AdminPage() {
 
           {/* ====== CLEANUP TAB ====== */}
           <TabsContent value="cleanup" className="space-y-6">
+            <BookingDiagnostics />
+            <DatabaseCleanup adminPassword="Sintra2025" />
+          </TabsContent>
+
+          {/* ====== DEV TAB ====== */}
+          <TabsContent value="dev" className="space-y-4 sm:space-y-6">
+            {/* Push notification test */}
+            <Card className="border-border p-4 sm:p-6">
+              <div className="mb-1 flex items-center gap-2">
+                <Send className="h-4 w-4 text-muted-foreground" />
+                <h2 className="text-foreground text-sm sm:text-base font-medium">Push Notification (ntfy)</h2>
+              </div>
+              <p className="mb-4 text-sm text-muted-foreground">
+                Fires a single push to your phone via ntfy.sh to confirm the <code className="font-mono text-xs bg-muted px-1 py-0.5 rounded">NTFY_TOPIC</code> secret is wired up correctly.
+              </p>
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                <Button
+                  onClick={runTestPush}
+                  disabled={testPushLoading}
+                  variant="outline"
+                  size="sm"
+                  className="gap-2 border-dashed"
+                >
+                  {testPushLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                  {testPushLoading ? "Sending…" : "Test push only"}
+                </Button>
+                {testPushResult && (
+                  <div className={`flex items-start gap-2 rounded-lg px-3 py-2 text-sm ${testPushResult.ok ? "bg-green-50 text-green-800" : "bg-red-50 text-red-800"}`}>
+                    {testPushResult.ok ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" /> : <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />}
+                    <span>{testPushResult.message}</span>
+                  </div>
+                )}
+              </div>
+            </Card>
+
+            {/* Full booking pipeline test */}
+            <Card className="border-border p-4 sm:p-6">
+              <div className="mb-1 flex items-center gap-2">
+                <FlaskConical className="h-4 w-4 text-muted-foreground" />
+                <h2 className="text-foreground text-sm sm:text-base font-medium">Full Booking Pipeline</h2>
+              </div>
+              <p className="mb-4 text-sm text-muted-foreground">
+                Creates a real test booking through the full stack — API, push notification, and owner email. No customer email is sent. The booking appears in the Bookings tab so you can check the card UI too.
+              </p>
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                <Button
+                  onClick={runTestBooking}
+                  disabled={testBookingLoading}
+                  variant="outline"
+                  size="sm"
+                  className="gap-2 border-dashed"
+                >
+                  {testBookingLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <FlaskConical className="h-4 w-4" />}
+                  {testBookingLoading ? "Firing…" : "Send test booking"}
+                </Button>
+                {testBookingResult && (
+                  <div className={`flex items-start gap-2 rounded-lg px-3 py-2 text-sm ${testBookingResult.ok ? "bg-green-50 text-green-800" : "bg-red-50 text-red-800"}`}>
+                    {testBookingResult.ok ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" /> : <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />}
+                    <span>
+                      {testBookingResult.message}
+                      {testBookingResult.bookingId && <span className="ml-1 font-mono text-xs opacity-70">({testBookingResult.bookingId})</span>}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </Card>
+
+            {/* Diagnostics + cleanup */}
             <BookingDiagnostics />
             <DatabaseCleanup adminPassword="Sintra2025" />
           </TabsContent>
