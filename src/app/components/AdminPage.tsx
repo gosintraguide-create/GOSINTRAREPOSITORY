@@ -38,6 +38,7 @@ import {
   Clapperboard,
   FlaskConical,
   Loader2,
+  SlidersHorizontal,
 } from "lucide-react";
 import { DestinationTracker } from "./DestinationTracker";
 import { Button } from "./ui/button";
@@ -246,6 +247,7 @@ export function AdminPage() {
   const [activeTab, setActiveTab] = useState("pickups");
   const [toursSubTab, setToursSubTab] = useState("requests");
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const [availabilitySheetOpen, setAvailabilitySheetOpen] = useState(false);
   const [ticketPurchasesEnabled, setTicketPurchasesEnabled] =
     useState(true);
 
@@ -2412,69 +2414,76 @@ export function AdminPage() {
               onRefresh={loadBookings}
             />
 
-            {/* Availability — here because it's changed per operational day */}
-            <Card className="border-border p-4 sm:p-6 lg:p-8">
-              <div className="mb-4 sm:mb-6">
-                <h2 className="mb-2 text-foreground text-sm sm:text-base">Availability Management</h2>
-                <div className="h-1 w-16 rounded-full bg-accent" />
-                <p className="mt-2 text-sm text-muted-foreground">Set available seats per time slot for a given date.</p>
-              </div>
-              <div className="space-y-6">
-                <div>
-                  <Label>Select Date</Label>
-                  <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" className="mt-2 w-full justify-start border-border text-left">
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {new Date(selectedDate).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+            {/* Availability — sheet trigger */}
+            <Sheet open={availabilitySheetOpen} onOpenChange={setAvailabilitySheetOpen}>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2 self-start">
+                  <SlidersHorizontal className="h-4 w-4" />
+                  Manage Availability
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
+                <SheetHeader className="mb-6">
+                  <SheetTitle>Availability Management</SheetTitle>
+                  <SheetDescription>Set available seats per time slot for a given date.</SheetDescription>
+                </SheetHeader>
+                <div className="space-y-6">
+                  <div>
+                    <Label>Select Date</Label>
+                    <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className="mt-2 w-full justify-start border-border text-left">
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {new Date(selectedDate).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <Calendar
+                          mode="single"
+                          selected={new Date(selectedDate)}
+                          onSelect={(date) => { if (date) { setSelectedDate(date.toISOString().split("T")[0]); setCalendarOpen(false); } }}
+                          disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                  <div className="rounded-lg border border-border bg-white p-4">
+                    <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                      <h3 className="text-foreground text-sm font-medium">
+                        Time Slots for {new Date(selectedDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                      </h3>
+                      <div className="flex gap-2">
+                        <Button size="sm" variant="outline" onClick={() => setAllSlotsForDate(selectedDate, 50)}>Set All to 50</Button>
+                        <Button size="sm" variant="outline" onClick={() => setAllSlotsForDate(selectedDate, 0)}>Set All to 0</Button>
+                      </div>
+                    </div>
+                    <div className="grid gap-3 grid-cols-2 sm:grid-cols-4">
+                      {TIME_SLOTS.map((slot) => (
+                        <div key={slot} className="rounded-lg border border-border p-3">
+                          <Label htmlFor={`bslot-${slot}`} className="text-foreground">{slot}</Label>
+                          <Input
+                            id={`bslot-${slot}`}
+                            type="number"
+                            min="0"
+                            max="50"
+                            value={availability[selectedDate]?.[slot] ?? 50}
+                            onChange={(e) => updateAvailability(selectedDate, slot, parseInt(e.target.value) || 0)}
+                            className="mt-2 border-border"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-4">
+                      <Button onClick={() => { saveAvailability(); setAvailabilitySheetOpen(false); }} className="bg-primary hover:bg-primary/90">
+                        <Save className="mr-2 h-4 w-4" />
+                        Save Availability
                       </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <Calendar
-                        mode="single"
-                        selected={new Date(selectedDate)}
-                        onSelect={(date) => { if (date) { setSelectedDate(date.toISOString().split("T")[0]); setCalendarOpen(false); } }}
-                        disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <div className="rounded-lg border border-border bg-white p-4 sm:p-6">
-                  <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                    <h3 className="text-foreground text-sm sm:text-base">
-                      Time Slots for {new Date(selectedDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-                    </h3>
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="outline" onClick={() => setAllSlotsForDate(selectedDate, 50)}>Set All to 50</Button>
-                      <Button size="sm" variant="outline" onClick={() => setAllSlotsForDate(selectedDate, 0)}>Set All to 0</Button>
                     </div>
                   </div>
-                  <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-4">
-                    {TIME_SLOTS.map((slot) => (
-                      <div key={slot} className="rounded-lg border border-border p-3 sm:p-4">
-                        <Label htmlFor={`bslot-${slot}`} className="text-foreground">{slot}</Label>
-                        <Input
-                          id={`bslot-${slot}`}
-                          type="number"
-                          min="0"
-                          max="50"
-                          value={availability[selectedDate]?.[slot] ?? 50}
-                          onChange={(e) => updateAvailability(selectedDate, slot, parseInt(e.target.value) || 0)}
-                          className="mt-2 border-border"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                  <div className="mt-4 sm:mt-6">
-                    <Button onClick={saveAvailability} className="bg-primary hover:bg-primary/90">
-                      <Save className="mr-2 h-4 w-4" />
-                      Save Availability
-                    </Button>
-                  </div>
                 </div>
-              </div>
-            </Card>
+              </SheetContent>
+            </Sheet>
           </TabsContent>
 
           {/* ====== MESSAGES TAB ====== */}
