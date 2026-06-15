@@ -369,9 +369,7 @@ export function HeroSection({
         {/* 2. Social proof */}
         <div className="px-4 pt-4 text-center">
           <span className="text-xs text-muted-foreground">
-            {"★★★★★"} {displayRating} &nbsp;·&nbsp;
-            {displayReviewCount.toLocaleString()} reviews &nbsp;·&nbsp;
-            {lowestPrice != null ? `From €${lowestPrice}/person` : "From €25/person"}
+            Local guides &nbsp;·&nbsp; Instant confirmation &nbsp;·&nbsp; Flexible booking
           </span>
         </div>
 
@@ -410,7 +408,7 @@ export function HeroSection({
             onClick={() => onNavigate("private-tours")}
             className="text-sm font-medium text-accent hover:text-accent/80"
           >
-            Private tours →
+            Book a private tour →
           </button>
         </div>
 
@@ -468,7 +466,7 @@ export function HeroSection({
 
             {/* Social proof */}
             <p className="mt-4 text-xs text-muted-foreground">
-              {"★★★★★"} {displayRating} &nbsp;·&nbsp; {displayReviewCount.toLocaleString()} reviews
+              Local guides &nbsp;·&nbsp; Instant confirmation &nbsp;·&nbsp; Flexible booking
             </p>
           </div>
 

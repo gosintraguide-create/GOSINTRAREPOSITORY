@@ -72,11 +72,11 @@ export const router = createBrowserRouter([
         element: <HopOnServiceDetailPage />,
         handle: {
           meta: {
-            title: "Hop On Day Pass - Unlimited Sintra Transportation Service",
+            title: "Hop-On Hop-Off Sintra | Tuk Tuk & Jeep Day Pass from €15",
             description:
-              "Unlimited hop-on/hop-off rides across all Sintra attractions from 9am to 7pm. Guaranteed seating in tuk-tuks and UMM jeeps. Local driver-guide on every vehicle.",
+              "Explore Sintra at your own pace with a hop-on hop-off day pass. Unlimited rides by tuk tuk or vintage jeep, from €15 per person. Stop anywhere, not just fixed bus stops.",
             keywords:
-              "Hop On Sintra service, Sintra day pass details, unlimited rides Sintra, hop on hop off service, Sintra transportation pass",
+              "hop-on hop-off Sintra, Sintra day pass, tuk tuk Sintra, Sintra jeep tour, unlimited rides Sintra, Sintra transportation pass",
             index: true,
           },
         },

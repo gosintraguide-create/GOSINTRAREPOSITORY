@@ -384,6 +384,11 @@ export function PrivateTourDetailPage() {
     tour.heroImage ||
     "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200";
 
+  // Filter out placeholder values so an unpopulated features list is treated as empty
+  const realFeatures = (tour.features || []).filter(
+    (f) => f && f.trim() && !/^Feature\s*\d+$/i.test(f.trim())
+  );
+
   return (
     <div className="flex-1">
       <Helmet>
@@ -506,11 +511,11 @@ export function PrivateTourDetailPage() {
               )}
 
               {/* Features / Highlights */}
-              {tour.features && tour.features.length > 0 && (
+              {realFeatures.length > 0 && (
                 <div className="pb-12">
                   <h2 className="mb-4 text-2xl font-bold">{tTour.tourFeatures}</h2>
                   <div className="space-y-3">
-                    {tour.features.map((feature, index) => (
+                    {realFeatures.map((feature, index) => (
                       <div
                         key={index}
                         className="flex items-start gap-3 rounded-lg border p-4"
@@ -841,11 +846,11 @@ export function PrivateTourDetailPage() {
             )}
 
             {/* Tour Highlights */}
-            {tour.features && tour.features.length > 0 && (
+            {realFeatures.length > 0 && (
               <>
                 <h2 className="mb-6 text-3xl font-bold">{tTour.tourFeatures}</h2>
                 <div className="space-y-4">
-                  {tour.features.map((feature, index) => (
+                  {realFeatures.map((feature, index) => (
                     <div
                       key={index}
                       className="flex items-start gap-3 rounded-lg border p-4"

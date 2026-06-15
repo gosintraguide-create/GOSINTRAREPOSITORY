@@ -173,17 +173,17 @@ export function HopOnServiceDetailPage() {
       description: t.feature2Desc,
     },
     {
-      icon: <Users className="h-6 w-6" />,
+      icon: <MapPin className="h-6 w-6" />,
       title: t.feature3Title,
       description: t.feature3Desc,
     },
     {
-      icon: <MapPin className="h-6 w-6" />,
+      icon: <Sparkles className="h-6 w-6" />,
       title: t.feature4Title,
       description: t.feature4Desc,
     },
     {
-      icon: <Sparkles className="h-6 w-6" />,
+      icon: <Users className="h-6 w-6" />,
       title: t.feature5Title,
       description: t.feature5Desc,
     },
@@ -203,7 +203,6 @@ export function HopOnServiceDetailPage() {
     { question: t.faq5Q, answer: t.faq5A },
     { question: t.faq6Q, answer: t.faq6A },
     { question: t.faq7Q, answer: t.faq7A },
-    { question: t.faq8Q, answer: t.faq8A },
   ], [t]);
 
   // Generate structured data for SEO
@@ -331,10 +330,14 @@ export function HopOnServiceDetailPage() {
 
     const locale = language === "en" ? "en_US" : `${language}_${language.toUpperCase()}`;
 
+    // Title and description — owned by this page, not inherited from route handle
+    document.title = "Hop-On Hop-Off Sintra | Tuk Tuk & Jeep Day Pass from €15";
+    updateMeta("name", "description", "Explore Sintra at your own pace with a hop-on hop-off day pass. Unlimited rides by tuk tuk or vintage jeep, from €15 per person. Stop anywhere, not just fixed bus stops.");
+
     // Open Graph
     updateMeta("property", "og:type", "product");
-    updateMeta("property", "og:title", "Hop On Sintra Day Pass - Unlimited Access to All Attractions");
-    updateMeta("property", "og:description", "Explore Sintra with unlimited hop-on/hop-off access. Guaranteed seating, 9am-7pm service. Visit all major palaces and attractions at your pace.");
+    updateMeta("property", "og:title", "Hop-On Hop-Off Sintra | Tuk Tuk & Jeep Day Pass from €15");
+    updateMeta("property", "og:description", "Explore Sintra at your own pace with a hop-on hop-off day pass. Unlimited rides by tuk tuk or vintage jeep, from €15 per person. Stop anywhere, not just fixed bus stops.");
     updateMeta("property", "og:url", "https://www.hoponsintra.com/hop-on-hop-off-sintra");
     updateMeta("property", "og:image", comprehensiveContent.content?.seo?.hopOnService?.ogImage || comprehensiveContent.content?.seo?.defaultOgImage || "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1200&h=630&fit=crop&q=80");
     updateMeta("property", "og:image:secure_url", comprehensiveContent.content?.seo?.hopOnService?.ogImage || comprehensiveContent.content?.seo?.defaultOgImage || "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1200&h=630&fit=crop&q=80");
@@ -348,22 +351,20 @@ export function HopOnServiceDetailPage() {
 
     // Twitter Card
     updateMeta("name", "twitter:card", "summary_large_image");
-    updateMeta("name", "twitter:title", "Hop On Sintra Day Pass - Unlimited Access to All Attractions");
-    updateMeta("name", "twitter:description", "Explore Sintra with unlimited hop-on/hop-off access. Guaranteed seating, 9am-7pm service. Visit all major palaces and attractions at your pace.");
+    updateMeta("name", "twitter:title", "Hop-On Hop-Off Sintra | Tuk Tuk & Jeep Day Pass from €15");
+    updateMeta("name", "twitter:description", "Explore Sintra at your own pace with a hop-on hop-off day pass. Unlimited rides by tuk tuk or vintage jeep, from €15 per person. Stop anywhere, not just fixed bus stops.");
     updateMeta("name", "twitter:image", comprehensiveContent.content?.seo?.hopOnService?.ogImage || comprehensiveContent.content?.seo?.defaultOgImage || "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1200&h=630&fit=crop&q=80");
     updateMeta("name", "twitter:image:alt", "Hop On Sintra - Tuk-tuk transportation in Sintra, Portugal");
 
     // Additional meta
     updateMeta("name", "author", "Hop On Sintra");
 
-    // Canonical
-    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
-    if (!canonical) {
-      canonical = document.createElement("link");
-      canonical.rel = "canonical";
-      document.head.appendChild(canonical);
-    }
+    // Canonical — remove any existing tags first to prevent duplicates/races
+    document.querySelectorAll('link[rel="canonical"]').forEach(el => el.remove());
+    const canonical = document.createElement("link");
+    canonical.rel = "canonical";
     canonical.href = "https://www.hoponsintra.com/hop-on-hop-off-sintra";
+    document.head.appendChild(canonical);
   }, [language, comprehensiveContent]);
 
   return (

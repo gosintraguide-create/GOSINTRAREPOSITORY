@@ -77,8 +77,8 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
 
   const navItems = [
     { id: "hop-on-hop-off-sintra", label: content.header.hopOnService || "Hop On Hop Off Sintra" },
-    { id: "attractions", label: t.attractions },
     { id: "private-tours", label: content.header.privateTours },
+    { id: "attractions", label: t.attractions },
     { id: "travel-guide", label: content.header.travelGuide },
   ];
 
