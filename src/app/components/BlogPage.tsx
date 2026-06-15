@@ -273,7 +273,7 @@ export function BlogPage() {
             </div>
           ) : (
             <>
-              <div className="mb-6 text-center">
+              <div className="mb-8 text-center">
                 <Badge variant="outline">
                   {filteredArticles.length}{" "}
                   {filteredArticles.length === 1 ? tb.article : tb.articles}{" "}
@@ -281,120 +281,76 @@ export function BlogPage() {
                 </Badge>
               </div>
 
-              {/* Featured article — full-width hero for the first result */}
-              {filteredArticles.length > 0 && (() => {
-                const featured = filteredArticles[0];
-                const featT = getArticleTranslation(featured, language);
-                return (
-                  <div
-                    className="group mb-10 cursor-pointer overflow-hidden rounded-2xl border border-border bg-white shadow-sm transition-all hover:shadow-xl"
-                    onClick={() => handleArticleClick(featured)}
-                  >
-                    <div className="flex flex-col lg:flex-row">
-                      {(featured.thumbnailImage || featured.featuredImage) && (
-                        <div className="relative overflow-hidden lg:w-1/2">
-                          <div className="aspect-video lg:aspect-auto lg:h-full">
-                            <ImageWithFallback
-                              src={featured.thumbnailImage || featured.featuredImage || ""}
-                              alt={featT.title}
-                              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent lg:bg-gradient-to-r" />
-                          </div>
-                        </div>
-                      )}
-                      <div className="flex flex-col justify-center p-6 sm:p-8 lg:w-1/2">
-                        <div className="mb-3 flex items-center gap-2">
-                          <Badge className="bg-primary text-white">{getCategoryName(featured.category)}</Badge>
-                          <Badge variant="outline" className="text-xs">Featured</Badge>
-                        </div>
-                        <h2 className="mb-3 text-xl font-bold leading-snug text-foreground group-hover:text-primary sm:text-2xl">
-                          {featT.title}
-                        </h2>
-                        <p className="mb-4 line-clamp-3 text-muted-foreground">{featT.excerpt}</p>
-                        <div className="mb-4 flex flex-wrap gap-3 text-sm text-muted-foreground">
-                          <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{formatDate(featured.publishDate)}</span>
-                          <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{featured.readTimeMinutes} {tb.minRead}</span>
-                        </div>
-                        {featured.tags.length > 0 && (
-                          <div className="mb-4 flex flex-wrap gap-2">
-                            {featured.tags.slice(0, 4).map((tag) => (
-                              <button
-                                key={tag}
-                                onClick={(e) => { e.stopPropagation(); setSelectedTag(tag); setSelectedCategory("all"); }}
-                                className="flex items-center gap-1 rounded-full border border-border px-2.5 py-0.5 text-xs text-muted-foreground hover:border-primary hover:text-primary transition-colors"
-                              >
-                                <Tag className="h-3 w-3" />{tag}
-                              </button>
-                            ))}
-                          </div>
+              {/* Uniform portrait-card grid */}
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {filteredArticles.map((article) => {
+                  const t = getArticleTranslation(article, language);
+                  const imgSrc = article.thumbnailImage || article.featuredImage || "";
+                  return (
+                    <div
+                      key={article.id}
+                      className="group cursor-pointer overflow-hidden rounded-2xl bg-white shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                      onClick={() => handleArticleClick(article)}
+                    >
+                      {/* Portrait image with title/meta overlay */}
+                      <div className="relative aspect-[3/4] overflow-hidden">
+                        {imgSrc ? (
+                          <ImageWithFallback
+                            src={imgSrc}
+                            alt={t.title}
+                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                        ) : (
+                          <div className="h-full w-full bg-stone-200" />
                         )}
-                        <div className="flex items-center gap-2 font-medium text-primary">
-                          {tb.readGuide}
-                          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-2" />
+                        {/* gradient — stronger at bottom for text legibility */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+
+                        {/* Category badge — top left */}
+                        <Badge className="absolute left-3 top-3 bg-primary/90 text-white text-xs backdrop-blur-sm">
+                          {getCategoryName(article.category)}
+                        </Badge>
+
+                        {/* Title + author + date — bottom overlay */}
+                        <div className="absolute bottom-0 left-0 right-0 p-4">
+                          <h3 className="mb-2.5 text-base font-bold leading-snug text-white sm:text-lg">
+                            {t.title}
+                          </h3>
+                          <div className="flex items-center gap-3 text-xs text-white/80">
+                            {article.author && (
+                              <span className="flex items-center gap-1">
+                                <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-white/40 text-[9px]">✦</span>
+                                {article.author}
+                              </span>
+                            )}
+                            <span className="flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              {formatDate(article.publishDate)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Excerpt + read more — below image */}
+                      <div className="p-4">
+                        <p className="mb-3 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+                          {t.excerpt}
+                        </p>
+                        <div className="flex items-center justify-between">
+                          <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <Clock className="h-3 w-3" />
+                            {article.readTimeMinutes} {tb.minRead}
+                          </span>
+                          <span className="flex items-center gap-1 text-sm font-medium text-primary transition-transform group-hover:translate-x-0.5">
+                            {tb.readGuide}
+                            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                          </span>
                         </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })()}
-
-              {/* Remaining articles grid */}
-              {filteredArticles.length > 1 && (
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {filteredArticles.slice(1).map((article) => {
-                    const t = getArticleTranslation(article, language);
-                    return (
-                      <Card
-                        key={article.id}
-                        className="group h-full cursor-pointer overflow-hidden transition-all hover:shadow-xl"
-                        onClick={() => handleArticleClick(article)}
-                      >
-                        {(article.thumbnailImage || article.featuredImage) && (
-                          <div className="relative aspect-video overflow-hidden">
-                            <ImageWithFallback
-                              src={article.thumbnailImage || article.featuredImage || ""}
-                              alt={t.title}
-                              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                            <Badge className="absolute left-3 top-3 bg-primary text-white text-xs">
-                              {getCategoryName(article.category)}
-                            </Badge>
-                          </div>
-                        )}
-                        <div className="flex h-full flex-col p-5">
-                          <div className="mb-2 flex flex-wrap gap-3 text-xs text-muted-foreground">
-                            <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{formatDate(article.publishDate)}</span>
-                            <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{article.readTimeMinutes} {tb.minRead}</span>
-                          </div>
-                          <h3 className="mb-2 text-base font-semibold leading-snug text-foreground group-hover:text-primary">
-                            {t.title}
-                          </h3>
-                          <p className="mb-3 flex-1 line-clamp-2 text-sm text-muted-foreground">{t.excerpt}</p>
-                          {article.tags.length > 0 && (
-                            <div className="mb-3 flex flex-wrap gap-1.5">
-                              {article.tags.slice(0, 3).map((tag) => (
-                                <button
-                                  key={tag}
-                                  onClick={(e) => { e.stopPropagation(); setSelectedTag(tag); setSelectedCategory("all"); }}
-                                  className="flex items-center gap-1 rounded-full border border-border px-2 py-0.5 text-xs text-muted-foreground hover:border-primary hover:text-primary transition-colors"
-                                >
-                                  <Tag className="h-2.5 w-2.5" />{tag}
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                          <div className="flex items-center gap-1.5 text-sm font-medium text-primary">
-                            {tb.readGuide}
-                            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-                          </div>
-                        </div>
-                      </Card>
-                    );
-                  })}
-                </div>
-              )}
+                  );
+                })}
+              </div>
             </>
           )}
         </div>
