@@ -180,66 +180,55 @@ export function BlogPage() {
 
   return (
     <div className="flex-1">
-      {/* Hero / Search Section */}
-      <section className="border-b border-border bg-white py-12">
+      {/* Header: title + search + category filters \u2014 single unified block */}
+      <section className="border-b border-border bg-white pb-6 pt-10">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-6 text-center">
-            <h1 className="mb-3 text-primary font-extrabold text-[23px]">
+          <div className="mb-5 text-center">
+            <h1 className="mb-2 text-primary font-extrabold text-[23px]">
               {tb.pageTitle}
             </h1>
-            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-              {tb.pageSubtitle
-                .replace(/\u2728/g, "")
-                .trim()}
+            <p className="mx-auto max-w-2xl text-base text-muted-foreground">
+              {tb.pageSubtitle.replace(/\u2728/g, "").trim()}
             </p>
           </div>
 
-          <div className="relative mx-auto max-w-2xl">
-            <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+          <div className="relative mx-auto mb-5 max-w-xl">
+            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               type="text"
               placeholder={tb.searchPlaceholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-12 rounded-xl bg-secondary/30 pl-12 pr-4"
+              className="h-10 rounded-xl bg-secondary/30 pl-10 pr-4 text-sm"
             />
           </div>
-        </div>
-      </section>
 
-      {/* Categories + Tag Filter */}
-      <section className="border-b border-border bg-white py-4">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3 overflow-x-auto pb-1 scrollbar-none">
-            <div className="flex flex-shrink-0 items-center gap-2">
-              <Filter className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">{tb.filterBy}</span>
-            </div>
-            <div className="flex flex-shrink-0 gap-2">
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+            <Button
+              variant={selectedCategory === "all" && !selectedTag ? "default" : "outline"}
+              size="sm"
+              className="shrink-0 rounded-full text-xs"
+              onClick={() => { setSelectedCategory("all"); setSelectedTag(""); }}
+            >
+              {tb.allArticles}
+            </Button>
+            {categories.map((category) => (
               <Button
-                variant={selectedCategory === "all" && !selectedTag ? "default" : "outline"}
+                key={category.id}
+                variant={selectedCategory === category.slug ? "default" : "outline"}
                 size="sm"
-                onClick={() => { setSelectedCategory("all"); setSelectedTag(""); }}
+                className="shrink-0 rounded-full text-xs"
+                onClick={() => { setSelectedCategory(category.slug); setSelectedTag(""); }}
               >
-                {tb.allArticles}
+                {getCategoryName(category.slug)}
               </Button>
-              {categories.map((category) => (
-                <Button
-                  key={category.id}
-                  variant={selectedCategory === category.slug ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => { setSelectedCategory(category.slug); setSelectedTag(""); }}
-                >
-                  {getCategoryName(category.slug)}
-                </Button>
-              ))}
-            </div>
+            ))}
             {selectedTag && (
-              <div className="flex flex-shrink-0 items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-sm text-primary">
-                <Tag className="h-3.5 w-3.5" />
+              <div className="flex shrink-0 items-center gap-1.5 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-xs text-primary">
+                <Tag className="h-3 w-3" />
                 {selectedTag}
-                <button onClick={() => setSelectedTag("")} className="ml-1 hover:text-destructive">
-                  <X className="h-3.5 w-3.5" />
+                <button onClick={() => setSelectedTag("")} className="ml-0.5 hover:text-destructive">
+                  <X className="h-3 w-3" />
                 </button>
               </div>
             )}
