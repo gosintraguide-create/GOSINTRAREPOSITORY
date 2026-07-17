@@ -75,10 +75,10 @@
   },
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.52.0",
+    "@sparticuz/chromium": "^149.0.0",
     "@tailwindcss/vite": "4.1.12",
     "@vitejs/plugin-react": "4.7.0",
-    "@sparticuz/chromium": "^130.0.0",
-    "puppeteer-core": "^22.15.0",
+    "puppeteer-core": "^25.3.0",
     "tailwindcss": "4.1.12",
     "vite": "6.3.5"
   }

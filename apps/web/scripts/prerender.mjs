@@ -179,23 +179,21 @@ async function main() {
 
   const server = await startServer();
 
-  // Required for @sparticuz/chromium v120+ in headless/no-GPU environments
-  // (Vercel build containers, Lambda, etc.) — must be set before executablePath()
-  chromium.setHeadlessMode = true;
+  // No GPU/WebGL available in headless build containers (Vercel, Lambda, etc.)
   chromium.setGraphicsMode = false;
 
   const executablePath = await chromium.executablePath();
   const browser = await puppeteer.launch({
-    args: [
-      ...chromium.args,
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-dev-shm-usage',   // prevents /dev/shm OOM in containers
-      '--disable-gpu',
-    ],
+    args: await puppeteer.defaultArgs({
+      args: [
+        ...chromium.args,
+        '--disable-dev-shm-usage', // prevents /dev/shm OOM in containers
+      ],
+      headless: 'shell',
+    }),
     defaultViewport: chromium.defaultViewport,
     executablePath,
-    headless: true,
+    headless: 'shell',
   });
 
   const page = await browser.newPage();
