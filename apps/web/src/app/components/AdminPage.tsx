@@ -39,6 +39,8 @@ import {
   FlaskConical,
   Loader2,
   SlidersHorizontal,
+  CreditCard,
+  Store,
 } from "lucide-react";
 import { DestinationTracker } from "./DestinationTracker";
 import { Button } from "./ui/button";
@@ -84,6 +86,8 @@ import { ContentEditor } from "./ContentEditor";
 import { BlogEditor } from "./BlogEditor";
 import { SEOTools } from "./SEOTools";
 import { DriverManagement } from "./DriverManagementMobile";
+import { CardTiersManagement } from "./CardTiersManagement";
+import { MerchantsDealsManagement } from "./MerchantsDealsManagement";
 import { PickupRequestsManagement } from "./PickupRequestsManagement";
 import { TagManagement } from "./TagManagement";
 import { ImageManager } from "./ImageManager";
@@ -2324,6 +2328,47 @@ export function AdminPage() {
 
                     <div className="my-3 h-px bg-border" />
 
+                    {/* Section: Card System */}
+                    <p className="px-3 pb-1 pt-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      Card System
+                    </p>
+
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-3"
+                      onClick={() => {
+                        setActiveTab("card-tiers");
+                        setMoreMenuOpen(false);
+                      }}
+                    >
+                      <CreditCard className="h-5 w-5" />
+                      <div className="flex flex-col items-start">
+                        <span>Card Tiers</span>
+                        <span className="text-xs text-muted-foreground">
+                          Sintra Day Card products
+                        </span>
+                      </div>
+                    </Button>
+
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-3"
+                      onClick={() => {
+                        setActiveTab("deals-merchants");
+                        setMoreMenuOpen(false);
+                      }}
+                    >
+                      <Store className="h-5 w-5" />
+                      <div className="flex flex-col items-start">
+                        <span>Deals &amp; Merchants</span>
+                        <span className="text-xs text-muted-foreground">
+                          Merchants and their card deals
+                        </span>
+                      </div>
+                    </Button>
+
+                    <div className="my-3 h-px bg-border" />
+
                     {/* Section: Settings */}
                     <p className="px-3 pb-1 pt-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                       Settings
@@ -3793,6 +3838,16 @@ export function AdminPage() {
           {/* ====== CINEMA NO MATO TAB ====== */}
           <TabsContent value="cinema-no-mato" className="space-y-6">
             <CinemaNoMatoEditor />
+          </TabsContent>
+
+          {/* ====== CARD TIERS TAB ====== */}
+          <TabsContent value="card-tiers" className="space-y-6">
+            <CardTiersManagement />
+          </TabsContent>
+
+          {/* ====== DEALS & MERCHANTS TAB ====== */}
+          <TabsContent value="deals-merchants" className="space-y-6">
+            <MerchantsDealsManagement />
           </TabsContent>
 
           {/* ====== CONTENT TAB ====== */}

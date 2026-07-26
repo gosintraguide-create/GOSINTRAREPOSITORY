@@ -1809,6 +1809,253 @@ app.get("/make-server-3bd0ade8/drivers/:id/activity", async (c) => {
   }
 });
 
+// ===== CARD SYSTEM: CARD PRODUCTS / MERCHANTS / DEALS =====
+
+// GET /card-products — list all card products (admin use)
+app.get("/make-server-3bd0ade8/card-products", async (c) => {
+  try {
+    const { data, error } = await supabase
+      .from("card_products")
+      .select("*")
+      .order("created_at", { ascending: true });
+    if (error) throw error;
+    return c.json({ success: true, cardProducts: data });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// POST /card-products — admin: create a new card product
+app.post("/make-server-3bd0ade8/card-products", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { name, description, priceCents, validFromTime, validUntilTime, isActive } = body;
+
+    if (!name || priceCents === undefined || priceCents === null) {
+      return c.json({ success: false, error: "Name and price are required" }, 400);
+    }
+
+    const { data, error } = await supabase
+      .from("card_products")
+      .insert({
+        name,
+        description: description || null,
+        price_cents: priceCents,
+        valid_from_time: validFromTime || "08:30",
+        valid_until_time: validUntilTime || "19:00",
+        is_active: isActive ?? true,
+      })
+      .select()
+      .single();
+    if (error) throw error;
+
+    return c.json({ success: true, cardProduct: data });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// PUT /card-products/:id — admin: update a card product
+app.put("/make-server-3bd0ade8/card-products/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const body = await c.req.json();
+    const { name, description, priceCents, validFromTime, validUntilTime, isActive } = body;
+
+    const updates: Record<string, unknown> = {};
+    if (name !== undefined) updates.name = name;
+    if (description !== undefined) updates.description = description;
+    if (priceCents !== undefined) updates.price_cents = priceCents;
+    if (validFromTime !== undefined) updates.valid_from_time = validFromTime;
+    if (validUntilTime !== undefined) updates.valid_until_time = validUntilTime;
+    if (isActive !== undefined) updates.is_active = isActive;
+
+    const { data, error } = await supabase
+      .from("card_products")
+      .update(updates)
+      .eq("id", id)
+      .select()
+      .maybeSingle();
+    if (error) throw error;
+    if (!data) return c.json({ success: false, error: "Card product not found" }, 404);
+
+    return c.json({ success: true, cardProduct: data });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// GET /merchants — list all merchants (admin use)
+app.get("/make-server-3bd0ade8/merchants", async (c) => {
+  try {
+    const { data, error } = await supabase
+      .from("merchants")
+      .select("*")
+      .order("created_at", { ascending: true });
+    if (error) throw error;
+    return c.json({ success: true, merchants: data });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// POST /merchants — admin: create a new merchant
+app.post("/make-server-3bd0ade8/merchants", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { name, category, location, lat, lng, isActive } = body;
+
+    if (!name) {
+      return c.json({ success: false, error: "Name is required" }, 400);
+    }
+
+    const { data, error } = await supabase
+      .from("merchants")
+      .insert({
+        name,
+        category: category || null,
+        location: location || null,
+        lat: lat ?? null,
+        lng: lng ?? null,
+        is_active: isActive ?? true,
+      })
+      .select()
+      .single();
+    if (error) throw error;
+
+    return c.json({ success: true, merchant: data });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// PUT /merchants/:id — admin: update a merchant
+app.put("/make-server-3bd0ade8/merchants/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const body = await c.req.json();
+    const { name, category, location, lat, lng, isActive } = body;
+
+    const updates: Record<string, unknown> = {};
+    if (name !== undefined) updates.name = name;
+    if (category !== undefined) updates.category = category;
+    if (location !== undefined) updates.location = location;
+    if (lat !== undefined) updates.lat = lat;
+    if (lng !== undefined) updates.lng = lng;
+    if (isActive !== undefined) updates.is_active = isActive;
+
+    const { data, error } = await supabase
+      .from("merchants")
+      .update(updates)
+      .eq("id", id)
+      .select()
+      .maybeSingle();
+    if (error) throw error;
+    if (!data) return c.json({ success: false, error: "Merchant not found" }, 404);
+
+    return c.json({ success: true, merchant: data });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// DELETE /merchants/:id — admin: remove a merchant (cascades to its deals/staff)
+app.delete("/make-server-3bd0ade8/merchants/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const { error } = await supabase.from("merchants").delete().eq("id", id);
+    if (error) throw error;
+    return c.json({ success: true });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// GET /deals — list deals, optionally filtered by merchant
+app.get("/make-server-3bd0ade8/deals", async (c) => {
+  try {
+    const merchantId = c.req.query("merchantId");
+    let query = supabase.from("deals").select("*").order("created_at", { ascending: true });
+    if (merchantId) query = query.eq("merchant_id", merchantId);
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return c.json({ success: true, deals: data });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// POST /deals — admin: create a new deal
+app.post("/make-server-3bd0ade8/deals", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { merchantId, title, terms, isSingleUse, isActive } = body;
+
+    if (!merchantId || !title) {
+      return c.json({ success: false, error: "Merchant and title are required" }, 400);
+    }
+
+    const { data, error } = await supabase
+      .from("deals")
+      .insert({
+        merchant_id: merchantId,
+        title,
+        terms: terms || null,
+        is_single_use: isSingleUse ?? true,
+        is_active: isActive ?? true,
+      })
+      .select()
+      .single();
+    if (error) throw error;
+
+    return c.json({ success: true, deal: data });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// PUT /deals/:id — admin: update a deal
+app.put("/make-server-3bd0ade8/deals/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const body = await c.req.json();
+    const { merchantId, title, terms, isSingleUse, isActive } = body;
+
+    const updates: Record<string, unknown> = {};
+    if (merchantId !== undefined) updates.merchant_id = merchantId;
+    if (title !== undefined) updates.title = title;
+    if (terms !== undefined) updates.terms = terms;
+    if (isSingleUse !== undefined) updates.is_single_use = isSingleUse;
+    if (isActive !== undefined) updates.is_active = isActive;
+
+    const { data, error } = await supabase
+      .from("deals")
+      .update(updates)
+      .eq("id", id)
+      .select()
+      .maybeSingle();
+    if (error) throw error;
+    if (!data) return c.json({ success: false, error: "Deal not found" }, 404);
+
+    return c.json({ success: true, deal: data });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// DELETE /deals/:id — admin: remove a deal
+app.delete("/make-server-3bd0ade8/deals/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const { error } = await supabase.from("deals").delete().eq("id", id);
+    if (error) throw error;
+    return c.json({ success: true });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
 // GET /pickup-requests/pending — only pending pickup requests (driver polling endpoint)
 app.get("/make-server-3bd0ade8/pickup-requests/pending", async (c) => {
   try {
