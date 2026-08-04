@@ -678,6 +678,13 @@ app.post("/make-server-3bd0ade8/bookings", async (c) => {
     const body = await c.req.json();
     const { paymentIntentId, isTestBooking, skipEmail } = body;
 
+    if (!isTestBooking) {
+      const purchasesEnabled = await kvWithRetry.get("ticket_purchases_enabled");
+      if (purchasesEnabled === false) {
+        return c.json({ success: false, error: "Ticket purchases are currently disabled" }, 403);
+      }
+    }
+
     // Idempotency: if this PI already triggered a booking (via webhook), return it
     if (paymentIntentId) {
       try {
@@ -2261,6 +2268,26 @@ app.post("/make-server-3bd0ade8/pricing", async (c) => {
   }
 });
 
+// Ticket purchases master toggle
+app.get("/make-server-3bd0ade8/settings/ticket-purchases-enabled", async (c) => {
+  try {
+    const enabled = await kvWithRetry.get("ticket_purchases_enabled");
+    return c.json({ success: true, enabled: enabled !== false });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+app.post("/make-server-3bd0ade8/settings/ticket-purchases-enabled", async (c) => {
+  try {
+    const { enabled } = await c.req.json();
+    await kvWithRetry.set("ticket_purchases_enabled", enabled !== false);
+    return c.json({ success: true });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
 // ===== IMAGE MANAGEMENT (Supabase Storage) =====
 
 const IMAGE_BUCKET = "make-3bd0ade8-images";
@@ -2577,6 +2604,11 @@ app.get("/make-server-3bd0ade8/stripe-config", (c) => {
 app.post("/make-server-3bd0ade8/create-payment-intent", async (c) => {
   if (!stripe) return c.json({ success: false, error: "Payment processing not configured" }, 503);
   try {
+    const purchasesEnabled = await kvWithRetry.get("ticket_purchases_enabled");
+    if (purchasesEnabled === false) {
+      return c.json({ success: false, error: "Ticket purchases are currently disabled" }, 403);
+    }
+
     const { amount, currency = "eur", metadata, pendingBookingData } = await c.req.json();
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount * 100),

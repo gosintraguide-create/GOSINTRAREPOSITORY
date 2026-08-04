@@ -197,6 +197,58 @@ const CHART_COLORS = [
   "#e74c3c",
 ];
 
+function TicketPurchasesToggle({
+  enabled,
+  onToggle,
+  idSuffix,
+}: {
+  enabled: boolean;
+  onToggle: (enabled: boolean) => void;
+  idSuffix: string;
+}) {
+  return (
+    <div
+      className={`rounded-lg border-2 p-4 transition-colors ${
+        enabled
+          ? "border-green-200 bg-green-50"
+          : "border-red-200 bg-red-50"
+      }`}
+    >
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-1">
+            <Label
+              htmlFor={`ticket-purchases-toggle-${idSuffix}`}
+              className="text-base cursor-pointer"
+            >
+              Enable Ticket Purchases
+            </Label>
+            {enabled ? (
+              <CheckCircle2 className="h-5 w-5 text-green-600" />
+            ) : (
+              <Lock className="h-5 w-5 text-red-600" />
+            )}
+          </div>
+          <p
+            className={`text-sm ${
+              enabled ? "text-green-700" : "text-red-700"
+            }`}
+          >
+            {enabled
+              ? "✅ Customers can purchase tickets and make bookings"
+              : "🔒 All dates show as SOLD OUT - Safe for testing"}
+          </p>
+        </div>
+        <Switch
+          id={`ticket-purchases-toggle-${idSuffix}`}
+          checked={enabled}
+          onCheckedChange={onToggle}
+        />
+      </div>
+    </div>
+  );
+}
+
 export function AdminPage() {
   const { onNavigate } = useOutletContext<OutletContext>();
   // Block search engines from indexing this page
@@ -2513,6 +2565,11 @@ export function AdminPage() {
                   <SheetDescription>Set available seats per time slot for a given date.</SheetDescription>
                 </SheetHeader>
                 <div className="space-y-6">
+                  <TicketPurchasesToggle
+                    enabled={ticketPurchasesEnabled}
+                    onToggle={toggleTicketPurchases}
+                    idSuffix="availability"
+                  />
                   <div>
                     <Label>Select Date</Label>
                     <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
@@ -3596,47 +3653,11 @@ export function AdminPage() {
 
               <div className="space-y-6">
                 {/* Ticket Purchases Master Toggle */}
-                <div
-                  className={`rounded-lg border-2 p-4 transition-colors ${
-                    ticketPurchasesEnabled
-                      ? "border-green-200 bg-green-50"
-                      : "border-red-200 bg-red-50"
-                  }`}
-                >
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Label
-                          htmlFor="ticket-purchases-toggle"
-                          className="text-base cursor-pointer"
-                        >
-                          Enable Ticket Purchases
-                        </Label>
-                        {ticketPurchasesEnabled ? (
-                          <CheckCircle2 className="h-5 w-5 text-green-600" />
-                        ) : (
-                          <Lock className="h-5 w-5 text-red-600" />
-                        )}
-                      </div>
-                      <p
-                        className={`text-sm ${
-                          ticketPurchasesEnabled
-                            ? "text-green-700"
-                            : "text-red-700"
-                        }`}
-                      >
-                        {ticketPurchasesEnabled
-                          ? "✅ Customers can purchase tickets and make bookings"
-                          : "🔒 All dates show as SOLD OUT - Safe for testing"}
-                      </p>
-                    </div>
-                    <Switch
-                      id="ticket-purchases-toggle"
-                      checked={ticketPurchasesEnabled}
-                      onCheckedChange={toggleTicketPurchases}
-                    />
-                  </div>
-                </div>
+                <TicketPurchasesToggle
+                  enabled={ticketPurchasesEnabled}
+                  onToggle={toggleTicketPurchases}
+                  idSuffix="pricing"
+                />
 
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
