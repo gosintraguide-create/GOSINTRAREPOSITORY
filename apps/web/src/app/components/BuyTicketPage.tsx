@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useOutletContext, useLocation } from "react-router";
 import { toast } from 'sonner';
-import { createBooking, createPaymentIntent } from "../lib/api";
+import { createBooking, createPaymentIntent, finalizePayment } from "../lib/api";
 import {
   projectId,
   publicAnonKey,
@@ -338,6 +338,51 @@ export function BuyTicketPage() {
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
   }, [currentStep]);
+
+  // Handle returning from a redirect-based payment method (PayPal, etc). Stripe
+  // reloads the page with payment_intent/redirect_status query params, which wipes
+  // the in-progress wizard state (currentStep, formData) — so this can't rely on
+  // reaching step 5 normally. It finalizes the booking server-side from data
+  // stashed when the payment intent was created, independent of local state.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const returnedPaymentIntentId = params.get("payment_intent");
+    const redirectStatus = params.get("redirect_status");
+    if (!returnedPaymentIntentId) return;
+
+    // Strip the redirect params so a refresh doesn't reprocess this payment
+    window.history.replaceState(
+      {},
+      "",
+      window.location.pathname + window.location.hash,
+    );
+
+    if (redirectStatus !== "succeeded") {
+      toast.error(
+        "Payment was not completed. Please try again.",
+      );
+      return;
+    }
+
+    (async () => {
+      const response = await finalizePayment(
+        returnedPaymentIntentId,
+      );
+      if (response.success && response.data?.success) {
+        onBookingComplete(response.data.booking);
+      } else {
+        console.error(
+          "⚠️ CRITICAL: Payment succeeded via redirect but booking finalization failed",
+        );
+        console.error("⚠️ Payment Intent ID:", returnedPaymentIntentId);
+        toast.error(
+          "Your payment succeeded but we couldn't finish your booking automatically. Please contact us with your payment confirmation.",
+          { duration: 15000 },
+        );
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const loadAvailabilityForDate = async (date: string) => {
     setLoadingAvailability(true);

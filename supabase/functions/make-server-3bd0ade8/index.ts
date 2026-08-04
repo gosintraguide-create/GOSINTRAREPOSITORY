@@ -2769,6 +2769,31 @@ app.get("/make-server-3bd0ade8/admin/pending-payments", async (c) => {
   }
 });
 
+// Verifies a payment intent succeeded with Stripe, then finalizes the booking from
+// the pending data stashed at payment-intent-creation time. Idempotent — safe to
+// call more than once for the same PI (e.g. admin recovery + client redirect-return
+// both calling in for the same payment).
+async function finalizePaymentIntent(paymentIntentId: string, source: string) {
+  const claimed = await kv.get(`pi_claimed_${paymentIntentId}`) as any;
+  if (claimed?.bookingId) {
+    const existingBooking = await kv.get(claimed.bookingId);
+    return { alreadyExisted: true, bookingId: claimed.bookingId, booking: existingBooking };
+  }
+
+  const paymentIntent = await stripe!.paymentIntents.retrieve(paymentIntentId);
+  if (paymentIntent.status !== "succeeded") {
+    throw new Error(`Payment intent status is "${paymentIntent.status}", not "succeeded"`);
+  }
+
+  const pending = await kv.get(`pending_pi_${paymentIntentId}`) as any;
+  if (!pending) {
+    throw new Error("No pending booking data found for this payment intent");
+  }
+
+  const { bookingId, booking } = await createBookingFromPendingPI(paymentIntentId, pending, source);
+  return { alreadyExisted: false, bookingId, booking };
+}
+
 // POST /admin/recover-payment — manually finalizes a booking for a payment intent
 // that Stripe confirms succeeded but that never got turned into a booking.
 app.post("/make-server-3bd0ade8/admin/recover-payment", async (c) => {
@@ -2776,27 +2801,28 @@ app.post("/make-server-3bd0ade8/admin/recover-payment", async (c) => {
   try {
     const { paymentIntentId } = await c.req.json();
     if (!paymentIntentId) return c.json({ success: false, error: "paymentIntentId required" }, 400);
-
-    const claimed = await kv.get(`pi_claimed_${paymentIntentId}`) as any;
-    if (claimed?.bookingId) {
-      const existingBooking = await kv.get(claimed.bookingId);
-      return c.json({ success: true, alreadyExisted: true, booking: existingBooking });
-    }
-
-    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-    if (paymentIntent.status !== "succeeded") {
-      return c.json({ success: false, error: `Payment intent status is "${paymentIntent.status}", not "succeeded"` }, 400);
-    }
-
-    const pending = await kv.get(`pending_pi_${paymentIntentId}`) as any;
-    if (!pending) {
-      return c.json({ success: false, error: "No pending booking data found for this payment intent — booking must be created manually" }, 404);
-    }
-
-    const { bookingId, booking } = await createBookingFromPendingPI(paymentIntentId, pending, "admin-recovery");
-    return c.json({ success: true, bookingId, booking });
+    const result = await finalizePaymentIntent(paymentIntentId, "admin-recovery");
+    return c.json({ success: true, ...result });
   } catch (error) {
-    return c.json({ success: false, error: String(error) }, 500);
+    return c.json({ success: false, error: String(error) }, 400);
+  }
+});
+
+// POST /finalize-payment — called by the client right after returning from a
+// redirect-based payment method (PayPal, etc). Those redirects reload the page and
+// wipe in-memory booking state, so the client can't finish the normal POST /bookings
+// flow; this uses the pending data stashed server-side when the payment intent was
+// created instead. Same idempotency guard as the webhook, so it's safe even if the
+// webhook also fires for the same payment.
+app.post("/make-server-3bd0ade8/finalize-payment", async (c) => {
+  if (!stripe) return c.json({ success: false, error: "Payment processing not configured" }, 503);
+  try {
+    const { paymentIntentId } = await c.req.json();
+    if (!paymentIntentId) return c.json({ success: false, error: "paymentIntentId required" }, 400);
+    const result = await finalizePaymentIntent(paymentIntentId, "client-redirect-return");
+    return c.json({ success: true, ...result });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 400);
   }
 });
 

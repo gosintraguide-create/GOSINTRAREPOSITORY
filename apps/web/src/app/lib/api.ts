@@ -257,3 +257,15 @@ export async function verifyPayment(paymentIntentId: string) {
   });
   return response;
 }
+
+// Finalizes a booking after returning from a redirect-based payment method
+// (PayPal, etc). The redirect reloads the page and wipes in-memory booking state,
+// so this uses the pending booking data stashed server-side when the payment
+// intent was created instead of resubmitting the (now-empty) local form state.
+export async function finalizePayment(paymentIntentId: string) {
+  const response = await apiCall('/finalize-payment', {
+    method: 'POST',
+    body: JSON.stringify({ paymentIntentId }),
+  });
+  return response;
+}
