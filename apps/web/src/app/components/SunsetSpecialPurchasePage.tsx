@@ -72,6 +72,67 @@ export function SunsetSpecialPurchasePage() {
     loadBookingData();
   }, []);
 
+  // Handle returning from a redirect-based payment method (PayPal, etc). The
+  // reload that follows wipes showPayment/clientSecret state, so this finalizes the
+  // add-on server-side from the data stashed when the payment intent was created,
+  // independent of local component state.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const returnedPaymentIntentId = params.get("payment_intent");
+    const redirectStatus = params.get("redirect_status");
+    if (!returnedPaymentIntentId) return;
+
+    window.history.replaceState(
+      {},
+      "",
+      window.location.pathname + window.location.hash,
+    );
+
+    if (redirectStatus !== "succeeded") {
+      toast.error("Payment was not completed. Please try again.");
+      return;
+    }
+
+    (async () => {
+      try {
+        const response = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/finalize-addon-payment`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${publicAnonKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ paymentIntentId: returnedPaymentIntentId }),
+          },
+        );
+        const data = await response.json();
+        if (data.success) {
+          sessionStorage.removeItem("sunset-special-booking-id");
+          sessionStorage.removeItem("sunset-special-active");
+          toast.success("Sunset special added to your booking!");
+          setTimeout(() => onNavigate("home"), 1500);
+        } else {
+          console.error(
+            "⚠️ CRITICAL: Sunset special payment succeeded via redirect but finalization failed",
+          );
+          console.error("⚠️ Payment Intent ID:", returnedPaymentIntentId);
+          toast.error(
+            "Your payment succeeded but we couldn't finish adding the sunset special automatically. Please contact us with your payment confirmation.",
+            { duration: 15000 },
+          );
+        }
+      } catch (err) {
+        console.error("Error finalizing redirect sunset-special payment:", err);
+        toast.error(
+          "Your payment may have succeeded but we couldn't confirm it automatically. Please contact us with your payment confirmation.",
+          { duration: 15000 },
+        );
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     if (booking && sunsetSpecial?.maxSeats) {
       checkSeatAvailability();
@@ -185,6 +246,15 @@ export function SunsetSpecialPurchasePage() {
               participants:
                 booking!.passengers.length.toString(),
             },
+            // Stashed server-side so the add-on can still be completed if a
+            // redirect-based payment method (PayPal, etc) reloads the page before
+            // handlePaymentSuccess can run.
+            pendingSunsetSpecialData: {
+              bookingId: booking!.id,
+              sunsetDate: booking!.selectedDate.split("T")[0],
+              quantity: booking!.passengers.length,
+              amount: totalPrice,
+            },
           }),
         },
       );
@@ -234,10 +304,9 @@ export function SunsetSpecialPurchasePage() {
           },
           body: JSON.stringify({
             paymentIntentId,
-            sunsetSpecialPrice: totalPrice,
-            participants: booking!.passengers.length,
-            maxSeats: sunsetSpecial?.maxSeats || 8,
-            departureTime: sunsetSpecial?.departureTime || "6:00 PM",
+            sunsetDate: booking!.selectedDate.split("T")[0],
+            quantity: booking!.passengers.length,
+            amount: totalPrice,
           }),
         },
       );

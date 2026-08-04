@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useOutletContext, useParams } from "react-router";
 import { Helmet } from "react-helmet-async";
+import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Card } from "./ui/card";
@@ -241,6 +242,67 @@ export function PrivateTourDetailPage() {
   useEffect(() => {
     loadTour();
   }, [slug, language]);
+
+  // Handle returning from a redirect-based payment method (PayPal, etc). The
+  // booking dialog isn't open after this reload — its state doesn't survive a full
+  // page reload — so this finalizes the booking server-side from the data stashed
+  // when the payment intent was created, independent of the dialog's local state.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const returnedPaymentIntentId = params.get("payment_intent");
+    const redirectStatus = params.get("redirect_status");
+    if (!returnedPaymentIntentId) return;
+
+    window.history.replaceState(
+      {},
+      "",
+      window.location.pathname + window.location.hash,
+    );
+
+    if (redirectStatus !== "succeeded") {
+      toast.error("Payment was not completed. Please try again.");
+      return;
+    }
+
+    (async () => {
+      try {
+        const response = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/finalize-tour-payment`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${publicAnonKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ paymentIntentId: returnedPaymentIntentId }),
+          },
+        );
+        const data = await response.json();
+        if (data.success) {
+          toast.success(
+            "Your private tour booking is confirmed! Check your email for details.",
+            { duration: 8000 },
+          );
+        } else {
+          console.error(
+            "⚠️ CRITICAL: Tour payment succeeded via redirect but booking finalization failed",
+          );
+          console.error("⚠️ Payment Intent ID:", returnedPaymentIntentId);
+          toast.error(
+            "Your payment succeeded but we couldn't finish your booking automatically. Please contact us with your payment confirmation.",
+            { duration: 15000 },
+          );
+        }
+      } catch (err) {
+        console.error("Error finalizing redirect tour payment:", err);
+        toast.error(
+          "Your payment may have succeeded but we couldn't confirm your booking automatically. Please contact us with your payment confirmation.",
+          { duration: 15000 },
+        );
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Sync people count with tour minimum when tour loads
   useEffect(() => {

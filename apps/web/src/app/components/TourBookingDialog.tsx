@@ -298,6 +298,16 @@ function BookingForm({ tour, onSuccess, onConfirmed, initialDate, initialPeople,
               customerPhone: phone,
               numberOfPeople: String(numberOfPeople),
             },
+            // Stashed server-side so the booking can still be completed if a
+            // redirect-based payment method (PayPal, etc) reloads the page and
+            // wipes this dialog's state before handlePaymentSuccess can run.
+            pendingTourBookingData: {
+              tourId: tour.id,
+              tourTitle: tour.title,
+              tourDate: buildTourDate(),
+              customerInfo: { name, email, phone, numberOfPeople, language: tourLanguage, specialRequests },
+              amount: tourPrice,
+            },
           }),
         }
       );

@@ -1225,6 +1225,46 @@ app.get("/make-server-3bd0ade8/bookings/:id/pdf", async (c) => {
   }
 });
 
+// Attaches a sunset-special add-on to an existing booking. Shared by the normal
+// POST /bookings/:id/add-sunset-special route and the redirect-return recovery path
+// (finalizeAddonPaymentIntent).
+async function attachSunsetSpecial(
+  bookingId: string,
+  data: { sunsetDate?: string; quantity?: number; amount?: number; paymentIntentId?: string },
+) {
+  let booking = await kv.get(bookingId) as any;
+  if (!booking) booking = await kv.get(`booking_${bookingId}`) as any;
+  if (!booking) {
+    throw new Error("Booking not found");
+  }
+
+  // Idempotency: skip if this exact payment already got attached
+  if (data.paymentIntentId && booking.sunsetSpecial?.paymentIntentId === data.paymentIntentId) {
+    return { alreadyExisted: true, booking };
+  }
+
+  booking.sunsetSpecial = {
+    date: data.sunsetDate,
+    quantity: data.quantity || 1,
+    amount: data.amount,
+    paymentIntentId: data.paymentIntentId,
+    addedAt: new Date().toISOString(),
+  };
+  await kv.set(bookingId, booking);
+
+  // Record in sunset_bookings_{date} for availability tracking
+  const date = data.sunsetDate || booking.selectedDate;
+  const sunsetBookings = ((await kv.get(`sunset_bookings_${date}`)) as any[]) || [];
+  sunsetBookings.push({
+    bookingId,
+    quantity: data.quantity || 1,
+    addedAt: new Date().toISOString(),
+  });
+  await kv.set(`sunset_bookings_${date}`, sunsetBookings);
+
+  return { alreadyExisted: false, booking };
+}
+
 // POST /bookings/:id/add-sunset-special — add sunset special to an existing booking
 app.post("/make-server-3bd0ade8/bookings/:id/add-sunset-special", async (c) => {
   try {
@@ -1244,37 +1284,49 @@ app.post("/make-server-3bd0ade8/bookings/:id/add-sunset-special", async (c) => {
       }
     }
 
-    let booking = await kv.get(id) as any;
-    if (!booking) booking = await kv.get(`booking_${id}`) as any;
-
-    if (!booking) {
-      return c.json({ success: false, error: "Booking not found" }, 404);
-    }
-
-    // Attach sunset special to the booking
-    booking.sunsetSpecial = {
-      date: sunsetDate,
-      quantity: quantity || 1,
-      amount,
-      paymentIntentId,
-      addedAt: new Date().toISOString(),
-    };
-    await kv.set(id, booking);
-
-    // Record in sunset_bookings_{date} for availability tracking
-    const date = sunsetDate || booking.selectedDate;
-    const sunsetBookings = ((await kv.get(`sunset_bookings_${date}`)) as any[]) || [];
-    sunsetBookings.push({
-      bookingId: id,
-      quantity: quantity || 1,
-      addedAt: new Date().toISOString(),
-    });
-    await kv.set(`sunset_bookings_${date}`, sunsetBookings);
-
+    const { booking } = await attachSunsetSpecial(id, { sunsetDate, quantity, amount, paymentIntentId });
     return c.json({ success: true, booking });
   } catch (error) {
     console.error("Add sunset special error:", error);
     return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// Verifies a payment intent succeeded with Stripe, then attaches the sunset-special
+// add-on from the pending data stashed at payment-intent-creation time. Used when
+// the client returns from a redirect-based payment method (PayPal, etc).
+async function finalizeAddonPaymentIntent(paymentIntentId: string) {
+  const paymentIntent = await stripe!.paymentIntents.retrieve(paymentIntentId);
+  if (paymentIntent.status !== "succeeded") {
+    throw new Error(`Payment intent status is "${paymentIntent.status}", not "succeeded"`);
+  }
+
+  const pending = await kv.get(`pending_addon_pi_${paymentIntentId}`) as any;
+  if (!pending) {
+    throw new Error("No pending add-on data found for this payment intent");
+  }
+
+  const { alreadyExisted, booking } = await attachSunsetSpecial(pending.bookingId, {
+    sunsetDate: pending.sunsetDate,
+    quantity: pending.quantity,
+    amount: pending.amount,
+    paymentIntentId,
+  });
+  await kv.del(`pending_addon_pi_${paymentIntentId}`);
+  return { alreadyExisted, booking };
+}
+
+// POST /finalize-addon-payment — called by the client right after returning from a
+// redirect-based payment method for a sunset-special add-on purchase.
+app.post("/make-server-3bd0ade8/finalize-addon-payment", async (c) => {
+  if (!stripe) return c.json({ success: false, error: "Payment processing not configured" }, 503);
+  try {
+    const { paymentIntentId } = await c.req.json();
+    if (!paymentIntentId) return c.json({ success: false, error: "paymentIntentId required" }, 400);
+    const result = await finalizeAddonPaymentIntent(paymentIntentId);
+    return c.json({ success: true, ...result });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 400);
   }
 });
 
@@ -1352,79 +1404,72 @@ app.post("/make-server-3bd0ade8/tour-bookings/:id/cancel", async (c) => {
   }
 });
 
-// POST /tour-bookings/create — called after Stripe payment succeeds
-app.post("/make-server-3bd0ade8/tour-bookings/create", async (c) => {
-  try {
-    const body = await c.req.json();
-    const { tourId, tourDate, customerInfo, paymentIntentId } = body;
+// Creates a tour booking and sends the customer/owner notifications. Shared by the
+// normal POST /tour-bookings/create route and the redirect-return recovery path
+// (finalizeTourPaymentIntent), which can't resubmit this from the client because a
+// redirect-based payment reloads the page and wipes the booking dialog's state.
+async function createTourBooking(body: any) {
+  const { tourId, tourDate, customerInfo, paymentIntentId } = body;
 
-    // Verify the payment actually succeeded before saving the booking
-    if (stripe && paymentIntentId) {
-      const intent = await stripe.paymentIntents.retrieve(paymentIntentId);
-      if (intent.status !== "succeeded") {
-        return c.json({ success: false, error: "Payment not completed" }, 400);
-      }
+  const existing = (await kvWithRetry.get("tour_bookings") as any[]) || [];
+
+  // Prevent duplicate bookings for the same payment intent
+  if (paymentIntentId && existing.some((b: any) => b.paymentIntentId === paymentIntentId)) {
+    const duplicate = existing.find((b: any) => b.paymentIntentId === paymentIntentId);
+    return { alreadyExisted: true, booking: duplicate };
+  }
+
+  const newBooking = {
+    id: `TB-${Date.now()}`,
+    tourId,
+    tourDate,
+    customerInfo,
+    paymentIntentId: paymentIntentId || null,
+    status: "confirmed",
+    createdAt: new Date().toISOString(),
+  };
+  existing.push(newBooking);
+  await kvWithRetry.set("tour_bookings", existing);
+
+  // Send confirmation email to customer
+  const resendApiKey = Deno.env.get("RESEND_API_KEY");
+  if (resendApiKey && customerInfo?.email) {
+    try {
+      const html = generateTourBookingConfirmationHTML({
+        customerName: customerInfo.name || "Guest",
+        bookingId: newBooking.id,
+        tourTitle: body.tourTitle || tourId,
+        tourDate: tourDate,
+        numberOfPeople: customerInfo.numberOfPeople || 1,
+        totalPrice: body.amount || 0,
+        specialRequests: customerInfo.specialRequests,
+      });
+      await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${resendApiKey}` },
+        body: JSON.stringify({
+          from: "Go Sintra <bookings@hoponsintra.com>",
+          to: [customerInfo.email],
+          subject: `✅ Your Private Tour is Confirmed – ${body.tourTitle || tourId}`,
+          html,
+        }),
+      });
+    } catch (emailError) {
+      console.error("Tour booking email failed:", emailError);
+      // Don't fail the booking if email fails
     }
+  }
 
-    const existing = (await kvWithRetry.get("tour_bookings") as any[]) || [];
-
-    // Prevent duplicate bookings for the same payment intent
-    if (paymentIntentId && existing.some((b: any) => b.paymentIntentId === paymentIntentId)) {
-      const duplicate = existing.find((b: any) => b.paymentIntentId === paymentIntentId);
-      return c.json({ success: true, booking: duplicate });
-    }
-
-    const newBooking = {
-      id: `TB-${Date.now()}`,
-      tourId,
-      tourDate,
-      customerInfo,
-      paymentIntentId: paymentIntentId || null,
-      status: "confirmed",
-      createdAt: new Date().toISOString(),
-    };
-    existing.push(newBooking);
-    await kvWithRetry.set("tour_bookings", existing);
-
-    // Send confirmation email to customer
-    const resendApiKey = Deno.env.get("RESEND_API_KEY");
-    if (resendApiKey && customerInfo?.email) {
-      try {
-        const html = generateTourBookingConfirmationHTML({
-          customerName: customerInfo.name || "Guest",
-          bookingId: newBooking.id,
-          tourTitle: body.tourTitle || tourId,
-          tourDate: tourDate,
-          numberOfPeople: customerInfo.numberOfPeople || 1,
-          totalPrice: body.amount || 0,
-          specialRequests: customerInfo.specialRequests,
-        });
-        await fetch("https://api.resend.com/emails", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${resendApiKey}` },
-          body: JSON.stringify({
-            from: "Go Sintra <bookings@hoponsintra.com>",
-            to: [customerInfo.email],
-            subject: `✅ Your Private Tour is Confirmed – ${body.tourTitle || tourId}`,
-            html,
-          }),
-        });
-      } catch (emailError) {
-        console.error("Tour booking email failed:", emailError);
-        // Don't fail the booking if email fails
-      }
-    }
-
-    // Notify owner of new private tour booking — push + email
-    await sendPushNotification(
-      `New private tour booking - ${body.tourTitle || tourId}`,
-      `${customerInfo?.numberOfPeople ?? 1} people on ${tourDate}\nCustomer: ${customerInfo?.name ?? "—"} (${customerInfo?.email ?? "—"})\nTotal: €${body.amount ?? "—"}`,
-      "urgent",
-      ["castle", "moneybag"],
-    );
-    await sendOwnerNotification(
-      `🏰 New Private Tour Booking – ${body.tourTitle || tourId}`,
-      `<h2>New Private Tour Booking</h2>
+  // Notify owner of new private tour booking — push + email
+  await sendPushNotification(
+    `New private tour booking - ${body.tourTitle || tourId}`,
+    `${customerInfo?.numberOfPeople ?? 1} people on ${tourDate}\nCustomer: ${customerInfo?.name ?? "—"} (${customerInfo?.email ?? "—"})\nTotal: €${body.amount ?? "—"}`,
+    "urgent",
+    ["castle", "moneybag"],
+  );
+  await sendOwnerNotification(
+    `🏰 New Private Tour Booking – ${body.tourTitle || tourId}`,
+    `<h2>New Private Tour Booking</h2>
 <ul>
   <li><strong>Booking ID:</strong> ${newBooking.id}</li>
   <li><strong>Tour:</strong> ${body.tourTitle || tourId}</li>
@@ -1434,11 +1479,64 @@ app.post("/make-server-3bd0ade8/tour-bookings/create", async (c) => {
   <li><strong>Total:</strong> €${body.amount ?? "—"}</li>
   ${customerInfo?.specialRequests ? `<li><strong>Special Requests:</strong> ${customerInfo.specialRequests}</li>` : ""}
 </ul>`,
-    );
+  );
 
-    return c.json({ success: true, booking: newBooking });
+  return { alreadyExisted: false, booking: newBooking };
+}
+
+// POST /tour-bookings/create — called after Stripe payment succeeds
+app.post("/make-server-3bd0ade8/tour-bookings/create", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { paymentIntentId } = body;
+
+    // Verify the payment actually succeeded before saving the booking
+    if (stripe && paymentIntentId) {
+      const intent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      if (intent.status !== "succeeded") {
+        return c.json({ success: false, error: "Payment not completed" }, 400);
+      }
+    }
+
+    const { booking } = await createTourBooking(body);
+    return c.json({ success: true, booking });
   } catch (error) {
     return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// Verifies a payment intent succeeded with Stripe, then finalizes a tour booking
+// from the pending data stashed at payment-intent-creation time. Used when the
+// client returns from a redirect-based payment method (PayPal, etc) — the reload
+// that follows wipes the booking dialog's state before it can call
+// POST /tour-bookings/create itself.
+async function finalizeTourPaymentIntent(paymentIntentId: string) {
+  const paymentIntent = await stripe!.paymentIntents.retrieve(paymentIntentId);
+  if (paymentIntent.status !== "succeeded") {
+    throw new Error(`Payment intent status is "${paymentIntent.status}", not "succeeded"`);
+  }
+
+  const pending = await kv.get(`pending_tour_pi_${paymentIntentId}`) as any;
+  if (!pending) {
+    throw new Error("No pending tour booking data found for this payment intent");
+  }
+
+  const { alreadyExisted, booking } = await createTourBooking({ ...pending, paymentIntentId });
+  await kv.del(`pending_tour_pi_${paymentIntentId}`);
+  return { alreadyExisted, booking };
+}
+
+// POST /finalize-tour-payment — called by the client right after returning from a
+// redirect-based payment method for a private tour booking.
+app.post("/make-server-3bd0ade8/finalize-tour-payment", async (c) => {
+  if (!stripe) return c.json({ success: false, error: "Payment processing not configured" }, 503);
+  try {
+    const { paymentIntentId } = await c.req.json();
+    if (!paymentIntentId) return c.json({ success: false, error: "paymentIntentId required" }, 400);
+    const result = await finalizeTourPaymentIntent(paymentIntentId);
+    return c.json({ success: true, ...result });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 400);
   }
 });
 
@@ -2604,12 +2702,18 @@ app.get("/make-server-3bd0ade8/stripe-config", (c) => {
 app.post("/make-server-3bd0ade8/create-payment-intent", async (c) => {
   if (!stripe) return c.json({ success: false, error: "Payment processing not configured" }, 503);
   try {
-    const purchasesEnabled = await kvWithRetry.get("ticket_purchases_enabled");
-    if (purchasesEnabled === false) {
-      return c.json({ success: false, error: "Ticket purchases are currently disabled" }, 403);
+    const { amount, currency = "eur", metadata, pendingBookingData, pendingSunsetSpecialData } = await c.req.json();
+
+    // Only new day-pass purchases (identified by pendingBookingData) are gated by
+    // the admin toggle — sunset-special add-ons are for customers who already have
+    // a valid booking and shouldn't be blocked by disabling new ticket sales.
+    if (pendingBookingData) {
+      const purchasesEnabled = await kvWithRetry.get("ticket_purchases_enabled");
+      if (purchasesEnabled === false) {
+        return c.json({ success: false, error: "Ticket purchases are currently disabled" }, 403);
+      }
     }
 
-    const { amount, currency = "eur", metadata, pendingBookingData } = await c.req.json();
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount * 100),
       currency,
@@ -2617,12 +2721,21 @@ app.post("/make-server-3bd0ade8/create-payment-intent", async (c) => {
       automatic_payment_methods: { enabled: true },
     });
 
-    // Store pending booking data so the stripe-webhook can complete the booking
-    // if the client drops after payment confirmation but before calling POST /bookings
+    // Store pending booking/add-on data so the stripe-webhook (day-pass) or the
+    // client's redirect-return handler can complete it if the client drops after
+    // payment confirmation but before calling the normal completion endpoint.
     if (pendingBookingData) {
       try {
         await kv.set(`pending_pi_${paymentIntent.id}`, {
           ...pendingBookingData,
+          pendingAt: new Date().toISOString(),
+        });
+      } catch {}
+    }
+    if (pendingSunsetSpecialData) {
+      try {
+        await kv.set(`pending_addon_pi_${paymentIntent.id}`, {
+          ...pendingSunsetSpecialData,
           pendingAt: new Date().toISOString(),
         });
       } catch {}
@@ -2637,13 +2750,23 @@ app.post("/make-server-3bd0ade8/create-payment-intent", async (c) => {
 app.post("/make-server-3bd0ade8/tour-bookings/create-payment-intent", async (c) => {
   if (!stripe) return c.json({ success: false, error: "Payment processing not configured" }, 503);
   try {
-    const { amount, currency = "eur", metadata } = await c.req.json();
+    const { amount, currency = "eur", metadata, pendingTourBookingData } = await c.req.json();
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount * 100),
       currency,
       metadata: metadata || {},
       automatic_payment_methods: { enabled: true },
     });
+
+    if (pendingTourBookingData) {
+      try {
+        await kv.set(`pending_tour_pi_${paymentIntent.id}`, {
+          ...pendingTourBookingData,
+          pendingAt: new Date().toISOString(),
+        });
+      } catch {}
+    }
+
     return c.json({ success: true, clientSecret: paymentIntent.client_secret, paymentIntentId: paymentIntent.id });
   } catch (error) {
     return c.json({ success: false, error: String(error) }, 500);
@@ -2751,18 +2874,33 @@ async function createBookingFromPendingPI(piId: string, pending: any, source: st
 }
 
 // GET /admin/pending-payments — lists payment intents that were charged but never
-// turned into a booking (i.e. the client dropped AND the webhook never fired/failed).
+// turned into a booking/add-on (i.e. the client dropped AND the recovery path never
+// fired/failed). Covers all three redirect-recoverable flows: day-pass tickets,
+// private tour bookings, and sunset-special add-ons.
 app.get("/make-server-3bd0ade8/admin/pending-payments", async (c) => {
   try {
-    const { data, error } = await supabase
-      .from("kv_store_3bd0ade8")
-      .select("key, value")
-      .like("key", "pending_pi_%");
-    if (error) throw error;
-    const pending = (data || []).map((row: any) => ({
-      paymentIntentId: row.key.replace("pending_pi_", ""),
-      ...row.value,
-    }));
+    const prefixes: Array<{ prefix: string; kind: string }> = [
+      { prefix: "pending_pi_", kind: "ticket" },
+      { prefix: "pending_tour_pi_", kind: "tour" },
+      { prefix: "pending_addon_pi_", kind: "addon" },
+    ];
+
+    const pending: any[] = [];
+    for (const { prefix, kind } of prefixes) {
+      const { data, error } = await supabase
+        .from("kv_store_3bd0ade8")
+        .select("key, value")
+        .like("key", `${prefix}%`);
+      if (error) throw error;
+      for (const row of data || []) {
+        pending.push({
+          kind,
+          paymentIntentId: row.key.replace(prefix, ""),
+          ...row.value,
+        });
+      }
+    }
+
     return c.json({ success: true, pending });
   } catch (error) {
     return c.json({ success: false, error: String(error) }, 500);
@@ -2794,15 +2932,33 @@ async function finalizePaymentIntent(paymentIntentId: string, source: string) {
   return { alreadyExisted: false, bookingId, booking };
 }
 
-// POST /admin/recover-payment — manually finalizes a booking for a payment intent
-// that Stripe confirms succeeded but that never got turned into a booking.
+// POST /admin/recover-payment — manually finalizes a booking/add-on for a payment
+// intent that Stripe confirms succeeded but that never got completed. Accepts an
+// optional "kind" ("ticket" | "tour" | "addon"); if omitted it's auto-detected from
+// whichever pending_* record exists for this payment intent.
 app.post("/make-server-3bd0ade8/admin/recover-payment", async (c) => {
   if (!stripe) return c.json({ success: false, error: "Stripe not configured" }, 503);
   try {
-    const { paymentIntentId } = await c.req.json();
+    const { paymentIntentId, kind } = await c.req.json();
     if (!paymentIntentId) return c.json({ success: false, error: "paymentIntentId required" }, 400);
+
+    let resolvedKind = kind;
+    if (!resolvedKind) {
+      if (await kv.get(`pending_pi_${paymentIntentId}`)) resolvedKind = "ticket";
+      else if (await kv.get(`pending_tour_pi_${paymentIntentId}`)) resolvedKind = "tour";
+      else if (await kv.get(`pending_addon_pi_${paymentIntentId}`)) resolvedKind = "addon";
+    }
+
+    if (resolvedKind === "tour") {
+      const result = await finalizeTourPaymentIntent(paymentIntentId);
+      return c.json({ success: true, kind: "tour", ...result });
+    }
+    if (resolvedKind === "addon") {
+      const result = await finalizeAddonPaymentIntent(paymentIntentId);
+      return c.json({ success: true, kind: "addon", ...result });
+    }
     const result = await finalizePaymentIntent(paymentIntentId, "admin-recovery");
-    return c.json({ success: true, ...result });
+    return c.json({ success: true, kind: "ticket", ...result });
   } catch (error) {
     return c.json({ success: false, error: String(error) }, 400);
   }
