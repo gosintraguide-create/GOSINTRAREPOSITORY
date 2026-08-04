@@ -2661,6 +2661,145 @@ app.post("/make-server-3bd0ade8/verify-payment", async (c) => {
   }
 });
 
+// Creates a booking from data stashed at payment-intent-creation time. Used by the
+// webhook safety net and by the admin recovery endpoint below.
+async function createBookingFromPendingPI(piId: string, pending: any, source: string) {
+  const bookingId = await generateBookingId();
+  const passengerList: any[] = pending.passengers || [];
+  const qrCodes: string[] = [];
+  for (let i = 0; i < passengerList.length; i++) {
+    qrCodes.push(await generateQRCode(bookingId, i));
+  }
+
+  const booking = {
+    id: bookingId,
+    ...pending,
+    qrCodes,
+    createdAt: new Date().toISOString(),
+    status: "confirmed",
+    paymentStatus: "paid",
+    paymentIntentId: piId,
+    source,
+  };
+
+  await kv.set(bookingId, booking);
+  await kv.set(`pi_claimed_${piId}`, { bookingId, claimedAt: new Date().toISOString() });
+  await kv.del(`pending_pi_${piId}`);
+
+  try {
+    const prefix = bookingId.split("-")[0];
+    const usedPrefixes = ((await kv.get("booking_used_prefixes")) as string[]) || [];
+    if (!usedPrefixes.includes(prefix)) {
+      usedPrefixes.push(prefix);
+      await kv.set("booking_used_prefixes", usedPrefixes);
+    }
+  } catch {}
+
+  try {
+    const TIME_SLOTS_LIST = ["9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"];
+    const bookingDate = pending.selectedDate;
+    const bookingSlot = pending.timeSlot;
+    const count = passengerList.length || 1;
+    if (bookingDate && bookingSlot) {
+      const storedAvail = await kv.get(`availability_${bookingDate}`);
+      let slotMap: Record<string, number> = {};
+      if (storedAvail && typeof storedAvail === "object" &&
+          TIME_SLOTS_LIST.some(s => s in (storedAvail as any))) {
+        slotMap = { ...(storedAvail as Record<string, number>) };
+      } else {
+        TIME_SLOTS_LIST.forEach(s => { slotMap[s] = 50; });
+      }
+      if (slotMap[bookingSlot] !== undefined) {
+        slotMap[bookingSlot] = Math.max(0, slotMap[bookingSlot] - count);
+      }
+      await kv.set(`availability_${bookingDate}`, slotMap);
+    }
+  } catch {}
+
+  try {
+    await sendBookingEmail(booking, qrCodes);
+  } catch {}
+
+  const passengerCount = booking.passengers?.length || 1;
+  const customerName = booking.contactInfo?.name || booking.fullName || "Guest";
+  const customerEmail = booking.contactInfo?.email || booking.email || "—";
+  try {
+    await sendPushNotification(
+      `🎟️ New booking (${source}) — ${booking.selectedDate}`,
+      `${passengerCount} day pass${passengerCount > 1 ? "es" : ""}\nCustomer: ${customerName}\nPickup: ${booking.pickupLocation ?? "—"} at ${booking.timeSlot ?? "—"}\nTotal: €${booking.totalPrice ?? "—"}`,
+      "urgent",
+      ["ticket", "moneybag"],
+    );
+  } catch {}
+  try {
+    await sendOwnerNotification(
+      `🎟️ New Booking (${source}): ${passengerCount} Day Pass${passengerCount > 1 ? "es" : ""} – ${booking.selectedDate}`,
+      `<h2>New Day Pass Booking — via ${source}</h2>
+<ul>
+  <li><strong>Booking ID:</strong> ${booking.id}</li>
+  <li><strong>Customer:</strong> ${customerName} (${customerEmail})</li>
+  <li><strong>Date:</strong> ${booking.selectedDate}</li>
+  <li><strong>Passengers:</strong> ${passengerCount}</li>
+  <li><strong>Total:</strong> €${booking.totalPrice ?? "—"}</li>
+  <li><strong>Pickup:</strong> ${booking.pickupLocation ?? "—"}</li>
+  <li><strong>Time Slot:</strong> ${booking.timeSlot ?? "—"}</li>
+</ul>`,
+    );
+  } catch {}
+
+  return { bookingId, booking, qrCodes };
+}
+
+// GET /admin/pending-payments — lists payment intents that were charged but never
+// turned into a booking (i.e. the client dropped AND the webhook never fired/failed).
+app.get("/make-server-3bd0ade8/admin/pending-payments", async (c) => {
+  try {
+    const { data, error } = await supabase
+      .from("kv_store_3bd0ade8")
+      .select("key, value")
+      .like("key", "pending_pi_%");
+    if (error) throw error;
+    const pending = (data || []).map((row: any) => ({
+      paymentIntentId: row.key.replace("pending_pi_", ""),
+      ...row.value,
+    }));
+    return c.json({ success: true, pending });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
+// POST /admin/recover-payment — manually finalizes a booking for a payment intent
+// that Stripe confirms succeeded but that never got turned into a booking.
+app.post("/make-server-3bd0ade8/admin/recover-payment", async (c) => {
+  if (!stripe) return c.json({ success: false, error: "Stripe not configured" }, 503);
+  try {
+    const { paymentIntentId } = await c.req.json();
+    if (!paymentIntentId) return c.json({ success: false, error: "paymentIntentId required" }, 400);
+
+    const claimed = await kv.get(`pi_claimed_${paymentIntentId}`) as any;
+    if (claimed?.bookingId) {
+      const existingBooking = await kv.get(claimed.bookingId);
+      return c.json({ success: true, alreadyExisted: true, booking: existingBooking });
+    }
+
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+    if (paymentIntent.status !== "succeeded") {
+      return c.json({ success: false, error: `Payment intent status is "${paymentIntent.status}", not "succeeded"` }, 400);
+    }
+
+    const pending = await kv.get(`pending_pi_${paymentIntentId}`) as any;
+    if (!pending) {
+      return c.json({ success: false, error: "No pending booking data found for this payment intent — booking must be created manually" }, 404);
+    }
+
+    const { bookingId, booking } = await createBookingFromPendingPI(paymentIntentId, pending, "admin-recovery");
+    return c.json({ success: true, bookingId, booking });
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500);
+  }
+});
+
 // POST /stripe-webhook — safety net: creates booking if client dropped after payment
 app.post("/make-server-3bd0ade8/stripe-webhook", async (c) => {
   if (!stripe) return c.json({ success: false, error: "Stripe not configured" }, 503);
@@ -2698,94 +2837,7 @@ app.post("/make-server-3bd0ade8/stripe-webhook", async (c) => {
     const pending = await kv.get(`pending_pi_${piId}`) as any;
     if (pending) {
       try {
-        const bookingId = await generateBookingId();
-        const passengerList: any[] = pending.passengers || [];
-        const qrCodes: string[] = [];
-        for (let i = 0; i < passengerList.length; i++) {
-          qrCodes.push(await generateQRCode(bookingId, i));
-        }
-
-        const booking = {
-          id: bookingId,
-          ...pending,
-          qrCodes,
-          createdAt: new Date().toISOString(),
-          status: "confirmed",
-          paymentStatus: "paid",
-          paymentIntentId: piId,
-          source: "stripe-webhook",
-        };
-
-        await kv.set(bookingId, booking);
-        await kv.set(`pi_claimed_${piId}`, { bookingId, claimedAt: new Date().toISOString() });
-        await kv.del(`pending_pi_${piId}`);
-
-        // Track booking prefix
-        try {
-          const prefix = bookingId.split("-")[0];
-          const usedPrefixes = ((await kv.get("booking_used_prefixes")) as string[]) || [];
-          if (!usedPrefixes.includes(prefix)) {
-            usedPrefixes.push(prefix);
-            await kv.set("booking_used_prefixes", usedPrefixes);
-          }
-        } catch {}
-
-        // Decrement availability
-        try {
-          const TIME_SLOTS_LIST = ["9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"];
-          const bookingDate = pending.selectedDate;
-          const bookingSlot = pending.timeSlot;
-          const count = passengerList.length || 1;
-          if (bookingDate && bookingSlot) {
-            const storedAvail = await kv.get(`availability_${bookingDate}`);
-            let slotMap: Record<string, number> = {};
-            if (storedAvail && typeof storedAvail === "object" &&
-                TIME_SLOTS_LIST.some(s => s in (storedAvail as any))) {
-              slotMap = { ...(storedAvail as Record<string, number>) };
-            } else {
-              TIME_SLOTS_LIST.forEach(s => { slotMap[s] = 50; });
-            }
-            if (slotMap[bookingSlot] !== undefined) {
-              slotMap[bookingSlot] = Math.max(0, slotMap[bookingSlot] - count);
-            }
-            await kv.set(`availability_${bookingDate}`, slotMap);
-          }
-        } catch {}
-
-        // Send confirmation email to customer
-        try {
-          await sendBookingEmail(booking, qrCodes);
-        } catch {}
-
-        // Notify owner — this is the path most likely to fire without the client present
-        const passengerCount = booking.passengers?.length || 1;
-        const customerName = booking.contactInfo?.name || booking.fullName || "Guest";
-        const customerEmail = booking.contactInfo?.email || booking.email || "—";
-        try {
-          await sendPushNotification(
-            `🎟️ New booking (webhook) — ${booking.selectedDate}`,
-            `${passengerCount} day pass${passengerCount > 1 ? "es" : ""}\nCustomer: ${customerName}\nPickup: ${booking.pickupLocation ?? "—"} at ${booking.timeSlot ?? "—"}\nTotal: €${booking.totalPrice ?? "—"}`,
-            "urgent",
-            ["ticket", "moneybag"],
-          );
-        } catch {}
-        try {
-          await sendOwnerNotification(
-            `🎟️ New Booking (webhook): ${passengerCount} Day Pass${passengerCount > 1 ? "es" : ""} – ${booking.selectedDate}`,
-            `<h2>New Day Pass Booking — via Stripe webhook</h2>
-<p style="color:#c53030;font-weight:bold">⚠️ This booking was completed by the Stripe webhook safety net — the customer's browser likely closed before the app could process the response. Everything is fine; they are fully booked.</p>
-<ul>
-  <li><strong>Booking ID:</strong> ${booking.id}</li>
-  <li><strong>Customer:</strong> ${customerName} (${customerEmail})</li>
-  <li><strong>Date:</strong> ${booking.selectedDate}</li>
-  <li><strong>Passengers:</strong> ${passengerCount}</li>
-  <li><strong>Total:</strong> €${booking.totalPrice ?? "—"}</li>
-  <li><strong>Pickup:</strong> ${booking.pickupLocation ?? "—"}</li>
-  <li><strong>Time Slot:</strong> ${booking.timeSlot ?? "—"}</li>
-</ul>`,
-          );
-        } catch {}
-
+        const { bookingId } = await createBookingFromPendingPI(piId, pending, "stripe-webhook");
         console.log(`✅ Webhook created booking ${bookingId} for PI ${piId}`);
       } catch (err) {
         console.error("Webhook booking creation failed:", err);
