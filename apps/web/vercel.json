@@ -11,7 +11,6 @@
     { "source": "/blog/:slug*", "destination": "/travel-guide/:slug*", "permanent": true },
     { "source": "/quinta-regaleira", "destination": "/attractions/quinta-regaleira", "permanent": true },
     { "source": "/convento-capuchos", "destination": "/attractions/convento-capuchos", "permanent": true },
-    { "source": "/", "has": [{ "type": "query", "key": "lang" }], "destination": "/", "permanent": false },
     { "source": "/sintra-day-planner", "destination": "/sintra-day-planner.html", "permanent": true },
     { "source": "/day-planner", "destination": "/sintra-day-planner.html", "permanent": true },
     { "source": "/cinema-no-mato", "destination": "/cinema-no-mato.html", "permanent": true }
