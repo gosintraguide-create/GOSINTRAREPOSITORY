@@ -16,6 +16,13 @@ export function installAdminOperations(app:any,deps:{db:any;stripe:any;get:(key:
  async function actor(c:any){const {data,error}=await db.auth.getUser(c.req.header('Authorization')?.replace(/^Bearer /i,''));if(error||data.user?.app_metadata?.role!=='admin')throw Error('Administrator access required');return data.user.id;}
  const audit=(id:string,action:string,target:string,detail:any)=>result(db.from('admin_activity').insert({actor:id,action,target,detail}));
  const route=(fn:any)=>async(c:any)=>{c.header('Cache-Control','private, no-store');try{const id=await actor(c);return await fn(c,id);}catch(e){return c.json({success:false,error:e instanceof Error?e.message:'Operation unavailable'},409);}};
+ app.get(root+'/reports',route(async(c:any)=>{
+  const filters=Object.fromEntries(['from','to','basis','role','seller','partner','channel','q','page'].map(key=>[key,c.req.query(key)||'']));
+  filters.page=filters.page||'0';filters.basis=filters.basis||'ordered';
+  if(filters.q.length>100||filters.seller.length>100||filters.partner.length>100)throw Error('Report filter is too long');
+  const kind=c.req.query('kind')||'sales';if(!['sales','perks'].includes(kind))throw Error('Invalid report');
+  return c.json({success:true,report:await rpc(kind==='perks'?'admin_perks_report':'admin_sales_report',{p_filters:filters})});
+ }));
  app.get(root,route(async(c:any)=>{
   const q=String(c.req.query('q')||'').replace(/[^a-zA-Z0-9@._+-]/g,'').slice(0,100);
   let orders=db.from('city_card_orders').select('*').order('created_at',{ascending:false}).limit(200);

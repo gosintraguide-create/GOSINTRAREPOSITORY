@@ -3,6 +3,7 @@ import './admin-console.css';
 export const adminSections=[
  ['Overview',[['overview','Attention & finances'],['metrics','Legacy booking reports']]],
  ['Bookings & Sales',[['city-cards','City Cards'],['refunds','Refunds'],['delivery','Ticket emails'],['bookings','Booking list'],['tours','Tour bookings']]],
+ ['Reports',[['finance-report','Financial overview'],['driver-sales-report','Sales by driver'],['merchant-sales-report','Sales by merchant'],['perk-report','Perk usage']]],
  ['Operations',[['pickups','Dispatch']]],
  ['Partners & Perks',[['deals-merchants','Businesses & offers'],['redemptions','Redemptions']]],
  ['Staff & Access',[['staff','Staff profiles']]],

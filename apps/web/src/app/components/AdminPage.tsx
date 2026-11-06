@@ -1,3 +1,4 @@
+import {AdminReports} from './AdminReports';
 import {AdminOperations} from './AdminOperations';
 import {AdminNavigation,validAdminTabs} from './AdminNavigation';
 import {AdminStaff} from './AdminStaff';
@@ -2232,6 +2233,10 @@ export function AdminPage() {
           className="admin-workspace"
         >
           <AdminNavigation active={activeTab} onNavigate={setActiveTab}/>
+          <TabsContent value="finance-report"><AdminReports/></TabsContent>
+          <TabsContent value="driver-sales-report"><AdminReports mode="drivers"/></TabsContent>
+          <TabsContent value="merchant-sales-report"><AdminReports mode="merchants"/></TabsContent>
+          <TabsContent value="perk-report"><AdminReports mode="perks"/></TabsContent>
           <TabsContent value="overview"><AdminOperations view="overview" onNavigate={setActiveTab}/></TabsContent>
           <TabsContent value="city-cards"><AdminOperations/></TabsContent>
           <TabsContent value="refunds"><AdminOperations view="refunds"/></TabsContent>
