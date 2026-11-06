@@ -1,3 +1,4 @@
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { getPublishedArticles } from './blogManager';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { loadComprehensiveContent } from './comprehensiveContent';

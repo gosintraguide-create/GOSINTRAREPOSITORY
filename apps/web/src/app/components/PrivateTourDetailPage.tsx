@@ -1,3 +1,4 @@
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useOutletContext, useParams } from "react-router";
 import { Helmet } from "react-helmet-async";

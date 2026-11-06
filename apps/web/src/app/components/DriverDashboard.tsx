@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+import { driverFetch as fetch } from "@/lib/driverClient";
+import { useState, useEffect, useRef } from 'react';
+import { createNotificationTracker } from '../lib/notificationTracker';
 import { useOutletContext } from 'react-router';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
@@ -30,9 +32,14 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { createClient } from '../utils/supabase/client';
 import { toast } from 'sonner';
-import { SellTicketsForm } from './SellTicketsForm';
+import { StaffCardSales } from './StaffCardSales';
 import { useWakeLock } from '../hooks/useWakeLock';
 import { useBackgroundSync } from '../hooks/useBackgroundSync';
+
+async function cardSalesApi(path:string,body?:unknown){
+ const response=await fetch(`https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8${path}`,{method:body===undefined?'GET':'POST',headers:{'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)});
+ const value=await response.json();if(!response.ok||!value.success)throw Object.assign(Error(value.error||'Unable to complete sale'),{status:response.status});return value;
+}
 
 interface OutletContext {
   language: string;
@@ -52,7 +59,6 @@ export function DriverDashboard({ driver, token, onLogout }: DriverDashboardProp
     // Remember user's preference
     return localStorage.getItem('driver-keep-awake') === 'true';
   });
-  const { isSupported: backgroundSyncSupported, registerBackgroundSync } = useBackgroundSync();
 
   // Block search engines from indexing this page
   useEffect(() => {
@@ -72,6 +78,7 @@ export function DriverDashboard({ driver, token, onLogout }: DriverDashboardProp
   const [activity, setActivity] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [pendingRequests, setPendingRequests] = useState<any[]>([]);
+  const pickupTracker = useRef(createNotificationTracker());
   const [acceptedRequests, setAcceptedRequests] = useState<any[]>([]);
   const [chartKey, setChartKey] = useState(0);
   const [activeAction, setActiveAction] = useState<string | null>(null);
@@ -232,6 +239,8 @@ export function DriverDashboard({ driver, token, onLogout }: DriverDashboardProp
       try {
         const data = JSON.parse(text);
         if (data.success) {
+          const added = pickupTracker.current(data.requests || []);
+          if (added.length) toast.info(`${added.length} new ride request${added.length > 1 ? 's' : ''}`, { duration: 8000 });
           setPendingRequests(data.requests);
         }
       } catch (parseError) {
@@ -298,10 +307,10 @@ export function DriverDashboard({ driver, token, onLogout }: DriverDashboardProp
     }
   };
 
-  const completePickupRequest = async (requestId: string) => {
+  const completePickupRequest = async (requestId: string, action = 'complete') => {
     try {
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/pickup-requests/${requestId}/complete`,
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/pickup-requests/${requestId}/${action}`,
         {
           method: 'POST',
           headers: {
@@ -312,11 +321,9 @@ export function DriverDashboard({ driver, token, onLogout }: DriverDashboardProp
       );
 
       const data = await response.json();
-      if (data.success) {
-        loadAcceptedRequests();
-      }
+      if (data.success) { loadAcceptedRequests(); } else { alert(data.error || "Ride update failed"); }
     } catch (error) {
-      console.error('Error completing pickup request:', error);
+      alert('Unable to update this ride. Refresh and try again.');
     }
   };
 
@@ -441,19 +448,20 @@ export function DriverDashboard({ driver, token, onLogout }: DriverDashboardProp
                       <div key={request.id} className="bg-white p-3 rounded-lg">
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-sm">{request.customerName}</p>
+                            <p className="font-medium text-sm">{request.customerName}</p><p>{request.groupSize} passengers · {request.destination}</p><a href={'tel:'+request.customerPhone}>{request.customerPhone}</a>{request.nonTukTuk&&<p className="font-bold text-red-700">NON-TUK-TUK VEHICLE REQUIRED</p>}{request.riders?.map((r:any)=><p key={r.bookingId+r.index}>{r.name} · {r.ageBand}</p>)}
+                            {request.readyAt && <p className="text-sm">Ready at {new Date(request.readyAt).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit",timeZone:"Europe/Lisbon"})} (Sintra)</p>}
                             <p className="text-xs text-gray-600 truncate">
                               <MapPin className="h-3 w-3 inline mr-1" />
                               {request.pickupLocation}
                             </p>
                           </div>
                           <Button
-                            onClick={() => completePickupRequest(request.id)}
+                            onClick={() => completePickupRequest(request.id, request.product==='city-card-v1'&&!request.pickedUpAt?'pickup':'complete')}
                             size="sm"
                             className="bg-green-600 hover:bg-green-700 flex-shrink-0"
                           >
                             <CheckCircle className="h-4 w-4 mr-1" />
-                            Complete
+                            {request.product==='city-card-v1'&&!request.pickedUpAt?'Record pickup':'Complete'}
                           </Button>
                         </div>
                       </div>
@@ -499,7 +507,8 @@ export function DriverDashboard({ driver, token, onLogout }: DriverDashboardProp
                       <div key={request.id} className="bg-white p-3 rounded-lg">
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-sm">{request.customerName}</p>
+                            <p className="font-medium text-sm">{request.customerName}</p><p>{request.groupSize} passengers · {request.destination}</p><a href={'tel:'+request.customerPhone}>{request.customerPhone}</a>{request.nonTukTuk&&<p className="font-bold text-red-700">NON-TUK-TUK VEHICLE REQUIRED</p>}{request.riders?.map((r:any)=><p key={r.bookingId+r.index}>{r.name} · {r.ageBand}</p>)}
+                            {request.readyAt && <p className="text-sm">Ready at {new Date(request.readyAt).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit",timeZone:"Europe/Lisbon"})} (Sintra)</p>}
                             <p className="text-xs text-gray-600 truncate">
                               <MapPin className="h-3 w-3 inline mr-1" />
                               {request.pickupLocation}
@@ -512,7 +521,7 @@ export function DriverDashboard({ driver, token, onLogout }: DriverDashboardProp
                             )}
                           </div>
                           <Button
-                            onClick={() => acceptPickupRequest(request.id)}
+                            disabled={request.product==='city-card-v1'&&(!['tuk_tuk','other'].includes(driver.vehicleCategory)||driver.passengerCapacity<request.groupSize||!driver.passengerCapacity||(request.nonTukTuk&&driver.vehicleCategory!=='other'))} onClick={() => acceptPickupRequest(request.id)}
                             size="sm"
                             className="bg-[#0A4D5C] hover:bg-[#0A4D5C]/90 flex-shrink-0"
                           >
@@ -562,13 +571,7 @@ export function DriverDashboard({ driver, token, onLogout }: DriverDashboardProp
               </Button>
               {showSellForm && (
                 <div className="mt-4">
-                  <SellTicketsForm
-                    driverId={driver.id}
-                    onSaleComplete={() => {
-                      loadMetrics();
-                      loadActivity();
-                    }}
-                  />
+                  <StaffCardSales api={cardSalesApi}/>
                 </div>
               )}
             </div>
@@ -968,3 +971,6 @@ export function DriverDashboard({ driver, token, onLogout }: DriverDashboardProp
     </div>
   );
 }
+
+
+

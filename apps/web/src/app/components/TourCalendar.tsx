@@ -1,3 +1,4 @@
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useState, useEffect } from 'react';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Users, Clock, Mail, Phone, X, Settings, Plus, Edit2 } from 'lucide-react';
 import { Button } from './ui/button';

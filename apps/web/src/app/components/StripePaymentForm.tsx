@@ -1,3 +1,4 @@
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useState, useEffect, useRef } from "react";
 import { loadStripe, Stripe, StripeElements } from "@stripe/stripe-js";
 import {
@@ -21,17 +22,25 @@ interface StripePaymentFormProps {
   metadata?: Record<string, string>;
 }
 
-function CheckoutForm({ amount, onSuccess, onError, customerEmail }: Omit<StripePaymentFormProps, 'clientSecret'>) {
+function CheckoutForm({ amount, onSuccess, onError, customerEmail, clientSecret }: StripePaymentFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const hasSubmittedRef = useRef(false);
+  const [now, setNow] = useState(Date.now());
+  const deadline = Date.parse(sessionStorage.getItem('checkout-hold:' + clientSecret.split('_secret_')[0]) || '');
+  const expired = Number.isFinite(deadline) && now >= deadline;
+  const remainingMinutes = Math.max(1, Math.ceil((deadline - now) / 60000));
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!stripe || !elements) {
+    if (!stripe || !elements || expired) {
       return;
     }
 
@@ -118,6 +127,13 @@ function CheckoutForm({ amount, onSuccess, onError, customerEmail }: Omit<Stripe
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {Number.isFinite(deadline) && (
+        <Alert>
+          <AlertDescription>{expired
+            ? "Your checkout window has ended. If you have not submitted payment, go back and restart checkout to check availability. If payment is processing, please wait and do not pay again."
+            : `Your places are reserved for this checkout. Please complete payment within ${remainingMinutes} minute${remainingMinutes === 1 ? '' : 's'}.`}</AlertDescription>
+        </Alert>
+      )}
       {/* Payment Element Container */}
       <div className="rounded-lg border border-border/50 p-4 bg-background">
         <PaymentElement 
@@ -164,7 +180,7 @@ function CheckoutForm({ amount, onSuccess, onError, customerEmail }: Omit<Stripe
         type="submit"
         size="lg"
         className="w-full bg-accent hover:bg-accent/90 shadow-lg hover:shadow-xl transition-all duration-200"
-        disabled={!stripe || isProcessing}
+        disabled={!stripe || isProcessing || expired}
       >
         {isProcessing ? (
           <>
@@ -294,7 +310,7 @@ export function StripePaymentForm({ amount, clientSecret, onSuccess, onError, cu
 
   return (
     <Elements stripe={stripePromiseRef.current} options={options}>
-      <CheckoutForm amount={amount} onSuccess={onSuccess} onError={onError} customerEmail={customerEmail} />
+      <CheckoutForm amount={amount} clientSecret={clientSecret} onSuccess={onSuccess} onError={onError} customerEmail={customerEmail} />
     </Elements>
   );
 }

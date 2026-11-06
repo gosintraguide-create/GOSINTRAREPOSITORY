@@ -1,5 +1,13 @@
-import { useState, useEffect, useMemo } from "react";
-import { useOutletContext } from "react-router";
+import {AdminOperations} from './AdminOperations';
+import {AdminNavigation,validAdminTabs} from './AdminNavigation';
+import {AdminStaff} from './AdminStaff';
+import {CityCardPricing} from './CityCardPricing';
+import {DailyCapacity} from './DailyCapacity';
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { createNotificationTracker, isPickupKey } from "../lib/notificationTracker";
+import { adminClient } from "../lib/adminClient";
+import { useOutletContext, useSearchParams } from "react-router";
 import {
   Settings,
   Lock,
@@ -267,11 +275,30 @@ export function AdminPage() {
     document.title = "Admin Portal - Access Restricted";
   }, []);
 
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    // Check for existing session in localStorage (persistent across browser sessions)
-    const session = localStorage.getItem("admin-session");
-    return session === "authenticated";
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [username, setUsername] = useState("");
+  const [isSigningIn, setIsSigningIn] = useState(false);
+  useEffect(() => {
+    let active = true;
+    let revision = 0;
+    localStorage.removeItem("admin-session");
+    const validate = async (token?: string) => {
+      const current = ++revision;
+      if (!token) { if (active) setIsAuthenticated(false); return; }
+      try {
+        const response = await fetch(`https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/admin/session`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (active && current === revision) setIsAuthenticated(response.ok);
+      } catch {
+        if (active && current === revision) setIsAuthenticated(false);
+      }
+    };
+    const { data: { subscription } } = adminClient.auth.onAuthStateChange((_event, session) => {
+      void validate(session?.access_token);
+    });
+    return () => { active = false; subscription.unsubscribe(); };
+  }, []);
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [pricing, setPricing] =
@@ -279,10 +306,11 @@ export function AdminPage() {
   const [availability, setAvailability] =
     useState<AvailabilitySettings>({});
   const [selectedDate, setSelectedDate] = useState(
-    new Date().toISOString().split("T")[0],
+    new Intl.DateTimeFormat("en-CA",{timeZone:"Europe/Lisbon",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date()),
   );
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [error, setError] = useState("");
+  const [resetMessage, setResetMessage] = useState("");
   const [content, setContent] = useState<WebsiteContent>({});
   const [bookings, setBookings] = useState<any[]>([]);
   const [loadingBookings, setLoadingBookings] = useState(false);
@@ -300,7 +328,9 @@ export function AdminPage() {
     showArchivedConversations,
     setShowArchivedConversations,
   ] = useState(false);
-  const [activeTab, setActiveTab] = useState("pickups");
+  const [adminParams,setAdminParams]=useSearchParams();
+  const activeTab=validAdminTabs.includes(adminParams.get("section")||"")?adminParams.get("section")!:"overview";
+  const setActiveTab=(tab:string)=>setAdminParams({section:tab});
   const [toursSubTab, setToursSubTab] = useState("requests");
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [availabilitySheetOpen, setAvailabilitySheetOpen] = useState(false);
@@ -318,8 +348,8 @@ export function AdminPage() {
   const [testPushResult, setTestPushResult] = useState<{ ok: boolean; message: string } | null>(null);
 
   // Notification state
-  const [lastPickupCount, setLastPickupCount] = useState(0);
-  const [lastBookingCount, setLastBookingCount] = useState(0);
+  const pickupTracker = useRef(createNotificationTracker());
+  const bookingTracker = useRef(createNotificationTracker());
   const [lastMessageCount, setLastMessageCount] = useState(0);
   const [newPickupsCount, setNewPickupsCount] = useState(0);
   const [newBookingsCount, setNewBookingsCount] = useState(0);
@@ -623,7 +653,10 @@ export function AdminPage() {
         if (response.ok) {
           const data = await response.json();
           console.log("✅ Bookings fetched successfully:", data.bookings?.length || 0);
-          setBookings(data.bookings || []);
+          setBookings(await Promise.all((data.bookings || []).map(async (booking: any) => ({
+            ...booking,
+            checkIns: await loadCheckInsForBooking(booking.id, booking.passengers?.length || 0),
+          }))));
         } else {
           const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
           console.error("❌ Server error:", errorData);
@@ -653,6 +686,10 @@ export function AdminPage() {
         async (payload) => {
           // Filter out non-booking keys (pickup requests, chat, etc.)
           const key = payload.new?.key;
+          if (typeof key === "string" && (key.startsWith("checkin_") || key.startsWith("checkins_"))) {
+            await fetchBookings();
+            return;
+          }
           if (
             !key ||
             key.startsWith("PICKUP_") ||
@@ -673,32 +710,7 @@ export function AdminPage() {
             payload,
           );
 
-          // Check if this is a new booking (INSERT event)
-          if (payload.eventType === "INSERT" && payload.new) {
-            const today = new Date()
-              .toISOString()
-              .split("T")[0];
-            const newBooking = payload.new.value;
-
-            // Check if booking was created today
-            if (newBooking?.createdAt) {
-              const createdDate = new Date(newBooking.createdAt)
-                .toISOString()
-                .split("T")[0];
-
-              if (createdDate === today) {
-                // Increment badge counter
-                setNewBookingsCount((prev) => prev + 1);
-
-                // Send mobile-friendly notification
-                sendMobileNotification('booking', {
-                  title: 'New Booking Received!',
-                  body: `Booking ${newBooking.id} from ${newBooking.passengers?.[0]?.firstName || "customer"}`,
-                  id: newBooking.id
-                });
-              }
-            }
-          }
+          void checkForNewItems();
 
           // Reload bookings when any booking changes
           await fetchBookings();
@@ -796,7 +808,7 @@ export function AdminPage() {
         async (payload) => {
           // Filter for pickup request keys only
           const key = payload.new?.key;
-          if (!key || !key.startsWith("pickup_request:")) {
+          if (!isPickupKey(key)) {
             return;
           }
           console.log(
@@ -804,31 +816,7 @@ export function AdminPage() {
             payload,
           );
 
-          // Check if this is a new pickup request (INSERT event)
-          if (payload.eventType === "INSERT" && payload.new) {
-            const newPickup = payload.new.value;
-
-            // Check if this is a pending pickup request
-            if (newPickup?.status === "pending") {
-              console.log("✅ New pending pickup request detected:", newPickup);
-              
-              // Increment badge counter
-              setNewPickupsCount((prev) => prev + 1);
-
-              // Send mobile-friendly notification
-              sendMobileNotification('pickup', {
-                title: 'New Pickup Request!',
-                body: `${newPickup.groupSize} passengers at ${newPickup.pickupLocation}`,
-                id: newPickup.id
-              });
-
-              // Show toast notification
-              toast.success(
-                `🚗 New pickup request: ${newPickup.groupSize} passengers at ${newPickup.pickupLocation}`,
-                { duration: 5000 }
-              );
-            }
-          }
+          void checkForNewItems();
 
           // Reload pickup requests from the PickupRequestsManagement component
           // It will handle its own data refresh
@@ -901,13 +889,33 @@ export function AdminPage() {
     }
   };
 
-  const handleLogin = () => {
-    if (password === "Sintra2025") {
+  const handleLogin = async () => {
+    if (isSigningIn) return;
+    setIsSigningIn(true);
+    setError("");
+    try {
+      const login = await fetch(`https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/admin/login`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${publicAnonKey}` },
+        body: JSON.stringify({ username: username.trim(), password }),
+      });
+      const result = await login.json();
+      if (!login.ok || !result.session) throw new Error(result.error || 'Sign-in failed');
+      const { data, error: loginError } = await adminClient.auth.setSession(result.session);
+      if (loginError || !data.session) throw new Error('Sign-in failed');
+      const response = await fetch(`https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/admin/session`, {
+        headers: { Authorization: `Bearer ${data.session.access_token}` },
+      });
+      if (!response.ok) {
+        await adminClient.auth.signOut({ scope: "local" });
+        throw new Error("This account does not have administrator access, or authentication is unavailable.");
+      }
+      setPassword("");
       setIsAuthenticated(true);
-      localStorage.setItem("admin-session", "authenticated");
-      setError("");
-    } else {
-      setError("Incorrect password");
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Sign-in failed. Please try again.");
+    } finally {
+      setPassword("");
+      setIsSigningIn(false);
     }
   };
 
@@ -1062,7 +1070,8 @@ export function AdminPage() {
       );
       const data = await res.json();
       if (data.success && data.booking) {
-        setTestBookingResult({ ok: true, message: "Test booking created — check your phone for the push notification and your email for the owner alert.", bookingId: data.booking.id });
+        const delivery = data.booking.delivery;
+        setTestBookingResult({ ok: true, message: `Test booking created. Customer email intentionally skipped; no ride request created. Owner push: ${delivery?.ownerPush?.success ? "accepted by provider" : "not confirmed"}. Owner email: ${delivery?.ownerEmail?.success ? "accepted by provider" : "not confirmed"}.`, bookingId: data.booking.id });
         toast.success("Test booking fired", { description: data.booking.id });
         loadBookings(); // refresh list
       } else {
@@ -1332,6 +1341,9 @@ export function AdminPage() {
         ),
       ]);
 
+    const freshPickupIds = new Set(pickupTracker.current(pickups).map((item) => item.id));
+    const freshBookingIds = new Set(bookingsResult?.success
+      ? bookingTracker.current(bookingsResult.bookings || []).map((item) => item.id) : []);
     // Count pending pickups (status !== 'completed' and status !== 'cancelled')
     const pendingPickups = pickups.filter(
       (p: any) =>
@@ -1340,7 +1352,7 @@ export function AdminPage() {
     const currentPickupCount = pendingPickups.length;
 
     // Count today's bookings
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Intl.DateTimeFormat("en-CA",{timeZone:"Europe/Lisbon",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
     // Count bookings CREATED today (not scheduled for today)
     const todaysBookings =
       bookingsResult?.bookings?.filter((b: any) => {
@@ -1362,10 +1374,9 @@ export function AdminPage() {
     if (showNotifications) {
       // Check for new pickups
       if (
-        currentPickupCount > lastPickupCount &&
-        lastPickupCount > 0
+        pendingPickups.some((item: any) => freshPickupIds.has(item.id))
       ) {
-        const newCount = currentPickupCount - lastPickupCount;
+        const newCount = pendingPickups.filter((item: any) => freshPickupIds.has(item.id)).length;
         toast.info(
           `🚗 ${newCount} new pickup request${newCount > 1 ? "s" : ""}!`,
           {
@@ -1389,10 +1400,9 @@ export function AdminPage() {
 
       // Check for new bookings
       if (
-        currentBookingCount > lastBookingCount &&
-        lastBookingCount > 0
+        todaysBookings.some((item: any) => freshBookingIds.has(item.id))
       ) {
-        const newCount = currentBookingCount - lastBookingCount;
+        const newCount = todaysBookings.filter((item: any) => freshBookingIds.has(item.id)).length;
         toast.success(
           `🎫 ${newCount} new booking${newCount > 1 ? "s" : ""} today!`,
           {
@@ -1442,8 +1452,6 @@ export function AdminPage() {
     }
 
     // Update counts
-    setLastPickupCount(currentPickupCount);
-    setLastBookingCount(currentBookingCount);
     setLastMessageCount(currentMessageCount);
 
     // Update main data
@@ -1491,8 +1499,22 @@ export function AdminPage() {
     }
   }, [isAuthenticated]);
 
-  // Auto-refresh every 30 seconds
-  // Removed polling interval - realtime subscriptions handle all updates automatically
+  // Polling remains necessary when realtime disconnects or is unavailable.
+  const checkForNewItemsRef = useRef(checkForNewItems);
+  checkForNewItemsRef.current = checkForNewItems;
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    let running = false;
+    const refresh = async () => {
+      if (running) return;
+      running = true;
+      try { await checkForNewItemsRef.current(); }
+      finally { running = false; }
+    };
+    const interval = window.setInterval(refresh, 15000);
+    window.addEventListener("focus", refresh);
+    return () => { window.clearInterval(interval); window.removeEventListener("focus", refresh); };
+  }, [isAuthenticated]);
 
   // Update page title when notification counts change
   useEffect(() => {
@@ -1757,7 +1779,7 @@ export function AdminPage() {
 
   // Pending bookings for today — drives the Bookings tab badge
   const pendingTodayCount = (() => {
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Intl.DateTimeFormat("en-CA",{timeZone:"Europe/Lisbon",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
     return bookings.filter(
       (b) => b?.selectedDate === today && b?.status !== "cancelled" && b?.status !== "completed",
     ).length;
@@ -1792,7 +1814,7 @@ export function AdminPage() {
     }
 
     // Exclude cancelled bookings from all metrics
-    const activeBookings = bookings.filter((b) => b.status !== "cancelled");
+    const activeBookings = bookings.filter((b) => b.status !== "cancelled" && b.product !== "city-card-v1");
 
     // Total metrics
     const totalRevenue = activeBookings.reduce(
@@ -1835,7 +1857,7 @@ export function AdminPage() {
         : 0;
 
     // Today's stats (active only)
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Intl.DateTimeFormat("en-CA",{timeZone:"Europe/Lisbon",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
     const todaysBookings = activeBookings.filter((b) => {
       const bookingDate = b.selectedDate?.split("T")[0] || b.passDate;
       return bookingDate === today;
@@ -1997,15 +2019,21 @@ export function AdminPage() {
             Admin Console
           </h1>
           <p className="mb-6 text-center text-muted-foreground">
-            Enter password to access admin settings
+            Sign in with your administrator account
           </p>
 
           <div className="space-y-4">
+            <div>
+              <Label htmlFor="admin-username">Username</Label>
+              <Input id="admin-username" type="text" autoComplete="username" value={username}
+                onChange={(event) => setUsername(event.target.value)} className="mt-2" />
+            </div>
             <div>
               <Label htmlFor="password">Password</Label>
               <div className="relative mt-2">
                 <Input
                   id="password"
+                  autoComplete="current-password"
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -2034,11 +2062,29 @@ export function AdminPage() {
 
             <Button
               onClick={handleLogin}
+              disabled={isSigningIn || !username.trim() || !password}
               className="w-full bg-primary hover:bg-primary/90"
             >
               <LogIn className="mr-2 h-4 w-4" />
-              Sign In
+              {isSigningIn ? "Signing in…" : "Sign In"}
             </Button>
+            <Button variant="outline" className="w-full" disabled={isSigningIn} onClick={async () => {
+              setError('');
+              setResetMessage('Requesting a password reset email…');
+              setIsSigningIn(true);
+              try {
+                const { error: resetError } = await adminClient.auth.resetPasswordForEmail('vascotimm@gmail.com', {
+                  redirectTo: 'https://www.hoponsintra.com/admin/reset-password',
+                });
+                if (resetError) throw resetError;
+                setResetMessage('Reset requested. Check your administrator Gmail inbox and spam folder. The email opens the live website to set your password; then return here to sign in.');
+              } catch (resetError) {
+                setResetMessage('');
+                setError(resetError instanceof Error ? resetError.message : 'Unable to send a reset link. Please try again later.');
+              }
+              finally { setIsSigningIn(false); }
+            }}>Set or reset my password</Button>
+            {resetMessage && <p role="status" className="text-sm">{resetMessage}</p>}
           </div>
         </Card>
       </div>
@@ -2047,7 +2093,7 @@ export function AdminPage() {
 
   // Main admin dashboard
   return (
-    <div className="flex-1 bg-secondary/30 py-6 sm:py-8 lg:py-12">
+    <div className="admin-console flex-1">
       <div className="mx-auto max-w-7xl px-3 sm:px-4 lg:px-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
@@ -2064,6 +2110,10 @@ export function AdminPage() {
               <div className="h-1 w-16 sm:w-20 rounded-full bg-accent" />
             </div>
             <div className="flex flex-wrap gap-2">
+              <Button variant="outline" onClick={async () => {
+                setIsAuthenticated(false);
+                await adminClient.auth.signOut({ scope: "local" });
+              }}>Sign Out</Button>
               <Button
                 variant="outline"
                 onClick={() => {
@@ -2098,6 +2148,7 @@ export function AdminPage() {
 
               <Button
                 variant="outline"
+                aria-label="Diagnostics"
                 onClick={() => onNavigate("diagnostics")}
                 className="gap-1.5 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3"
                 size="sm"
@@ -2109,6 +2160,7 @@ export function AdminPage() {
               </Button>
               <Button
                 variant="outline"
+                aria-label="QR Scanner"
                 onClick={() => onNavigate("qr-scanner")}
                 className="gap-1.5 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3"
                 size="sm"
@@ -2177,368 +2229,24 @@ export function AdminPage() {
             const clearedTotal = tab === "pickups" ? totalCount - newPickupsCount : tab === "bookings" ? totalCount - newBookingsCount : totalCount;
             document.title = clearedTotal > 0 ? `(${clearedTotal}) Hop On Sintra Admin` : 'Hop On Sintra Admin';
           }}
-          className="w-full"
+          className="admin-workspace"
         >
-          <div className="mb-4 sm:mb-8">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <TabsList className="w-full sm:w-auto flex-wrap h-auto gap-1">
-                <TabsTrigger
-                  value="pickups"
-                  className="flex items-center gap-1.5 text-xs sm:text-sm px-2 sm:px-3 relative"
-                >
-                  <Navigation className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  <span>Pickups</span>
-                  {newPickupsCount > 0 && (
-                    <span className="ml-1 flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full bg-orange-500 text-xs text-white animate-pulse">
-                      {newPickupsCount}
-                    </span>
-                  )}
-                </TabsTrigger>
-                <TabsTrigger
-                  value="bookings"
-                  className="flex items-center gap-1.5 text-xs sm:text-sm px-2 sm:px-3 relative"
-                >
-                  <Package className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  <span>Bookings</span>
-                  {pendingTodayCount > 0 && (
-                    <span className="ml-1 flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full bg-accent text-xs text-white">
-                      {pendingTodayCount}
-                    </span>
-                  )}
-                </TabsTrigger>
-                <TabsTrigger
-                  value="messages"
-                  className="flex items-center gap-1.5 text-xs sm:text-sm px-2 sm:px-3 relative"
-                >
-                  <MessageCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  <span>Messages</span>
-                  {conversations.filter(
-                    (c) => c.unreadByAdmin > 0 && !c.archived,
-                  ).length > 0 && (
-                    <span className="ml-1 flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                      {
-                        conversations.filter(
-                          (c) => c.unreadByAdmin > 0,
-                        ).length
-                      }
-                    </span>
-                  )}
-                </TabsTrigger>
-                <TabsTrigger
-                  value="tours"
-                  className="flex items-center gap-1.5 text-xs sm:text-sm px-2 sm:px-3"
-                >
-                  <Car className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  <span>Tours</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="metrics"
-                  className="flex items-center gap-1.5 text-xs sm:text-sm px-2 sm:px-3"
-                >
-                  <BarChart3 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  <span>Analytics</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="dev"
-                  className="flex items-center gap-1.5 text-xs sm:text-sm px-2 sm:px-3"
-                >
-                  <FlaskConical className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  <span>Dev</span>
-                </TabsTrigger>
-              </TabsList>
-
-              <Sheet
-                open={moreMenuOpen}
-                onOpenChange={setMoreMenuOpen}
-              >
-                <SheetTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="gap-2 text-xs sm:text-sm px-3 sm:px-4"
-                  >
-                    <MoreHorizontal className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                    More
-                  </Button>
-                </SheetTrigger>
-                <SheetContent
-                  side="right"
-                  className="w-full sm:max-w-md overflow-y-auto"
-                >
-                  <SheetHeader>
-                    <SheetTitle>More Options</SheetTitle>
-                    <SheetDescription>
-                      Access additional admin tools and settings
-                    </SheetDescription>
-                  </SheetHeader>
-                  <div className="mt-6 space-y-1">
-                    {/* Section: Content Management */}
-                    <p className="px-3 pb-1 pt-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                      Content Management
-                    </p>
-
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-3"
-                      onClick={() => {
-                        setActiveTab("content");
-                        setMoreMenuOpen(false);
-                      }}
-                    >
-                      <Settings className="h-5 w-5" />
-                      <div className="flex flex-col items-start">
-                        <span>Content</span>
-                        <span className="text-xs text-muted-foreground">
-                          Edit website content &amp; images
-                        </span>
-                      </div>
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-3"
-                      onClick={() => {
-                        setActiveTab("blog");
-                        setMoreMenuOpen(false);
-                      }}
-                    >
-                      <FileText className="h-5 w-5" />
-                      <div className="flex flex-col items-start">
-                        <span>Blog</span>
-                        <span className="text-xs text-muted-foreground">
-                          Manage blog articles
-                        </span>
-                      </div>
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-3"
-                      onClick={() => {
-                        setActiveTab("private-tours");
-                        setMoreMenuOpen(false);
-                      }}
-                    >
-                      <Car className="h-5 w-5" />
-                      <div className="flex flex-col items-start">
-                        <span>Private Tours</span>
-                        <span className="text-xs text-muted-foreground">
-                          Manage tour packages
-                        </span>
-                      </div>
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-3"
-                      onClick={() => {
-                        setActiveTab("images");
-                        setMoreMenuOpen(false);
-                      }}
-                    >
-                      <Image className="h-5 w-5" />
-                      <div className="flex flex-col items-start">
-                        <span>Image Library</span>
-                        <span className="text-xs text-muted-foreground">
-                          Upload and manage images
-                        </span>
-                      </div>
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-3"
-                      onClick={() => {
-                        setActiveTab("planner-images");
-                        setMoreMenuOpen(false);
-                      }}
-                    >
-                      <Calculator className="h-5 w-5" />
-                      <div className="flex flex-col items-start">
-                        <span>Day Planner Images</span>
-                        <span className="text-xs text-muted-foreground">
-                          Monument photos in the calculator
-                        </span>
-                      </div>
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-3"
-                      onClick={() => {
-                        setActiveTab("cinema-no-mato");
-                        setMoreMenuOpen(false);
-                      }}
-                    >
-                      <Clapperboard className="h-5 w-5" />
-                      <div className="flex flex-col items-start">
-                        <span>Cinema no Mato</span>
-                        <span className="text-xs text-muted-foreground">
-                          Sessões, preços, hero e conteúdo
-                        </span>
-                      </div>
-                    </Button>
-
-                    <div className="my-3 h-px bg-border" />
-
-                    {/* Section: Card System */}
-                    <p className="px-3 pb-1 pt-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                      Card System
-                    </p>
-
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-3"
-                      onClick={() => {
-                        setActiveTab("card-tiers");
-                        setMoreMenuOpen(false);
-                      }}
-                    >
-                      <CreditCard className="h-5 w-5" />
-                      <div className="flex flex-col items-start">
-                        <span>Card Tiers</span>
-                        <span className="text-xs text-muted-foreground">
-                          Sintra Day Card products
-                        </span>
-                      </div>
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-3"
-                      onClick={() => {
-                        setActiveTab("deals-merchants");
-                        setMoreMenuOpen(false);
-                      }}
-                    >
-                      <Store className="h-5 w-5" />
-                      <div className="flex flex-col items-start">
-                        <span>Deals &amp; Merchants</span>
-                        <span className="text-xs text-muted-foreground">
-                          Merchants and their card deals
-                        </span>
-                      </div>
-                    </Button>
-
-                    <div className="my-3 h-px bg-border" />
-
-                    {/* Section: Settings */}
-                    <p className="px-3 pb-1 pt-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                      Settings
-                    </p>
-
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-3"
-                      onClick={() => {
-                        setActiveTab("settings");
-                        setMoreMenuOpen(false);
-                      }}
-                    >
-                      <DollarSign className="h-5 w-5" />
-                      <div className="flex flex-col items-start">
-                        <span>Pricing &amp; Features</span>
-                        <span className="text-xs text-muted-foreground">
-                          Ticket prices &amp; feature flags
-                        </span>
-                      </div>
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-3"
-                      onClick={() => {
-                        setActiveTab("seo");
-                        setMoreMenuOpen(false);
-                      }}
-                    >
-                      <Tag className="h-5 w-5" />
-                      <div className="flex flex-col items-start">
-                        <span>SEO</span>
-                        <span className="text-xs text-muted-foreground">
-                          SEO tools and settings
-                        </span>
-                      </div>
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-3"
-                      onClick={() => {
-                        setActiveTab("tags");
-                        setMoreMenuOpen(false);
-                      }}
-                    >
-                      <Tag className="h-5 w-5" />
-                      <div className="flex flex-col items-start">
-                        <span>Tags</span>
-                        <span className="text-xs text-muted-foreground">
-                          Manage blog tags
-                        </span>
-                      </div>
-                    </Button>
-
-                    <div className="my-3 h-px bg-border" />
-
-                    {/* Section: System */}
-                    <p className="px-3 pb-1 pt-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                      System
-                    </p>
-
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-3"
-                      onClick={() => {
-                        setActiveTab("logs");
-                        setMoreMenuOpen(false);
-                      }}
-                    >
-                      <FileText className="h-5 w-5" />
-                      <div className="flex flex-col items-start">
-                        <span>Booking Logs</span>
-                        <span className="text-xs text-muted-foreground">
-                          View booking history &amp; trip records
-                        </span>
-                      </div>
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-3"
-                      onClick={() => {
-                        setActiveTab("dev");
-                        setMoreMenuOpen(false);
-                      }}
-                    >
-                      <FlaskConical className="h-5 w-5" />
-                      <div className="flex flex-col items-start">
-                        <span>Dev / Testing</span>
-                        <span className="text-xs text-muted-foreground">
-                          Test push, bookings, diagnostics, cleanup
-                        </span>
-                      </div>
-                    </Button>
-                  </div>
-                </SheetContent>
-              </Sheet>
-            </div>
-          </div>
-
+          <AdminNavigation active={activeTab} onNavigate={setActiveTab}/>
+          <TabsContent value="overview"><AdminOperations view="overview" onNavigate={setActiveTab}/></TabsContent>
+          <TabsContent value="city-cards"><AdminOperations/></TabsContent>
+          <TabsContent value="refunds"><AdminOperations view="refunds"/></TabsContent>
+          <TabsContent value="delivery"><AdminOperations view="delivery"/></TabsContent>
+          <TabsContent value="activity"><AdminOperations view="activity"/></TabsContent>
+          <TabsContent value="redemptions"><AdminOperations view="redemptions"/></TabsContent>
+          <TabsContent value="staff"><AdminStaff/></TabsContent>
+          <TabsContent value="city-pricing"><CityCardPricing/></TabsContent>
+          <TabsContent value="availability"><DailyCapacity/></TabsContent>
           {/* ====== PICKUPS TAB ====== */}
           <TabsContent
             value="pickups"
             className="space-y-4 sm:space-y-6"
           >
             <PickupRequestsManagement />
-            <div className="border-t border-border pt-4 sm:pt-6">
-              <div className="mb-4">
-                <div className="flex items-center gap-2">
-                  <UserCog className="h-5 w-5 text-primary" />
-                  <h2 className="text-foreground text-base sm:text-lg">Drivers</h2>
-                </div>
-                <p className="mt-1 text-sm text-muted-foreground">Manage driver accounts and assignments</p>
-              </div>
-              <DriverManagement />
-            </div>
           </TabsContent>
 
           {/* ====== BOOKINGS TAB ====== */}
@@ -2562,7 +2270,7 @@ export function AdminPage() {
               <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
                 <SheetHeader className="mb-6">
                   <SheetTitle>Availability Management</SheetTitle>
-                  <SheetDescription>Set available seats per time slot for a given date.</SheetDescription>
+                  <SheetDescription>Set daily card capacity and operating hours for each visit date.</SheetDescription>
                 </SheetHeader>
                 <div className="space-y-6">
                   <TicketPurchasesToggle
@@ -2570,59 +2278,7 @@ export function AdminPage() {
                     onToggle={toggleTicketPurchases}
                     idSuffix="availability"
                   />
-                  <div>
-                    <Label>Select Date</Label>
-                    <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-                      <PopoverTrigger asChild>
-                        <Button variant="outline" className="mt-2 w-full justify-start border-border text-left">
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {new Date(selectedDate).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <Calendar
-                          mode="single"
-                          selected={new Date(selectedDate)}
-                          onSelect={(date) => { if (date) { setSelectedDate(date.toISOString().split("T")[0]); setCalendarOpen(false); } }}
-                          disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                  <div className="rounded-lg border border-border bg-white p-4">
-                    <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                      <h3 className="text-foreground text-sm font-medium">
-                        Time Slots for {new Date(selectedDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-                      </h3>
-                      <div className="flex gap-2">
-                        <Button size="sm" variant="outline" onClick={() => setAllSlotsForDate(selectedDate, 50)}>Set All to 50</Button>
-                        <Button size="sm" variant="outline" onClick={() => setAllSlotsForDate(selectedDate, 0)}>Set All to 0</Button>
-                      </div>
-                    </div>
-                    <div className="grid gap-3 grid-cols-2 sm:grid-cols-4">
-                      {TIME_SLOTS.map((slot) => (
-                        <div key={slot} className="rounded-lg border border-border p-3">
-                          <Label htmlFor={`bslot-${slot}`} className="text-foreground">{slot}</Label>
-                          <Input
-                            id={`bslot-${slot}`}
-                            type="number"
-                            min="0"
-                            max="50"
-                            value={availability[selectedDate]?.[slot] ?? 50}
-                            onChange={(e) => updateAvailability(selectedDate, slot, parseInt(e.target.value) || 0)}
-                            className="mt-2 border-border"
-                          />
-                        </div>
-                      ))}
-                    </div>
-                    <div className="mt-4">
-                      <Button onClick={() => { saveAvailability(); setAvailabilitySheetOpen(false); }} className="bg-primary hover:bg-primary/90">
-                        <Save className="mr-2 h-4 w-4" />
-                        Save Availability
-                      </Button>
-                    </div>
-                  </div>
+                  <DailyCapacity/>
                 </div>
               </SheetContent>
             </Sheet>
@@ -3026,7 +2682,7 @@ export function AdminPage() {
           <TabsContent
             value="metrics"
             className="space-y-4 sm:space-y-6"
-          >
+          ><p>Legacy booking-value reports only. City Cards are excluded; use Overview for their gross sales, refunds and net receipts.</p>
             {/* Today's Operations - Featured Section */}
             <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5 p-4 sm:p-6">
               <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -3639,6 +3295,7 @@ export function AdminPage() {
             value="settings"
             className="space-y-4 sm:space-y-6"
           >
+            <p>City Card half price is calculated automatically. These child-price and add-on fields apply to the legacy website offer.</p>
             {/* Feature Flags */}
             <FeatureFlagManager />
 
@@ -3646,7 +3303,7 @@ export function AdminPage() {
             <Card className="border-border p-4 sm:p-6 lg:p-8">
               <div className="mb-4 sm:mb-6">
                 <h2 className="mb-2 text-foreground text-sm sm:text-base">
-                  Pricing Settings
+                  Legacy website pricing & settings
                 </h2>
                 <div className="h-1 w-16 rounded-full bg-accent" />
               </div>
@@ -3733,7 +3390,7 @@ export function AdminPage() {
                   </p>
                   <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
                     <li>• Adult: <strong className="text-foreground">€{pricing.basePrice.toFixed(2)}</strong></li>
-                    <li>• Child (7-12): <strong className="text-foreground">€{pricing.childPrice.toFixed(2)}</strong></li>
+                    <li>• Legacy website child: <strong className="text-foreground">€{pricing.childPrice.toFixed(2)}</strong></li>
                     <li>• Insight Tour add-on: <strong className="text-foreground">+€{pricing.guidedTourSurcharge.toFixed(2)}</strong> per person</li>
                   </ul>
                 </div>
@@ -3862,13 +3519,11 @@ export function AdminPage() {
           </TabsContent>
 
           {/* ====== CARD TIERS TAB ====== */}
-          <TabsContent value="card-tiers" className="space-y-6">
-            <CardTiersManagement />
-          </TabsContent>
+          
 
           {/* ====== DEALS & MERCHANTS TAB ====== */}
           <TabsContent value="deals-merchants" className="space-y-6">
-            <MerchantsDealsManagement />
+            <MerchantsDealsManagement showProfiles={false}/>
           </TabsContent>
 
           {/* ====== CONTENT TAB ====== */}
@@ -3897,14 +3552,12 @@ export function AdminPage() {
           </TabsContent>
 
           {/* ====== LOGS TAB ====== */}
-          <TabsContent value="logs" className="space-y-6">
-            <BookingLogs />
-          </TabsContent>
+          
 
           {/* ====== CLEANUP TAB ====== */}
           <TabsContent value="cleanup" className="space-y-6">
             <BookingDiagnostics />
-            <DatabaseCleanup adminPassword="Sintra2025" />
+            <DatabaseCleanup />
           </TabsContent>
 
           {/* ====== DEV TAB ====== */}
@@ -3972,7 +3625,7 @@ export function AdminPage() {
 
             {/* Diagnostics + cleanup */}
             <BookingDiagnostics />
-            <DatabaseCleanup adminPassword="Sintra2025" />
+            <DatabaseCleanup />
 
             {/* System reset */}
             <Card className="border-red-300 p-4 sm:p-6">
@@ -4014,3 +3667,5 @@ export function AdminPage() {
 }
 
 export default AdminPage;
+
+

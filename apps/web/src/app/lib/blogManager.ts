@@ -1,3 +1,4 @@
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 // Blog/Articles Management System for Hop On Sintra
 
 export interface FAQItem {

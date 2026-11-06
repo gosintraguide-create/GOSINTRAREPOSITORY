@@ -1,3 +1,4 @@
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useState, useEffect } from "react";
 import { CheckCircle, Download, Mail, Calendar, Users, ArrowRight, Printer, AlertCircle, FileDown, Ticket, Home, Settings, LogIn, Car, MessageCircle, MapPin } from "lucide-react";
 import { Button } from "./ui/button";

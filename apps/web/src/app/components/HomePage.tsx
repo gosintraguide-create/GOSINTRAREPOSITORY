@@ -1,3 +1,4 @@
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import image_71ee40946db4b4bf36ff2a3323e15fbad96b7af0 from 'figma:asset/71ee40946db4b4bf36ff2a3323e15fbad96b7af0.png'
 import image_8fa5e0f9f1551c4c27ecf6c304e93b992f85fb68 from 'figma:asset/8fa5e0f9f1551c4c27ecf6c304e93b992f85fb68.png'
 import image_72471611660200b2275398b6c3d4ca944a3262f9 from 'figma:asset/72471611660200b2275398b6c3d4ca944a3262f9.png'

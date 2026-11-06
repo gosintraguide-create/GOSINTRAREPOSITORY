@@ -1,3 +1,4 @@
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 // Session manager for temporary user profiles based on booking credentials
 
 export interface UserSession {
@@ -65,6 +66,8 @@ export function isLoggedIn(): boolean {
  */
 export function clearSession(): void {
   try {
+    const session = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
+    if (session?.bookingId) sessionStorage.removeItem('booking-access:' + session.bookingId);
     localStorage.removeItem(SESSION_KEY);
     // Also clear the chat conversation ID when user logs out
     localStorage.removeItem('chatConversationId');

@@ -1,3 +1,4 @@
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useEffect, useState, Suspense, lazy, useRef } from "react";
 import { Outlet, useLocation, useNavigate, useMatches } from "react-router";
 import { Header } from "./Header";

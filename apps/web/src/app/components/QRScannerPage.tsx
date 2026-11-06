@@ -1,3 +1,4 @@
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useState, useEffect, useRef } from "react";
 import { useOutletContext, useLocation } from "react-router";
 import { Button } from "./ui/button";

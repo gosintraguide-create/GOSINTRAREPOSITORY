@@ -1,3 +1,4 @@
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useState } from "react";
 import { Image as ImageIcon, RefreshCw, X, Plus, GripVertical } from "lucide-react";
 import { Button } from "./ui/button";

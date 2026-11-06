@@ -155,12 +155,6 @@ export function Footer({
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="z-[100]">
                 <DropdownMenuItem
-                  onClick={() => onNavigate?.("admin")}
-                  className="cursor-pointer min-h-[44px]"
-                >
-                  {legacyContent.footer.adminPortal}
-                </DropdownMenuItem>
-                <DropdownMenuItem
                   onClick={() => onNavigate?.("driver-portal")}
                   className="cursor-pointer min-h-[44px]"
                 >

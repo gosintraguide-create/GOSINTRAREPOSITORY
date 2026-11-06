@@ -1,3 +1,4 @@
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useParams, useNavigate, useOutletContext, Link } from "react-router";
 import { Breadcrumbs } from "./Breadcrumbs";
 import { useEffect, useState } from "react";
