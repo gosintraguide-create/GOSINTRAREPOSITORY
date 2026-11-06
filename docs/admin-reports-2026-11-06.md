@@ -20,3 +20,5 @@ Five report integration tests pass, covering complete totals across pagination, 
 Migration 20261106010000 was applied and recorded atomically. The report route was deployed on a freshly downloaded live function, changing only admin-operations.ts. Public report requests returned 401; privileged SELECT verification returned zero paid orders and zero confirmed redemptions. No business transactions or permissions were changed.
 
 Browser verification was interrupted when local browser use was disabled in Work settings. UI layout/interaction verification remains incomplete. Frontend production release status is recorded after deployment.
+
+Production frontend deployment dpl_BfMP7h51A43J4JjnPzbeyRaha8m6 is READY on www.hoponsintra.com, from commit dd58b928. HTTP 200 and served report labels/date controls verified. No Git push or merge performed. Browser visual validation remains unavailable.
