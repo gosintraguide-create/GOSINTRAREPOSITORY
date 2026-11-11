@@ -504,13 +504,13 @@ function CategoryStickyNav({
   return (
     <nav
       id="private-tours-sticky-nav"
-      className="px-[18px] md:px-[48px]"
+      className="px-[18px] md:px-[48px] backdrop-blur-md"
       style={{
         position: "sticky",
         top: navbarHeight,
         zIndex: 40,
-        background: "#f8f5f0",
-        borderBottom: "1px solid rgba(180,140,80,0.25)",
+        background: "var(--site-header-background)",
+        borderBottom: "1px solid var(--border)",
         display: "flex",
         justifyContent: "center",
         overflowX: "auto",
