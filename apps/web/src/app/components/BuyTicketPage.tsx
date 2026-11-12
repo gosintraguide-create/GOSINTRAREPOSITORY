@@ -1,3 +1,4 @@
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useState, useEffect } from "react";
 import { useOutletContext, useLocation } from "react-router";
 import { toast } from 'sonner';

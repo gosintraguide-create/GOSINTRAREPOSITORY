@@ -1,4 +1,5 @@
 import {useWebsiteText} from '../lib/translations/websiteText';
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useState, useEffect } from "react";
 import { Sunset, Clock, Users, MapPin, Sparkles, ChevronLeft, ChevronRight, Loader2, CheckCircle } from "lucide-react";
 import { Button } from "./ui/button";

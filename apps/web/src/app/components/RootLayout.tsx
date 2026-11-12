@@ -1,6 +1,7 @@
 import {getProfileCopy} from '../lib/translations/profileCopy';
 import {WebsiteLanguageContext, websiteText} from '../lib/translations/websiteText';
 import {selectWebsiteLanguage, normalizeWebsiteLanguage} from '../lib/translations/language';
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useEffect, useState, Suspense, lazy, useRef } from "react";
 import { Outlet, useLocation, useNavigate, useMatches } from "react-router";
 import { Header } from "./Header";
@@ -510,7 +511,7 @@ export function RootLayout() {
 
       <div className="flex min-h-screen flex-col bg-background">
         {/* Sticky wrapper keeps InfoBar + Header pinned together at the top */}
-        <div className={`sticky top-0 z-50${getCurrentPage() === "driver-portal" ? " hidden md:block" : ""}`} data-site-header>
+        <div hidden={location.pathname.startsWith("/admin")} className={`sticky top-0 z-50${getCurrentPage() === "driver-portal" ? " hidden md:block" : ""}`} data-site-header>
           {!["admin", "driver-portal", "diagnostics"].includes(getCurrentPage()) && (
             <InfoBar language={language} />
           )}
@@ -526,7 +527,7 @@ export function RootLayout() {
             <Outlet context={{ language, onNavigate: handleNavigate }} />
           </Suspense>
         </main>
-        {getCurrentPage() === "driver-portal" ? (
+        {location.pathname.startsWith("/admin") ? null : getCurrentPage() === "driver-portal" ? (
           <div className="hidden md:block">
             <Footer onNavigate={handleNavigate} language={language} />
           </div>

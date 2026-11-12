@@ -1,3 +1,5 @@
+import {StaffLogin} from './components/StaffLogin';
+import {MerchantPortal} from './components/MerchantPortal';
 import { createBrowserRouter, Navigate } from "react-router";
 import { lazy } from "react";
 import { RootLayout } from "@/components/RootLayout";
@@ -21,6 +23,7 @@ const BlogPage = lazy(() => import("@/components/BlogPage").then(m => ({ default
 const BlogArticlePage = lazy(() => import("@/components/BlogArticlePage").then(m => ({ default: m.BlogArticlePage })));
 const RouteMapPage = lazy(() => import("@/components/RouteMapPage").then(m => ({ default: m.RouteMapPage })));
 const AdminPage = lazy(() => import("@/components/AdminPage").then(m => ({ default: m.AdminPage })));
+const AdminPasswordPage = lazy(() => import("@/components/AdminPasswordPage").then(m => ({ default: m.AdminPasswordPage })));
 const DriverPortalPage = lazy(() => import("@/components/DriverPortalPage").then(m => ({ default: m.DriverPortalPage })));
 const QRScannerPage = lazy(() => import("@/components/QRScannerPage").then(m => ({ default: m.QRScannerPage })));
 const NotFoundPage = lazy(() => import("@/components/NotFoundPage").then(m => ({ default: m.NotFoundPage })));
@@ -49,7 +52,7 @@ export const attractionSlugs: Record<string, string> = {
   "parque-e-palacio-da-pena": "pena-palace",
 };
 
-export const router = createBrowserRouter([
+export const router = createBrowserRouter([{path:"/staff",element:<StaffLogin/>},{path:"/merchant",element:<MerchantPortal/>},
   {
     path: "/",
     element: <RootLayout />,
@@ -301,6 +304,11 @@ export const router = createBrowserRouter([
             index: false,
           },
         },
+      },
+      {
+        path: "admin/reset-password",
+        element: <AdminPasswordPage />,
+        handle: { meta: { title: "Set administrator password", index: false } },
       },
       {
         path: "admin",

@@ -1,3 +1,4 @@
+import { authenticatedFetch as fetch } from './authenticatedFetch';
 // Utility for handling API errors gracefully
 // Prevents console spam while still logging critical issues
 

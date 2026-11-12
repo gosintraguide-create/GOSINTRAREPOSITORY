@@ -1,0 +1,10 @@
+import {pickupInput,customerPickup} from './pickup-eligibility.ts';
+export function installCityPickups(app:any,db:any,notify:(r:any)=>Promise<void>){
+ const root='/make-server-3bd0ade8/customer/rides';
+ const rpc=async(name:string,args:any)=>{const {data,error}=await db.rpc(name,args);if(error)throw Error(error.message);return data;};
+ const route=(fn:any)=>async(c:any)=>{c.header('Cache-Control','private, no-store');const token=c.req.header('Authorization')?.replace(/^Bearer /i,'');if(!token)return c.json({success:false,error:'Please sign in'},401);const {data,error}=await db.auth.getUser(token);if(error||!data.user?.email_confirmed_at||!data.user.email)return c.json({success:false,error:'Please sign in'},401);try{return await fn(c,data.user.email.toLowerCase());}catch(e){return c.json({success:false,error:e instanceof Error?e.message:'Ride request unavailable'},409);}};
+ const safe=(r:any)=>({...customerPickup(r),riders:r.riders,nonTukTuk:r.nonTukTuk,pickedUpAt:r.pickedUpAt||null});
+ app.get(root,route(async(c:any,email:string)=>c.json({success:true,requests:(await rpc('customer_city_pickups',{p_email:email})).map(safe)})));
+ app.post(root,route(async(c:any,email:string)=>{const b=await c.req.json();if(!Array.isArray(b.cards)||!b.cards.length||b.cards.length>50)throw Error('Select your cardholders');for(const card of b.cards)if(typeof card.bookingId!=='string'||!/^CC-[0-9A-F-]{36}$/.test(card.bookingId)||!Number.isInteger(card.index)||card.index<0)throw Error('Invalid card');const input=pickupInput({...b,groupSize:b.cards.length},50);const result=await rpc('create_city_pickup',{p_email:email,p_cards:b.cards,p_input:input});if(result.created)try{await notify(result.request);}catch{console.error('City pickup notification failed');}return c.json({success:true,created:result.created,request:safe(result.request)});}));
+ app.post(root+'/:id/cancel',route(async(c:any,email:string)=>c.json({success:true,request:safe(await rpc('cancel_city_pickup',{p_email:email,p_id:c.req.param('id')}))})));
+}

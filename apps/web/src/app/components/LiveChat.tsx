@@ -1,4 +1,5 @@
 import {useWebsiteText} from '../lib/translations/websiteText';
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useState, useRef, useEffect } from "react";
 import { MessageCircle, X, Send, Car, ArrowLeft } from "lucide-react";
 import { Button } from "./ui/button";

@@ -1,3 +1,4 @@
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useState, useEffect, useMemo } from "react";
 import { ArrowLeft, TrendingUp, TrendingDown, DollarSign, Users, Calendar, Package, CheckCircle2, Clock, Download, Filter, BarChart3, LineChart as LineChartIcon, PieChart as PieChartIcon, RefreshCw } from "lucide-react";
 import { Button } from "./ui/button";

@@ -1,3 +1,12 @@
+import {installCityPickups} from './city-pickups.ts';
+import {installAdminOperations,adminChangeAudit} from './admin-operations.ts';
+import {createStaffPasswordLogin} from './staff-login.ts';
+import {installStaffCardSales} from './staff-card-sales.ts';
+import {installMerchantPerks} from './merchant-perks.ts';
+import {installCityCards} from './city-cards.ts';
+import {cityBoardingError} from './city-card-product.ts';
+import {installCustomerPickups} from './customer-pickups.ts';
+import {createRidePurchaseGuard} from './ride-purchases.ts';
 // v2 — adds /stripe-config endpoint
 import { Hono } from "npm:hono";
 import { cors } from "npm:hono/cors";
@@ -9,6 +18,16 @@ import * as kv from "./kv_store.ts";
 import QRCode from "npm:qrcode@1.5.4";
 import { PDFDocument, rgb } from "npm:pdf-lib@1.17.1";
 import Stripe from "npm:stripe@17.3.1";
+import { handlePaymentWebhook } from "./payment-webhook.ts";
+import { installDriverAccounts } from "./driver-accounts.ts";
+import { createStaffGuard, resolveStaff } from "./staff-access.ts";
+import { installPickupTransitions } from "./pickup-transitions.ts";
+import { authorizeAdmin, createAdminGuard } from "./admin-auth.ts";
+import { createAdminLogin } from "./admin-login.ts";
+import { reconcileCheckoutHold } from "./checkout-holds.ts";
+import { createBookingAccessGuard } from "./booking-access.ts";
+import { readCheckinHistory } from "./checkin-history.ts";
+import { priceTicket, priceTour, priceAddon, verifyTicketPayment } from "./ticket-payment.ts";
 import { generateBookingConfirmationHTML, generateTourBookingConfirmationHTML, generateTourQuoteRequestHTML } from "./email_template.ts";
 import { cleanupDatabase, removeLegacyBranding, cleanupOldAvailability } from "./cleanup.ts";
 
@@ -187,7 +206,7 @@ app.use(
     },
     credentials: true,
     allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowHeaders: ["Content-Type", "Authorization"],
+    allowHeaders: ["Content-Type", "Authorization", "X-Booking-Token"],
   }),
 );
 app.use("*", logger(console.log));
@@ -198,6 +217,43 @@ const supabase = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
 );
 
+app.use("/make-server-3bd0ade8/*", createAdminGuard((token) => supabase.auth.getUser(token)));
+app.use("/make-server-3bd0ade8/*",adminChangeAudit(supabase));
+const getDriverProfiles = async () => (await kvWithRetry.get("drivers_list") as any[]) || [];
+const resolveSellerStaff = (token?:string) => resolveStaff(token, {
+ getUser: token => supabase.auth.getUser(token), getDrivers: getDriverProfiles,
+ sessionActive: async (userId, sessionId) => {
+  const {data,error}=await supabase.rpc('driver_session_active',{p_user_id:userId,p_session_id:sessionId});
+  if(error)throw new Error('Session verification unavailable');return data===true;
+ },
+});
+app.use("/make-server-3bd0ade8/*", createStaffGuard(resolveSellerStaff));
+
+
+app.use("/make-server-3bd0ade8/*", createBookingAccessGuard(Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "", async (auth) => await authorizeAdmin(auth, token => supabase.auth.getUser(token)) === 200, async id => {
+  const { data, error } = await supabase.rpc("allow_booking_login", { p_id: id });
+  if (error) throw new Error("Booking sign-in temporarily unavailable");
+  return data === true;
+}));
+
+app.use('/make-server-3bd0ade8/*',createRidePurchaseGuard({get:kv.get,set:kv.set,isAdmin:async auth=>await authorizeAdmin(auth,token=>supabase.auth.getUser(token))===200}));
+
+app.get("/make-server-3bd0ade8/admin/session", (c) => c.json({ success: true }));
+app.post("/make-server-3bd0ade8/admin/login", createAdminLogin({
+  allowAttempt: async () => {
+    const { data, error } = await supabase.rpc('allow_admin_login');
+    if (error) throw error;
+    return data === true;
+  },
+  signIn: async (email, password) => {
+    // Never sign in on the shared service-role client: that changes its session.
+    const authClient = createClient(Deno.env.get('SUPABASE_URL') ?? '', Deno.env.get('SUPABASE_ANON_KEY') ?? '', {
+      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+    });
+    return await authClient.auth.signInWithPassword({ email, password });
+  },
+}));
+
 // Initialize Stripe
 const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
 const stripe = stripeSecretKey
@@ -205,6 +261,14 @@ const stripe = stripeSecretKey
       apiVersion: "2024-11-20.acacia",
     })
   : null;
+
+app.post('/make-server-3bd0ade8/staff/login',createStaffPasswordLogin((path,body)=>app.request('/make-server-3bd0ade8'+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})));
+installMerchantPerks(app, supabase);
+installStaffCardSales(app,{db:supabase,get:kv.get,staff:resolveSellerStaff,qr:generateQRCode,send:sendBookingEmail});
+const cityCards = installCityCards(app, {db:supabase, stripe, get:kv.get, qr:generateQRCode,
+  returnUrl:`${Deno.env.get('SUPABASE_URL')}/functions/v1/make-server-3bd0ade8/city-cards/checkout-return`});
+
+installAdminOperations(app,{db:supabase,stripe,get:kv.get,send:sendBookingEmail,reconcile:cityCards.reconcile});
 
 // Generate unique Go Sintra booking ID with sequential letter prefixes
 async function getNextAvailablePrefix(): Promise<string> {
@@ -296,6 +360,13 @@ async function initializeDatabase() {
 }
 initializeDatabase();
 
+async function commitDayPass(booking: any, paymentId: string | null = null) {
+  const { data, error } = await supabase.rpc("commit_day_pass", { p_booking: booking, p_payment_id: paymentId });
+  if (error) throw new Error(error.message);
+  if (!data?.booking) throw new Error("Booking transaction did not complete");
+  return data;
+}
+
 // Generate QR code
 async function generateQRCode(bookingId: string, passengerIndex: number): Promise<string> {
   const qrData = `${bookingId}|${passengerIndex}`;
@@ -324,6 +395,8 @@ async function generateBookingPDF(booking: any, qrCodes: string[]): Promise<stri
   try {
     console.log(`🔧 Starting PDF generation for booking ${booking.id}`);
     const pdfDoc = await PDFDocument.create();
+    const ticketFont = await pdfDoc.embedFont('Helvetica');
+    if(booking.product==='city-card-v1') {const created=new Date(booking.createdAt);pdfDoc.setCreationDate(created);pdfDoc.setModificationDate(created);}
 
     const shortDate = new Date(booking.selectedDate).toLocaleDateString("en-GB", {
       day: "numeric", month: "long", year: "numeric",
@@ -343,6 +416,7 @@ async function generateBookingPDF(booking: any, qrCodes: string[]): Promise<stri
 
     for (let i = 0; i < booking.passengers.length; i++) {
       const passenger = booking.passengers[i];
+      const cardColor = booking.product==='city-card-v1' ? (passenger.ageBand==='free' ? rgb(.4,.4,.4) : passenger.ageBand==='half' ? orange : teal) : teal;
       const qrCode = qrCodes[i];
       const page = pdfDoc.addPage([595, 842]);
       const { width, height } = page.getSize();
@@ -352,21 +426,21 @@ async function generateBookingPDF(booking: any, qrCodes: string[]): Promise<stri
 
       // ── Header band ──────────────────────────────────────────────────────
       const headerH = 115;
-      page.drawRectangle({ x: 0, y: height - headerH, width, height: headerH, color: teal });
+      page.drawRectangle({ x: 0, y: height - headerH, width, height: headerH, color: cardColor });
       // Orange accent bar
       page.drawRectangle({ x: 0, y: height - headerH - 4, width, height: 4, color: orange });
 
       // "GO SINTRA" centred
-      const brandText = "GO SINTRA";
+      const brandText = booking.product === "city-card-v1" ? "HOP ON SINTRA" : "GO SINTRA";
       page.drawText(brandText, {
         x: width / 2 - brandText.length * 10.5,
         y: height - 52, size: 32, color: white,
       });
       // "HOP-ON DAY PASS" subtitle
-      const subText = "HOP-ON DAY PASS";
+      const subText = booking.product === "city-card-v1" ? "CITY CARD" : "HOP-ON DAY PASS";
       page.drawText(subText, {
         x: width / 2 - subText.length * 5.4,
-        y: height - 82, size: 14, color: orange,
+        y: height - 82, size: 14, color: booking.product==='city-card-v1'?white:orange,
       });
       // Passenger counter badge (only when multiple passes)
       if (booking.passengers.length > 1) {
@@ -385,9 +459,9 @@ async function generateBookingPDF(booking: any, qrCodes: string[]): Promise<stri
         y: height - 148, size: 9, color: textGray,
       });
       // Scale font size so long names still fit
-      const nameSize = passengerName.length > 18 ? 18 : 22;
+      const nameSize = Math.min(22, 485 / ticketFont.widthOfTextAtSize(passengerName,1));
       page.drawText(passengerName, {
-        x: width / 2 - passengerName.length * (nameSize * 0.55),
+        x: (width-ticketFont.widthOfTextAtSize(passengerName,nameSize))/2,
         y: height - 172, size: nameSize, color: teal,
       });
 
@@ -413,6 +487,7 @@ async function generateBookingPDF(booking: any, qrCodes: string[]): Promise<stri
           const qrImage = await pdfDoc.embedPng(qrImageBytes);
           page.drawImage(qrImage, { x: qrX, y: qrBottom, width: qrSize, height: qrSize });
         } catch (err) {
+          if(booking.product==='city-card-v1')throw err;
           console.error(`Error adding QR code`, err);
         }
       }
@@ -458,14 +533,14 @@ async function generateBookingPDF(booking: any, qrCodes: string[]): Promise<stri
       page.drawText(shortDate, { x: lx, y: detailsY - 18, size: 13, color: textDark });
 
       page.drawText("TYPE", { x: rx, y: detailsY, size: 9, color: textGray });
-      page.drawText(passenger.type || "Adult", { x: rx, y: detailsY - 18, size: 13, color: textDark });
+      page.drawText(booking.product==='city-card-v1' ? ({full:'Full price (12+)',half:'Half price (7-11)',free:'Free (under 7)'}[passenger.ageBand]||'City Card') : passenger.type || "Adult", { x: rx, y: detailsY - 18, size: 13, color: textDark });
       detailsY -= 52;
 
       page.drawText("VALID HOURS", { x: lx, y: detailsY, size: 9, color: textGray });
-      page.drawText("9:00 AM – 7:00 PM", { x: lx, y: detailsY - 18, size: 13, color: textDark });
+      page.drawText(booking.transportHours ? `${booking.transportHours.opens} - ${booking.transportHours.closes} Lisbon` : "9:00 AM – 7:00 PM", { x: lx, y: detailsY - 18, size: 13, color: textDark });
 
       page.drawText("BOOKING REF", { x: rx, y: detailsY, size: 9, color: textGray });
-      page.drawText(bookingRef, { x: rx, y: detailsY - 18, size: 13, color: textDark });
+      page.drawText(bookingRef, { x: rx, y: detailsY - 18, size: bookingRef.length>25?7:13, color: textDark });
       detailsY -= 52;
 
       // ── Divider ───────────────────────────────────────────────────────────
@@ -473,21 +548,22 @@ async function generateBookingPDF(booking: any, qrCodes: string[]): Promise<stri
       detailsY -= 22;
 
       // ── Instructions ─────────────────────────────────────────────────────
-      const instr1 = "Show QR code to driver  •  Unlimited rides all day  •  9 AM – 7 PM";
-      const instr2 = "Professional local guides on every vehicle  •  Sintra, Portugal";
+      const instr1 = booking.product==='city-card-v1' ? 'Unlimited routes during operating hours. Private/sunset tours excluded.' : "Show QR code to driver  •  Unlimited rides all day  •  9 AM – 7 PM";
+      const instr2 = booking.product==='city-card-v1' ? (passenger.ageBand==='full' ? 'Partner perks valid throughout the visit date. No attraction admission.' : passenger.ageBand==='free' ? 'No tuk-tuks. Full-price companion required. No partner perks.' : 'Full-price companion required. No partner perks.') : "Professional local guides on every vehicle  •  Sintra, Portugal";
       page.drawText(instr1, { x: width / 2 - instr1.length * 2.5, y: detailsY, size: 9, color: textGray });
       page.drawText(instr2, { x: width / 2 - instr2.length * 2.5, y: detailsY - 16, size: 9, color: textGray });
+      if(booking.product==='city-card-v1'&&timeSlot)page.drawText(`First departure slot: ${timeSlot}`,{x:75,y:detailsY-36,size:10,color:textDark});
 
       // ── Footer band ───────────────────────────────────────────────────────
       const footerH = 85;
       page.drawRectangle({ x: 0, y: 0, width, height: footerH, color: teal });
       page.drawRectangle({ x: 0, y: footerH, width, height: 3, color: orange });
 
-      page.drawText("GO SINTRA", {
+      page.drawText(booking.product==='city-card-v1'?'HOP ON SINTRA':"GO SINTRA", {
         x: width / 2 - "GO SINTRA".length * 5,
         y: 57, size: 16, color: white,
       });
-      page.drawText("Hop-On / Hop-Off Day Pass Service", {
+      page.drawText(booking.product==='city-card-v1'?'City Card - Unlimited Rides':"Hop-On / Hop-Off Day Pass Service", {
         x: width / 2 - "Hop-On / Hop-Off Day Pass Service".length * 3,
         y: 38, size: 10, color: orange,
       });
@@ -498,7 +574,9 @@ async function generateBookingPDF(booking: any, qrCodes: string[]): Promise<stri
     }
 
     const pdfBytes = await pdfDoc.save();
-    const base64 = btoa(String.fromCharCode(...pdfBytes));
+    const chunks:string[]=[];
+    for(let offset=0;offset<pdfBytes.length;offset+=32768)chunks.push(String.fromCharCode(...pdfBytes.subarray(offset,offset+32768)));
+    const base64 = btoa(chunks.join(''));
     return base64;
   } catch (error) {
     console.error("Error generating PDF:", error);
@@ -507,7 +585,7 @@ async function generateBookingPDF(booking: any, qrCodes: string[]): Promise<stri
 }
 
 // Send Booking Email
-async function sendBookingEmail(booking: any, qrCodes: string[]) {
+async function sendBookingEmail(booking: any, qrCodes: string[], deliveryKey?: string) {
   const resendApiKey = Deno.env.get("RESEND_API_KEY");
   if (!resendApiKey) {
     console.log("RESEND_API_KEY not configured");
@@ -520,7 +598,7 @@ async function sendBookingEmail(booking: any, qrCodes: string[]) {
     });
 
     const passengersWithQR = booking.passengers.map((p: any, i: number) => ({ ...p, qrCode: qrCodes[i] }));
-    const htmlContent = generateBookingConfirmationHTML({
+    let htmlContent = generateBookingConfirmationHTML({
       customerName: booking.contactInfo?.name || booking.fullName || 'Guest',
       bookingId: booking.id,
       selectedDate: booking.selectedDate,
@@ -534,13 +612,21 @@ async function sendBookingEmail(booking: any, qrCodes: string[]) {
       timeSlot: booking.timeSlot,
     });
 
+    if(booking.product==='city-card-v1') {
+      const escape=(value:any)=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]!));
+      htmlContent=`<h1>Your Hop On Sintra City Cards</h1><p>Visit date: ${escape(booking.selectedDate)}. Transport: ${escape(booking.transportHours.opens)}–${escape(booking.transportHours.closes)}, Lisbon time.</p><ul>${booking.passengers.map((p:any)=>`<li>${escape(p.name)} — ${escape(p.ageBand)} price category${p.ageBand==='free'?' (under 7; no tuk-tuks)':''}</li>`).join('')}</ul><p>Your named cards and QR codes are attached as a PDF. All routes are included; private tours, sunset trips and attraction admission are excluded. Partner perks are included only with full-price cards, throughout the visit date.</p><p>Sign in to the app using this email address to see these same cards. You do not need to buy them again. Cancellation is free until 23:59 Lisbon time the day before your visit; cash and terminal refunds are handled by our team.</p>`;
+    }
     const recipientEmail = booking.contactInfo?.email || booking.email;
     if (!recipientEmail) return { success: false, error: 'No email address provided' };
 
     let pdfBase64;
     try {
       pdfBase64 = await generateBookingPDF(booking, qrCodes);
-    } catch (e) { console.error("PDF gen failed", e); }
+    } catch (e) {
+      console.error("PDF gen failed", e);
+      return { success: false, error: "Ticket PDF generation failed", pdfAttached: false };
+    }
+    if (!pdfBase64) return { success: false, error: "Ticket PDF is empty", pdfAttached: false };
 
     const bookingIdShort = booking.id.split("_")[1] || booking.id;
     const emailPayload: any = {
@@ -558,7 +644,9 @@ async function sendBookingEmail(booking: any, qrCodes: string[]) {
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${resendApiKey}` },
+      ...(deliveryKey ? {headers:{"Content-Type":"application/json",Authorization:`Bearer ${resendApiKey}`,"Idempotency-Key":deliveryKey}} : {}),
       body: JSON.stringify(emailPayload),
+      signal: AbortSignal.timeout(8000),
     });
 
     const result = await response.json();
@@ -567,7 +655,7 @@ async function sendBookingEmail(booking: any, qrCodes: string[]) {
       return { success: false, error: result.message || "Failed to send email" };
     }
 
-    console.log(`📧 Email sent to ${recipientEmail}`);
+    console.log(`📧 Ticket email accepted by provider for booking ${booking.id}`);
     return { success: true, emailId: result.id, pdfAttached: !!pdfBase64 };
   } catch (error) {
     console.error("Error sending email:", error);
@@ -587,7 +675,7 @@ async function sendPushNotification(
   tags: string[] = [],
 ) {
   const topic = Deno.env.get("NTFY_TOPIC");
-  if (!topic) return; // silently skip if not configured
+  if (!topic) return { success: false, error: "Push service not configured" };
   try {
     // HTTP headers must be ASCII-only — strip emoji/non-ASCII from title
     const asciiTitle = title.replace(/[^\x20-\x7E]/g, "").trim();
@@ -600,12 +688,16 @@ async function sendPushNotification(
         "Content-Type": "text/plain",
       },
       body: message,
+      signal: AbortSignal.timeout(8000),
     });
     if (!res.ok) {
       console.error(`❌ ntfy push failed (${res.status}):`, await res.text().catch(() => ""));
+      return { success: false, error: `Push provider rejected request (${res.status})` };
     }
+    return { success: true };
   } catch (err) {
     console.error("ntfy push error:", err);
+    return { success: false, error: "Push request failed" };
   }
 }
 // ─────────────────────────────────────────────────────────────────────────────
@@ -615,7 +707,7 @@ async function sendOwnerNotification(subject: string, html: string) {
   const resendApiKey = Deno.env.get("RESEND_API_KEY");
   if (!resendApiKey) {
     console.error("⚠️ RESEND_API_KEY not set — owner notification skipped");
-    return;
+    return { success: false, error: "Email service not configured" };
   }
   try {
     const res = await fetch("https://api.resend.com/emails", {
@@ -627,15 +719,20 @@ async function sendOwnerNotification(subject: string, html: string) {
         subject,
         html,
       }),
+      signal: AbortSignal.timeout(8000),
     });
     if (res.ok) {
       console.log("📧 Owner notification sent:", subject);
+      const result = await res.json();
+      return { success: true, emailId: result.id };
     } else {
       const body = await res.text().catch(() => "(unreadable)");
       console.error(`❌ Owner notification rejected by Resend (${res.status}):`, body);
+      return { success: false, error: `Email provider rejected request (${res.status})` };
     }
   } catch (err) {
     console.error("Owner notification failed:", err);
+    return { success: false, error: "Owner email request failed" };
   }
 }
 
@@ -675,8 +772,14 @@ app.post("/make-server-3bd0ade8/test-push", async (c) => {
 // Create Booking
 app.post("/make-server-3bd0ade8/bookings", async (c) => {
   try {
-    const body = await c.req.json();
+    const body = (c.get("ridePurchaseBody") ?? await c.req.json());
     const { paymentIntentId, isTestBooking, skipEmail } = body;
+
+    // Test purchases and suppressed customer emails are staff-only operations.
+    if (isTestBooking || skipEmail) {
+      const status = await authorizeAdmin(c.req.header("Authorization"), (token) => supabase.auth.getUser(token));
+      if (status !== 200) return c.json({ success: false, error: "Administrator access required" }, status);
+    }
 
     if (!isTestBooking) {
       const purchasesEnabled = await kvWithRetry.get("ticket_purchases_enabled");
@@ -685,31 +788,19 @@ app.post("/make-server-3bd0ade8/bookings", async (c) => {
       }
     }
 
-    // Idempotency: if this PI already triggered a booking (via webhook), return it
-    if (paymentIntentId) {
+    if (!isTestBooking && !body.manualBooking) {
+      if (!stripe) return c.json({ success: false, error: "Payment processing not configured" }, 503);
+      if (typeof paymentIntentId !== "string" || !/^pi_[A-Za-z0-9]+$/.test(paymentIntentId)) return c.json({ success: false, error: "A completed payment is required" }, 400);
       try {
-        const claimed = await kv.get(`pi_claimed_${paymentIntentId}`) as any;
-        if (claimed?.bookingId) {
-          const existingBooking = await kv.get(claimed.bookingId);
-          if (existingBooking) {
-            console.log(`ℹ️ Booking already exists for PI ${paymentIntentId} — returning ${claimed.bookingId}`);
-            return c.json({ success: true, booking: existingBooking, emailSent: true });
-          }
-        }
-      } catch {}
-    }
-
-    // Payment verification
-    if (stripe && paymentIntentId && !isTestBooking) {
-      try {
-        const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-        if (paymentIntent.status !== "succeeded") {
-          return c.json({ success: false, error: "Payment verification failed." }, 400);
-        }
+        const result = await finalizePaymentIntent(paymentIntentId, "client-checkout");
+        return c.json({ success: true, booking: result.booking, emailSent: result.booking?.delivery?.customerEmail?.success === true });
       } catch (error) {
-        return c.json({ success: false, error: "Payment verification error" }, 400);
+        return c.json({ success: false, error: String(error) }, 400);
       }
     }
+    delete body.id;
+    delete body.paymentIntentId;
+    if (paymentIntentId) return c.json({ success: false, error: "Test bookings cannot claim payments" }, 400);
 
     const bookingId = await generateBookingId();
     const qrCodes: string[] = [];
@@ -727,43 +818,7 @@ app.post("/make-server-3bd0ade8/bookings", async (c) => {
       paymentIntentId: body.paymentIntentId || null,
     };
 
-    await kv.set(bookingId, booking);
-
-    // Mark PI as claimed + clean up pending data (idempotency / webhook safety)
-    if (booking.paymentIntentId) {
-      try {
-        await kv.set(`pi_claimed_${booking.paymentIntentId}`, { bookingId, claimedAt: new Date().toISOString() });
-        await kv.del(`pending_pi_${booking.paymentIntentId}`);
-      } catch {}
-    }
-
-    // Decrement per-slot availability (same logic as driver-sales/create)
-    try {
-      const TIME_SLOTS_LIST = ["9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"];
-      const bookingDate = body.selectedDate;
-      const bookingSlot = body.timeSlot;
-      const passengerCount = body.passengers?.length || 1;
-
-      if (bookingDate && bookingSlot) {
-        const storedAvail = await kv.get(`availability_${bookingDate}`);
-        let slotMap: Record<string, number>;
-
-        if (storedAvail && typeof storedAvail === "object" &&
-            TIME_SLOTS_LIST.some(s => s in (storedAvail as any))) {
-          slotMap = { ...(storedAvail as Record<string, number>) };
-        } else {
-          slotMap = {};
-          TIME_SLOTS_LIST.forEach(s => { slotMap[s] = 50; });
-        }
-
-        if (slotMap[bookingSlot] !== undefined) {
-          slotMap[bookingSlot] = Math.max(0, slotMap[bookingSlot] - passengerCount);
-        }
-        await kv.set(`availability_${bookingDate}`, slotMap);
-      }
-    } catch (e) {
-      console.error("Availability decrement failed:", e);
-    }
+    await commitDayPass(booking);
 
     // Track prefix
     try {
@@ -789,7 +844,7 @@ app.post("/make-server-3bd0ade8/bookings", async (c) => {
     }
 
     // Email
-    let emailResult = { success: true, skipped: false };
+    let emailResult: any = { success: false, skipped: true };
     if (!skipEmail) {
       emailResult = await sendBookingEmail(booking, qrCodes);
     } else {
@@ -802,14 +857,14 @@ app.post("/make-server-3bd0ade8/bookings", async (c) => {
     const customerEmail = booking.contactInfo?.email || booking.email || "—";
 
     // Push notification (instant, to phone)
-    await sendPushNotification(
+    const pushResult = await sendPushNotification(
       `🎟️ New booking — ${booking.selectedDate}`,
       `${passengerCount} day pass${passengerCount > 1 ? "es" : ""}\nCustomer: ${customerName}\nPickup: ${booking.pickupLocation ?? "—"} at ${booking.timeSlot ?? "—"}\nTotal: €${booking.totalPrice ?? "—"}`,
       "urgent",
       ["ticket", "moneybag"],
     );
 
-    await sendOwnerNotification(
+    const ownerEmailResult = await sendOwnerNotification(
       `🎟️ New Booking: ${passengerCount} Day Pass${passengerCount > 1 ? "es" : ""} – ${booking.selectedDate}`,
       `<h2>New Day Pass Booking</h2>
 <ul>
@@ -823,7 +878,9 @@ app.post("/make-server-3bd0ade8/bookings", async (c) => {
 </ul>`,
     );
 
-    return c.json({ success: true, booking, emailSent: emailResult.success });
+    booking.delivery = { customerEmail: emailResult, ownerEmail: ownerEmailResult, ownerPush: pushResult, attemptedAt: new Date().toISOString() };
+    await kv.set(bookingId, { ...await kv.get(bookingId), delivery: booking.delivery });
+    return c.json({ success: true, booking, emailSent: emailResult.success === true });
   } catch (error) {
     console.error("Error creating booking:", error);
     return c.json({ success: false, error: "Failed to create booking" }, 500);
@@ -837,6 +894,9 @@ app.post("/make-server-3bd0ade8/checkin", async (c) => {
     const booking = await kv.get(bookingId);
 
     if (!booking) return c.json({ success: false, message: "Booking not found" }, 404);
+
+    const boardingError=cityBoardingError(booking,passengerIndex ?? 0);
+    if(boardingError) return c.json({success:false,message:boardingError},409);
 
     const checkInKey = `checkin_${bookingId}_${passengerIndex || 0}_${booking.selectedDate}`;
     const existingCheckIn = await kv.get(checkInKey);
@@ -856,7 +916,7 @@ app.post("/make-server-3bd0ade8/checkin", async (c) => {
     const checkInsKey = `checkins_${bookingId}_${passengerIndex || 0}`;
     const checkIns = (await kv.get(checkInsKey)) || [];
     
-    if (existingCheckIn) {
+    if (existingCheckIn && checkIns.length > 0) {
       checkIns[checkIns.length - 1] = checkInRecord;
     } else {
       checkIns.push(checkInRecord);
@@ -889,15 +949,24 @@ app.post("/make-server-3bd0ade8/checkin", async (c) => {
   }
 });
 
+// Admin check-in history used by booking lists and attendance summaries.
+app.get("/make-server-3bd0ade8/checkins/:bookingId/:passengerIndex", async (c) => {
+  const result = await readCheckinHistory(c.req.param("bookingId"), c.req.param("passengerIndex"), kv.get);
+  return c.json(result.body, result.status);
+});
+
 // Verify QR
 app.post("/make-server-3bd0ade8/verify-qr", async (c) => {
   try {
     const { qrData } = await c.req.json();
     const [bookingId, passengerIndexStr] = qrData.split("|");
-    const passengerIndex = parseInt(passengerIndexStr);
+    const passengerIndex = Number(passengerIndexStr);
 
     const booking = await kv.get(bookingId);
     if (!booking) return c.json({ success: false, message: "Booking not found" });
+
+    const boardingError=cityBoardingError(booking,passengerIndex);
+    if(boardingError) return c.json({success:false,message:boardingError},409);
 
     const bookingDate = new Date(booking.selectedDate);
     bookingDate.setHours(0,0,0,0);
@@ -912,12 +981,12 @@ app.post("/make-server-3bd0ade8/verify-qr", async (c) => {
       success: true,
       booking: {
         bookingId: booking.id,
-        customerName: booking.contactInfo.name,
-        passType: `${booking.passengers.length} Day Pass`,
+        customerName: booking.product==='city-card-v1'?booking.passengers[passengerIndex].name:booking.contactInfo.name,
+        passType: booking.product==='city-card-v1'?`City Card · ${booking.passengers[passengerIndex].ageBand==='free'?'UNDER 7 · NO TUK TUK':booking.passengers[passengerIndex].ageBand==='half'?'7–11 years':'12+ years'}`:`${booking.passengers.length} Day Pass`,
         numPasses: booking.passengers.length,
         passDate: booking.selectedDate,
         passengerIndex,
-        alreadyCheckedIn: !!existingCheckIn,
+        alreadyCheckedIn: booking.product==='city-card-v1'?false:!!existingCheckIn,
         isExpired,
       },
     });
@@ -943,115 +1012,21 @@ app.get("/make-server-3bd0ade8/pickup-requests", async (c) => {
   }
 });
 
-// 2. Create Request (Customer)
-app.post("/make-server-3bd0ade8/pickup-requests", async (c) => {
-  try {
-    const body = await c.req.json();
-    const { groupSize, pickupLocation, destination, customerName, customerPhone } = body;
-
-    const requestId = `PICKUP_${Date.now()}`;
-    const pickupRequest = {
-      id: requestId,
-      groupSize: parseInt(groupSize),
-      pickupLocation, destination, customerName, customerPhone,
-      status: "pending",
-      requestTime: new Date().toISOString(),
-      createdAt: new Date().toISOString(),
-      estimatedArrival: new Date(Date.now() + 5 * 60000).toISOString(),
-      vehiclesNeeded: Math.ceil(parseInt(groupSize) / 6),
-    };
-
-    await kv.set(requestId, pickupRequest);
-
-    // Maintain active list
-    const activeRequests = (await kv.get("active_pickup_requests")) || [];
-    activeRequests.push(requestId);
-    await kv.set("active_pickup_requests", activeRequests);
-
-    // Push + email notification to owner
-    await sendPushNotification(
-      `🚗 Pickup request — ${pickupLocation ?? "unknown location"}`,
-      `Group of ${groupSize}\nFrom: ${pickupLocation ?? "—"} → ${destination ?? "—"}\nCustomer: ${customerName ?? "—"} (${customerPhone ?? "no phone"})`,
-      "urgent",
-      ["car", "rotating_light"],
-    );
-    await sendOwnerNotification(
-      `🚗 Pickup Request — ${pickupLocation ?? "unknown"} → ${destination ?? "unknown"}`,
-      `<h2>New Pickup Request</h2>
-<ul>
-  <li><strong>Request ID:</strong> ${requestId}</li>
-  <li><strong>Customer:</strong> ${customerName ?? "—"} (${customerPhone ?? "—"})</li>
-  <li><strong>From:</strong> ${pickupLocation ?? "—"}</li>
-  <li><strong>To:</strong> ${destination ?? "—"}</li>
-  <li><strong>Group size:</strong> ${groupSize}</li>
-</ul>`,
-    );
-
-    console.log(`🚗 Pickup created: ${requestId}`);
-    return c.json({ success: true, request: pickupRequest });
-  } catch (error) {
-    return c.json({ success: false, error: "Failed to create pickup" }, 500);
-  }
+installCustomerPickups(app,{
+ secret:Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')??'', get:kv.get,list:()=>kv.getByPrefix('PICKUP_'),
+ payment:async id=>{if(!stripe)throw new Error('Payment verification unavailable');return stripe.paymentIntents.retrieve(id,{expand:['latest_charge']});},
+ create:async(id,input,booking)=>{const {data,error}=await supabase.rpc('create_customer_pickup',{p_booking_id:id,p_request:input,p_identity:booking});if(error)throw new Error('Pickup unavailable');return data;},
+ notify:async request=>{
+  const escape=(v:any)=>String(v??'').replace(/[&<>"']/g,(ch)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]!));
+  await Promise.allSettled([
+   sendPushNotification('Pickup request',request.groupSize+' passengers: '+request.pickupLocation+' → '+request.destination,'urgent',['car']),
+   sendOwnerNotification('Pickup request', '<h2>New pickup request</h2><p>'+escape(request.id)+'</p><p>'+escape(request.customerName)+' — '+escape(request.customerPhone)+'</p><p>'+escape(request.pickupLocation)+' → '+escape(request.destination)+'</p><p>Passengers: '+request.groupSize+'</p>'),
+  ]);
+ },
 });
 
-// 3. Update Status (Cancel/Complete)
-app.post("/make-server-3bd0ade8/pickup-requests/:id/cancel", async (c) => {
-  try {
-    const requestId = c.req.param("id");
-    // FIX: Look up ID directly
-    const request = await kv.get(requestId); 
-
-    if (!request) return c.json({ success: false, error: "Request not found" }, 404);
-
-    request.status = "cancelled";
-    await kv.set(requestId, request);
-    return c.json({ success: true, request });
-  } catch (error) {
-    return c.json({ success: false, error: "Failed to cancel" }, 500);
-  }
-});
-
-app.post("/make-server-3bd0ade8/pickup-requests/:id/complete", async (c) => {
-  try {
-    const requestId = c.req.param("id");
-    // FIX: Look up ID directly
-    const request = await kv.get(requestId);
-
-    if (!request) return c.json({ success: false, error: "Request not found" }, 404);
-
-    request.status = "completed";
-    request.completedTime = new Date().toISOString();
-    await kv.set(requestId, request);
-    return c.json({ success: true, request });
-  } catch (error) {
-    return c.json({ success: false, error: "Failed to complete" }, 500);
-  }
-});
-
-// 4. Assign Driver
-app.post("/make-server-3bd0ade8/pickup-requests/:id/assign", async (c) => {
-  try {
-    const requestId = c.req.param("id");
-    const body = await c.req.json();
-    const { driverId, driverName } = body;
-
-    // FIX: Look up ID directly
-    const request = await kv.get(requestId);
-
-    if (!request) return c.json({ success: false, error: "Request not found" }, 404);
-
-    request.status = "accepted";
-    request.acceptedBy = driverId;
-    request.acceptedByName = driverName;
-    request.acceptedAt = new Date().toISOString();
-    await kv.set(requestId, request);
-
-    console.log(`✅ Pickup ${requestId} accepted by ${driverName}`);
-    return c.json({ success: true, request });
-  } catch (error) {
-    return c.json({ success: false, error: "Failed to accept" }, 500);
-  }
-});
+installCityPickups(app,supabase,async request=>{await sendPushNotification('City Card pickup',request.groupSize+' passengers: '+request.pickupLocation+' → '+request.destination+(request.nonTukTuk?' — NO TUK-TUK':''),'urgent',['car']);});
+installPickupTransitions(app,supabase);
 
 // Verify Booking Code
 app.post("/make-server-3bd0ade8/verify-booking", async (c) => {
@@ -1112,7 +1087,7 @@ app.post("/make-server-3bd0ade8/verify-booking-login", async (c) => {
         customerEmail: booking.contactInfo?.email || "",
         customerPhone: booking.contactInfo?.phone || "",
         passes: booking.passengers?.length || 1,
-        visitDate: booking.visitDate || new Date().toISOString(),
+        visitDate: booking.selectedDate || booking.visitDate,
       },
     });
   } catch (error) {
@@ -1165,10 +1140,9 @@ app.patch("/make-server-3bd0ade8/bookings/:id/status", async (c) => {
     let booking: any = await kv.get(id);
     if (!booking) booking = await kv.get(`booking_${id}`);
     if (!booking) return c.json({ success: false, error: "Booking not found" }, 404);
-    booking.status = status;
-    booking.statusUpdatedAt = new Date().toISOString();
-    await kv.set(id, booking);
-    return c.json({ success: true, booking });
+    const result = await supabase.rpc('set_day_pass_status', {p_id:id,p_status:status});
+    if (result.error) return c.json({success:false,error:result.error.message},409);
+    return c.json({ success: true, booking:result.data });
   } catch (err) {
     console.error("Error updating booking status:", err);
     return c.json({ success: false, error: "Failed to update status" }, 500);
@@ -1232,37 +1206,9 @@ async function attachSunsetSpecial(
   bookingId: string,
   data: { sunsetDate?: string; quantity?: number; amount?: number; paymentIntentId?: string },
 ) {
-  let booking = await kv.get(bookingId) as any;
-  if (!booking) booking = await kv.get(`booking_${bookingId}`) as any;
-  if (!booking) {
-    throw new Error("Booking not found");
-  }
-
-  // Idempotency: skip if this exact payment already got attached
-  if (data.paymentIntentId && booking.sunsetSpecial?.paymentIntentId === data.paymentIntentId) {
-    return { alreadyExisted: true, booking };
-  }
-
-  booking.sunsetSpecial = {
-    date: data.sunsetDate,
-    quantity: data.quantity || 1,
-    amount: data.amount,
-    paymentIntentId: data.paymentIntentId,
-    addedAt: new Date().toISOString(),
-  };
-  await kv.set(bookingId, booking);
-
-  // Record in sunset_bookings_{date} for availability tracking
-  const date = data.sunsetDate || booking.selectedDate;
-  const sunsetBookings = ((await kv.get(`sunset_bookings_${date}`)) as any[]) || [];
-  sunsetBookings.push({
-    bookingId,
-    quantity: data.quantity || 1,
-    addedAt: new Date().toISOString(),
-  });
-  await kv.set(`sunset_bookings_${date}`, sunsetBookings);
-
-  return { alreadyExisted: false, booking };
+  const { data: result, error } = await supabase.rpc("commit_sunset_booking", { p_booking_id: bookingId, p_addon: data });
+  if (error) throw new Error(error.message);
+  return result;
 }
 
 // POST /bookings/:id/add-sunset-special — add sunset special to an existing booking
@@ -1270,21 +1216,10 @@ app.post("/make-server-3bd0ade8/bookings/:id/add-sunset-special", async (c) => {
   try {
     const id = c.req.param("id");
     const body = await c.req.json();
-    const { paymentIntentId, sunsetDate, quantity, amount } = body;
-
-    // Verify payment
-    if (stripe && paymentIntentId) {
-      try {
-        const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-        if (paymentIntent.status !== "succeeded") {
-          return c.json({ success: false, error: "Payment not confirmed" }, 400);
-        }
-      } catch {
-        return c.json({ success: false, error: "Payment verification failed" }, 400);
-      }
-    }
-
-    const { booking } = await attachSunsetSpecial(id, { sunsetDate, quantity, amount, paymentIntentId });
+    const { paymentIntentId } = body;
+    if (!stripe) return c.json({ success: false, error: "Payment processing not configured" }, 503);
+    if (typeof paymentIntentId !== "string" || !/^pi_[A-Za-z0-9]+$/.test(paymentIntentId)) return c.json({ success: false, error: "A completed payment is required" }, 400);
+    const { booking } = await finalizeAddonPaymentIntent(paymentIntentId, id);
     return c.json({ success: true, booking });
   } catch (error) {
     console.error("Add sunset special error:", error);
@@ -1295,7 +1230,7 @@ app.post("/make-server-3bd0ade8/bookings/:id/add-sunset-special", async (c) => {
 // Verifies a payment intent succeeded with Stripe, then attaches the sunset-special
 // add-on from the pending data stashed at payment-intent-creation time. Used when
 // the client returns from a redirect-based payment method (PayPal, etc).
-async function finalizeAddonPaymentIntent(paymentIntentId: string) {
+async function finalizeAddonPaymentIntent(paymentIntentId: string, expectedBookingId?: string) {
   const paymentIntent = await stripe!.paymentIntents.retrieve(paymentIntentId);
   if (paymentIntent.status !== "succeeded") {
     throw new Error(`Payment intent status is "${paymentIntent.status}", not "succeeded"`);
@@ -1306,13 +1241,20 @@ async function finalizeAddonPaymentIntent(paymentIntentId: string) {
     throw new Error("No pending add-on data found for this payment intent");
   }
 
+  verifyTicketPayment(paymentIntent, pending, "addon");
+  if (expectedBookingId && pending.bookingId !== expectedBookingId) throw new Error("Payment belongs to a different booking");
+  if (pending.completedAt) {
+    const booking = await kv.get(pending.bookingId);
+    if (!booking) throw new Error("Completed booking not found");
+    return { alreadyExisted: true, booking };
+  }
   const { alreadyExisted, booking } = await attachSunsetSpecial(pending.bookingId, {
     sunsetDate: pending.sunsetDate,
     quantity: pending.quantity,
     amount: pending.amount,
     paymentIntentId,
   });
-  await kv.del(`pending_addon_pi_${paymentIntentId}`);
+  await kv.set(`pending_addon_pi_${paymentIntentId}`, { ...pending, completedAt: new Date().toISOString() });
   return { alreadyExisted, booking };
 }
 
@@ -1382,8 +1324,8 @@ app.post("/make-server-3bd0ade8/tour-bookings/create-manual", async (c) => {
       status: "confirmed",
       createdAt: new Date().toISOString(),
     };
-    existing.push(newBooking);
-    await kvWithRetry.set("tour_bookings", existing);
+    const { error } = await supabase.rpc("commit_tour_booking", { p_booking: newBooking });
+    if (error) throw new Error(error.message);
     return c.json({ success: true, booking: newBooking });
   } catch (error) {
     return c.json({ success: false, error: String(error) }, 500);
@@ -1393,12 +1335,9 @@ app.post("/make-server-3bd0ade8/tour-bookings/create-manual", async (c) => {
 app.post("/make-server-3bd0ade8/tour-bookings/:id/cancel", async (c) => {
   try {
     const id = c.req.param("id");
-    const existing = (await kvWithRetry.get("tour_bookings") as any[]) || [];
-    const idx = existing.findIndex((b: any) => b.bookingId === id);
-    if (idx === -1) return c.json({ success: false, error: "Not found" }, 404);
-    existing[idx] = { ...existing[idx], status: "cancelled", cancelledAt: new Date().toISOString() };
-    await kvWithRetry.set("tour_bookings", existing);
-    return c.json({ success: true, booking: existing[idx] });
+    const { data: booking, error } = await supabase.rpc("cancel_tour_booking", { p_id: id });
+    if (error) throw new Error(error.message);
+    return c.json({ success: true, booking });
   } catch (error) {
     return c.json({ success: false, error: String(error) }, 500);
   }
@@ -1428,8 +1367,9 @@ async function createTourBooking(body: any) {
     status: "confirmed",
     createdAt: new Date().toISOString(),
   };
-  existing.push(newBooking);
-  await kvWithRetry.set("tour_bookings", existing);
+  const { data: committed, error: commitError } = await supabase.rpc("commit_tour_booking", { p_booking: newBooking });
+  if (commitError) throw new Error(commitError.message);
+  if (committed.alreadyExisted) return committed;
 
   // Send confirmation email to customer
   const resendApiKey = Deno.env.get("RESEND_API_KEY");
@@ -1490,15 +1430,9 @@ app.post("/make-server-3bd0ade8/tour-bookings/create", async (c) => {
     const body = await c.req.json();
     const { paymentIntentId } = body;
 
-    // Verify the payment actually succeeded before saving the booking
-    if (stripe && paymentIntentId) {
-      const intent = await stripe.paymentIntents.retrieve(paymentIntentId);
-      if (intent.status !== "succeeded") {
-        return c.json({ success: false, error: "Payment not completed" }, 400);
-      }
-    }
-
-    const { booking } = await createTourBooking(body);
+    if (!stripe) return c.json({ success: false, error: "Payment processing not configured" }, 503);
+    if (typeof paymentIntentId !== "string" || !/^pi_[A-Za-z0-9]+$/.test(paymentIntentId)) return c.json({ success: false, error: "A completed payment is required" }, 400);
+    const { booking } = await finalizeTourPaymentIntent(paymentIntentId);
     return c.json({ success: true, booking });
   } catch (error) {
     return c.json({ success: false, error: String(error) }, 500);
@@ -1521,8 +1455,9 @@ async function finalizeTourPaymentIntent(paymentIntentId: string) {
     throw new Error("No pending tour booking data found for this payment intent");
   }
 
+  verifyTicketPayment(paymentIntent, pending, "tour");
   const { alreadyExisted, booking } = await createTourBooking({ ...pending, paymentIntentId });
-  await kv.del(`pending_tour_pi_${paymentIntentId}`);
+  await kv.set(`pending_tour_pi_${paymentIntentId}`, { ...pending, completedAt: new Date().toISOString() });
   return { alreadyExisted, booking };
 }
 
@@ -1693,165 +1628,11 @@ app.post("/make-server-3bd0ade8/tour-requests/:id/notes", async (c) => {
 
 // ===== DRIVER MANAGEMENT =====
 
-// GET /drivers — list all drivers (admin use)
-app.get("/make-server-3bd0ade8/drivers", async (c) => {
-  const driversData = await kvWithRetry.get("drivers_list");
-  const drivers = ((driversData as any[]) || []).map((d: any) => {
-    const { password: _, ...safe } = d;
-    return safe;
-  });
-  return c.json({ success: true, drivers });
-});
-
-// POST /drivers/create — admin: add a new driver account
-app.post("/make-server-3bd0ade8/drivers/create", async (c) => {
-  try {
-    const body = await c.req.json();
-    const { name, username, password, phoneNumber, vehicleType, licenseNumber, status } = body;
-
-    if (!name || !username || !password) {
-      return c.json({ success: false, error: "Name, username, and password are required" }, 400);
-    }
-
-    const drivers = (await kvWithRetry.get("drivers_list") as any[]) || [];
-
-    if (drivers.some((d: any) => d.username === username)) {
-      return c.json({ success: false, error: "Username already taken" }, 409);
-    }
-
-    const newDriver = {
-      id: `driver_${Date.now()}`,
-      name,
-      username,
-      password,
-      phoneNumber: phoneNumber || "",
-      vehicleType: vehicleType || "",
-      licenseNumber: licenseNumber || "",
-      status: status || "offline",
-      totalTicketsSold: 0,
-      totalRevenue: 0,
-      totalQRScans: 0,
-      createdAt: new Date().toISOString(),
-    };
-
-    drivers.push(newDriver);
-    await kvWithRetry.set("drivers_list", drivers);
-
-    const { password: _pw, ...safeDriver } = newDriver;
-    return c.json({ success: true, driver: safeDriver });
-  } catch (error) {
-    return c.json({ success: false, error: String(error) }, 500);
-  }
-});
-
-// PUT /drivers/:id — admin: update driver profile
-app.put("/make-server-3bd0ade8/drivers/:id", async (c) => {
-  try {
-    const driverId = c.req.param("id");
-    const body = await c.req.json();
-
-    const drivers = (await kvWithRetry.get("drivers_list") as any[]) || [];
-    const idx = drivers.findIndex((d: any) => d.id === driverId);
-    if (idx === -1) return c.json({ success: false, error: "Driver not found" }, 404);
-
-    // If username changed, ensure it's not taken by another driver
-    if (body.username && body.username !== drivers[idx].username) {
-      if (drivers.some((d: any, i: number) => i !== idx && d.username === body.username)) {
-        return c.json({ success: false, error: "Username already taken" }, 409);
-      }
-    }
-
-    drivers[idx] = {
-      ...drivers[idx],
-      ...body,
-      id: driverId, // prevent id change
-      updatedAt: new Date().toISOString(),
-    };
-
-    await kvWithRetry.set("drivers_list", drivers);
-
-    const { password: _pw, ...safeDriver } = drivers[idx];
-    return c.json({ success: true, driver: safeDriver });
-  } catch (error) {
-    return c.json({ success: false, error: String(error) }, 500);
-  }
-});
-
-// DELETE /drivers/:id — admin: remove a driver account
-app.delete("/make-server-3bd0ade8/drivers/:id", async (c) => {
-  try {
-    const driverId = c.req.param("id");
-    const drivers = (await kvWithRetry.get("drivers_list") as any[]) || [];
-    const filtered = drivers.filter((d: any) => d.id !== driverId);
-
-    if (filtered.length === drivers.length) {
-      return c.json({ success: false, error: "Driver not found" }, 404);
-    }
-
-    await kvWithRetry.set("drivers_list", filtered);
-    return c.json({ success: true });
-  } catch (error) {
-    return c.json({ success: false, error: String(error) }, 500);
-  }
-});
-
-// POST /drivers/login
-app.post("/make-server-3bd0ade8/drivers/login", async (c) => {
-  try {
-    const { username, password } = await c.req.json();
-
-    if (!username || !password) {
-      return c.json({ success: false, error: "Username and password required" }, 400);
-    }
-
-    const drivers = (await kvWithRetry.get("drivers_list") as any[]) || [];
-    const driverIdx = drivers.findIndex(
-      (d: any) => (d.username === username || d.email === username) && d.password === password
-    );
-
-    if (driverIdx === -1) {
-      return c.json({ success: false, error: "Invalid credentials" }, 401);
-    }
-
-    // Mark driver online
-    drivers[driverIdx] = {
-      ...drivers[driverIdx],
-      status: "online",
-      lastLoginAt: new Date().toISOString(),
-    };
-    await kvWithRetry.set("drivers_list", drivers);
-
-    // Return driver without password
-    const { password: _pw, ...driverInfo } = drivers[driverIdx];
-    const token = `drv_${driverInfo.id}_${Date.now()}`;
-
-    return c.json({ success: true, driver: driverInfo, token });
-  } catch (error) {
-    console.error("Driver login error:", error);
-    return c.json({ success: false, error: String(error) }, 500);
-  }
-});
-
-// POST /drivers/logout
-app.post("/make-server-3bd0ade8/drivers/logout", async (c) => {
-  try {
-    const { driverId } = await c.req.json();
-    const drivers = (await kvWithRetry.get("drivers_list") as any[]) || [];
-    const idx = drivers.findIndex((d: any) => d.id === driverId);
-
-    if (idx !== -1) {
-      drivers[idx] = {
-        ...drivers[idx],
-        status: "offline",
-        lastLogoutAt: new Date().toISOString(),
-      };
-      await kvWithRetry.set("drivers_list", drivers);
-    }
-
-    return c.json({ success: true });
-  } catch (error) {
-    return c.json({ success: false, error: String(error) }, 500);
-  }
+installDriverAccounts(app, {
+ supabase, getDrivers:getDriverProfiles,
+ authClient:()=>createClient(Deno.env.get('SUPABASE_URL') ?? '',Deno.env.get('SUPABASE_ANON_KEY') ?? '',{
+  auth:{persistSession:false,autoRefreshToken:false},
+ }),
 });
 
 // GET /drivers/:id/metrics — daily sales/revenue/QR-scan breakdown for a date range
@@ -2068,7 +1849,7 @@ app.put("/make-server-3bd0ade8/merchants/:id", async (c) => {
 app.delete("/make-server-3bd0ade8/merchants/:id", async (c) => {
   try {
     const id = c.req.param("id");
-    const { error } = await supabase.from("merchants").delete().eq("id", id);
+    const { error } = await supabase.from("merchants").update({is_active:false}).eq("id", id);
     if (error) throw error;
     return c.json({ success: true });
   } catch (error) {
@@ -2153,7 +1934,7 @@ app.put("/make-server-3bd0ade8/deals/:id", async (c) => {
 app.delete("/make-server-3bd0ade8/deals/:id", async (c) => {
   try {
     const id = c.req.param("id");
-    const { error } = await supabase.from("deals").delete().eq("id", id);
+    const { error } = await supabase.from("deals").update({is_active:false}).eq("id", id);
     if (error) throw error;
     return c.json({ success: true });
   } catch (error) {
@@ -2206,6 +1987,10 @@ app.post("/make-server-3bd0ade8/driver-sales/create", async (c) => {
       type: "driver_sale",
     };
 
+    await commitDayPass({ ...sale, status: "confirmed", paymentStatus: "paid",
+      contactInfo: { name: [firstName,lastName].filter(Boolean).join(" "), email: customerEmail },
+      passengers: Array.from({ length: qty }, (_, i) => ({ name: "Passenger " + (i+1), type: "Adult" })) });
+
     // Append to driver sales history
     const driverSales = (await kvWithRetry.get(`driver_sales_${driverId}`) as any[]) || [];
     driverSales.push(sale);
@@ -2223,28 +2008,7 @@ app.post("/make-server-3bd0ade8/driver-sales/create", async (c) => {
     });
     await kvWithRetry.set(`driver_activity_${driverId}`, driverActivity);
 
-    // Decrement per-slot availability for the date
-    const TIME_SLOTS_LIST = ["9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"];
-    const storedAvail = await kvWithRetry.get(`availability_${selectedDate}`);
-    let slotMap: Record<string, number>;
-
-    if (storedAvail && typeof storedAvail === "object" &&
-        TIME_SLOTS_LIST.some(s => s in (storedAvail as any))) {
-      // Already a per-slot map — use it directly
-      slotMap = { ...(storedAvail as Record<string, number>) };
-    } else {
-      // First sale of the day — initialise each slot to 50
-      slotMap = {};
-      TIME_SLOTS_LIST.forEach(s => { slotMap[s] = 50; });
-    }
-
-    if (timeSlot && slotMap[timeSlot] !== undefined) {
-      slotMap[timeSlot] = Math.max(0, slotMap[timeSlot] - qty);
-    }
-    await kvWithRetry.set(`availability_${selectedDate}`, slotMap);
-
     // Send confirmation email to customer
-    const tempPassword = `${(firstName || "guest").toLowerCase()}${Math.floor(1000 + Math.random() * 9000)}`;
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     if (resendApiKey && customerEmail) {
       try {
@@ -2265,8 +2029,8 @@ app.post("/make-server-3bd0ade8/driver-sales/create", async (c) => {
   <li><strong>Booking ID:</strong> ${bookingId}</li>
 </ul>
 <p><strong>Customer Portal Login (to request pickup assistance):</strong><br>
-Email: ${customerEmail}<br>
-Password: ${tempPassword}</p>
+Booking ID: ${bookingId}<br>
+Last name: ${lastName}</p>
 <p>Enjoy your Sintra experience! 🏰</p>`,
           }),
         });
@@ -2296,7 +2060,7 @@ Password: ${tempPassword}</p>
     return c.json({
       success: true,
       booking: sale,
-      customerInfo: { email: customerEmail, temporaryPassword: tempPassword },
+      customerInfo: { email: customerEmail, bookingId, lastName },
     });
   } catch (error) {
     console.error("Driver sale error:", error);
@@ -2652,10 +2416,14 @@ app.get("/make-server-3bd0ade8/availability", async (c) => {
 app.get("/make-server-3bd0ade8/availability/:date", async (c) => {
   try {
     const date = c.req.param("date");
-    const stored = await kvWithRetry.get(`availability_${date}`);
+    await cityCards.cleanup();
+    const day = await cityCards.inventory(date);
     return c.json({
       success: true,
-      availability: stored || { date, totalSeats: 100, bookedSeats: 0, availableSeats: 100 },
+      // Preserve the website's slot picker, with holds and the daily ceiling applied.
+      availability: {date,totalSeats:day.capacity,bookedSeats:day.booked,reservedSeats:day.reserved,availableSeats:day.remaining,
+        ...Object.fromEntries(Object.entries(day.slots).map(([slot,detail]:[string,any])=>[slot,detail.remaining]))},
+      day,
     });
   } catch (error) {
     return c.json({ success: false, error: String(error) }, 500);
@@ -2664,10 +2432,16 @@ app.get("/make-server-3bd0ade8/availability/:date", async (c) => {
 
 app.post("/make-server-3bd0ade8/availability/:date", async (c) => {
   try {
-    const date = c.req.param("date");
-    const body = await c.req.json();
-    await kvWithRetry.set(`availability_${date}`, { ...body, date });
-    return c.json({ success: true });
+    // Compatibility for an already-open admin tab using the previous slot editor.
+    const date=c.req.param('date'), body=await c.req.json(), day=await cityCards.inventory(date);
+    const slots:Record<string,number>={};
+    for(const [slot,detail] of Object.entries(day.slots) as [string,any][]) {
+      if(!Number.isInteger(body[slot])||body[slot]<0||body[slot]>100000) return c.json({success:false,error:'Enter a valid allocation for every slot'},400);
+      slots[slot]=body[slot]+detail.booked;
+    }
+    const {error}=await supabase.rpc('set_day_pass_day',{p_date:date,p_capacity:day.capacity,p_opens:day.opens,p_closes:day.closes,p_slots:slots});
+    if(error) return c.json({success:false,error:error.message},409);
+    return c.json({success:true});
   } catch (error) {
     return c.json({ success: false, error: String(error) }, 500);
   }
@@ -2699,10 +2473,63 @@ app.get("/make-server-3bd0ade8/stripe-config", (c) => {
   return c.json({ success: true, publishableKey });
 });
 
+async function reconcileExpiredCheckouts() {
+  await cityCards.cleanup();
+  const { data, error } = await supabase.from("checkout_holds").select("payment_id,kind")
+    .eq("state", "active").not("payment_id", "like", "city_%").lt("expires_at", new Date().toISOString()).order("last_checked_at", { ascending: true, nullsFirst: true }).limit(20);
+  if (error) throw new Error("Checkout reservations unavailable");
+  await Promise.all((data || []).map(async hold => {
+    try {
+      const { error: touchError } = await supabase.from("checkout_holds").update({ last_checked_at: new Date().toISOString() }).eq("payment_id", hold.payment_id);
+      if (touchError) throw touchError;
+      await reconcileCheckoutHold(hold, {
+        retrieve: id => stripe!.paymentIntents.retrieve(id),
+        cancel: id => stripe!.paymentIntents.cancel(id),
+        release: async id => { const { error } = await supabase.rpc("release_checkout", { p_payment: id }); if (error) throw error; },
+        finalize: (id, kind) => kind === "tour" ? finalizeTourPaymentIntent(id) : kind === "addon" ? finalizeAddonPaymentIntent(id) : finalizePaymentIntent(id, "expired-hold-recovery"),
+      });
+    } catch (error) { console.error("Checkout hold retained for review", hold.payment_id, error); }
+  }));
+}
+
+async function reserveCheckout(paymentId: string, kind: string, purchase: any) {
+  const { data, error } = await supabase.rpc("reserve_checkout", { p_payment: paymentId, p_kind: kind, p_purchase: purchase });
+  if (error) {
+    // The client secret has not been returned yet; never offer payment without seats.
+    try { await stripe!.paymentIntents.cancel(paymentId); } catch (cancelError) { console.error("Unused payment cancellation failed", paymentId, cancelError); }
+    throw new Error(error.message);
+  }
+  return data;
+}
+
 app.post("/make-server-3bd0ade8/create-payment-intent", async (c) => {
   if (!stripe) return c.json({ success: false, error: "Payment processing not configured" }, 503);
   try {
-    const { amount, currency = "eur", metadata, pendingBookingData, pendingSunsetSpecialData } = await c.req.json();
+    let { amount, currency = "eur", metadata, pendingBookingData, pendingSunsetSpecialData } = (c.get("ridePurchaseBody") ?? await c.req.json());
+    if (pendingBookingData && pendingSunsetSpecialData) return c.json({ success: false, error: "Choose one purchase type" }, 400);
+    if (pendingBookingData) {
+      try {
+        pendingBookingData = priceTicket(pendingBookingData, await kvWithRetry.get("pricing_config"));
+        if (currency !== "eur" || typeof amount !== "number" || Math.round(amount * 100) !== pendingBookingData.paymentQuote.amountCents) return c.json({ success: false, error: "Ticket prices changed. Refresh checkout and try again." }, 400);
+        amount = pendingBookingData.totalPrice;
+        currency = "eur";
+        metadata = { ...metadata, purchaseKind: "ticket" };
+      } catch (error) {
+        return c.json({ success: false, error: String(error) }, 400);
+      }
+    }
+
+    if (!pendingBookingData && !pendingSunsetSpecialData) return c.json({ success: false, error: "Purchase details required" }, 400);
+    if (pendingSunsetSpecialData) {
+      try {
+        const booking = await kv.get(pendingSunsetSpecialData.bookingId) as any;
+        const content = await kvWithRetry.get("comprehensive_content") as any;
+        pendingSunsetSpecialData = priceAddon(pendingSunsetSpecialData, booking, content?.homepage?.sunsetSpecial?.price);
+        if (currency !== "eur" || typeof amount !== "number" || Math.round(amount * 100) !== pendingSunsetSpecialData.paymentQuote.amountCents) return c.json({ success: false, error: "Prices changed. Refresh checkout." }, 400);
+        amount = pendingSunsetSpecialData.amount;
+        metadata = { ...metadata, purchaseKind: "addon" };
+      } catch (error) { return c.json({ success: false, error: String(error) }, 400); }
+    }
 
     // Only new day-pass purchases (identified by pendingBookingData) are gated by
     // the admin toggle — sunset-special add-ons are for customers who already have
@@ -2714,6 +2541,7 @@ app.post("/make-server-3bd0ade8/create-payment-intent", async (c) => {
       }
     }
 
+    await reconcileExpiredCheckouts();
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount * 100),
       currency,
@@ -2721,27 +2549,8 @@ app.post("/make-server-3bd0ade8/create-payment-intent", async (c) => {
       automatic_payment_methods: { enabled: true },
     });
 
-    // Store pending booking/add-on data so the stripe-webhook (day-pass) or the
-    // client's redirect-return handler can complete it if the client drops after
-    // payment confirmation but before calling the normal completion endpoint.
-    if (pendingBookingData) {
-      try {
-        await kv.set(`pending_pi_${paymentIntent.id}`, {
-          ...pendingBookingData,
-          pendingAt: new Date().toISOString(),
-        });
-      } catch {}
-    }
-    if (pendingSunsetSpecialData) {
-      try {
-        await kv.set(`pending_addon_pi_${paymentIntent.id}`, {
-          ...pendingSunsetSpecialData,
-          pendingAt: new Date().toISOString(),
-        });
-      } catch {}
-    }
-
-    return c.json({ success: true, clientSecret: paymentIntent.client_secret, paymentIntentId: paymentIntent.id });
+    const holdExpiresAt = await reserveCheckout(paymentIntent.id, pendingBookingData ? "ticket" : "addon", pendingBookingData || pendingSunsetSpecialData);
+    return c.json({ success: true, clientSecret: paymentIntent.client_secret, paymentIntentId: paymentIntent.id, holdExpiresAt });
   } catch (error) {
     return c.json({ success: false, error: String(error) }, 500);
   }
@@ -2750,7 +2559,15 @@ app.post("/make-server-3bd0ade8/create-payment-intent", async (c) => {
 app.post("/make-server-3bd0ade8/tour-bookings/create-payment-intent", async (c) => {
   if (!stripe) return c.json({ success: false, error: "Payment processing not configured" }, 503);
   try {
-    const { amount, currency = "eur", metadata, pendingTourBookingData } = await c.req.json();
+    let { amount, currency = "eur", metadata, pendingTourBookingData } = await c.req.json();
+    try {
+      const tours = await kvWithRetry.get("private_tours") as any[];
+      pendingTourBookingData = priceTour(pendingTourBookingData, tours?.find((tour: any) => tour.id === pendingTourBookingData?.tourId));
+      if (currency !== "eur" || typeof amount !== "number" || Math.round(amount * 100) !== pendingTourBookingData.paymentQuote.amountCents) return c.json({ success: false, error: "Tour prices changed. Refresh checkout." }, 400);
+      amount = pendingTourBookingData.amount;
+      metadata = { ...metadata, purchaseKind: "tour" };
+    } catch (error) { return c.json({ success: false, error: String(error) }, 400); }
+    await reconcileExpiredCheckouts();
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount * 100),
       currency,
@@ -2758,16 +2575,8 @@ app.post("/make-server-3bd0ade8/tour-bookings/create-payment-intent", async (c) 
       automatic_payment_methods: { enabled: true },
     });
 
-    if (pendingTourBookingData) {
-      try {
-        await kv.set(`pending_tour_pi_${paymentIntent.id}`, {
-          ...pendingTourBookingData,
-          pendingAt: new Date().toISOString(),
-        });
-      } catch {}
-    }
-
-    return c.json({ success: true, clientSecret: paymentIntent.client_secret, paymentIntentId: paymentIntent.id });
+    const holdExpiresAt = await reserveCheckout(paymentIntent.id, "tour", pendingTourBookingData);
+    return c.json({ success: true, clientSecret: paymentIntent.client_secret, paymentIntentId: paymentIntent.id, holdExpiresAt });
   } catch (error) {
     return c.json({ success: false, error: String(error) }, 500);
   }
@@ -2805,9 +2614,8 @@ async function createBookingFromPendingPI(piId: string, pending: any, source: st
     source,
   };
 
-  await kv.set(bookingId, booking);
-  await kv.set(`pi_claimed_${piId}`, { bookingId, claimedAt: new Date().toISOString() });
-  await kv.del(`pending_pi_${piId}`);
+  const committed = await commitDayPass(booking, piId);
+  if (committed.alreadyExisted) return { bookingId: committed.booking.id, booking: committed.booking };
 
   try {
     const prefix = bookingId.split("-")[0];
@@ -2818,36 +2626,13 @@ async function createBookingFromPendingPI(piId: string, pending: any, source: st
     }
   } catch {}
 
-  try {
-    const TIME_SLOTS_LIST = ["9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"];
-    const bookingDate = pending.selectedDate;
-    const bookingSlot = pending.timeSlot;
-    const count = passengerList.length || 1;
-    if (bookingDate && bookingSlot) {
-      const storedAvail = await kv.get(`availability_${bookingDate}`);
-      let slotMap: Record<string, number> = {};
-      if (storedAvail && typeof storedAvail === "object" &&
-          TIME_SLOTS_LIST.some(s => s in (storedAvail as any))) {
-        slotMap = { ...(storedAvail as Record<string, number>) };
-      } else {
-        TIME_SLOTS_LIST.forEach(s => { slotMap[s] = 50; });
-      }
-      if (slotMap[bookingSlot] !== undefined) {
-        slotMap[bookingSlot] = Math.max(0, slotMap[bookingSlot] - count);
-      }
-      await kv.set(`availability_${bookingDate}`, slotMap);
-    }
-  } catch {}
-
-  try {
-    await sendBookingEmail(booking, qrCodes);
-  } catch {}
+  booking.delivery = { customerEmail: await sendBookingEmail(booking, qrCodes), attemptedAt: new Date().toISOString() };
 
   const passengerCount = booking.passengers?.length || 1;
   const customerName = booking.contactInfo?.name || booking.fullName || "Guest";
   const customerEmail = booking.contactInfo?.email || booking.email || "—";
   try {
-    await sendPushNotification(
+    booking.delivery.ownerPush = await sendPushNotification(
       `🎟️ New booking (${source}) — ${booking.selectedDate}`,
       `${passengerCount} day pass${passengerCount > 1 ? "es" : ""}\nCustomer: ${customerName}\nPickup: ${booking.pickupLocation ?? "—"} at ${booking.timeSlot ?? "—"}\nTotal: €${booking.totalPrice ?? "—"}`,
       "urgent",
@@ -2855,7 +2640,7 @@ async function createBookingFromPendingPI(piId: string, pending: any, source: st
     );
   } catch {}
   try {
-    await sendOwnerNotification(
+    booking.delivery.ownerEmail = await sendOwnerNotification(
       `🎟️ New Booking (${source}): ${passengerCount} Day Pass${passengerCount > 1 ? "es" : ""} – ${booking.selectedDate}`,
       `<h2>New Day Pass Booking — via ${source}</h2>
 <ul>
@@ -2870,6 +2655,7 @@ async function createBookingFromPendingPI(piId: string, pending: any, source: st
     );
   } catch {}
 
+  await kv.set(bookingId, { ...await kv.get(bookingId), delivery: booking.delivery });
   return { bookingId, booking, qrCodes };
 }
 
@@ -2893,6 +2679,7 @@ app.get("/make-server-3bd0ade8/admin/pending-payments", async (c) => {
         .like("key", `${prefix}%`);
       if (error) throw error;
       for (const row of data || []) {
+        if (row.value?.completedAt) continue;
         pending.push({
           kind,
           paymentIntentId: row.key.replace(prefix, ""),
@@ -2928,6 +2715,7 @@ async function finalizePaymentIntent(paymentIntentId: string, source: string) {
     throw new Error("No pending booking data found for this payment intent");
   }
 
+  verifyTicketPayment(paymentIntent, pending);
   const { bookingId, booking } = await createBookingFromPendingPI(paymentIntentId, pending, source);
   return { alreadyExisted: false, bookingId, booking };
 }
@@ -2985,50 +2773,36 @@ app.post("/make-server-3bd0ade8/finalize-payment", async (c) => {
 // POST /stripe-webhook — safety net: creates booking if client dropped after payment
 app.post("/make-server-3bd0ade8/stripe-webhook", async (c) => {
   if (!stripe) return c.json({ success: false, error: "Stripe not configured" }, 503);
+  return await handlePaymentWebhook(c.req.raw, {
+    secret: Deno.env.get("STRIPE_WEBHOOK_SECRET"),
+    verify: (body, signature, secret) =>
+      stripe.webhooks.constructEventAsync(body, signature, secret),
+    process: async (event) => {
+      if (await cityCards.webhook(event)) return;
+      if (event.type !== "payment_intent.succeeded") return;
+      const payment = event.data.object as { id?: unknown } | null;
+      if (!payment || typeof payment.id !== "string" || !payment.id.startsWith("pi_")) {
+        throw new Error("Invalid payment intent in verified webhook");
+      }
+      const piId = payment.id;
 
-  const sig = c.req.header("stripe-signature");
-  const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
-
-  let event: any;
-  try {
-    const rawBody = await c.req.text();
-    if (webhookSecret && sig) {
-      event = await stripe.webhooks.constructEventAsync(rawBody, sig, webhookSecret);
-    } else {
-      event = JSON.parse(rawBody);
-    }
-  } catch (err) {
-    console.error("Webhook signature error:", err);
-    return c.json({ error: `Webhook error: ${err}` }, 400);
-  }
-
-  if (event.type === "payment_intent.succeeded") {
-    const pi = event.data.object;
-    const piId = pi.id;
-
-    // Idempotency: skip if a booking was already created for this PI
-    try {
+      // Do not swallow database errors: acknowledging them loses Stripe retries.
       const claimed = await kv.get(`pi_claimed_${piId}`) as any;
-      if (claimed?.bookingId) {
-        console.log(`ℹ️ Webhook: PI ${piId} already claimed by booking ${claimed.bookingId}`);
-        return c.json({ received: true });
-      }
-    } catch {}
+      if (claimed?.bookingId) return;
 
-    // Check for pending booking data stored when the PI was created
-    const pending = await kv.get(`pending_pi_${piId}`) as any;
-    if (pending) {
-      try {
-        const { bookingId } = await createBookingFromPendingPI(piId, pending, "stripe-webhook");
-        console.log(`✅ Webhook created booking ${bookingId} for PI ${piId}`);
-      } catch (err) {
-        console.error("Webhook booking creation failed:", err);
-        // Return 200 so Stripe doesn't retry — the pending data is still there for manual recovery
+      const pending = await kv.get(`pending_pi_${piId}`) as any;
+      if (pending) {
+        // Reuse the recovery path, which independently retrieves the payment
+        // from Stripe and verifies that it actually succeeded.
+        await finalizePaymentIntent(piId, "stripe-webhook");
+      } else if (await kv.get(`pending_tour_pi_${piId}`)) {
+        await finalizeTourPaymentIntent(piId);
+      } else if (await kv.get(`pending_addon_pi_${piId}`)) {
+        await finalizeAddonPaymentIntent(piId);
       }
-    }
-  }
-
-  return c.json({ received: true });
+    },
+    onProcessingError: (error) => console.error("Webhook fulfillment failed:", error),
+  });
 });
 
 // ===== INFO BAR (time / weather / traffic) =====
@@ -3051,7 +2825,7 @@ app.get("/make-server-3bd0ade8/info-bar", async (c) => {
 
   // API keys — Supabase secrets only, no embedded fallback
   const OWM_KEY = Deno.env.get("OPENWEATHER_API_KEY");
-  const TT_KEY  = Deno.env.get("TOMTOM_API_KEY") || "Rngab0Ztt57iFON47bgFei5BIEBnzoze";
+  const TT_KEY  = Deno.env.get("TOMTOM_API_KEY");
 
   // --- Weather (OpenWeatherMap) ---
   let weather: { temp: number; description: string; icon: string } | null = null;
@@ -3080,6 +2854,7 @@ app.get("/make-server-3bd0ade8/info-bar", async (c) => {
   // Destination: Pena Palace (38.7879,-9.3902)
   let traffic: { level: string; delaySeconds: number; travelTimeSeconds: number } | null = null;
   try {
+    if (!TT_KEY) throw new Error("Traffic service is not configured");
     const origin = "38.8011,-9.3873";
     const dest   = "38.7879,-9.3902";
     const r = await fetch(
@@ -3213,3 +2988,9 @@ app.get("/make-server-3bd0ade8/sitemap.xml", async (c) => {
 });
 
 Deno.serve(app.fetch);
+
+
+
+
+
+

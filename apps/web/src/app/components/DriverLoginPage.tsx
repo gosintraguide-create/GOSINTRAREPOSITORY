@@ -1,3 +1,5 @@
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
+import { driverClient } from '../lib/driverClient';
 import { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -55,7 +57,11 @@ export function DriverLoginPage({ onLoginSuccess }: DriverLoginPageProps) {
         throw new Error(data.error || 'Login failed');
       }
 
-      onLoginSuccess(data.driver, data.token);
+      if (!data.session) throw new Error('Please refresh the page and try again.');
+      const { error: sessionError } = await driverClient.auth.setSession(data.session);
+      if (sessionError) throw sessionError;
+      setPassword('');
+      onLoginSuccess(data.driver, data.session.access_token);
     } catch (err) {
       let errorMessage = 'Login failed';
       

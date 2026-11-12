@@ -1,5 +1,6 @@
 import {reviewedArticle, reviewFixture} from './translations/publishedContent';
 import {websiteText} from './translations/websiteText';
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 // Blog/Articles Management System for Hop On Sintra
 
 export interface FAQItem {

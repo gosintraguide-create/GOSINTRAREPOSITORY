@@ -1,6 +1,7 @@
 import {useWebsiteText} from '../lib/translations/websiteText';
 import {useEditableContent} from '../lib/useEditableContent';
 import {reviewedTour, reviewFixture} from '../lib/translations/publishedContent';
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { useOutletContext } from "react-router";
