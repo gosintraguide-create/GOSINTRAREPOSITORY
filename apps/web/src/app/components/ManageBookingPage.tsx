@@ -1,3 +1,5 @@
+import {useWebsiteText} from '../lib/translations/websiteText';
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router";
 import { Card } from "./ui/card";
@@ -25,6 +27,7 @@ interface ManageBookingPageProps {
 }
 
 export function ManageBookingPage() {
+  const wt = useWebsiteText();
   const { language = "en", onNavigate } = useOutletContext<OutletContext>();
   const content = getTranslation(language);
   const [bookingId, setBookingId] = useState("");
@@ -70,11 +73,11 @@ export function ManageBookingPage() {
         setBooking(result.booking);
         sessionStorage.setItem("currentBooking", JSON.stringify(result.booking));
       } else {
-        toast.error(result.error || "Booking not found");
+        toast.error(wt("Booking not found"));
       }
     } catch (error) {
       console.error("Error looking up booking:", error);
-      toast.error("Failed to look up booking. Please try again.");
+      toast.error(wt("Failed to look up booking. Please try again."));
     } finally {
       setLoading(false);
     }
@@ -82,13 +85,13 @@ export function ManageBookingPage() {
 
   const handleLookup = async () => {
     if (!bookingId.trim() || !lastName.trim()) {
-      toast.error("Please enter both booking ID and last name");
+      toast.error(wt("Please enter both booking ID and last name"));
       return;
     }
 
     await fetchBooking(bookingId, lastName);
     if (booking) {
-      toast.success("Booking found!");
+      toast.success(wt("Booking found!"));
     }
   };
 
@@ -116,13 +119,13 @@ export function ManageBookingPage() {
         a.click();
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
-        toast.success("Tickets downloaded!");
+        toast.success(wt("Tickets downloaded!"));
       } else {
-        toast.error("Failed to download tickets");
+        toast.error(wt("Failed to download tickets"));
       }
     } catch (error) {
       console.error("Error downloading PDF:", error);
-      toast.error("Failed to download tickets");
+      toast.error(wt("Failed to download tickets"));
     }
   };
 
@@ -139,12 +142,12 @@ export function ManageBookingPage() {
     setBookingId("");
     setLastName("");
     sessionStorage.removeItem("currentBooking");
-    toast.success("Logged out successfully");
+    toast.success(wt("Logged out successfully"));
   };
 
   // Format date
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString(language === 'pt' ? 'pt-PT' : language, {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -172,6 +175,7 @@ export function ManageBookingPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 py-12 sm:py-20">
         <div className="mx-auto max-w-md px-4">
+          <p className="mb-6 rounded-xl border border-border bg-white p-4">{wt("Bought City Cards on the website or app?")} <a className="font-semibold text-primary underline" href="/my-cards">{wt("Open My Cards with your verified email")}</a>{wt(". Use the form below for an earlier booking.")}</p>
           <Card className="border-border p-8">
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <div className="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
@@ -489,21 +493,13 @@ export function ManageBookingPage() {
                 </p>
                 <ul className="space-y-2 text-sm text-foreground">
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600" />
-                    Pena Palace
-                  </li>
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600" />{wt("Pena Palace")}</li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600" />
-                    Quinta da Regaleira
-                  </li>
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600" />{wt("Quinta da Regaleira")}</li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600" />
-                    Moorish Castle
-                  </li>
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600" />{wt("Moorish Castle")}</li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600" />
-                    Sintra Town Center
-                  </li>
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600" />{wt("Sintra Town Center")}</li>
                 </ul>
 
                 {isToday(booking.selectedDate) && (
@@ -583,16 +579,14 @@ export function ManageBookingPage() {
                   <Mail className="h-5 w-5 text-primary" />
                 </div>
                 <div className="flex-1">
-                  <h4 className="mb-1 text-foreground">Email Us</h4>
+                  <h4 className="mb-1 text-foreground">{wt("Email Us")}</h4>
                   <a 
                     href={`mailto:${content.company.email}`}
                     className="text-sm text-primary hover:underline"
                   >
                     {content.company.email}
                   </a>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Response within 24 hours
-                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">{wt("Response within 24 hours")}</p>
                 </div>
               </div>
 
@@ -602,7 +596,7 @@ export function ManageBookingPage() {
                   <Phone className="h-5 w-5 text-primary" />
                 </div>
                 <div className="flex-1">
-                  <h4 className="mb-1 text-foreground">Call Us</h4>
+                  <h4 className="mb-1 text-foreground">{wt("Call Us")}</h4>
                   <a 
                     href={`tel:${content.company.phone}`}
                     className="text-sm text-primary hover:underline"
@@ -617,9 +611,7 @@ export function ManageBookingPage() {
 
               {/* WhatsApp */}
               <div className="relative flex items-start gap-4 rounded-lg border-2 border-green-500 bg-green-50/50 p-4 shadow-sm transition-colors hover:bg-green-50">
-                <Badge className="absolute -right-2 -top-2 bg-green-600 text-white hover:bg-green-700">
-                  Recommended
-                </Badge>
+                <Badge className="absolute -right-2 -top-2 bg-green-600 text-white hover:bg-green-700">{wt("Recommended")}</Badge>
                 <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-green-600/10">
                   <MessageSquare className="h-5 w-5 text-green-600" />
                 </div>
@@ -630,12 +622,8 @@ export function ManageBookingPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-sm text-green-700 hover:underline"
-                  >
-                    Chat with us
-                  </a>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Instant messaging support • Fastest response
-                  </p>
+                  >{wt("Chat with us")}</a>
+                  <p className="mt-1 text-xs text-muted-foreground">{wt("Instant messaging support • Fastest response")}</p>
                 </div>
               </div>
 
@@ -647,9 +635,7 @@ export function ManageBookingPage() {
               <Button 
                 onClick={() => setContactDialogOpen(false)}
                 variant="outline"
-              >
-                Close
-              </Button>
+              >{wt("Close")}</Button>
             </div>
           </DialogContent>
         </Dialog>

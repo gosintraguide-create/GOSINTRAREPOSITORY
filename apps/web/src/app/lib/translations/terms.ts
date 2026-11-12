@@ -1,3 +1,4 @@
+import additionalTranslations from './terms-nl-it.json';
 // Terms of Service Translations
 export interface TermsContent {
   title: string;
@@ -21,6 +22,7 @@ export interface TermsContent {
 }
 
 export const termsTranslations: { [key: string]: TermsContent } = {
+  ...additionalTranslations,
   en: {
     title: "Terms of Service",
     lastUpdated: "Last Updated",

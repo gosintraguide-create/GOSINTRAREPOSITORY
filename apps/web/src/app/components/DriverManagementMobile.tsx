@@ -1,3 +1,4 @@
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -52,7 +53,7 @@ export function DriverManagement() {
     username: "",
     password: "",
     phoneNumber: "",
-    vehicleType: "",
+    vehicleType: "", vehicleCategory: "", passengerCapacity: 0,
     licenseNumber: "",
     status: "active",
   });
@@ -193,9 +194,9 @@ export function DriverManagement() {
     setFormData({
       name: driver.name,
       username: driver.username || driver.email, // Fallback to email if old data
-      password: driver.password || "", // Load existing password
+      password: "", // Passwords are held by Auth and can only be replaced.
       phoneNumber: driver.phoneNumber || "",
-      vehicleType: driver.vehicleType || "",
+      vehicleType: driver.vehicleType || "", vehicleCategory: driver.vehicleCategory || "", passengerCapacity: driver.passengerCapacity || 0,
       licenseNumber: driver.licenseNumber || "",
       status: driver.status,
     });
@@ -207,7 +208,7 @@ export function DriverManagement() {
       username: "",
       password: "",
       phoneNumber: "",
-      vehicleType: "",
+      vehicleType: "", vehicleCategory: "", passengerCapacity: 0,
       licenseNumber: "",
       status: "active",
     });
@@ -290,7 +291,7 @@ export function DriverManagement() {
                 <Label htmlFor="password">Password *</Label>
                 <Input
                   id="password"
-                  type="password"
+                  type="password" minLength={12}
                   placeholder="••••••••"
                   value={formData.password}
                   onChange={(e) =>
@@ -320,7 +321,7 @@ export function DriverManagement() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="vehicleType">
+                <div className="space-y-2"><label>Dispatch vehicle category<select className="border rounded p-2 w-full" value={formData.vehicleCategory} onChange={e=>setFormData({...formData,vehicleCategory:e.target.value})}><option value="">Not configured — City Card assignments blocked</option><option value="tuk_tuk">Tuk-tuk</option><option value="other">Other vehicle (children under 7 allowed)</option></select></label><label>Passenger seats (excluding driver)<Input type="number" min={0} max={50} value={formData.passengerCapacity} onChange={e=>setFormData({...formData,passengerCapacity:Number(e.target.value)})}/></label></div><Label htmlFor="vehicleType">
                   Vehicle Type
                 </Label>
                 <Input
@@ -473,7 +474,7 @@ export function DriverManagement() {
                         <p className="text-sm text-gray-500">
                           Password:{" "}
                           <code className="bg-gray-100 px-1 rounded">
-                            {driver.password || "••••••••"}
+                            Password is securely stored
                           </code>
                         </p>
                         <p className="text-sm text-gray-500">
@@ -567,8 +568,8 @@ export function DriverManagement() {
                                 </Label>
                                 <Input
                                   id="edit-password"
-                                  type="text"
-                                  placeholder="Enter new password"
+                                  type="password" minLength={12}
+                                  placeholder="At least 12 characters"
                                   value={formData.password}
                                   onChange={(e) =>
                                     setFormData({
@@ -601,7 +602,7 @@ export function DriverManagement() {
                               </div>
 
                               <div className="space-y-2">
-                                <Label htmlFor="edit-vehicle">
+                                <div className="space-y-2"><label>Dispatch vehicle category<select className="border rounded p-2 w-full" value={formData.vehicleCategory} onChange={e=>setFormData({...formData,vehicleCategory:e.target.value})}><option value="">Not configured — City Card assignments blocked</option><option value="tuk_tuk">Tuk-tuk</option><option value="other">Other vehicle (children under 7 allowed)</option></select></label><label>Passenger seats (excluding driver)<Input type="number" min={0} max={50} value={formData.passengerCapacity} onChange={e=>setFormData({...formData,passengerCapacity:Number(e.target.value)})}/></label></div><Label htmlFor="edit-vehicle">
                                   Vehicle Type
                                 </Label>
                                 <Input
@@ -724,3 +725,4 @@ export function DriverManagement() {
     </div>
   );
 }
+

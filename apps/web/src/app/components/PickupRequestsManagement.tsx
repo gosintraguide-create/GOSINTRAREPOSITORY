@@ -1,4 +1,7 @@
+import {CityRideDispatch} from './CityRideDispatch';
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useState, useEffect } from "react";
+import { isPickupKey } from "../lib/notificationTracker";
 import {
   Card,
   CardContent,
@@ -28,6 +31,7 @@ import { Alert, AlertDescription } from "./ui/alert";
 import { DestinationTracker } from "./DestinationTracker";
 
 interface PickupRequest {
+  product?: string; nonTukTuk?: boolean; riders?: any[]; pickedUpAt?: string;
   id: string;
   customerName: string;
   customerPhone: string;
@@ -35,6 +39,7 @@ interface PickupRequest {
   destination: string;
   groupSize: number;
   requestTime: string;
+  readyAt?: string;
   status: "pending" | "accepted" | "completed" | "cancelled";
   acceptedBy?: string;
   acceptedByName?: string;
@@ -69,7 +74,7 @@ export function PickupRequestsManagement() {
         (payload) => {
           // Filter for pickup request keys only
           const key = payload.new?.key;
-          if (!key || !key.startsWith("pickup_request:")) {
+          if (!isPickupKey(key)) {
             return;
           }
           
@@ -90,7 +95,11 @@ export function PickupRequestsManagement() {
         }
       });
 
+    const interval = window.setInterval(loadRequests, 15000);
+    window.addEventListener("focus", loadRequests);
     return () => {
+      window.clearInterval(interval);
+      window.removeEventListener("focus", loadRequests);
       console.log('🔌 Unsubscribing from pickup requests management channel');
       supabase.removeChannel(channel);
     };
@@ -416,7 +425,8 @@ export function PickupRequestsManagement() {
                       {new Date(
                         request.requestTime,
                       ).toLocaleString()}
-                      {request.estimatedWait &&
+                      {request.readyAt && <span> · Ready at {new Date(request.readyAt).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit",timeZone:"Europe/Lisbon"})} (Sintra)</span>}
+                        {request.estimatedWait &&
                         request.status === "pending" && (
                           <span className="text-yellow-600 font-medium">
                             • Est. wait: {request.estimatedWait}{" "}
@@ -473,7 +483,7 @@ export function PickupRequestsManagement() {
                         <p className="text-sm text-muted-foreground">
                           {request.groupSize} passenger
                           {request.groupSize > 1 ? "s" : ""} •{" "}
-                          {getVehicleType(request.groupSize)}
+                          {request.product==='city-card-v1'?(request.nonTukTuk?'Non-tuk-tuk vehicle required':'Compatible vehicle required'):getVehicleType(request.groupSize)}
                         </p>
                       </div>
                     </div>
@@ -510,6 +520,7 @@ export function PickupRequestsManagement() {
                     )}
                   </div>
                 </div>
+                {request.product==='city-card-v1'&&<CityRideDispatch request={request} onChange={loadRequests}/>} 
               </CardContent>
             </Card>
           ))
@@ -518,3 +529,5 @@ export function PickupRequestsManagement() {
     </div>
   );
 }
+
+

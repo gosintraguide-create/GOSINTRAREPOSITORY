@@ -4,75 +4,102 @@
     "email": "hoponsintra@gmail.com",
     "phone": "+351 932 967 279",
     "location": "Sintra, Portogallo",
-    "operatingHours": "9:00 - 19:00 Tutti i giorni",
+    "operatingHours": "Orari per la data della visita",
     "whatsappNumber": "+351932967279"
   },
   "homepage": {
     "hero": {
       "title": "Scopri Sintra a Modo Tuo",
-      "subtitle": "Pass giornaliero hop-on/hop-off con posti garantiti e autisti-guide professionisti. Viaggi illimitati in piccoli tuk tuk e jeep d'epoca.",
-      "ctaButton": "Prenota il Tuo Pass Giornaliero",
+      "subtitle": "Esplora Sintra con corse hop-on/hop-off illimitate nella data scelta. Le City Cards a tariffa intera includono anche vantaggi selezionati presso i nostri partner.",
+      "ctaButton": "Acquista City Cards",
       "heroEyebrow": "Sintra, Portogallo",
-      "heroHeadingPre": "Sintra merita più di un pomeriggio frettoloso. Esploratela su un",
+      "heroHeadingPre": "Scopri Sintra in",
       "heroTukTuk": "tuk tuk",
-      "heroHeadingMid": "o su una",
+      "heroHeadingMid": "o in",
       "heroVintageJeep": "jeep d'epoca",
-      "heroHeadingPost": ", al vostro ritmo.",
-      "heroSubtitleNew": "Salite e scendete tutte le volte che volete, con una guida locale su ogni veicolo e corse sempre disponibili. Disponibili anche tour privati di un'intera giornata.",
-      "privateToursButton": "Tour privati",
+      "heroHeadingPost": ", al tuo ritmo.",
+      "heroSubtitleNew": "Esplora Sintra con corse hop-on/hop-off illimitate nella data scelta. Le City Cards a tariffa intera includono anche vantaggi selezionati presso i nostri partner.",
+      "privateToursButton": "Prenota un tour privato",
       "whatWeOffer": "Cosa offriamo",
-      "daypassTitle": "Pass giornata intera",
-      "daypassDescription": "Corse illimitate verso tutte le attrazioni di Sintra. Guida locale su ogni veicolo.",
+      "daypassTitle": "City Card",
+      "daypassDescription": "Esplora Sintra con corse hop-on/hop-off illimitate nella data scelta. Le City Cards a tariffa intera includono anche vantaggi selezionati presso i nostri partner.",
       "daypassCta": "Scopri cosa è incluso",
       "privateToursTitle": "Tour privati",
-      "privateToursDescription": "Esperienze di intera giornata su misura per il vostro gruppo. Luoghi nascosti, costa, monumenti.",
+      "privateToursDescription": "Una giornata su misura per il tuo gruppo, tra palazzi, paesaggi costieri e luoghi fuori dai sentieri battuti.",
       "privateToursCta": "Vedi i tour privati",
-      "travelGuideDescription": "Consigli locali, luoghi nascosti e suggerimenti pratici per pianificare la vostra giornata a Sintra.",
+      "travelGuideDescription": "Consigli locali, angoli tranquilli e informazioni pratiche per organizzare la tua giornata a Sintra.",
       "travelGuideCta": "Leggi la guida",
       "benefitPills": [
-        { "icon": "Users", "text": "Piccoli Gruppi (2-6)" },
-        { "icon": "Shield", "text": "Guide Locali" },
-        { "icon": "MapPin", "text": "Tutte le Attrazioni" }
+        {
+          "icon": "Users",
+          "text": "Una carta nominativa a persona"
+        },
+        {
+          "icon": "Shield",
+          "text": "Guide Locali"
+        },
+        {
+          "icon": "MapPin",
+          "text": "Ingressi alle attrazioni separati"
+        }
       ]
     },
     "quickLinks": {
       "title": "Esplora di Più",
       "subtitle": "Scopri attrazioni, consigli e tour personalizzati",
-      "attractions": { "title": "Esplora le Attrazioni", "subtitle": "Siti UNESCO e palazzi" },
-      "travelGuide": { "title": "Guida di Viaggio", "subtitle": "Consigli e segreti locali" },
-      "privateTours": { "title": "Preferisci un Tour Privato?", "subtitle": "Esperienza personalizzata esclusiva" }
+      "attractions": {
+        "title": "Esplora le Attrazioni",
+        "subtitle": "Siti UNESCO e palazzi"
+      },
+      "travelGuide": {
+        "title": "Guida di Viaggio",
+        "subtitle": "Consigli e segreti locali"
+      },
+      "privateTours": {
+        "title": "Preferisci un Tour Privato?",
+        "subtitle": "Esperienza personalizzata esclusiva"
+      }
     },
     "heroTitle": "Scopri Sintra a Modo Tuo",
-    "heroSubtitle": "Pass giornaliero hop-on, hop-off con posti garantiti e guide locali professioniste. Corse illimitate in piccoli tuk tuk e jeep d'epoca.",
-    "heroCallToAction": "Prenota il Tuo Pass Giornaliero",
+    "heroSubtitle": "Esplora Sintra con corse hop-on/hop-off illimitate nella data scelta. Le City Cards a tariffa intera includono anche vantaggi selezionati presso i nostri partner.",
+    "heroCallToAction": "Acquista City Cards",
     "benefitPills": [
-      { "icon": "Users", "text": "Piccoli Gruppi (2-6)" },
-      { "icon": "Shield", "text": "Guide Professioniste" },
-      { "icon": "MapPin", "text": "Tutte le Attrazioni" }
+      {
+        "icon": "Users",
+        "text": "Una carta nominativa a persona"
+      },
+      {
+        "icon": "Shield",
+        "text": "Guide Professioniste"
+      },
+      {
+        "icon": "MapPin",
+        "text": "Ingressi alle attrazioni separati"
+      }
     ],
     "sectionOneTitle": "Perché Scegliere Hop On Sintra?",
     "sectionOneDescription": "Evita gli autobus affollati e vivi Sintra come dovrebbe essere scoperta—con guide locali professioniste",
-    "hopOnHopOffDayPass": "Pass Giornaliero Hop-On/Hop-Off",
+    "hopOnHopOffDayPass": "City Card",
     "unlimitedAdventureTitle": "La Tua Avventura Illimitata a Sintra",
-    "serviceDescription": "Hop On Sintra è un servizio flessibile di pass giornaliero hop-on/hop-off che utilizza veicoli piccoli e intimi come tuk tuk e jeep d'epoca UMM. Dalle 9 alle 19, ottieni posti garantiti e corse illimitate verso tutte le principali attrazioni.",
+    "serviceDescription": "Esplora Sintra con corse hop-on/hop-off illimitate nella data scelta. Le City Cards a tariffa intera includono anche vantaggi selezionati presso i nostri partner.",
     "serviceDescription2": "A differenza degli autobus turistici affollati, i nostri piccoli gruppi (2-6 passeggeri) con guide locali professioniste ti danno la libertà di esplorare Sintra al tuo ritmo mentre godi di attenzione personalizzata.",
     "unlimitedRidesTitle": "Corse Illimitate Tutto il Giorno",
-    "unlimitedRidesSubtitle": "Un pass, tutte le attrazioni",
+    "unlimitedRidesSubtitle": "Ingressi alle attrazioni separati",
     "frequentServiceTitle": "Servizio Continuo",
-    "frequentServiceSubtitle": "Disponibile tutto il giorno",
+    "frequentServiceSubtitle": "Secondo disponibilità dei veicoli",
     "smallGroupsTitle": "Piccoli Gruppi Intimi",
-    "smallGroupsSubtitle": "Massimo 2-6 passeggeri",
+    "smallGroupsSubtitle": "Una carta nominativa a persona",
     "professionalGuidesTitle": "Guide Professioniste",
     "professionalGuidesSubtitle": "Esperti locali",
     "requestPickupTitle": "Richiedi Ritiri Su Richiesta",
-    "requestPickupSubtitle": "Chiama un veicolo in qualsiasi momento",
-    "realTimeTrackingTitle": "Tracciamento Veicoli in Tempo Reale",
-    "realTimeTrackingSubtitle": "Vedi arrivare il tuo viaggio",
+    "requestPickupSubtitle": "Secondo disponibilità dei veicoli",
+    "realTimeTrackingTitle": "Secondo disponibilità dei veicoli",
+    "realTimeTrackingSubtitle": "Secondo disponibilità dei veicoli",
     "priceFrom": "Da",
     "pricePerPerson": "per persona",
     "sunsetSpecialTitle": "Gita off-road al tramonto verso il Cabo da Roca",
     "sunsetSpecialDescription": "Unitevi a noi mentre i nostri veicoli percorrono i sentieri costieri del punto più occidentale dell'Europa continentale. Inizia e termina alla stazione ferroviaria di Sintra.",
-    "sunsetSpecialBadge":"Speciale di Oggi",
+    "sunsetSpecialBadge": "Speciale di Oggi",
     "sunsetSpecialSeatsOnly": "Solo",
     "sunsetSpecialSeats": "Posti",
     "sunsetSpecialAvailableNow": "Disponibile Ora",
@@ -98,23 +125,23 @@
     "sunsetSpecialErrorUnableToVerify": "Impossibile verificare l'ID di prenotazione. Riprova.",
     "sunsetSpecialBookingVerified": "Prenotazione verificata! Reindirizzamento...",
     "finalCtaTitle": "La Tua Giornata Migliore a Sintra Inizia Qui",
-    "finalCtaSubtitle": "Sali e scendi tutto il giorno tra i palazzi e i castelli di Sintra. Posti garantiti, guide locali, nessun orario fisso.",
-    "finalCtaButton": "Ottieni Il Tuo Pass Giornaliero Ora",
-    "finalCtaSubtext": "Conferma istantanea · Biglietti digitali · Pagamento sicuro",
+    "finalCtaSubtitle": "Esplora Sintra con corse hop-on/hop-off illimitate nella data scelta. Le City Cards a tariffa intera includono anche vantaggi selezionati presso i nostri partner.",
+    "finalCtaButton": "Acquista City Cards",
+    "finalCtaSubtext": "Pagamento verificato",
     "faq": {
       "sectionTitle": "Domande Frequenti su Sintra",
       "q1": "Vale la pena visitare Sintra da Lisbona?",
       "a1": "Assolutamente sì — Sintra è una delle gite più straordinarie d'Europa, a soli 40 minuti in treno diretto dalla stazione Rossio di Lisbona. I suoi palazzi patrimonio UNESCO, il castello moresco e le colline boscose la rendono davvero imperdibile. La maggior parte dei visitatori la considera il momento più bello del proprio viaggio in Portogallo.",
       "q2": "Si può visitare Sintra senza auto?",
-      "a2": "Sì, facilmente. I treni da Lisbona Rossio partono ogni 20-30 minuti verso Sintra per circa 2,30 €. Una volta lì, un pass hop-on/hop-off è il modo più pratico per raggiungere il Palazzo della Pena, la Quinta da Regaleira, Monserrate, Cabo da Roca e altre attrazioni — senza auto né taxi.",
+      "a2": "Esplora Sintra con corse hop-on/hop-off illimitate nella data scelta. Le City Cards a tariffa intera includono anche vantaggi selezionati presso i nostri partner. Gli orari del trasporto dipendono dalla data della visita e sono indicati prima del pagamento e sulla carta. Si applica il fuso Europe/Lisbon. La City Card non è un pass di 24 ore consecutive.",
       "q3": "Quanto tempo ci vuole per visitare Sintra?",
-      "a3": "Un'intera giornata è ideale. Il solo Palazzo della Pena richiede 2-3 ore incluse le code. Con un pass valido dalle 9 alle 19, si possono visitare comodamente 3-4 attrazioni, esplorare il centro storico e prendere ancora il treno serale per Lisbona.",
+      "a3": "Gli orari del trasporto dipendono dalla data della visita e sono indicati prima del pagamento e sulla carta. Si applica il fuso Europe/Lisbon. La City Card non è un pass di 24 ore consecutive.",
       "q4": "Qual è il modo migliore per muoversi a Sintra?",
-      "a4": "Un pass hop-on/hop-off è l'opzione più flessibile. Piccoli tuk-tuk e jeep d'epoca circolano in modo continuo dalle 9 alle 19, collegando la stazione con il Palazzo della Pena, la Quinta da Regaleira, Monserrate e le altre fermate. A differenza dei grandi bus turistici, i veicoli trasportano da 2 a 6 passeggeri con una guida-autista locale su ogni percorso.",
+      "a4": "Esplora Sintra con corse hop-on/hop-off illimitate nella data scelta. Le City Cards a tariffa intera includono anche vantaggi selezionati presso i nostri partner. Gli orari del trasporto dipendono dalla data della visita e sono indicati prima del pagamento e sulla carta. Si applica il fuso Europe/Lisbon. La City Card non è un pass di 24 ore consecutive.",
       "q5": "Bisogna prenotare in anticipo per Sintra?",
-      "a5": "Per i fine settimana e i mesi estivi (luglio–settembre) si raccomanda vivamente di prenotare in anticipo. Il Palazzo della Pena in particolare va esaurito rapidamente. I pass giornalieri si prenotano online in pochi minuti con conferma istantanea via QR code inviata per email.",
-      "q6": "Cosa è incluso in un pass hop-on/hop-off?",
-      "a6": "Il pass giornaliero offre corse illimitate su tutte le fermate di Sintra dalle 9 alle 19. Ogni veicolo ha una guida-autista locale a bordo. I posti garantiti eliminano i tempi di attesa. Scendi a qualsiasi attrazione, fermati quanto vuoi e risali sul veicolo successivo senza costi aggiuntivi."
+      "a5": "Accedi con un'email verificata, scegli la data e indica il nome di ogni titolare. Le carte appaiono in Le mie carte dopo la verifica del pagamento. Usa la stessa email sul sito e nell'app.",
+      "q6": "Cosa include la City Card?",
+      "a6": "Esplora Sintra con corse hop-on/hop-off illimitate nella data scelta. Le City Cards a tariffa intera includono anche vantaggi selezionati presso i nostri partner. Gli ingressi alle attrazioni, i tour privati e le escursioni al tramonto sono prodotti separati e non inclusi nella City Card."
     }
   },
   "routes": {
@@ -125,7 +152,7 @@
     "bothRoutes": "Entrambi i percorsi",
     "loopsBack": "torna indietro",
     "onePassBothRoutes": "Un Pass, Entrambi i Percorsi",
-    "onePassDescription": "Il tuo pass giornaliero ti dà accesso illimitato a entrambi i percorsi. I nostri veicoli visitano tutte le fermate durante gli orari di servizio (dalle 9 alle 19), e non devi mai cambiare veicolo - resta a bordo mentre i percorsi si collegano alla Stazione Ferroviaria e al Centro Storico Nord.",
+    "onePassDescription": "Esplora Sintra con corse hop-on/hop-off illimitate nella data scelta. Le City Cards a tariffa intera includono anche vantaggi selezionati presso i nostri partner. Gli orari del trasporto dipendono dalla data della visita e sono indicati prima del pagamento e sulla carta. Si applica il fuso Europe/Lisbon. La City Card non è un pass di 24 ore consecutive.",
     "viewMapButton": "Vedi la mappa interattiva",
     "stops": {
       "trainStation": "Stazione Ferroviaria",
@@ -140,20 +167,20 @@
   },
   "header": {
     "hopOnService": "Hop On Hop Off",
-    "privateTours": "Tour Privati",
+    "privateTours": "Tour privati",
     "travelGuide": "Guida di Viaggio"
   },
   "footer": {
-    "quickLinks": "Link Rapidi",
+    "quickLinks": "Link utili",
     "attractions": "Attrazioni",
     "travelGuide": "Guida di Viaggio",
-    "buyDayPass": "Acquista Pass Giornaliero",
+    "buyDayPass": "Acquista City Cards",
     "privacyPolicy": "Privacy",
     "terms": "Termini",
-    "reservedArea": "Area Riservata",
-    "adminPortal": "Portale Admin",
-    "driverPortal": "Portale Autista",
-    "allRightsReserved": "Tutti i diritti riservati. Fatto con ❤️ per i viaggiatori."
+    "reservedArea": "Area del personale",
+    "adminPortal": "Portale amministrazione",
+    "driverPortal": "Portale autisti",
+    "allRightsReserved": "Tutti i diritti riservati. Creato con ❤️ per chi viaggia."
   },
   "manageBooking": {
     "pageTitle": "Gestisci La Tua Prenotazione",
@@ -221,18 +248,18 @@
     "contactSupportDescription": "Hai bisogno di aiuto? Siamo qui per te! Contattaci tramite uno di questi canali."
   },
   "about": {
-    "title": "Su Hop On Sintra - Servizio Premium Hop-On/Hop-Off con Guide Professionali",
-    "subtitle": "Your premium hop-on/hop-off day pass service through Sintra's magical landscapes with professional local guides",
+    "title": "Chi siamo",
+    "subtitle": "Esplora Sintra con corse hop-on/hop-off illimitate nella data scelta. Le City Cards a tariffa intera includono anche vantaggi selezionati presso i nostri partner.",
     "story": [
       "Hop On Sintra è nata da una semplice osservazione: i visitatori di questo sito Patrimonio dell'Umanità UNESCO meritavano di meglio rispetto a bus affollati e orari rigidi.",
-      "Abbiamo creato un servizio di pass giornaliero flessibile e premium che combina l'intimità di piccoli veicoli guidati da guide locali professioniste con la libertà dell'hop-on/hop-off.",
-      "Oggi, migliaia di visitatori scelgono Hop On Sintra per i posti garantiti, le guide-autiste professioniste, il servizio affidabile per tutto il giorno e un modo autentico e intimo di esplorare questa destinazione magica."
+      "Ti aiutiamo a scoprire Sintra al tuo ritmo, con guide locali e corse condivise tra le fermate principali.",
+      "Scegli la City Card per il trasporto condiviso oppure prenota un tour privato con un itinerario pensato per il tuo gruppo."
     ],
     "mission": "La nostra missione è offrire il modo più comodo, confortevole e autentico per esplorare i palazzi, i castelli e i giardini di Sintra con guide locali professioniste.",
     "values": [
       {
-        "title": "Comfort Garantito",
-        "description": "Ogni passeggero ha un posto garantito su un piccolo veicolo accogliente guidato da una guida locale professionista. Niente viaggi in piedi, niente sovraffollamento."
+        "title": "Una carta nominativa a persona",
+        "description": "Scegli l'età di ogni persona alla data della visita: sotto i 7 anni gratis, 7–11 metà prezzo, dai 12 tariffa intera. Ogni persona, compresi i bambini con carta gratuita, deve avere una carta nominativa e occupa un posto."
       },
       {
         "title": "Libertà Totale",
@@ -251,10 +278,22 @@
     "perksHeading": "La Differenza di Hop On Sintra",
     "perksSubtitle": "Abbiamo reinventato il modo in cui esplori Sintra—niente autobus affollati, niente orari rigidi!",
     "perks": [
-      { "title": "Piccoli Gruppi", "description": "Solo 2-6 ospiti per veicolo per un'esperienza accogliente e personale" },
-      { "title": "Guide Professionali", "description": "Ogni autista è un esperto locale certificato che ama Sintra" },
-      { "title": "Posti Garantiti", "description": "Comfort prenotato in anticipo senza attese o posti in piedi" },
-      { "title": "Il Tuo Ritmo", "description": "Sali e scendi quanto vuoi per tutto il giorno" }
+      {
+        "title": "Piccoli Gruppi",
+        "description": "Viaggia in piccoli veicoli per un'esperienza più personale."
+      },
+      {
+        "title": "Guide Professionali",
+        "description": "Ogni autista è un esperto locale certificato che ama Sintra"
+      },
+      {
+        "title": "Una carta nominativa a persona",
+        "description": "Ogni viaggiatore ha una carta QR personale. Il trasporto è soggetto alla disponibilità dei veicoli."
+      },
+      {
+        "title": "Il Tuo Ritmo",
+        "description": "Sali e scendi quanto vuoi per tutto il giorno"
+      }
     ],
     "valuesBadge": "I Nostri Valori",
     "valuesHeading": "Cosa Difendiamo",
@@ -263,11 +302,26 @@
     "faqHeading": "Domande Comuni",
     "faqSubtitle": "Tutto quello che devi sapere su Hop On Sintra",
     "faq": [
-      { "q": "Cosa include il pass giornaliero?", "a": "Corse illimitate su tutti i veicoli partecipanti (tuk-tuk, jeep UMM) con guide-autisti professionali per un'intera giornata. Posti garantiti in ogni veicolo. Puoi opzionalmente aggiungere i biglietti d'ingresso alle attrazioni." },
-      { "q": "Posso acquistare i biglietti delle attrazioni con il mio pass?", "a": "Sì! Durante la prenotazione puoi aggiungere i biglietti d'ingresso a attrazioni popolari come il Palazzo di Pena, la Quinta da Regaleira e altro ancora. Questo ti fa risparmiare tempo—niente code alle biglietterie." },
-      { "q": "Cosa sono i tour guidati?", "a": "Le nostre partenze delle 10:00 e delle 14:00 offrono tour guidati dove il tuo autista-guida professionista si ferma alle attrazioni principali per condividere commenti esperti sulla storia e i tesori nascosti di Sintra." },
-      { "q": "Come uso il mio codice QR?", "a": "Mostra semplicemente il tuo codice QR (inviato via email) a qualsiasi autista di Hop On Sintra prima di salire. Lo scansioneranno per verificare il tuo pass." },
-      { "q": "Con quale frequenza partono i veicoli?", "a": "Offriamo un servizio continuo da tutte le principali attrazioni durante gli orari di operazione (9:00 - 19:00). Presentati semplicemente a qualsiasi fermata." }
+      {
+        "q": "Cosa include la City Card?",
+        "a": "Esplora Sintra con corse hop-on/hop-off illimitate nella data scelta. Le City Cards a tariffa intera includono anche vantaggi selezionati presso i nostri partner. Gli ingressi alle attrazioni, i tour privati e le escursioni al tramonto sono prodotti separati e non inclusi nella City Card."
+      },
+      {
+        "q": "Gli ingressi alle attrazioni sono inclusi?",
+        "a": "No. Gli ingressi alle attrazioni sono separati dalla City Card. Controlla le opzioni dei biglietti e gli orari d'ingresso di ciascun luogo prima della visita."
+      },
+      {
+        "q": "Posso prenotare un tour privato con guida?",
+        "a": "Sì. Consulta i tour privati per itinerari, date disponibili e prezzi. Si prenotano separatamente dalla City Card."
+      },
+      {
+        "q": "Come uso il mio codice QR?",
+        "a": "Apri Le mie carte sul sito o nell'app e mostra all'autista la carta QR di ogni viaggiatore prima di salire."
+      },
+      {
+        "q": "Con quale frequenza partono i veicoli?",
+        "a": "Controlla gli orari di servizio indicati per la data della visita. L'orario del passaggio dipende dalla disponibilità dei veicoli e dall'assegnazione dell'autista."
+      }
     ]
   },
   "attractions": {
@@ -517,28 +571,28 @@
   },
   "seo": {
     "home": {
-      "title": "Hop On Sintra - Pass Giornaliero Premium Hop-On/Hop-Off | Guide Locali Professioniste",
-      "description": "Esplora i siti Patrimonio dell'Umanità UNESCO di Sintra con posti garantiti in piccoli veicoli guidati da guide locali professioniste. Corse illimitate tutto il giorno. Prenota ora il tuo pass giornaliero flessibile online.",
+      "title": "City Cards e tour privati a Sintra | Hop On Sintra",
+      "description": "Esplora Sintra con corse hop-on/hop-off illimitate nella data scelta. Le City Cards a tariffa intera includono anche vantaggi selezionati presso i nostri partner.",
       "keywords": "pass giornaliero Sintra, hop on hop off Sintra, trasporto Sintra, tour piccoli gruppi Sintra, tour Palazzo Pena, tour guidati Sintra, guide professioniste Sintra"
     },
     "attractions": {
-      "title": "Attrazioni di Sintra - Palazzi e Castelli | Pass Giornaliero Hop On Sintra",
-      "description": "Scopri il Palazzo di Pena, Quinta da Regaleira, Castello dei Mori e altro con guide locali professioniste. Il nostro pass giornaliero include trasporto illimitato a tutte le principali attrazioni di Sintra.",
+      "title": "Attrazioni | Hop On Sintra",
+      "description": "Scopri i palazzi, i castelli e i giardini di Sintra. Consulta le informazioni per la visita e pianifica le tue tappe.",
       "keywords": "attrazioni Sintra, Palazzo di Pena, Quinta da Regaleira, Castello dei Mori, Palazzo di Monserrate, Palazzo Nazionale di Sintra"
     },
     "howItWorks": {
-      "title": "Come Funziona - Servizio Hop-On/Hop-Off Hop On Sintra",
-      "description": "Scopri come funziona il nostro pass giornaliero flessibile. Prenota online, ottieni i tuoi codici QR e sali su qualsiasi veicolo durante gli orari di apertura con guide locali professioniste. Semplice e conveniente.",
+      "title": "City Card | Hop On Sintra",
+      "description": "Accedi con un'email verificata, scegli la data e indica il nome di ogni titolare. Le carte appaiono in Le mie carte dopo la verifica del pagamento. Usa la stessa email sul sito e nell'app.",
       "keywords": "come visitare Sintra, guida trasporto Sintra, come funziona hop on hop off, guida pass giornaliero Sintra"
     },
     "buyTicket": {
-      "title": "Prenota il Tuo Pass Giornaliero - Hop On Sintra | Conferma Immediata",
-      "description": "Prenota il tuo pass giornaliero Sintra online. Scegli la tua data, ottieni codici QR immediati per ogni passeggero e goditi corse illimitate con guide professioniste fino alle 19:00. Aggiungi anche biglietti per le attrazioni.",
+      "title": "Acquista City Cards | Hop On Sintra",
+      "description": "Accedi con un'email verificata, scegli la data e indica il nome di ogni titolare. Le carte appaiono in Le mie carte dopo la verifica del pagamento. Usa la stessa email sul sito e nell'app. Gli ingressi alle attrazioni, i tour privati e le escursioni al tramonto sono prodotti separati e non inclusi nella City Card.",
       "keywords": "prenotare pass giornaliero Sintra, comprare biglietti Sintra, pass giornaliero Sintra online, biglietti attrazioni Sintra"
     },
     "about": {
-      "title": "Chi Siamo Hop On Sintra - Servizio Premium Pass Giornaliero con Guide Professioniste",
-      "description": "Hop On Sintra offre servizio premium pass giornaliero hop-on/hop-off con posti garantiti in piccoli veicoli guidati da guide locali professioniste. Servizio continuo in tutta Sintra.",
+      "title": "Chi siamo | Hop On Sintra",
+      "description": "La nostra missione è offrire il modo più comodo, confortevole e autentico per esplorare i palazzi, i castelli e i giardini di Sintra con guide locali professioniste.",
       "keywords": "chi siamo Hop On Sintra, azienda pass giornaliero Sintra, tour premium Sintra, piccolo gruppo Sintra, guide professioniste"
     },
     "blog": {
@@ -567,8 +621,8 @@
     "guide": "guida",
     "guides": "guide",
     "ctaTitle": "Pronto a Iniziare la Tua Avventura?",
-    "ctaSubtitle": "Ora che sei armato di conoscenze locali, prenota il tuo pass giornaliero flessibile con autisti-guide professionisti! 🎉",
-    "ctaButton": "Prenota il Tuo Pass Giornaliero",
+    "ctaSubtitle": "Esplora Sintra con corse hop-on/hop-off illimitate nella data scelta. Le City Cards a tariffa intera includono anche vantaggi selezionati presso i nostri partner.",
+    "ctaButton": "Acquista City Cards",
     "backToBlog": "Torna al Blog",
     "articleNotFound": "Articolo non trovato",
     "articleNotFoundDesc": "Questo articolo potrebbe essere stato spostato o rimosso.",
@@ -593,8 +647,8 @@
     "viewAllArticles": "Visualizza Tutti gli Articoli",
     "tableOfContents": "Indice",
     "readyToExperience": "Pronto a Scoprire Sintra?",
-    "bookFlexibleDayPass": "Prenota il tuo pass giornaliero flessibile e inizia a esplorare i magnifici palazzi e giardini di Sintra",
-    "bookDayPassNow": "Prenota il Tuo Pass Giornaliero Ora",
+    "bookFlexibleDayPass": "Esplora Sintra con corse hop-on/hop-off illimitate nella data scelta. Le City Cards a tariffa intera includono anche vantaggi selezionati presso i nostri partner.",
+    "bookDayPassNow": "Acquista City Cards",
     "categories": {
       "planning": "Pianificazione della Visita",
       "getting-there": "Come Arrivare",
@@ -735,49 +789,81 @@
           "name": "Stazione Ferroviaria di Sintra",
           "description": "Punto di connessione per entrambi i percorsi",
           "info": "Situata nel cuore di Sintra, a pochi passi dal centro storico. I nostri veicoli prelevano proprio all'esterno dell'ingresso principale della stazione. Punto di connessione per entrambi i percorsi.",
-          "highlights": ["Facile accesso da Lisbona", "Entrambi i percorsi si fermano qui", "Partenze frequenti"]
+          "highlights": [
+            "Facile accesso da Lisbona",
+            "Entrambi i percorsi si fermano qui",
+            "Partenze frequenti"
+          ]
         },
         "historicalCenterNorth": {
           "name": "Centro Storico Nord",
           "description": "Centro storico con caffè e negozi",
           "info": "Ritiro nell'affascinante centro storico, circondato da ristoranti locali, pasticcerie e boutique. Punto di connessione per entrambi i percorsi.",
-          "highlights": ["Atmosfera storica", "Entrambi i percorsi si fermano qui", "Opzioni di ristorazione nelle vicinanze"]
+          "highlights": [
+            "Atmosfera storica",
+            "Entrambi i percorsi si fermano qui",
+            "Opzioni di ristorazione nelle vicinanze"
+          ]
         },
         "historicalCenterSouth": {
           "name": "Centro Storico Sud",
           "description": "Centro città vicino al Palazzo Nazionale",
           "info": "Fermata nel centro storico vicino all'iconico Palazzo Nazionale con i suoi distintivi camini gemelli.",
-          "highlights": ["Eredità reale", "Posizione centrale", "Architettura iconica"]
+          "highlights": [
+            "Eredità reale",
+            "Posizione centrale",
+            "Architettura iconica"
+          ]
         },
         "moorishCastle": {
           "name": "Castello dei Mori",
           "description": "Antica fortezza con mura medievali",
           "info": "Visita questa fortificazione moresca del X secolo arroccata sulla collina, che offre viste spettacolari sulla regione.",
-          "highlights": ["Significato storico", "Viste panoramiche", "Autentiche rovine medievali"]
+          "highlights": [
+            "Significato storico",
+            "Viste panoramiche",
+            "Autentiche rovine medievali"
+          ]
         },
         "penaPalace": {
           "name": "Palazzo di Pena",
           "description": "Castello iconico sulla collina con viste panoramiche",
           "info": "Visita il monumento più famoso di Sintra. Il nostro punto di ritiro si trova comodamente all'ingresso del palazzo.",
-          "highlights": ["Viste mozzafiato", "Attrazione più visitata", "Ottime opportunità fotografiche"]
+          "highlights": [
+            "Viste mozzafiato",
+            "Attrazione più visitata",
+            "Ottime opportunità fotografiche"
+          ]
         },
         "quintaRegaleira": {
           "name": "Quinta da Regaleira",
           "description": "Tenuta mistica con pozzi iniziatici e grotte",
           "info": "Visita questa tenuta incantevole con giardini misteriosi, tunnel sotterranei e il famoso Pozzo Iniziatico. Ritiro all'ingresso principale.",
-          "highlights": ["Architettura misteriosa", "Giardini bellissimi", "Esperienza unica"]
+          "highlights": [
+            "Architettura misteriosa",
+            "Giardini bellissimi",
+            "Esperienza unica"
+          ]
         },
         "seteais": {
           "name": "Seteais",
           "description": "Palazzo storico e punto panoramico",
           "info": "Fermata a questo magnifico palazzo neoclassico con viste mozzafiato. Ora un hotel di lusso, l'esterno e i giardini sono aperti ai visitatori.",
-          "highlights": ["Architettura impressionante", "Punto panoramico", "Significato storico"]
+          "highlights": [
+            "Architettura impressionante",
+            "Punto panoramico",
+            "Significato storico"
+          ]
         },
         "monserratePalace": {
           "name": "Palazzo di Monserrate",
           "description": "Palazzo romantico con giardini esotici",
           "info": "Ritiro a questo splendido palazzo del XIX secolo circondato da giardini botanici con piante provenienti da tutto il mondo. Un gioiello nascosto di Sintra.",
-          "highlights": ["Giardini botanici esotici", "Architettura romantica", "Atmosfera tranquilla"]
+          "highlights": [
+            "Giardini botanici esotici",
+            "Architettura romantica",
+            "Atmosfera tranquilla"
+          ]
         }
       }
     },
@@ -835,7 +921,7 @@
       "card1Title": "Guide Professionali",
       "card1Description": "Tutti i nostri veicoli sono guidati da guide locali esperte",
       "card2Title": "Orario Flessibile",
-      "card2Description": "Sali e scendi al tuo ritmo, dalle 9 alle 19 tutti i giorni",
+      "card2Description": "Esplora Sintra con corse hop-on/hop-off illimitate nella data scelta. Le City Cards a tariffa intera includono anche vantaggi selezionati presso i nostri partner.",
       "card3Title": "Ottimo Rapporto Qualità-Prezzo",
       "card3Description": "Corse illimitate per un'intera giornata a un prezzo accessibile",
       "bookDayPassButton": "Prenota Ora il Tuo Pass Giornaliero"
@@ -1001,7 +1087,7 @@
     "tip1": "Clicca su un segnaposto per vedere il nome della fermata e le attrazioni vicine",
     "tip2": "Usa la funzione indicazioni per ottenere percorsi a piedi tra le fermate",
     "tip3": "Tutte le fermate sono servite durante gli orari operativi (dalle 9 alle 19)",
-    "ctaButton": "Prenota il Tuo Pass Giornaliero",
+    "ctaButton": "Acquista City Cards",
     "ctaSubtext": "Corse illimitate verso tutte queste fermate per un giorno intero"
   },
   "ui": {
@@ -1009,7 +1095,7 @@
     "howItWorks": "Come Funziona",
     "attractions": "Attrazioni",
     "manageBooking": "La Mia Prenotazione",
-    "buyTicket": "Acquista Pass",
+    "buyTicket": "Acquista City Cards",
     "about": "Chi Siamo & Contatti",
     "contact": "Contatti",
     "bookNow": "Prenota Ora",
@@ -1054,19 +1140,19 @@
     "buyAttractionTicket": "Acquista Biglietto Attrazione",
     "easyAs1234": "Facile come 1-2-3-4",
     "howItWorksTitle": "Come Funziona",
-    "howItWorksSubtitle": "Tre semplici passaggi per il miglior giorno del tuo viaggio! 🎉",
-    "step1Title": "Prenota in Secondi!",
-    "step1Description": "Scegli la tua data, aggiungi attrazioni opzionali e boom—sei pronto! Il tuo pass digitale arriva istantaneamente via email. Niente stampe, niente problemi, solo pura avventura.",
-    "step1Badge": "⚡ Richiede meno di 3 minuti",
-    "step2Title": "Ottieni il Tuo Codice QR Magico",
-    "step2Description": "Il tuo smartphone diventa il tuo biglietto per Sintra! Salva il tuo codice QR e sei pronto per salire a una qualsiasi delle nostre fermate. È così semplice.",
-    "step2Badge": "📱 Funziona anche offline!",
+    "howItWorksSubtitle": "Quattro passi per scoprire Sintra al tuo ritmo.",
+    "step1Title": "Scegli la data della visita",
+    "step1Description": "Accedi con un'email verificata, scegli la data e indica il nome di ogni titolare. Le carte appaiono in Le mie carte dopo la verifica del pagamento. Usa la stessa email sul sito e nell'app.",
+    "step1Badge": "Pagamento verificato",
+    "step2Title": "Le mie carte",
+    "step2Description": "Mostra la carta QR di ogni viaggiatore quando sali. Le carte sono personali e non trasferibili. Le carte cancellate non possono essere utilizzate.",
+    "step2Badge": "Pagamento verificato",
     "step3Title": "Sali e Esplora!",
-    "step3Description": "Vedi un tuk tuk alla fermata? Mostra il tuo codice al tuo autista-guida professionale e sali! Il servizio è attivo dalle 9:00 alle 19:00. Esplora al tuo ritmo—le nostre guide ti accompagnano tutto il giorno.",
-    "step3Badge": "🎉 Corse illimitate con guide professioniste",
+    "step3Description": "Gli orari del trasporto dipendono dalla data della visita e sono indicati prima del pagamento e sulla carta. Si applica il fuso Europe/Lisbon. La City Card non è un pass di 24 ore consecutive. I minori di 7 anni non possono viaggiare in tuk tuk. Un gruppo con un bambino sotto i 7 anni deve utilizzare un altro veicolo.",
+    "step3Badge": "Corse illimitate",
     "step4Title": "Nessun Veicolo alla Fermata?",
-    "step4Description": "Se non vedi alcun veicolo in attesa quando arrivi a una fermata, puoi richiedere un prelievo! Questo ci fa sapere che stai aspettando e ci aiuta a raggiungerti più velocemente. La tua richiesta ci aiuta a ottimizzare il nostro servizio e ridurre i tempi di attesa per tutti.",
-    "step4Badge": "🔔 Richiedi il prelievo in qualsiasi momento",
+    "step4Description": "Richiedi una corsa durante gli orari di servizio per i titolari selezionati. Il ritiro dipende dalla disponibilità e assegnazione dei veicoli; il ritiro immediato non è garantito.",
+    "step4Badge": "Secondo disponibilità dei veicoli",
     "installAppTitle": "📱 Installa l'App Hop On Sintra",
     "installAppDescription": "Aggiungi alla tua schermata iniziale! Funziona offline, carica più velocemente e rende più facile richiedere prelievi. Ci vogliono solo 2 secondi!",
     "installAppFaster": "Più Veloce",
@@ -1096,8 +1182,8 @@
     "searchAttractions": "Cerca attrazioni...",
     "exploreMore": "Esplora",
     "attractionsCtaTitle": "Pronti a Esplorare Sintra?",
-    "attractionsCtaDescription": "Il vostro pass giornaliero Hop On Sintra vi dà accesso a tutte queste magnifiche attrazioni. Salite e scendete come volete, trascorrendo tutto il tempo che desiderate in ogni luogo.",
-    "attractionsCtaButton": "Prenota il Tuo Pass Giornaliero",
+    "attractionsCtaDescription": "Esplora Sintra con corse hop-on/hop-off illimitate nella data scelta. Le City Cards a tariffa intera includono anche vantaggi selezionati presso i nostri partner. Gli ingressi alle attrazioni, i tour privati e le escursioni al tramonto sono prodotti separati e non inclusi nella City Card.",
+    "attractionsCtaButton": "Acquista City Cards",
     "attractionSingular": "attrazione",
     "attractionPlural": "attrazioni",
     "free": "Gratuito",
@@ -1105,8 +1191,8 @@
     "moreWaysSubtitle": "Scopri i nostri servizi pensati per rendere la tua esperienza a Sintra indimenticabile",
     "moreWays": {
       "hopOnTitle": "Servizio Hop On",
-      "hopOnDescription": "Pass giornaliero illimitato per visitare tutte le attrazioni al tuo ritmo",
-      "hopOnBadge": "9–19 tutti i giorni",
+      "hopOnDescription": "Esplora Sintra con corse hop-on/hop-off illimitate nella data scelta. Le City Cards a tariffa intera includono anche vantaggi selezionati presso i nostri partner.",
+      "hopOnBadge": "Orari per la data della visita",
       "privateToursTitle": "Tour Privati",
       "privateToursDescription": "Tour guidati personalizzati con guide locali esperte e itinerari su misura",
       "privateToursBadge": "Esperienza Esclusiva",
@@ -1420,17 +1506,17 @@
     "adult": "Adulto",
     "productCard": {
       "daypass": {
-        "title": "Pass Giornaliero Completo",
-        "description": "Corse illimitate a tutte le attrazioni di Sintra",
+        "title": "City Card",
+        "description": "Esplora Sintra con corse hop-on/hop-off illimitate nella data scelta. Le City Cards a tariffa intera includono anche vantaggi selezionati presso i nostri partner.",
         "features": [
-          "Corse illimitate hop-on hop-off",
-          "Posti garantiti - nessuna attesa",
-          "Autisti-guide professionisti",
-          "Servizio 9-19 quotidiano",
-          "Piccoli gruppi (max 8 persone)",
-          "Tracciamento veicolo in tempo reale"
+          "Corse illimitate",
+          "Vantaggi con tariffa intera",
+          "Una carta nominativa a persona",
+          "Orari per la data della visita",
+          "Sotto i 7 anni: niente tuk tuk",
+          "Ingressi alle attrazioni separati"
         ],
-        "bookNow": "Prenota Il Tuo Pass"
+        "bookNow": "Acquista City Cards"
       },
       "insightTour": {
         "title": "Insight Tour",
@@ -1526,8 +1612,8 @@
     "onlineBookingComingSoon": "Prenotazione Online Prossimamente",
     "ticketsAtEntrance": "I biglietti per le attrazioni non sono ancora disponibili per l'acquisto online. Puoi comprarli all'ingresso.",
     "getThereEasily": "Arriva Facilmente!",
-    "dayPassPromo": "Prenota un pass giornaliero Hop On Sintra per trasporto illimitato tra tutte le attrazioni con autisti-guide professionali!",
-    "getDayPass": "Ottieni Pass Giornaliero",
+    "dayPassPromo": "Esplora Sintra con corse hop-on/hop-off illimitate nella data scelta. Le City Cards a tariffa intera includono anche vantaggi selezionati presso i nostri partner.",
+    "getDayPass": "Acquista City Cards",
     "dontMissThese": "Non Perdere Queste!",
     "insiderTips": "Consigli degli Esperti",
     "timeNeeded": "Tempo Necessario",
@@ -1546,12 +1632,12 @@
     "morePrivateTours": "Altri Tour Privati",
     "viewTour": "Vedi tour",
     "date": "Data",
-    "guests": "Ospiti",
+    "guests": "Partecipanti",
     "checkAvailability": "Controlla disponibilità",
     "freeCancellation": "Cancellazione gratuita",
     "freeCancellationDesc": "Cancella fino a 24 ore prima per un rimborso completo",
     "privateExclusive": "Tour 100% privato",
-    "privateExclusiveDesc": "Esclusivamente per il tuo gruppo — senza bus condivisi o estranei",
+    "privateExclusiveDesc": "Riservato al tuo gruppo, con una guida dedicata.",
     "otherToursTitle": "Altri tour che potrebbero piacerti",
     "freeGuidesTitle": "Consulta le nostre guide gratuite",
     "readArticle": "Leggi",
@@ -1568,16 +1654,16 @@
     "selectDate": "Seleziona una Data",
     "availableTimes": "Orari Disponibili",
     "pickDatePrompt": "Scegli una data per vedere gli orari disponibili",
-    "guests": "Ospiti",
-    "guest": "ospite",
-    "guestsPlural": "ospiti",
-    "minimumGuestsNotice": "Questo tour ha un minimo di {min} persone — questo è ciò che verrà addebitato.",
+    "guests": "Partecipanti",
+    "guest": "partecipante",
+    "guestsPlural": "partecipanti",
+    "minimumGuestsNotice": "Il prezzo minimo di questo tour corrisponde a {min} partecipanti, anche se il tuo gruppo è più piccolo.",
     "total": "Totale",
     "quoteOnRequest": "Preventivo su richiesta",
     "next": "Avanti →",
     "legendAvailable": "Disponibile",
-    "legendLimited": "Limitato",
-    "legendFull": "Completo",
+    "legendLimited": "Pochi posti",
+    "legendFull": "Al completo",
     "checkingAvailability": "Verifica disponibilità…",
     "fullName": "Nome Completo",
     "email": "E-mail",
@@ -1590,11 +1676,11 @@
     "summaryTour": "Tour",
     "summaryDate": "Data",
     "summaryTime": "Ora",
-    "summaryGuests": "Ospiti",
+    "summaryGuests": "Partecipanti",
     "quoteInfo": "Esamineremo la tua richiesta e ti invieremo un preventivo personalizzato entro 24 ore. Nessun pagamento richiesto fino alla conferma.",
     "back": "Indietro",
     "submitting": "Invio in corso…",
-    "settingUpPayment": "Impostazione pagamento…",
+    "settingUpPayment": "Preparazione del pagamento…",
     "requestQuote": "Richiedi Preventivo Personalizzato",
     "continuePayment": "Continua al Pagamento",
     "quoteSuccess": "Richiesta di Preventivo Inviata!",
@@ -1622,67 +1708,137 @@
   },
   "hopOnService": {
     "backToHome": "Torna alla home",
-    "heroTitle": "Pass Giornaliero Hop On Sintra",
-    "heroSubtitle": "Accesso illimitato hop-on/hop-off a tutte le principali attrazioni di Sintra con posto garantito",
+    "heroTitle": "City Card",
+    "heroSubtitle": "Esplora Sintra con corse hop-on/hop-off illimitate nella data scelta. Le City Cards a tariffa intera includono anche vantaggi selezionati presso i nostri partner.",
     "badgeUnlimitedRides": "Corse illimitate",
-    "badge9am7pm": "9:00 - 19:00 ogni giorno",
-    "descriptionTitle": "Il tuo biglietto per scoprire Sintra",
-    "descriptionP1": "Il pass giornaliero Hop On Sintra è la tua chiave per scoprire una delle destinazioni più incantevoli del Portogallo. Con corse illimitate durante il giorno, hai la libertà di esplorare i magnifici palazzi, i castelli storici e i panorami mozzafiato di Sintra al tuo ritmo.",
-    "descriptionP2": "Nessun orario fisso, nessuna fretta tra le attrazioni. Mostra semplicemente il tuo pass a una delle nostre fermate designate e sali a bordo di uno dei nostri confortevoli tuk-tuk o jeep UMM. I nostri autisti professionisti conoscono le strade tortuose di Sintra come le loro tasche, garantendoti un trasporto sicuro ed efficiente mentre ti godi il paesaggio.",
+    "badge9am7pm": "Orari per la data della visita",
+    "descriptionTitle": "City Card",
+    "descriptionP1": "Esplora Sintra con corse hop-on/hop-off illimitate nella data scelta. Le City Cards a tariffa intera includono anche vantaggi selezionati presso i nostri partner.",
+    "descriptionP2": "Esplora Sintra con corse hop-on/hop-off illimitate nella data scelta. Le City Cards a tariffa intera includono anche vantaggi selezionati presso i nostri partner.",
     "galleryBadge": "Galleria",
     "featuresTitle": "Cosa è incluso",
     "feature1Title": "Corse illimitate",
-    "feature1Desc": "Sali e scendi quante volte vuoi durante tutta la giornata",
-    "feature2Title": "Servizio dalle 9 alle 19",
-    "feature2Desc": "Accesso per tutto il giorno, dalla mattina alla sera",
-    "feature3Title": "Posto garantito",
-    "feature3Desc": "Posti riservati su tuk-tuk e jeep UMM",
+    "feature1Desc": "Esplora Sintra con corse hop-on/hop-off illimitate nella data scelta. Le City Cards a tariffa intera includono anche vantaggi selezionati presso i nostri partner.",
+    "feature2Title": "Orari per la data della visita",
+    "feature2Desc": "Gli orari del trasporto dipendono dalla data della visita e sono indicati prima del pagamento e sulla carta. Si applica il fuso Europe/Lisbon. La City Card non è un pass di 24 ore consecutive.",
+    "feature3Title": "Secondo disponibilità dei veicoli",
+    "feature3Desc": "Richiedi una corsa durante gli orari di servizio per i titolari selezionati. Il ritiro dipende dalla disponibilità e assegnazione dei veicoli; il ritiro immediato non è garantito.",
     "feature4Title": "Tutte le principali attrazioni",
-    "feature4Desc": "Accesso al Palazzo della Pena, Quinta da Regaleira e altro ancora",
-    "feature5Title": "Autisti professionisti",
-    "feature5Desc": "Trasporto sicuro e confortevole",
+    "feature4Desc": "I minori di 7 anni non possono viaggiare in tuk tuk. Un gruppo con un bambino sotto i 7 anni deve utilizzare un altro veicolo.",
+    "feature5Title": "Una carta nominativa a persona",
+    "feature5Desc": "Richiedi una corsa durante gli orari di servizio per i titolari selezionati. Il ritiro dipende dalla disponibilità e assegnazione dei veicoli; il ritiro immediato non è garantito.",
     "feature6Title": "Salta le code",
-    "feature6Desc": "Niente stress per parcheggio o orari dei mezzi pubblici",
+    "feature6Desc": "Accedi con un'email verificata, scegli la data e indica il nome di ogni titolare. Le carte appaiono in Le mie carte dopo la verifica del pagamento. Usa la stessa email sul sito e nell'app.",
     "faqTitle": "Domande frequenti",
     "faq1Q": "Come funziona il pass giornaliero?",
-    "faq1A": "Il tuo pass giornaliero ti dà accesso illimitato al nostro servizio hop-on/hop-off dalle 9 alle 19. Mostra semplicemente il tuo pass per salire su uno dei nostri veicoli alle fermate designate a Sintra. Puoi salire e scendere quante volte vuoi.",
+    "faq1A": "Esplora Sintra con corse hop-on/hop-off illimitate nella data scelta. Le City Cards a tariffa intera includono anche vantaggi selezionati presso i nostri partner. Gli orari del trasporto dipendono dalla data della visita e sono indicati prima del pagamento e sulla carta. Si applica il fuso Europe/Lisbon. La City Card non è un pass di 24 ore consecutive.",
     "faq2Q": "Quali veicoli utilizzate?",
-    "faq2A": "Operiamo una flotta di tuk-tuk e jeep UMM, tutti dotati di sedili comodi. I nostri veicoli sono perfetti per navigare le strade strette e tortuose di Sintra.",
+    "faq2A": "Prezzi e disponibilità aggiornati sono mostrati prima del pagamento. L'operatore stabilisce la tariffa intera; dai 7 agli 11 anni si paga metà prezzo e sotto i 7 si viaggia gratis. Scegli l'età di ogni persona alla data della visita: sotto i 7 anni gratis, 7–11 metà prezzo, dai 12 tariffa intera. Ogni persona, compresi i bambini con carta gratuita, deve avere una carta nominativa e occupa un posto.",
     "faq3Q": "Dove posso salire a bordo?",
-    "faq3A": "Abbiamo diversi punti di raccolta a Sintra, inclusa la stazione ferroviaria, il centro città e vicino alle principali attrazioni. Consulta la nostra mappa degli itinerari per tutti i punti di fermata.",
+    "faq3A": "Esplora Sintra con corse hop-on/hop-off illimitate nella data scelta. Le City Cards a tariffa intera includono anche vantaggi selezionati presso i nostri partner. Gli orari del trasporto dipendono dalla data della visita e sono indicati prima del pagamento e sulla carta. Si applica il fuso Europe/Lisbon. La City Card non è un pass di 24 ore consecutive.",
     "faq4Q": "Il pass è valido per più giorni?",
-    "faq4A": "Ogni pass è valido per una giornata intera. Se hai bisogno di trasporto per più giorni, puoi acquistare pass aggiuntivi al momento della prenotazione o separatamente.",
+    "faq4A": "Richiedi una corsa durante gli orari di servizio per i titolari selezionati. Il ritiro dipende dalla disponibilità e assegnazione dei veicoli; il ritiro immediato non è garantito.",
     "faq5Q": "Posso portare i bagagli?",
-    "faq5A": "Borse e zaini piccoli vanno bene, ma i bagagli voluminosi potrebbero non stare comodamente sui nostri veicoli. Se hai molti bagagli, contattaci in anticipo.",
+    "faq5A": "Mostra la carta QR di ogni viaggiatore quando sali. Le carte sono personali e non trasferibili. Le carte cancellate non possono essere utilizzate.",
     "faq6Q": "Offrite sconti per gruppi?",
-    "faq6A": "Sì! Prenotando più pass per gruppi, benefici dei nostri prezzi di gruppo. I bambini dai 7 ai 12 anni ricevono anche un prezzo ridotto.",
+    "faq6A": "Gli orari del trasporto dipendono dalla data della visita e sono indicati prima del pagamento e sulla carta. Si applica il fuso Europe/Lisbon. La City Card non è un pass di 24 ore consecutive.",
     "faq7Q": "Cosa succede se perdo una corsa?",
-    "faq7A": "Nessun problema! Il nostro servizio funziona continuamente durante il giorno a intervalli regolari. Aspetta a qualsiasi fermata e il prossimo veicolo ti raccoglierà. Il tuo pass è valido per tutto il giorno.",
+    "faq7A": "Scegli l'età di ogni persona alla data della visita: sotto i 7 anni gratis, 7–11 metà prezzo, dai 12 tariffa intera. Ogni persona, compresi i bambini con carta gratuita, deve avere una carta nominativa e occupa un posto. Le carte bambino richiedono un accompagnatore con carta valida a tariffa intera nello stesso account e per la stessa data. Prima di cancellare l'ultimo accompagnatore, controlla le carte bambino dipendenti che devono essere cancellate insieme. I minori di 7 anni non possono viaggiare in tuk tuk. Un gruppo con un bambino sotto i 7 anni deve utilizzare un altro veicolo.",
     "faq8Q": "I biglietti di ingresso alle attrazioni sono inclusi?",
-    "faq8A": "Il pass giornaliero copre solo il trasporto. Tuttavia puoi aggiungere i biglietti per le attrazioni al momento del pagamento per un'esperienza combinata.",
+    "faq8A": "Scegli l'età di ogni persona alla data della visita: sotto i 7 anni gratis, 7–11 metà prezzo, dai 12 tariffa intera. Ogni persona, compresi i bambini con carta gratuita, deve avere una carta nominativa e occupa un posto. Le carte bambino richiedono un accompagnatore con carta valida a tariffa intera nello stesso account e per la stessa data. Prima di cancellare l'ultimo accompagnatore, controlla le carte bambino dipendenti che devono essere cancellate insieme. I minori di 7 anni non possono viaggiare in tuk tuk. Un gruppo con un bambino sotto i 7 anni deve utilizzare un altro veicolo.",
     "exploreSectionTitle": "Pianifica il tuo viaggio perfetto",
     "travelGuideTitle": "Guida di viaggio",
     "travelGuideDesc": "Scopri consigli degli esperti, i migliori momenti per visitare ogni palazzo e le gemme nascoste di Sintra",
     "privateToursTitle": "Tour privati",
     "privateToursDesc": "Vuoi un'esperienza personalizzata? Esplora tour su misura con guide locali esperte",
     "mobileCtaTitle": "Pronto a esplorare Sintra?",
-    "mobileCtaDesc": "Acquista il tuo pass giornaliero ora e inizia a scoprire le magiche attrazioni di Sintra al tuo ritmo.",
-    "mobileCtaButton": "Prenota il tuo pass",
-    "bookingCardTitle": "Prenota il tuo pass",
-    "bookingCardSubtitle": "Accesso illimitato a tutte le attrazioni",
-    "bookingDetail1": "Valido per un'intera giornata",
-    "bookingDetail2": "Servizio: 9:00 - 19:00 ogni giorno",
-    "bookingDetail3": "Sconti gruppo disponibili",
+    "mobileCtaDesc": "Esplora Sintra con corse hop-on/hop-off illimitate nella data scelta. Le City Cards a tariffa intera includono anche vantaggi selezionati presso i nostri partner.",
+    "mobileCtaButton": "Acquista City Cards",
+    "bookingCardTitle": "City Card",
+    "bookingCardSubtitle": "Esplora Sintra con corse hop-on/hop-off illimitate nella data scelta. Le City Cards a tariffa intera includono anche vantaggi selezionati presso i nostri partner. Gli ingressi alle attrazioni, i tour privati e le escursioni al tramonto sono prodotti separati e non inclusi nella City Card.",
+    "bookingDetail1": "Gli orari del trasporto dipendono dalla data della visita e sono indicati prima del pagamento e sulla carta. Si applica il fuso Europe/Lisbon. La City Card non è un pass di 24 ore consecutive.",
+    "bookingDetail2": "Orari per la data della visita",
+    "bookingDetail3": "Prezzi e disponibilità aggiornati sono mostrati prima del pagamento. L'operatore stabilisce la tariffa intera; dai 7 agli 11 anni si paga metà prezzo e sotto i 7 si viaggia gratis.",
     "bookingDetail4": "Più punti di raccolta",
     "priceFrom": "A partire da",
     "pricePerPerson": "a persona",
-    "bookNow": "Prenota ora",
-    "bookingFootnote": "Conferma immediata • Prenotazione flessibile",
+    "bookNow": "Acquista City Cards",
+    "bookingFootnote": "Cancellazione gratuita in Le mie carte entro le 23:59, ora di Lisbona, del giorno precedente la visita. Il termine di cancellazione per il cliente scade all'inizio del giorno della visita.",
     "whyUsTitle": "Perché i viaggiatori ci amano",
-    "whyUs1": "Nessuna attesa per bus o taxi",
+    "whyUs1": "Secondo disponibilità dei veicoli",
     "whyUs2": "Niente stress per il parcheggio",
     "whyUs3": "Vedi di più in meno tempo",
     "whyUs4": "Veicoli portoghesi autentici",
-    "getYourPass": "Ottieni il tuo pass"
+    "getYourPass": "Acquista City Cards"
+  },
+  "editorial": {
+    "tours": {
+      "tour_1778577424183": {
+        "title": "Un primo incontro con Sintra",
+        "description": "Una prima scoperta, senza fretta, dei monumenti e dei punti panoramici di Sintra. In un’ora e mezza o due, la guida locale collega paesaggio, architettura e storie per raccontare ciò che rende speciale questo luogo.",
+        "longDescription": "Non tutti vogliono dedicare un’intera giornata a un tour guidato. Questa esperienza più breve è pensata per chi desidera conoscere Sintra prima di continuare a esplorarla in autonomia.\n\nLa guida segue il principale percorso panoramico di Sintra, fermandosi vicino a edifici importanti e punti panoramici. Lungo la strada scoprirai i legami tra palazzi, castello, tenute e boschi, dalla presenza moresca sulle colline all’architettura romantica.\n\nC’è tempo per fotografare, fare domande e godersi il paesaggio. L’obiettivo è un’introduzione piacevole e accessibile, non una lezione formale di storia né un’intera giornata di visite ai monumenti.\n\nIl tour è adatto a chi visita Sintra per la prima volta, ha poco tempo o preferisce un ritmo tranquillo. Alla fine avrai un’idea più chiara di ciò che stai osservando e di come Sintra sia diventata un luogo così particolare.",
+        "duration": "1½–2 ore"
+      },
+      "tour_1778579744484": {
+        "title": "L’essenziale di Sintra",
+        "description": "Scopri Sintra in circa quattro ore, tra percorsi panoramici, storia locale e tempo per visitare un monumento. Una scelta equilibrata se cerchi qualcosa di più di una prima impressione senza dedicare al tour l’intera giornata.",
+        "longDescription": "Questa esperienza approfondisce il tour introduttivo e offre più tempo per conoscere i paesaggi, le strade storiche e l’eredità reale di Sintra. Durante il percorso sulle colline, la guida racconta le storie dei palazzi, del castello, dei boschi e dei punti panoramici.\n\nC’è tempo per entrare in un monumento a scelta. Il biglietto d’ingresso si acquista separatamente, così la visita può essere organizzata intorno al luogo che ti interessa di più.\n\nIl percorso comprende anche il centro storico e la zona della Quinta da Regaleira. Nei tratti non accessibili ai veicoli si prosegue a piedi, per osservare con calma strade, edifici e giardini.\n\nÈ una buona scelta per chi vuole conoscere le colline e il centro storico, visitare l’interno di un monumento e capire meglio la storia locale, lasciando una parte della giornata libera per esplorare in autonomia.",
+        "duration": "4 ore"
+      },
+      "tour_1778626810320": {
+        "title": "Sintra, dai palazzi all’oceano",
+        "description": "Un’intera giornata tra i monumenti, i boschi e la costa atlantica di Sintra. Unisci storia locale, percorsi panoramici e tempo per due monumenti ai paesaggi costieri di Azenhas do Mar e Cabo da Roca.",
+        "longDescription": "Molte gite di un giorno si concentrano sui palazzi oppure sulla costa. Questa esperienza di otto ore unisce entrambi, dalle colline all’Atlantico, con tempo per godersi le soste.\n\nLa giornata inizia sulle colline, tra palazzi reali, vedute del Castello dei Mori, tenute nel bosco e angoli tranquilli. La guida racconta la storia che ha modellato questo paesaggio, dal passato medievale all’architettura romantica.\n\nC’è tempo per visitare gli interni di due monumenti. I biglietti d’ingresso non sono inclusi, per permetterti di scegliere i luoghi che ti interessano di più. Alcuni tratti del centro storico e della zona della Quinta da Regaleira si percorrono a piedi, dove i veicoli non possono entrare.\n\nPiù tardi il percorso prosegue verso ovest. Le strade nel bosco lasciano spazio alle vedute dell’oceano vicino ad Azenhas do Mar e Cabo da Roca, il punto più occidentale dell’Europa continentale. Alcuni tratti fuoristrada svelano paesaggi costieri meno frequentati. Il ritmo lascia spazio alle soste, senza correre da un luogo all’altro.",
+        "duration": "8 ore"
+      },
+      "tour_1778628786076": {
+        "title": "Gli angoli nascosti di Sintra: un giorno in tour privato",
+        "description": "Scopri una Sintra più tranquilla in 4x4: strade nel bosco, vedute dalle scogliere, un convento del XVI secolo, vino locale e paesaggi atlantici fuori dai percorsi abituali.",
+        "longDescription": "Questo tour privato di otto ore attraversa le colline di Sintra e scende fino alla costa. Invece di seguire il percorso più affollato dei palazzi, collega luoghi tranquilli che si scoprono meglio con conoscenza locale e tempo a disposizione.\n\nLa mattina inizia sulle strade del bosco, tra racconti sui palazzi, il castello e le tenute reali di Sintra. Visiti il Convento dos Capuchos, un convento francescano noto per le piccole stanze e gli interni rivestiti di sughero, poi prosegui verso il Santuário da Peninha per ammirare la costa atlantica.\n\nNel pomeriggio, il percorso attraversa la regione vinicola di Colares per una visita in cantina con degustazione, seguita dal pranzo in un ristorante di paese. Si prosegue attraverso Azenhas do Mar fino a un punto panoramico vicino a Cabo da Roca. Il 4x4 permette di avvicinarsi, ma l’ultimo tratto è a piedi.\n\n**Inclusi:** veicolo 4x4, guida in inglese e degustazione di vini.\n\n**Non inclusi:** pranzo, ingressi ai monumenti e mance.\n\n**Durata:** circa otto ore. Il tour è riservato solo al tuo gruppo.",
+        "duration": "8 ore"
+      }
+    },
+    "articles": {
+      "how-to-get-to-sintra": {
+        "title": "Come arrivare a Sintra da Lisbona",
+        "excerpt": "Organizza il viaggio da Lisbona, scopri come muoverti all’arrivo e lascia tempo per le colline e i monumenti di Sintra.",
+        "content": "## In treno\n\nSintra si trova a circa 30 km a nord-ovest di Lisbona. Per molti visitatori il treno è una scelta pratica, che evita di cercare parcheggio vicino al centro storico. Rossio è un punto di partenza comodo se soggiorni nel centro di Lisbona. Da altre zone, controlla il percorso e gli eventuali cambi con CP prima di partire.\n\nPrevedi tempo per acquistare o ricaricare il titolo di viaggio e trovare il binario. Controlla tariffe, orari e viaggio di ritorno sul [sito ufficiale di CP](https://www.cp.pt). Non affidarti a un vecchio orario pubblicato su un blog. Partire presto lascia più margine, soprattutto se hai un ingresso a un monumento con orario prestabilito.\n\n## In auto e parcheggio\n\nArrivare in auto da Lisbona è possibile, ma traffico e parcheggio possono allungare molto un tragitto breve. Verifica le restrizioni di accesso prima di avvicinarti al centro storico o alle strade dei palazzi. Non contare di raggiungere in auto l’ingresso di Pena. Valuta un parcheggio fuori dalle zone più affollate e prosegui con un servizio di trasporto locale adatto.\n\n## Come muoverti all’arrivo\n\nArrivare alla stazione di Sintra non significa essere già ai monumenti sulle colline. Confronta gli autobus locali, i percorsi a piedi e le opzioni Hop On Sintra in base al tuo itinerario. Verifica percorso, orari e condizioni di ogni servizio. La City Card e gli ingressi ai monumenti sono prodotti distinti: leggi cosa comprende la carta scelta.\n\nCamminare può essere piacevole, ma le salite sono ripide e le distanze sulla mappa possono ingannare. Scegli un percorso adatto alla tua mobilità, alle scarpe e al meteo. Lascia margine tra le visite e controlla il treno di ritorno prima di concludere la giornata. Un programma realistico si gode più di una corsa per vedere tutti i palazzi.",
+        "seo": {
+          "title": "Come arrivare a Sintra da Lisbona",
+          "description": "Organizza il viaggio da Lisbona, scopri come muoverti all’arrivo e lascia tempo per le colline e i monumenti di Sintra.",
+          "keywords": "Come arrivare a Sintra da Lisbona"
+        }
+      },
+      "pena-palace-complete-guide": {
+        "title": "Visitare il Palácio da Pena: guida pratica",
+        "excerpt": "Scegli i biglietti adatti, organizza la salita e dedica tempo sia al palazzo sia al parco.",
+        "content": "## Un palazzo sopra il bosco\n\nPena è uno dei luoghi più riconoscibili di Sintra. Le torri colorate emergono dal bosco e uniscono influenze architettoniche diverse in uno scenario romantico. Il palazzo ottocentesco, voluto da Ferdinando II, si sviluppò intorno a un monastero precedente. Vale la pena soffermarsi sui dettagli, oltre a scattare la fotografia più famosa.\n\n## Scegli il biglietto adatto\n\nConsulta opzioni, prezzi e orari sulla [pagina ufficiale dei biglietti di Pena](https://www.parquesdesintra.pt/en/plan-your-visit/tickets-palace-of-pena/). Verifica esattamente quali spazi sono compresi. Per il palazzo rispetta l’orario prenotato e considera la salita a piedi all’interno del parco. Arrivare al cancello del parco non significa essere già all’ingresso del palazzo.\n\n## Organizza il percorso e la visita\n\nLascia un buon margine tra l’arrivo a Sintra e l’orario d’ingresso al palazzo. Trasporti locali, traffico, code e salita nel parco influiscono sul percorso. Verifica le restrizioni di accesso prima di considerare l’auto. Dal centro si affronta una salita, non una breve passeggiata. Il trasporto Hop On Sintra dipende da orari, disponibilità e condizioni del servizio scelto; i biglietti dei monumenti sono separati.\n\nAll’interno, dedica tempo alle stanze reali e ai dettagli architettonici. Fuori, il parco invita a un ritmo diverso, tra sentieri alberati, laghi e punti panoramici. Ciò che puoi vedere dipende dal biglietto, dal tuo passo e dagli spazi aperti quel giorno. Prevedi alcune ore per goderti palazzo e parco, invece di riempire ogni momento libero con un altro monumento.\n\n## Comfort e accessibilità\n\nPorta scarpe comode, acqua e uno strato in più: sulla collina può fare più fresco e esserci più vento o nebbia che a Lisbona. Segui i cartelli e le indicazioni del personale su fotografie e accessi. Se hai esigenze di mobilità, consulta le [informazioni ufficiali sull’accessibilità](https://www.parquesdesintra.pt/en/plan-your-visit/accessibility/park-and-palace-of-pena/) e chiedi dei servizi di supporto prima di prenotare. Le condizioni cambiano da una zona all’altra: considerare tutto accessibile o tutto inaccessibile non aiuta a pianificare.\n\nIl vicino Castelo dos Mouros può essere una seconda visita; la Quinta da Regaleira è più vicina al centro. Scegli ciò che ti interessa di più e lascia spazio per spostamenti, pasti e una pausa. Sintra si apprezza meglio quando puoi guardarti intorno invece di controllare continuamente l’ora.",
+        "seo": {
+          "title": "Visitare il Palácio da Pena: guida pratica",
+          "description": "Scegli i biglietti adatti, organizza la salita e dedica tempo sia al palazzo sia al parco.",
+          "keywords": "Visitare il Palácio da Pena: guida pratica"
+        }
+      },
+      "article-1778533613801": {
+        "title": "Vale la pena visitare Sintra? Uno sguardo locale",
+        "excerpt": "Sintra è più di un elenco di palazzi. Una riflessione personale su aspettative, spostamenti e tempo per godersi il luogo.",
+        "content": "## La Sintra che immaginiamo\n\nPrima di arrivare, molti hanno già un’immagine di Sintra: palazzi sopra gli alberi, pietre antiche nella nebbia e sentieri che scompaiono nel bosco. Capisco il fascino. Ciò che una fotografia fatica a mostrare è il tempo necessario per vivere il luogo. Spesso Sintra viene inserita in una rapida gita da Lisbona, e questo può cambiare l’intera giornata.\n\nPer me la risposta è sì: Sintra merita una visita. La combinazione di boschi, montagne, palazzi e costa vicina è insolita. Questo però non significa che tutti debbano visitarla allo stesso modo, né che un lungo elenco garantisca una bella esperienza. Ciò che speri di trovare conta quanto il numero di luoghi raggiunti.\n\n## La distanza non è solo questione di chilometri\n\nSulla mappa i monumenti possono sembrare vicini. Sul posto ci sono salite, strade tortuose, code e tempo per spostarsi. Un itinerario ambizioso può diventare una giornata di «non c’è tempo», «la prossima volta» e «dobbiamo andare». Ho visto quanto facilmente il tentativo di vedere tutto lasci poco spazio per godersi qualcosa.\n\nAlcuni dei momenti che apprezzo di più sono tranquilli: fermarsi a un punto panoramico, notare la luce tra gli alberi o lasciare scorrere il pomeriggio senza controllare continuamente la prossima prenotazione. Sono momenti difficili da programmare. Hanno bisogno di un po’ di spazio intorno a ciò che hai già pianificato.\n\n## Scegli l’esperienza, non l’elenco più lungo\n\nBiglietti e trasporti si sommano. Questo non significa che Sintra non valga la spesa, ma è un motivo per scegliere con attenzione. Se sei qui per i palazzi, dedica loro tempo. Se ti attira la natura, paesaggi, sentieri e costa possono dare forma a una giornata diversa. Verifica accessi e condizioni del percorso, senza presumere che tutto sia gratuito o sempre aperto.\n\nIl mio consiglio è rallentare abbastanza da lasciare che sia il luogo a dare forma alla giornata. Sia un percorso classico tra monumenti sia una visita tranquilla dedicata al paesaggio possono meritare. La scelta migliore segue i tuoi interessi e il tuo ritmo. È così che penso anche ai tour qui sotto: modi diversi di vivere Sintra, non una gara a collezionare tappe.",
+        "seo": {
+          "title": "Vale la pena visitare Sintra? Uno sguardo locale",
+          "description": "Sintra è più di un elenco di palazzi. Una riflessione personale su aspettative, spostamenti e tempo per godersi il luogo.",
+          "keywords": "Vale la pena visitare Sintra? Uno sguardo locale"
+        }
+      },
+      "article-1778534118361": {
+        "title": "Il lato tranquillo di Sintra che molti visitatori non scoprono",
+        "excerpt": "Dal Convento dos Capuchos a Peninha, un percorso personale tra boschi, silenzio e panorami aperti sulla costa.",
+        "content": "## Oltre il percorso abituale\n\nPer molti visitatori Sintra comincia con un elenco: Pena, Regaleira, il castello, poi il prossimo autobus e la prossima coda. È comprensibile. Sono luoghi straordinari e spesso il motivo del viaggio. Ma la giornata può diventare faticosa prima di trovare il tempo per notare il paesaggio. Esiste un’altra Sintra, più tranquilla e meno concentrata sul passare da un ingresso all’altro.\n\nHo scelto di allontanarmi dal percorso abituale, verso il Convento dos Capuchos. Già l’avvicinamento nel bosco cambiava il ritmo: strade strette, luce filtrata e meno urgenza di raggiungere la tappa successiva. Organizza l’accesso in anticipo: non è un luogo da dare per automaticamente incluso nel consueto itinerario dei palazzi.\n\n## Capuchos: un’altra forma di ricchezza\n\nIl convento francescano del Cinquecento è molto diverso dai palazzi di Sintra. Stanze piccole, soffitti bassi, superfici rivestite di sughero e passaggi in pietra raccontano sobrietà anziché ostentazione. Gli edifici sembrano fare spazio al bosco invece di respingerlo. Mi sono ritrovato a notare le trame, il muschio e il suono del vento, anziché cercare la sala più grandiosa.\n\nDurante la mia visita c’erano poche persone. È un ricordo di quel giorno, non una promessa che sarà sempre vuoto. Mi è rimasto il contrasto: un luogo in cui la semplicità era il punto centrale e prestare attenzione sembrava più importante che scattare un’altra fotografia.\n\n## Peninha e il paesaggio che si apre\n\nProseguendo verso Peninha, il bosco si apre gradualmente e l’Atlantico sembra più vicino. Il tragitto diventa parte dell’esperienza, anziché un intervallo tra attrazioni. Dal punto panoramico, quando il meteo lo permette, la costa verso Cascais e l’area di Lisbona in lontananza danno il senso della vastità oltre le colline. Vento e nuvole possono cambiare completamente la scena.\n\nIl santuario appare modesto accanto al paesaggio. Ricordo soprattutto il rapporto tra bosco, montagna e mare. Sintra comincia a sembrare un luogo continuo, non una raccolta di monumenti separati. Gli spazi tra i luoghi famosi meritano attenzione anche da soli.\n\n## Trovare il proprio ritmo\n\nIl percorso principale non è una scelta sbagliata, soprattutto alla prima visita con poco tempo. Ma se cerchi qualcosa di diverso, consiglio di lasciare spazio a questo lato tranquillo. Un tour guidato in piccolo gruppo può collegare luoghi meno ovvi senza trasformare la giornata in un altro elenco da spuntare. Per me la scoperta non è stata un monumento segreto, ma un modo più lento di guardare Sintra.",
+        "seo": {
+          "title": "Il lato tranquillo di Sintra che molti visitatori non scoprono",
+          "description": "Dal Convento dos Capuchos a Peninha, un percorso personale tra boschi, silenzio e panorami aperti sulla costa.",
+          "keywords": "Il lato tranquillo di Sintra che molti visitatori non scoprono"
+        }
+      }
+    }
   }
 }

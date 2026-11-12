@@ -1,3 +1,7 @@
+import {getProfileCopy} from '../lib/translations/profileCopy';
+import {WebsiteLanguageContext, websiteText} from '../lib/translations/websiteText';
+import {selectWebsiteLanguage, normalizeWebsiteLanguage} from '../lib/translations/language';
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useEffect, useState, Suspense, lazy, useRef } from "react";
 import { Outlet, useLocation, useNavigate, useMatches } from "react-router";
 import { Header } from "./Header";
@@ -10,7 +14,7 @@ import { useEditableContent } from "../lib/useEditableContent";
 import { ScrollToTop } from "./ScrollToTop";
 import { loadArticlesFromServer, loadCategoriesFromServer } from "../lib/blogManager";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
-import { preloadTranslation, onLocaleLoad } from "../lib/translations/loader";
+import { preloadTranslation, onLocaleLoad, getTranslation } from "../lib/translations/loader";
 
 // Lazy load LiveChatWidget to avoid initial bundle bloat
 const LiveChatWidget = lazy(() => import("./LiveChatWidget").then(m => ({ default: m.LiveChatWidget })));
@@ -27,6 +31,7 @@ const LOCALE_MAP: Record<string, string> = {
 };
 
 export function RootLayout() {
+  const languageSelection = useRef(0);
   const [language, setLanguage] = useState<string>("en");
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isLanguageInitialized, setIsLanguageInitialized] = useState(false);
@@ -67,36 +72,8 @@ export function RootLayout() {
   const enabledLanguagesKey = JSON.stringify(enabledLanguages);
   const prevEnabledLanguagesKeyRef = useRef<string>('');
 
-  // Helper function to get browser's preferred language
-  const getBrowserLanguage = (): string => {
-    // Get browser language (e.g., "en-US", "pt-BR", "es")
-    const browserLang = navigator.language || (navigator as any).userLanguage;
-    // Extract the language code (e.g., "en" from "en-US")
-    const langCode = browserLang.split('-')[0].toLowerCase();
-    return langCode;
-  };
-
-  // Helper function to get the best available language based on preference and enabled languages
-  const getBestAvailableLanguage = (preferredLang: string | null, availableLanguages: string[]): string => {
-    // If preferred language is enabled, use it
-    if (preferredLang && availableLanguages.includes(preferredLang)) {
-      return preferredLang;
-    }
-    
-    // Try browser language
-    const browserLang = getBrowserLanguage();
-    if (availableLanguages.includes(browserLang)) {
-      return browserLang;
-    }
-    
-    // Otherwise, fall back to first enabled language (preferably English)
-    if (availableLanguages.includes('en')) {
-      return 'en';
-    }
-    
-    // If English is disabled, use the first enabled language
-    return availableLanguages[0] || 'en';
-  };
+  const getBestAvailableLanguage = (preferredLang: string | null, availableLanguages: string[]): string =>
+    selectWebsiteLanguage(preferredLang, navigator.languages?.length ? navigator.languages : [navigator.language], availableLanguages);
 
   // Get meta data from route handle
   const currentRoute = matches[matches.length - 1];
@@ -128,8 +105,12 @@ export function RootLayout() {
       
       // Only update if different from current
       if (bestLanguage !== language) {
-        setLanguage(bestLanguage);
-        localStorage.setItem("language", bestLanguage);
+        const selection = ++languageSelection.current;
+        preloadTranslation(bestLanguage).then(() => {
+          if (selection !== languageSelection.current) return;
+          setLanguage(bestLanguage);
+          localStorage.setItem('language', bestLanguage);
+        });
       }
       
       prevEnabledLanguagesKeyRef.current = enabledLanguagesKey;
@@ -168,7 +149,11 @@ export function RootLayout() {
   }, [language]);
 
   // Save language to localStorage when it changes
-  const handleLanguageChange = (lang: string) => {
+  const handleLanguageChange = async (lang: string) => {
+    lang = normalizeWebsiteLanguage(lang);
+    const selection = ++languageSelection.current;
+    await preloadTranslation(lang);
+    if (selection !== languageSelection.current) return;
     setLanguage(lang);
     localStorage.setItem("language", lang);
   };
@@ -352,8 +337,12 @@ export function RootLayout() {
     }
 
     const dynamicMeta = getDynamicMetaForDetailPage();
-    const pageTitle = dynamicMeta?.title || (meta as any).title || "Hop On Sintra";
-    const pageDesc = dynamicMeta?.description || (meta as any).description || "Explore Sintra with unlimited hop-on/hop-off day pass";
+    const translated = getTranslation(language);
+    const seoKey = ({'/':'home','/attractions':'attractions','/about':'about','/travel-guide':'blog','/buy-ticket':'buyTicket','/hop-on-hop-off-sintra':'howItWorks'} as Record<string,string>)[location.pathname];
+    const localized = seoKey ? (translated.seo as Record<string,{title:string;description:string}>)[seoKey] : undefined;
+    const otherTitles: Record<string,string> = {'/profile':getProfileCopy(language).title, '/profile/rides':getProfileCopy(language).rides, '/profile/history':getProfileCopy(language).history, '/private-tours': translated.privateTours.hero.title, '/route-map': translated.routeMap.title, '/manage-booking': translated.manageBooking.pageTitle, '/request-pickup': translated.ui.requestPickup, '/privacy-policy': translated.footer.privacyPolicy, '/terms-of-service': translated.footer.terms, '/live-chat': translated.ui.contact};
+    const pageTitle = localized?.title || otherTitles[location.pathname] || websiteText(language, dynamicMeta?.title || (meta as any).title || 'Hop On Sintra');
+    const pageDesc = localized?.description || websiteText(language, dynamicMeta?.description || (meta as any).description || 'Explore Sintra with Hop On Sintra.');
     const pageKeywords = dynamicMeta?.keywords || (meta as any).keywords;
 
     // Title
@@ -511,18 +500,18 @@ export function RootLayout() {
   }, [meta, location.pathname, language, editableContent]);
 
   return (
-    <>
+    <WebsiteLanguageContext.Provider value={language}>
       {/* Scroll to top on route change */}
       <ScrollToTop />
 
       {/* Skip to content link for accessibility */}
       <a href="#main-content" className="skip-to-content">
-        Skip to main content
+        {websiteText(language, 'Skip to main content')}
       </a>
 
       <div className="flex min-h-screen flex-col bg-background">
         {/* Sticky wrapper keeps InfoBar + Header pinned together at the top */}
-        <div className={`sticky top-0 z-50${getCurrentPage() === "driver-portal" ? " hidden md:block" : ""}`} data-site-header>
+        <div hidden={location.pathname.startsWith("/admin")} className={`sticky top-0 z-50${getCurrentPage() === "driver-portal" ? " hidden md:block" : ""}`} data-site-header>
           {!["admin", "driver-portal", "diagnostics"].includes(getCurrentPage()) && (
             <InfoBar language={language} />
           )}
@@ -538,7 +527,7 @@ export function RootLayout() {
             <Outlet context={{ language, onNavigate: handleNavigate }} />
           </Suspense>
         </main>
-        {getCurrentPage() === "driver-portal" ? (
+        {location.pathname.startsWith("/admin") ? null : getCurrentPage() === "driver-portal" ? (
           <div className="hidden md:block">
             <Footer onNavigate={handleNavigate} language={language} />
           </div>
@@ -552,7 +541,7 @@ export function RootLayout() {
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           className="fixed bottom-[84px] left-4 z-40 flex h-11 w-11 items-center justify-center rounded-full bg-primary text-white shadow-lg transition-all hover:bg-primary/90 hover:scale-110 active:scale-95 md:bottom-8 md:left-auto md:right-6"
-          aria-label="Scroll to top"
+          aria-label={websiteText(language, 'Scroll to top')}
         >
           <ArrowUp className="h-5 w-5" />
         </button>
@@ -568,6 +557,6 @@ export function RootLayout() {
           <LiveChatWidget language={language} />
         </Suspense>
       )}
-    </>
+    </WebsiteLanguageContext.Provider>
   );
 }

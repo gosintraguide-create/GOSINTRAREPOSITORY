@@ -1,3 +1,4 @@
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useState } from "react";
 import { Database, AlertCircle, CheckCircle2, RefreshCw, Trash2, Info } from "lucide-react";
 import { Button } from "./ui/button";

@@ -1,3 +1,7 @@
+import {useWebsiteText} from '../lib/translations/websiteText';
+import {useEditableContent} from '../lib/useEditableContent';
+import {reviewedTour, reviewFixture} from '../lib/translations/publishedContent';
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { useOutletContext } from "react-router";
@@ -164,19 +168,20 @@ function getCategoryForTour(tour: PrivateTour): CategoryId {
 }
 
 /** Return the price string to show on the compact card. */
-function getDisplayPrice(tour: PrivateTour): string {
-  if (tour.pricingMode === "quote-only") return "Custom quote";
-  if (tour.perPersonPrice && tour.perPersonPrice > 0) return `From €${tour.perPersonPrice} / person`;
-  if (tour.fixedPrice && tour.fixedPrice > 0) return `From €${tour.fixedPrice}`;
+function getDisplayPrice(tour: PrivateTour, wt: ReturnType<typeof useWebsiteText>): string {
+  if (tour.pricingMode === "quote-only") return wt("Custom quote");
+  if (tour.perPersonPrice && tour.perPersonPrice > 0) return wt("From {price} / person", {price: `€${tour.perPersonPrice}`});
+  if (tour.fixedPrice && tour.fixedPrice > 0) return wt("From {price}", {price: `€${tour.fixedPrice}`});
   if (tour.groupTiers && tour.groupTiers.length > 0) {
     const min = Math.min(...tour.groupTiers.map((g) => g.price));
-    return `From €${min} / group`;
+    return wt("From {price} / group", {price: `€${min}`});
   }
   return tour.price || "";
 }
 
 // ── Coming Soon Card ─────────────────────────────────────────────────────────
 function ComingSoonCard({ accent, description, isMobile }: { accent: string; description: string; isMobile?: boolean }) {
+  const wt = useWebsiteText();
   return (
     <div
       style={{
@@ -210,9 +215,7 @@ function ComingSoonCard({ accent, description, isMobile }: { accent: string; des
       </div>
       {/* Content */}
       <div style={{ padding: "14px 16px 16px", display: "flex", flexDirection: "column", gap: "5px", flex: 1 }}>
-        <p style={{ fontSize: "15px", fontWeight: 800, color: "#1a1a1a", margin: 0, lineHeight: 1.3 }}>
-          More coming soon
-        </p>
+        <p style={{ fontSize: "15px", fontWeight: 800, color: "#1a1a1a", margin: 0, lineHeight: 1.3 }}>{wt("More coming soon")}</p>
         <p style={{ fontSize: "12px", color: "#6b5a3a", lineHeight: 1.5, margin: 0 }}>
           {description}
         </p>
@@ -231,7 +234,8 @@ function TourCard({
   accent: string;
   isMobile?: boolean;
 }) {
-  const price = getDisplayPrice(tour);
+  const wt = useWebsiteText();
+  const price = getDisplayPrice(tour, wt);
   const slashIdx = price.indexOf(" / ");
   const priceBase = slashIdx >= 0 ? price.slice(0, slashIdx) : price;
   const priceSuffix = slashIdx >= 0 ? price.slice(slashIdx + 3) : null;
@@ -350,6 +354,19 @@ function CategorySection({
   bgColor?: string;
 }) {
   const needsComingSoon = tours.length < 2;
+  const railRef = useRef<HTMLDivElement>(null);
+  const [hasMoreCards, setHasMoreCards] = useState(false);
+  useEffect(() => {
+    const rail = railRef.current;
+    if (!rail) return;
+    const update = () => setHasMoreCards(rail.scrollWidth - rail.clientWidth - rail.scrollLeft > 2);
+    const observer = new ResizeObserver(update);
+    observer.observe(rail);
+    for (const child of rail.children) observer.observe(child);
+    rail.addEventListener("scroll", update, { passive: true });
+    update();
+    return () => { observer.disconnect(); rail.removeEventListener("scroll", update); };
+  }, [tours.length]);
 
   return (
     <div>
@@ -432,6 +449,8 @@ function CategorySection({
       {/* Mobile horizontal scroll — wrapped for right-edge fade affordance */}
       <div className="md:hidden" style={{ position: "relative", overflow: "hidden" }}>
         <div
+          ref={railRef}
+          data-tour-rail
           className="flex"
           style={{
             overflowX: "auto",
@@ -453,7 +472,10 @@ function CategorySection({
         {/* Right-edge fade: indicates more cards exist off-screen */}
         <div
           aria-hidden="true"
+          data-tour-fade
+          data-visible={hasMoreCards}
           style={{
+            opacity: hasMoreCards ? 1 : 0,
             position: "absolute",
             top: 0,
             right: 0,
@@ -485,44 +507,56 @@ function CategoryStickyNav({
   activeCategory: string;
   onPillClick: (catId: string) => void;
 }) {
+  const wt = useWebsiteText();
   const pillRefs = useRef<Record<string, HTMLButtonElement | null>>({});
-  const isFirstMount = useRef(true);
+  const navRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    // Skip on initial mount — scrollIntoView on mount causes unexpected vertical
-    // scroll on mobile, making the sticky nav appear mid-screen.
-    if (isFirstMount.current) {
-      isFirstMount.current = false;
-      return;
-    }
     const el = pillRefs.current[activeCategory];
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-    }
+    const nav = navRef.current;
+    if (!el || !nav) return;
+    const reveal = () => {
+      const item = el.getBoundingClientRect();
+      const bounds = nav.getBoundingClientRect();
+      if (item.left < bounds.left || item.right > bounds.right) {
+        nav.scrollTo({ left: nav.scrollLeft + item.left - bounds.left - (bounds.width - item.width) / 2,
+          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+      }
+    };
+    const observer = new ResizeObserver(reveal);
+    observer.observe(nav);
+    observer.observe(el);
+    reveal();
+    return () => observer.disconnect();
   }, [activeCategory]);
 
   return (
     <nav
+      ref={navRef}
       id="private-tours-sticky-nav"
-      className="px-[18px] md:px-[48px]"
+      className="px-[18px] md:px-[48px] backdrop-blur-md"
       style={{
         position: "sticky",
         top: navbarHeight,
         zIndex: 40,
-        background: "#f8f5f0",
-        borderBottom: "1px solid rgba(180,140,80,0.25)",
+        background: "var(--site-header-background)",
+        borderBottom: "1px solid var(--border)",
         display: "flex",
-        justifyContent: "center",
         overflowX: "auto",
         scrollbarWidth: "none",
         WebkitOverflowScrolling: "touch",
         msOverflowStyle: "none",
       } as React.CSSProperties}
     >
+      <div style={{ display: "flex", flexShrink: 0, marginInline: "auto" }}>
       {STICKY_NAV_PILLS.map((pill) => {
         const isActive = activeCategory === pill.id;
         return (
           <button
+            type="button"
+            aria-current={isActive ? "location" : undefined}
+            aria-controls={pill.sectionId}
+            className="focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--accent)]"
             key={pill.id}
             ref={(el) => { pillRefs.current[pill.id] = el; }}
             onClick={() => onPillClick(pill.id)}
@@ -547,15 +581,17 @@ function CategoryStickyNav({
               flexShrink: 0,
             }}
           >
-            {pill.label}
+            {wt(pill.label)}
           </button>
         );
       })}
+      </div>
     </nav>
   );
 }
 
 export function PrivateToursPage() {
+  const wt = useWebsiteText();
   const { language = "en", onNavigate } = useOutletContext<OutletContext>();
 
   const content = getTranslation(language);
@@ -563,19 +599,13 @@ export function PrivateToursPage() {
   const uiT = getUITranslation(language);
 
   // CMS page content (editable from admin)
-  const [cmsContent, setCmsContent] = useState<ComprehensiveContent>(
-    () => loadComprehensiveContentForLanguage(language)
-  );
+  const cmsContent = useEditableContent(language);
   const cms = cmsContent.privateTours.page;
   const CATEGORIES = buildCategories(cms);
 
-  useEffect(() => {
-    syncComprehensiveContentFromDatabase().then((fresh) => {
-      setCmsContent(fresh);
-    }).catch(() => {/* keep cached */});
-  }, []);
 
-  const [tours, setTours] = useState<PrivateTour[]>([]);
+  const [rawTours, setTours] = useState<PrivateTour[]>([]);
+  const tours = rawTours.map(tour => reviewedTour({...tour, category: getCategoryForTour(tour)}, language));
   const [loading, setLoading] = useState(true);
 
   const [fetchError, setFetchError] = useState(false);
@@ -603,46 +633,53 @@ export function PrivateToursPage() {
   useEffect(() => {
     const el = document.querySelector("[data-site-header]") ?? document.querySelector("header");
     if (!el) return;
-    const ro = new ResizeObserver(() => {
+    const stickyNav = document.getElementById("private-tours-sticky-nav");
+    const update = () => {
       setNavbarHeight((el as HTMLElement).offsetHeight);
-      const stickyNav = document.getElementById("private-tours-sticky-nav");
       if (stickyNav) setStickyNavHeight((stickyNav as HTMLElement).offsetHeight);
-    });
+    };
+    const ro = new ResizeObserver(update);
     ro.observe(el);
+    if (stickyNav) ro.observe(stickyNav);
+    update();
     return () => ro.disconnect();
   }, []);
 
-  // Track which category section is in view using IntersectionObserver
+  // Track sections after asynchronous content arrives, in document order.
   useEffect(() => {
+    if (loading) return;
     const offset = navbarHeight + stickyNavHeight;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const pill = STICKY_NAV_PILLS.find((p) => p.sectionId === entry.target.id);
-            if (pill) setActiveCategory(pill.id);
-          }
-        });
-      },
-      {
-        rootMargin: `-${offset}px 0px -60% 0px`,
-        threshold: 0,
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      let active: string = STICKY_NAV_PILLS[0].id;
+      for (const pill of STICKY_NAV_PILLS) {
+        const el = document.getElementById(pill.sectionId);
+        if (el && el.getBoundingClientRect().top <= offset + 2) active = pill.id;
       }
-    );
-
+      setActiveCategory(active);
+    };
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
+    document.addEventListener("scroll", schedule, { passive: true, capture: true });
+    window.addEventListener("resize", schedule);
+    const observer = new ResizeObserver(schedule);
     for (const pill of STICKY_NAV_PILLS) {
       const el = document.getElementById(pill.sectionId);
       if (el) observer.observe(el);
     }
-
-    return () => observer.disconnect();
-  }, [navbarHeight, stickyNavHeight]);
+    update();
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      document.removeEventListener("scroll", schedule, true);
+      window.removeEventListener("resize", schedule);
+    };
+  }, [navbarHeight, stickyNavHeight, loading, language]);
 
   const handlePillClick = (catId: string) => {
     const pill = STICKY_NAV_PILLS.find((p) => p.id === catId);
     const el = pill ? document.getElementById(pill.sectionId) : null;
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (el) el.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth", block: "start" });
   };
 
   // Check if Private Tours feature is enabled
@@ -660,6 +697,8 @@ export function PrivateToursPage() {
   };
 
   const loadTours = async () => {
+    const fixture = await reviewFixture('tours');
+    if (fixture) { setTours(fixture as PrivateTour[]); setLoading(false); return; }
     setFetchError(false);
     const cacheKey = language || "en";
 
@@ -764,7 +803,7 @@ export function PrivateToursPage() {
     if (!selectedTour) return;
 
     if (!formData.customerName || !formData.email) {
-      toast.error("Please fill in your name and email");
+      toast.error(wt("Please fill in your name and email"));
       return;
     }
 
@@ -791,7 +830,7 @@ export function PrivateToursPage() {
       );
 
       if (response.ok) {
-        toast.success("Request submitted! We'll contact you soon.");
+        toast.success(wt("Request submitted! We'll contact you soon."));
         setShowRequestDialog(false);
         setFormData({
           customerName: "",
@@ -803,11 +842,11 @@ export function PrivateToursPage() {
         });
         setSelectedTour(null);
       } else {
-        toast.error("Failed to submit request. Please try again.");
+        toast.error(wt("Failed to submit request. Please try again."));
       }
     } catch (error) {
       console.error("Error submitting tour request:", error);
-      toast.error("Failed to submit request. Please try again.");
+      toast.error(wt("Failed to submit request. Please try again."));
     } finally {
       setSubmitting(false);
     }
@@ -896,17 +935,18 @@ export function PrivateToursPage() {
   return (
     <div className="flex-1" style={{ background: "#f8f5f0" }}>
       <Helmet>
-        <title>Private Tours in Sintra | Hop On Sintra</title>
+        <meta name="twitter:title" content={`${cms.heroTitle} | Hop On Sintra`}/>
+        <title>{cms.heroTitle} | Hop On Sintra</title>
         <meta
           name="description"
-          content="Private guided tours in Sintra with a dedicated local expert. Visit Pena Palace, Quinta da Regaleira, hidden gems, and the Atlantic coastline. Custom itineraries for families, couples, and small groups."
+          content={t.hero.subtitle}
         />
         <link rel="canonical" href={`${SITE_URL}/private-tours`} />
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="Private Tours in Sintra | Hop On Sintra" />
+        <meta property="og:title" content={`${cms.heroTitle} | Hop On Sintra`} />
         <meta
           property="og:description"
-          content="Private guided tours in Sintra with a dedicated local expert. Custom itineraries for families, couples, and small groups."
+          content={t.hero.subtitle}
         />
         <meta
           property="og:image"
@@ -922,48 +962,10 @@ export function PrivateToursPage() {
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
           "@type": "FAQPage",
-          "mainEntity": [
-            {
-              "@type": "Question",
-              "name": "What is a private tour in Sintra?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "A private tour with Hop On Sintra is an exclusive guided experience reserved entirely for your group. Your dedicated local expert takes you through Sintra's palaces, castles, gardens, and hidden gems at your own pace, with a fully customisable itinerary."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "How do I book a private tour in Sintra?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Browse our private tour options on this page, choose the experience that suits your group, and click to check availability. You can also reach us directly on WhatsApp at +351 932 967 279 to discuss your requirements."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "What is the difference between the hop-on day pass and a private tour?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "The hop-on day pass gives you unlimited shared tuk-tuk and jeep rides between Sintra's major stops from 9am to 7pm. A private tour is exclusively for your group, with a dedicated guide, a custom itinerary, and door-to-door commentary — ideal for families, couples, and special occasions."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "Can I customise a private tour itinerary?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Yes. All Hop On Sintra private tours are fully customisable. Contact us before booking to request specific stops, a different pace, or a bespoke route that includes locations not listed in our standard packages."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "How many people can join a private tour?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Our private tours are designed for small groups, typically 1–8 guests, so every experience feels personal. Larger groups can be accommodated on request — contact us to discuss options."
-              }
-            }
-          ]
+          mainEntity: cms.faq.map(item => ({
+            '@type': 'Question', name: item.question,
+            acceptedAnswer: {'@type': 'Answer', text: item.answer},
+          }))
         })}</script>
       </Helmet>
 
@@ -1008,11 +1010,9 @@ export function PrivateToursPage() {
       {!loading && fetchError && (
         <div style={{ padding: "32px 48px" }}>
           <Card className="p-8 text-center">
-            <p className="text-lg font-medium mb-2">Could not load tours</p>
-            <p className="text-muted-foreground mb-4">
-              There was a problem connecting to the server. Please try again.
-            </p>
-            <Button onClick={loadTours}>Try Again</Button>
+            <p className="text-lg font-medium mb-2">{wt("Could not load tours")}</p>
+            <p className="text-muted-foreground mb-4">{wt("There was a problem connecting to the server. Please try again.")}</p>
+            <Button onClick={loadTours}>{wt("Try Again")}</Button>
           </Card>
         </div>
       )}
@@ -1175,23 +1175,21 @@ export function PrivateToursPage() {
       <Dialog open={showRequestDialog} onOpenChange={setShowRequestDialog}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Request a Private Tour</DialogTitle>
-            <DialogDescription>
-              Fill in your details and we'll get back to you shortly with a personalized quote.
-            </DialogDescription>
+            <DialogTitle>{wt("Request a Private Tour")}</DialogTitle>
+            <DialogDescription>{wt("Fill in your details and we'll get back to you shortly with a personalized quote.")}</DialogDescription>
           </DialogHeader>
 
           {selectedTour && (
             <div className="space-y-4">
               <div className="rounded-lg bg-secondary/50 p-4">
-                <p className="text-sm font-medium text-muted-foreground">Selected Tour</p>
+                <p className="text-sm font-medium text-muted-foreground">{wt("Selected Tour")}</p>
                 <p className="text-lg font-semibold text-foreground">{selectedTour.title}</p>
                 <p className="text-sm text-muted-foreground">{selectedTour.price} • {selectedTour.duration}</p>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <Label htmlFor="name">Your Name *</Label>
+                  <Label htmlFor="name">{wt("Your Name *")}</Label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
@@ -1205,7 +1203,7 @@ export function PrivateToursPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="email">Email *</Label>
+                  <Label htmlFor="email">{wt("Email *")}</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
@@ -1220,7 +1218,7 @@ export function PrivateToursPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="phone">Phone *</Label>
+                  <Label htmlFor="phone">{wt("Phone *")}</Label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
@@ -1236,7 +1234,7 @@ export function PrivateToursPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="people">Number of People *</Label>
+                  <Label htmlFor="people">{wt("Number of People *")}</Label>
                   <div className="relative">
                     <Users className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
@@ -1253,12 +1251,12 @@ export function PrivateToursPage() {
                 </div>
 
                 <div className="sm:col-span-2">
-                  <Label>Preferred Date *</Label>
+                  <Label>{wt("Preferred Date *")}</Label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button variant="outline" className="w-full justify-start text-left font-normal">
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {formData.preferredDate ? formData.preferredDate.toLocaleDateString() : "Pick a date"}
+                        {formData.preferredDate ? formData.preferredDate.toLocaleDateString(language === "pt" ? "pt-PT" : language) : wt("Pick a date")}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0">
@@ -1274,12 +1272,12 @@ export function PrivateToursPage() {
                 </div>
 
                 <div className="sm:col-span-2">
-                  <Label htmlFor="message">Additional Information *</Label>
+                  <Label htmlFor="message">{wt("Additional Information *")}</Label>
                   <Textarea
                     id="message"
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    placeholder="Any special requirements or questions?"
+                    placeholder={wt("Any special requirements or questions?")}
                     rows={4}
                     required
                   />
@@ -1288,11 +1286,9 @@ export function PrivateToursPage() {
 
               <div className="flex gap-2">
                 <Button onClick={submitTourRequest} disabled={submitting} className="flex-1">
-                  {submitting ? "Submitting..." : "Submit Request"}
+                  {submitting ? wt("Submitting...") : wt("Submit Request")}
                 </Button>
-                <Button variant="outline" onClick={() => setShowRequestDialog(false)}>
-                  Cancel
-                </Button>
+                <Button variant="outline" onClick={() => setShowRequestDialog(false)}>{wt("Cancel")}</Button>
               </div>
             </div>
           )}

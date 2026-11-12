@@ -1,3 +1,4 @@
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useState } from "react";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
@@ -129,7 +130,7 @@ export function CompactBookingsList({ bookings, onRefresh }: CompactBookingsList
 
   // ── Filter + sort ─────────────────────────────────────────────────────────
   const getFilteredBookings = () => {
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Intl.DateTimeFormat("en-CA",{timeZone:"Europe/Lisbon",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
     const todayTime = new Date(today).getTime();
 
     let filtered = bookings.filter((booking) => {
@@ -155,7 +156,7 @@ export function CompactBookingsList({ bookings, onRefresh }: CompactBookingsList
       if (bookingFilter === "today") return bookingDate === today;
       if (bookingFilter === "upcoming") return bookingTime >= todayTime;
       if (bookingFilter === "date" && selectedCalendarDate) {
-        return bookingDate === selectedCalendarDate.toISOString().split("T")[0];
+        return bookingDate === `${selectedCalendarDate.getFullYear()}-${String(selectedCalendarDate.getMonth()+1).padStart(2,"0")}-${String(selectedCalendarDate.getDate()).padStart(2,"0")}`;
       }
       return true;
     });
@@ -181,7 +182,7 @@ export function CompactBookingsList({ bookings, onRefresh }: CompactBookingsList
 
   const filteredBookings = getFilteredBookings();
 
-  const todayStr = new Date().toISOString().split("T")[0];
+  const todayStr = new Intl.DateTimeFormat("en-CA",{timeZone:"Europe/Lisbon",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
   const todayTotalCount = bookings.filter(
     (b) => b?.selectedDate === todayStr,
   ).length;
@@ -315,7 +316,7 @@ export function CompactBookingsList({ bookings, onRefresh }: CompactBookingsList
             if (/^\d{13}/.test(booking.id)) bookingIdShort = booking.id.slice(-6);
             else if (booking.id.includes("_")) bookingIdShort = booking.id.split("_")[1];
 
-            const totalPassengers = booking.passengers?.length || 0;
+            const totalPassengers = booking.passengers?.filter((p:any)=>!p.cancelledAt).length || 0;
             const checkedInCount = (booking.checkIns || []).filter(
               (arr: any[]) => arr && arr.length > 0,
             ).length;
@@ -480,6 +481,12 @@ export function CompactBookingsList({ bookings, onRefresh }: CompactBookingsList
 
                       {/* Right: price + passengers + check-ins + extras */}
                       <div className="space-y-3">
+                        <div className="text-sm space-y-1">
+                          <p className="text-xs text-muted-foreground">Ticket and notification status</p>
+                          <p>Customer email: {booking.delivery?.customerEmail?.skipped ? "Skipped for test" : booking.delivery?.customerEmail?.success ? "Accepted by email service" : booking.delivery?.customerEmail ? "Failed — ticket PDF can still be downloaded" : "Not recorded"}</p>
+                          <p>Owner email: {booking.delivery?.ownerEmail?.success ? "Accepted by email service" : booking.delivery?.ownerEmail ? "Failed" : "Not recorded"}</p>
+                          <p>Owner push: {booking.delivery?.ownerPush?.success ? "Accepted by push service" : booking.delivery?.ownerPush ? "Failed" : "Not recorded"}</p>
+                        </div>
                         <div>
                           <p className="text-xs text-muted-foreground mb-1">Total Price</p>
                           <p className={`text-2xl font-semibold ${isCancelled ? "text-muted-foreground line-through" : "text-primary"}`}>
@@ -520,6 +527,7 @@ export function CompactBookingsList({ bookings, onRefresh }: CompactBookingsList
                       </div>
                     </div>
 
+                    {booking.product==='city-card-v1'?<a className="underline block p-3" href={'/admin?section=city-cards&q='+encodeURIComponent(booking.id)}>Manage individual cards, cancellation and ticket delivery</a>:<>
                     {/* ── Status controls ── */}
                     <div className="pt-3 border-t border-border">
                       <p className="text-xs text-muted-foreground mb-2">Change status</p>
@@ -566,7 +574,8 @@ export function CompactBookingsList({ bookings, onRefresh }: CompactBookingsList
                       </div>
                     </div>
 
-                    {/* ── Email section ── */}
+                    </>}
+                    {/* ── Email section ── */}{booking.product !== "city-card-v1" && <>
                     <div className="pt-3 border-t border-border">
                       <div className="flex items-center justify-between gap-4 flex-wrap">
                         <div className="flex items-center gap-3">
@@ -599,6 +608,7 @@ export function CompactBookingsList({ bookings, onRefresh }: CompactBookingsList
                         </Button>
                       </div>
                     </div>
+                    </>}
                   </div>
                 )}
               </Card>
@@ -609,3 +619,7 @@ export function CompactBookingsList({ bookings, onRefresh }: CompactBookingsList
     </>
   );
 }
+
+
+
+

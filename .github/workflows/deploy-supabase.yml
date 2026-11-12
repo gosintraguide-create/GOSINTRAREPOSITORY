@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "supabase/functions/**"
+      - "supabase/functions/make-server-3bd0ade8/**"
 
 jobs:
   deploy:

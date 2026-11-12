@@ -1,3 +1,7 @@
+import {useWebsiteText} from '../lib/translations/websiteText';
+import {reviewedTour, reviewFixture} from '../lib/translations/publishedContent';
+import {loadArticlesFromServer, getPublicArticleTranslation as getArticleTranslation} from '../lib/blogManager';
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useOutletContext, useParams } from "react-router";
 import { Helmet } from "react-helmet-async";
@@ -94,8 +98,8 @@ function MobileStickyBar({ price, duration, onBook, language = "en" }: { price: 
       className="lg:hidden sticky z-40 bg-white border-b border-stone-200 shadow-sm"
       style={{ top: headerHeight }}
     >
-      <div className="flex items-center justify-between gap-4 px-4 py-3">
-        <div>
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3 sm:flex-nowrap">
+        <div className="min-w-0">
           {price != null ? (
             <>
               <p className="text-[11px] font-medium uppercase tracking-wide text-stone-400 leading-none mb-0.5">{tBar.fromPrice}</p>
@@ -109,12 +113,12 @@ function MobileStickyBar({ price, duration, onBook, language = "en" }: { price: 
           )}
         </div>
         {duration && (
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+          <div className="flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
             <Clock className="h-3.5 w-3.5 shrink-0" />
             <span>{duration}</span>
           </div>
         )}
-        <Button onClick={onBook} className="h-10 shrink-0 px-5 text-sm font-semibold">
+        <Button onClick={onBook} className="min-h-11 h-auto w-full whitespace-normal px-5 py-2 text-sm font-semibold sm:w-auto sm:shrink-0">
           <Ticket className="mr-1.5 h-4 w-4" />
           {tBar.bookThisTour}
         </Button>
@@ -167,13 +171,16 @@ interface SuggestedArticle {
 }
 
 export function PrivateTourDetailPage() {
+  const wt = useWebsiteText();
   const { language = "en", onNavigate } = useOutletContext<OutletContext>();
   const { slug } = useParams<{ slug: string }>();
   const tTour = getTranslation(language).privateTourDetail;
   const tBreadcrumbs = getTranslation(language).breadcrumbs;
 
-  const [tour, setTour] = useState<PrivateTour | null>(null);
-  const [otherTours, setOtherTours] = useState<PrivateTour[]>([]);
+  const [rawTour, setTour] = useState<PrivateTour | null>(null);
+  const tour = rawTour ? reviewedTour(rawTour, language) : null;
+  const [rawOtherTours, setOtherTours] = useState<PrivateTour[]>([]);
+  const otherTours = rawOtherTours.map(tour => reviewedTour(tour, language));
   const [loading, setLoading] = useState(true);
   const [showBookingDialog, setShowBookingDialog] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
@@ -186,24 +193,29 @@ export function PrivateTourDetailPage() {
   const [suggestedArticles, setSuggestedArticles] = useState<SuggestedArticle[]>([]);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem("blog-articles-cache");
-      if (!raw) return;
-      const all: any[] = JSON.parse(raw);
-      const published = all.filter((a) => a.isPublished !== false);
-      // Shuffle and pick 3
-      const shuffled = published.sort(() => Math.random() - 0.5).slice(0, 3);
-      setSuggestedArticles(shuffled.map((a) => ({
+    let active = true;
+    loadArticlesFromServer(projectId, publicAnonKey).then(all => {
+      if (!active) return;
+      setSuggestedArticles(all.filter(a => a.isPublished).slice(0, 3).map((a) => ({
         slug: a.slug,
-        title: a.translations?.[language]?.title || a.translations?.en?.title || a.title || "",
-        excerpt: a.translations?.[language]?.excerpt || a.translations?.en?.excerpt || a.excerpt || "",
+        title: getArticleTranslation(a, language).title,
+        excerpt: getArticleTranslation(a, language).excerpt,
         image: a.featuredImage || a.heroImage || a.thumbnailImage,
         readTimeMinutes: a.readTimeMinutes,
       })));
-    } catch (_) {}
+    }).catch(() => { if (active) setSuggestedArticles([]); });
+    return () => { active = false; };
   }, [language]);
 
   const loadTour = async () => {
+    const fixture = await reviewFixture('tours');
+    if (fixture) {
+      const tours = fixture as PrivateTour[];
+      setTour(tours.find(tour => tour.id === slug) || null);
+      setOtherTours(tours.filter(tour => tour.id !== slug));
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     try {
       const cacheKey = language || "en";
@@ -260,7 +272,7 @@ export function PrivateTourDetailPage() {
     );
 
     if (redirectStatus !== "succeeded") {
-      toast.error("Payment was not completed. Please try again.");
+      toast.error(wt("Payment was not completed. Please try again."));
       return;
     }
 
@@ -289,14 +301,14 @@ export function PrivateTourDetailPage() {
           );
           console.error("⚠️ Payment Intent ID:", returnedPaymentIntentId);
           toast.error(
-            "Your payment succeeded but we couldn't finish your booking automatically. Please contact us with your payment confirmation.",
+            wt("Your payment succeeded but we couldn't finish your booking automatically. Please contact us with your payment confirmation."),
             { duration: 15000 },
           );
         }
       } catch (err) {
         console.error("Error finalizing redirect tour payment:", err);
         toast.error(
-          "Your payment may have succeeded but we couldn't confirm your booking automatically. Please contact us with your payment confirmation.",
+          wt("Your payment may have succeeded but we couldn't confirm your booking automatically. Please contact us with your payment confirmation."),
           { duration: 15000 },
         );
       }
@@ -324,7 +336,7 @@ export function PrivateTourDetailPage() {
       description: tour.longDescription || tour.description,
       image: tourImage,
       url: tourUrl,
-      duration: parseDuration(tour.duration),
+      duration: parseDuration(rawTour?.duration || tour.duration),
       touristType: "Private Tour",
       provider: {
         "@type": "TravelAgency",
@@ -357,7 +369,7 @@ export function PrivateTourDetailPage() {
         },
         result: {
           "@type": "Reservation",
-          name: `Book ${tour.title}`,
+          name: tour.title,
         },
       },
     };
@@ -379,34 +391,34 @@ export function PrivateTourDetailPage() {
     if (!tour) return [];
     const items: { question: string; answer: string }[] = [
       {
-        question: `How long is the ${tour.title}?`,
-        answer: `The ${tour.title} lasts ${tour.duration}.`,
+        question: wt("How long is this tour?"),
+        answer: wt("Tour duration: {duration}.", {duration: tour.duration}),
       },
     ];
     if (tour.features?.length) {
       items.push({
-        question: `What is included in the ${tour.title}?`,
+        question: wt("What is included in this tour?"),
         answer: tour.features.join(". "),
       });
     }
     if (tour.maxGroupSize) {
       items.push({
-        question: "How many people can join this private tour?",
-        answer: `This private tour accommodates ${tour.minPeople ? `${tour.minPeople} to ` : "up to "}${tour.maxGroupSize} guests. All tours are exclusively for your group — no strangers join.`,
+        question: wt("How many people can join this private tour?"),
+        answer: wt("Up to {max} participants, exclusively from your group.", {max: tour.maxGroupSize}),
       });
     }
     items.push(
       {
-        question: "Can I customise the itinerary?",
-        answer: "Yes. All Hop On Sintra private tours are fully customisable. Contact us before your booking to request stops, pacing changes, or a bespoke route.",
+        question: wt("Can I customise the itinerary?"),
+        answer: wt("Yes. Contact us before booking to discuss your preferred stops and pace."),
       },
       {
-        question: "What is the cancellation policy?",
-        answer: "Free cancellation is available. Contact us to reschedule or cancel your private tour booking.",
+        question: wt("What is the cancellation policy?"),
+        answer: wt("Check the cancellation conditions for your tour before booking. Contact us if you need to change or cancel a reservation."),
       }
     );
     return items;
-  }, [tour]);
+  }, [tour, language]);
 
   const tourFaqSchema = useMemo(() => {
     if (!tourFaqItems.length) return null;
@@ -454,7 +466,7 @@ export function PrivateTourDetailPage() {
   return (
     <div className="flex-1">
       <Helmet>
-        <title>{tour.title} | Private Tours Sintra – Hop On Sintra</title>
+        <title>{tour.title} | Hop On Sintra</title>
         <meta name="description" content={tour.description} />
         <link rel="canonical" href={tourUrl} />
         {/* Open Graph */}
@@ -593,7 +605,7 @@ export function PrivateTourDetailPage() {
               {/* FAQ Section — desktop */}
               {tourFaqItems.length > 0 && (
                 <div className="pb-12">
-                  <h2 className="mb-6 text-2xl font-bold">Frequently Asked Questions</h2>
+                  <h2 className="mb-6 text-2xl font-bold">{wt("Frequently Asked Questions")}</h2>
                   <div className="space-y-4">
                     {tourFaqItems.map((item, i) => (
                       <div key={i} className="rounded-xl border border-border bg-white p-5">
@@ -664,7 +676,7 @@ export function PrivateTourDetailPage() {
                         <button className="flex w-full items-center gap-2.5 rounded-xl border border-input bg-background py-3 pl-3.5 pr-3.5 text-left text-sm font-medium transition-colors hover:bg-secondary/40 focus:outline-none focus:ring-2 focus:ring-ring">
                           <CalendarIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
                           <span className={`flex-1 ${cardDate ? "text-foreground" : "text-muted-foreground"}`}>
-                            {cardDate ? format(cardDate, "MMM d, yyyy") : tTour.selectDate}
+                            {cardDate ? new Intl.DateTimeFormat(language === 'pt' ? 'pt-PT' : language, {dateStyle: 'long'}).format(cardDate) : tTour.selectDate}
                           </span>
                           <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
                         </button>
@@ -714,22 +726,16 @@ export function PrivateTourDetailPage() {
                     <button
                       onClick={() => setContactOpen(true)}
                       className="text-xs text-muted-foreground hover:text-primary transition-colors underline underline-offset-2"
-                    >
-                      Have questions? Contact us
-                    </button>
+                    >{wt("Have questions? Contact us")}</button>
                   </div>
 
                   {/* Contact modal */}
                   <Dialog open={contactOpen} onOpenChange={setContactOpen}>
                     <DialogContent className="max-w-xs rounded-2xl p-6 text-center">
                       <DialogHeader>
-                        <DialogTitle className="text-base font-semibold text-foreground">
-                          We're here to help
-                        </DialogTitle>
+                        <DialogTitle className="text-base font-semibold text-foreground">{wt("We're here to help")}</DialogTitle>
                       </DialogHeader>
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        Choose how you'd like to reach us
-                      </p>
+                      <p className="mt-1 text-sm text-muted-foreground">{wt("Choose how you'd like to reach us")}</p>
                       <div className="mt-5 flex flex-col gap-3">
                         <a
                           href="https://wa.me/351932967279"
@@ -928,7 +934,7 @@ export function PrivateTourDetailPage() {
             {/* FAQ Section — mobile */}
             {tourFaqItems.length > 0 && (
               <div className="mt-8">
-                <h2 className="mb-6 text-3xl font-bold">Frequently Asked Questions</h2>
+                <h2 className="mb-6 text-3xl font-bold">{wt("Frequently Asked Questions")}</h2>
                 <div className="space-y-4">
                   {tourFaqItems.map((item, i) => (
                     <div key={i} className="rounded-xl border border-border bg-white p-5">

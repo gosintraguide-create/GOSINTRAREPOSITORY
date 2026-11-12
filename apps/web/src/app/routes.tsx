@@ -1,3 +1,5 @@
+import {StaffLogin} from './components/StaffLogin';
+import {MerchantPortal} from './components/MerchantPortal';
 import { createBrowserRouter, Navigate } from "react-router";
 import { lazy } from "react";
 import { RootLayout } from "@/components/RootLayout";
@@ -5,6 +7,8 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { RouterErrorFallback } from "@/components/RouterErrorFallback";
 
 // Lazy load pages - using @/ alias for consistent module resolution
+const CustomerProfilePage = lazy(() => import('@/components/CustomerProfilePage').then(m => ({default:m.CustomerProfilePage})));
+const CityCardTermsPage = lazy(() => import('@/components/CityCardTermsPage').then(m => ({default:m.CityCardTermsPage})));
 const HomePage = lazy(() => import("@/components/HomePage").then(m => ({ default: m.HomePage })));
 const AttractionsPage = lazy(() => import("@/components/AttractionsPage").then(m => ({ default: m.AttractionsPage })));
 const AttractionDetailPage = lazy(() => import("@/components/AttractionDetailPage").then(m => ({ default: m.AttractionDetailPage })));
@@ -19,6 +23,7 @@ const BlogPage = lazy(() => import("@/components/BlogPage").then(m => ({ default
 const BlogArticlePage = lazy(() => import("@/components/BlogArticlePage").then(m => ({ default: m.BlogArticlePage })));
 const RouteMapPage = lazy(() => import("@/components/RouteMapPage").then(m => ({ default: m.RouteMapPage })));
 const AdminPage = lazy(() => import("@/components/AdminPage").then(m => ({ default: m.AdminPage })));
+const AdminPasswordPage = lazy(() => import("@/components/AdminPasswordPage").then(m => ({ default: m.AdminPasswordPage })));
 const DriverPortalPage = lazy(() => import("@/components/DriverPortalPage").then(m => ({ default: m.DriverPortalPage })));
 const QRScannerPage = lazy(() => import("@/components/QRScannerPage").then(m => ({ default: m.QRScannerPage })));
 const NotFoundPage = lazy(() => import("@/components/NotFoundPage").then(m => ({ default: m.NotFoundPage })));
@@ -47,7 +52,7 @@ export const attractionSlugs: Record<string, string> = {
   "parque-e-palacio-da-pena": "pena-palace",
 };
 
-export const router = createBrowserRouter([
+export const router = createBrowserRouter([{path:"/staff",element:<StaffLogin/>},{path:"/merchant",element:<MerchantPortal/>},
   {
     path: "/",
     element: <RootLayout />,
@@ -230,6 +235,17 @@ export const router = createBrowserRouter([
         },
       },
       {
+        path: 'profile/:section?',
+        element: <ErrorBoundary><CustomerProfilePage /></ErrorBoundary>,
+        handle: {meta: {title: 'Your Profile - Hop On Sintra', index: false}},
+      },
+      {
+        path: 'my-cards', element: <Navigate to='/profile' replace />, handle: {meta: {index:false}},
+      },
+      {
+        path: 'city-card-terms', element: <CityCardTermsPage />, handle: {meta: {title:'City Card Conditions - Hop On Sintra',index:true}},
+      },
+      {
         path: "manage-booking",
         element: (
           <ErrorBoundary>
@@ -288,6 +304,11 @@ export const router = createBrowserRouter([
             index: false,
           },
         },
+      },
+      {
+        path: "admin/reset-password",
+        element: <AdminPasswordPage />,
+        handle: { meta: { title: "Set administrator password", index: false } },
       },
       {
         path: "admin",

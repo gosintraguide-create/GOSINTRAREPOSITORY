@@ -1,3 +1,5 @@
+import {useWebsiteText} from '../lib/translations/websiteText';
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router";
 import { MapPin, Users, Clock, Car, CheckCircle, AlertCircle } from "lucide-react";
@@ -22,9 +24,16 @@ interface RequestPickupPageProps {
 }
 
 export function RequestPickupPage() {
+  const wt = useWebsiteText();
   const { language = "en", onNavigate } = useOutletContext<OutletContext>();
   const t = getTranslation(language).components;
   const [step, setStep] = useState<"verify" | "request" | "searching" | "confirmed">("verify");
+  const [lastName,setLastName]=useState('');
+  const [maxPassengers,setMaxPassengers]=useState(1);
+  const [readyInMinutes,setReadyInMinutes]=useState(0);
+  const [requestKey,setRequestKey]=useState(()=>crypto.randomUUID());
+  const [currentRequest,setCurrentRequest]=useState<any>(null);
+  const [history,setHistory]=useState<any[]>([]);
   const [bookingCode, setBookingCode] = useState<string>("");
   const [verificationError, setVerificationError] = useState<string>("");
   const [isVerified, setIsVerified] = useState<boolean>(false);
@@ -70,6 +79,8 @@ export function RequestPickupPage() {
     if (session) {
       setBookingCode(session.bookingId);
       setCustomerName(session.customerName);
+      setLastName(session.lastName);
+      setMaxPassengers(session.passes);
       
       // Parse phone number into prefix and number
       if (session.customerPhone) {
@@ -124,8 +135,8 @@ export function RequestPickupPage() {
   };
 
   const handleVerifyBooking = async () => {
-    if (!bookingCode.trim()) {
-      setVerificationError("Please enter your booking code");
+    if (!bookingCode.trim() || !lastName.trim()) {
+      setVerificationError(wt("Please enter your booking code and last name"));
       return;
     }
 
@@ -134,7 +145,7 @@ export function RequestPickupPage() {
     try {
       // Verify booking code with backend
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/verify-booking`,
+        `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/verify-booking-login`,
         {
           method: 'POST',
           headers: {
@@ -142,7 +153,7 @@ export function RequestPickupPage() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            bookingCode: bookingCode.trim().toUpperCase(),
+            bookingId: bookingCode.trim().toUpperCase(), lastName:lastName.trim(),
           }),
         }
       );
@@ -161,28 +172,30 @@ export function RequestPickupPage() {
             setPhoneNumber(parsed.number);
           }
           
+          setMaxPassengers(result.booking.passes || 1);
           setGroupSize(String(result.booking.passes || 1));
           setStep("request");
           window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
-          setVerificationError("Invalid booking code. Please check and try again.");
+          setVerificationError(wt("Invalid booking code. Please check and try again."));
         }
       } else {
-        setVerificationError("Unable to verify booking. Please try again.");
+        setVerificationError(response.status === 401 ? wt("Please sign in to your booking first, then return here to request a pickup.") : wt("Unable to verify booking. Please try again."));
       }
     } catch (error) {
-      setVerificationError("Connection error. Please check your internet and try again.");
+      setVerificationError(wt("Connection error. Please check your internet and try again."));
     }
   };
 
   const handleRequestPickup = async () => {
-    if (!location || !groupSize || !customerName || !phoneNumber) return;
+    if (!location || !destination || location===destination || !groupSize || !customerName || !phoneNumber) return;
     
     setStep("searching");
     
     const customerPhone = `${phonePrefix} ${phoneNumber}`;
     
     const requestData = {
+      bookingId:bookingCode.trim().toUpperCase(), requestKey, readyInMinutes,
       customerName,
       customerPhone,
       pickupLocation: locations.find(l => l.id === location)?.name || location,
@@ -210,13 +223,14 @@ export function RequestPickupPage() {
       clearTimeout(timeout);
 
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Server error: ${response.status} - ${errorText}`);
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Unable to send request.");
       }
 
       const result = await response.json();
 
       if (result.success) {
+        setCurrentRequest(result.request);
         setStep("confirmed");
       } else {
         throw new Error(result.error || 'Failed to create pickup request');
@@ -226,12 +240,28 @@ export function RequestPickupPage() {
       const isTimeout = error instanceof Error && error.name === 'AbortError';
       toast.error(
         isTimeout
-          ? "Request timed out. Please check your connection and try again."
-          : "Unable to send request. Please try again or contact us via WhatsApp.",
+          ? wt("We could not confirm the request. It may have been saved. Please contact us via WhatsApp before sending another.")
+          : error instanceof Error ? error.message : wt("Unable to send request. Please try again or contact us via WhatsApp."),
         { duration: 6000 }
       );
     }
   };
+
+  useEffect(()=>{
+    if(!isVerified||!bookingCode)return;
+    let cancelled=false;
+    const refresh=async()=>{
+      try{
+        const response=await fetch(`https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/pickup-requests/mine?bookingId=${encodeURIComponent(bookingCode.trim().toUpperCase())}`);
+        const data=await response.json();
+        if(response.ok&&!cancelled){
+          setHistory(data.requests||[]);
+          setCurrentRequest(previous=>data.requests?.find((r:any)=>r.id===previous?.id)||previous);
+        }
+      }catch{}
+    };
+    void refresh();const timer=setInterval(refresh,15000);return()=>{cancelled=true;clearInterval(timer);};
+  },[isVerified,bookingCode,step]);
 
   if (step === "verify") {
     return (
@@ -262,11 +292,11 @@ export function RequestPickupPage() {
             <Card className="overflow-hidden border-border p-6 shadow-lg sm:p-8">
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="booking-code">Booking Code</Label>
+                  <Label htmlFor="booking-code">{wt("Booking Code")}</Label>
                   <Input
                     id="booking-code"
                     type="text"
-                    placeholder="e.g., GST-ABC123"
+                    placeholder={wt("e.g., GST-ABC123")}
                     value={bookingCode}
                     onChange={(e) => {
                       setBookingCode(e.target.value.toUpperCase());
@@ -279,16 +309,15 @@ export function RequestPickupPage() {
                       }
                     }}
                   />
-                  <p className="text-sm text-muted-foreground">
-                    You received this code in your booking confirmation email
-                  </p>
+                  <p className="text-sm text-muted-foreground">{wt("You received this code in your booking confirmation email")}</p>
                 </div>
 
+                <div className="space-y-2"><Label htmlFor="pickup-last-name">{wt("Last name on booking")}</Label><Input id="pickup-last-name" autoComplete="family-name" value={lastName} onChange={e=>setLastName(e.target.value)} /></div>
                 {verificationError && (
                   <div className="rounded-lg border border-red-200 bg-red-50 p-4">
                     <div className="flex items-start gap-2">
                       <AlertCircle className="h-5 w-5 flex-shrink-0 text-red-600" />
-                      <p className="text-sm text-red-600">{verificationError}</p>
+                      <div><p className="text-sm text-red-600">{verificationError}</p><Button variant="outline" className="mt-2" onClick={() => onNavigate("login")}>{wt("Sign in to booking")}</Button></div>
                     </div>
                   </div>
                 )}
@@ -297,27 +326,21 @@ export function RequestPickupPage() {
                   size="lg"
                   className="w-full bg-accent hover:bg-accent/90"
                   onClick={handleVerifyBooking}
-                  disabled={!bookingCode.trim()}
+                  disabled={!bookingCode.trim() || !lastName.trim()}
                 >
-                  <CheckCircle className="mr-2 h-5 w-5" />
-                  Verify Booking
-                </Button>
+                  <CheckCircle className="mr-2 h-5 w-5" />{wt("Verify Booking")}</Button>
 
                 <div className="rounded-lg border border-border bg-white p-4">
                   <div className="mb-2 flex items-center gap-2 text-primary">
                     <AlertCircle className="h-5 w-5" />
-                    <span className="font-medium">Don't have a booking?</span>
+                    <span className="font-medium">{wt("Don't have a booking?")}</span>
                   </div>
-                  <p className="mb-3 text-sm text-muted-foreground">
-                    Pickup requests are only available to customers with purchased day passes.
-                  </p>
+                  <p className="mb-3 text-sm text-muted-foreground">{wt("Pickup requests are only available to customers with purchased day passes.")}</p>
                   <Button
                     variant="outline"
                     className="w-full"
                     onClick={() => onNavigate("buy-ticket")}
-                  >
-                    Purchase Day Pass
-                  </Button>
+                  >{wt("Purchase Day Pass")}</Button>
                 </div>
               </div>
             </Card>
@@ -339,20 +362,13 @@ export function RequestPickupPage() {
               </div>
             </div>
           </div>
-          <h2 className="mb-2 text-foreground">Sending Your Request...</h2>
-          <p className="mb-4 text-muted-foreground">
-            Notifying nearby drivers about your group of <strong>{groupSize} {parseInt(groupSize) === 1 ? 'passenger' : 'passengers'}</strong>
+          <h2 className="mb-2 text-foreground">{wt("Sending Your Request...")}</h2>
+          <p className="mb-4 text-muted-foreground">{wt("Saving the pickup request for your group of")}<strong>{groupSize} {parseInt(groupSize) === 1 ? 'passenger' : 'passengers'}</strong>
           </p>
           {showSlowMessage && (
             <div className="mt-4 space-y-3">
-              <p className="text-sm text-muted-foreground">Taking longer than expected...</p>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setStep("request")}
-              >
-                Go Back
-              </Button>
+              <p className="text-sm text-muted-foreground">{wt("Taking longer than expected...")}</p>
+              <p className="text-sm text-muted-foreground">{wt("Please wait for the result before sending another request.")}</p>
             </div>
           )}
         </Card>
@@ -361,94 +377,17 @@ export function RequestPickupPage() {
   }
 
   if (step === "confirmed") {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-secondary/30 px-4">
-        <Card className="w-full max-w-md p-8">
-          <div className="mb-6 flex justify-center">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-accent/10">
-              <CheckCircle className="h-12 w-12 text-accent" />
-            </div>
-          </div>
-          
-          <h2 className="mb-2 text-center text-foreground">Request Sent!</h2>
-          <p className="mb-6 text-center text-muted-foreground">
-            Drivers have been notified. Someone will confirm and be with you shortly.
-          </p>
-
-          <div className="space-y-4">
-            <div className="rounded-lg border border-border bg-white p-4">
-              <div className="mb-3 flex items-center gap-2 text-foreground">
-                <Car className="h-5 w-5 text-accent" />
-                <span>Vehicle Details</span>
-              </div>
-              <div className="space-y-2 text-muted-foreground">
-                <div className="flex justify-between">
-                  <span>Vehicles:</span>
-                  <span className="text-foreground">
-                    {parseInt(groupSize) <= 6 ? '1 vehicle' : `${Math.ceil(parseInt(groupSize) / 6)} vehicles coordinated`}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Group Size:</span>
-                  <span className="text-foreground">{groupSize} {parseInt(groupSize) === 1 ? 'passenger' : 'passengers'}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-lg border border-border bg-white p-4">
-              <div className="mb-3 flex items-center gap-2 text-foreground">
-                <MapPin className="h-5 w-5 text-accent" />
-                <span>Pickup Location</span>
-              </div>
-              <p className="text-muted-foreground">
-                {locations.find(l => l.id === location)?.name}
-              </p>
-            </div>
-
-            {destination && (
-              <div className="rounded-lg border border-border bg-white p-4">
-                <div className="mb-3 flex items-center gap-2 text-foreground">
-                  <MapPin className="h-5 w-5 text-primary" />
-                  <span>Destination</span>
-                </div>
-                <p className="text-muted-foreground">
-                  {locations.find(l => l.id === destination)?.name}
-                </p>
-              </div>
-            )}
-
-            <div className="rounded-lg border-2 border-accent/20 bg-accent/5 p-4">
-              <div className="flex gap-3">
-                <AlertCircle className="h-5 w-5 flex-shrink-0 text-accent" />
-                <div className="text-muted-foreground">
-                  {parseInt(groupSize) <= 6 ? (
-                    <p>A driver has been notified of your group of <strong className="text-foreground">{groupSize}</strong> and will send an appropriate vehicle.</p>
-                  ) : (
-                    <p>Drivers have been notified. <strong className="text-foreground">{Math.ceil(parseInt(groupSize) / 6)} vehicles</strong> will be coordinated for your group of {groupSize}.</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6 flex gap-3">
-            <Button
-              variant="outline"
-              className="flex-1"
-              onClick={() => setStep("request")}
-            >
-              Request Another
-            </Button>
-            <Button
-              className="flex-1 bg-accent hover:bg-accent/90"
-              onClick={() => onNavigate("home")}
-            >
-              Done
-            </Button>
-          </div>
-        </Card>
-      </div>
-    );
+    const active=['pending','accepted'].includes(currentRequest?.status);
+    return <div className="min-h-screen bg-secondary/30 p-6"><Card className="mx-auto max-w-lg p-6 space-y-4">
+      <h1>{currentRequest?.status==='accepted'?wt('Driver assigned'):currentRequest?.status==='completed'?wt('Ride completed'):currentRequest?.status==='cancelled'?wt('Request cancelled'):wt('Pickup request received')}</h1>
+      <p>{wt(currentRequest?.pickupLocation || "")} → {wt(currentRequest?.destination || "")}</p>
+      <p>{currentRequest?.groupSize} {wt("passengers · Reference:")} {currentRequest?.id}</p>
+      {currentRequest?.acceptedByName && <p>{wt("Driver:")} {currentRequest.acceptedByName}</p>}
+      {currentRequest?.status==='pending' && <p>{wt("The team will assign your pickup. An arrival time has not been confirmed.")}</p>}
+      {currentRequest?.readyAt && <p>{wt("Ready at")} {new Date(currentRequest.readyAt).toLocaleTimeString(language,{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Lisbon'})} {wt("(Sintra time)")}</p>}
+      <Button disabled={active} onClick={()=>{setRequestKey(crypto.randomUUID());setCurrentRequest(null);setStep('request');}}>{wt("Request another ride")}</Button>
+      <Button variant="outline" onClick={()=>onNavigate('home')}>{wt("Done")}</Button>
+    </Card></div>;
   }
 
   return (
@@ -464,19 +403,16 @@ export function RequestPickupPage() {
               <Car className="h-10 w-10 text-white" />
             </div>
           </div>
-          <h1 className="mb-4 bg-gradient-to-r from-primary via-primary/90 to-accent bg-clip-text text-transparent">
-            Request a Pickup
-          </h1>
-          <p className="mx-auto max-w-2xl text-muted-foreground">
-            Tell us your group size and location, and we'll send the perfect vehicle for you. 
-            Our drivers are notified of your passenger count to ensure comfort and availability.
-          </p>
+          <h1 className="mb-4 bg-gradient-to-r from-primary via-primary/90 to-accent bg-clip-text text-transparent">{wt("Request a Pickup")}</h1>
+          <p className="mx-auto max-w-2xl text-muted-foreground">{wt("Choose your group size and stops to request a pickup from the team. Assignment and arrival time depend on availability.")}</p>
         </div>
       </section>
 
       {/* Request Form */}
       <section className="py-12 sm:py-16">
         <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
+          {history.length>0 && <Card className="mb-4 p-4"><h2>{wt("Your recent requests")}</h2>{history.map(r=><button key={r.id} className="block w-full py-3 text-left" onClick={()=>{setCurrentRequest(r);setStep('confirmed');}}>{wt(r.pickupLocation)} → {wt(r.destination)} · {wt(({pending:'Pickup request received',accepted:'Driver assigned',completed:'Ride completed',cancelled:'Request cancelled'} as Record<string,string>)[r.status] || 'Pickup request received')}</button>)}</Card>}
+          <div className="mb-4"><Label htmlFor="pickup-ready">{wt("When will you be ready?")}</Label><select id="pickup-ready" className="block w-full border rounded p-3" value={readyInMinutes} onChange={e=>setReadyInMinutes(Number(e.target.value))}><option value={0}>{wt("Now")}</option><option value={15}>{wt("In 15 minutes")}</option></select></div>
           <Card className="overflow-hidden border-border p-6 shadow-lg sm:p-8">
             <div className="space-y-6">
               {/* Customer Name */}
@@ -494,7 +430,7 @@ export function RequestPickupPage() {
 
               {/* Customer Phone */}
               <div className="space-y-2">
-                <Label htmlFor="customer-phone">Phone Number</Label>
+                <Label htmlFor="customer-phone">{wt("Phone Number")}</Label>
                 <Input
                   id="customer-phone"
                   type="tel"
@@ -519,9 +455,7 @@ export function RequestPickupPage() {
               {/* Group Size */}
               <div className="space-y-2">
                 <Label htmlFor="group-size" className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-accent" />
-                  Number of Passengers
-                </Label>
+                  <Users className="h-4 w-4 text-accent" />{wt("Number of Passengers")}</Label>
                 <div className="flex items-center gap-3">
                   <Button
                     type="button"
@@ -536,7 +470,7 @@ export function RequestPickupPage() {
                     id="group-size"
                     type="number"
                     min="1"
-                    max="50"
+                    max={maxPassengers}
                     value={groupSize}
                     onChange={(e) => setGroupSize(String(Math.max(1, parseInt(e.target.value) || 1)))}
                     className="border-border text-center"
@@ -546,7 +480,7 @@ export function RequestPickupPage() {
                     variant="outline"
                     size="sm"
                     className="h-12 w-12 border-border"
-                    onClick={() => setGroupSize(String(Math.min(50, parseInt(groupSize) + 1)))}
+                    onClick={() => setGroupSize(String(Math.min(maxPassengers, parseInt(groupSize) + 1)))}
                   >
                     +
                   </Button>
@@ -555,27 +489,21 @@ export function RequestPickupPage() {
                   <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
                     <div className="flex items-start gap-2 text-muted-foreground">
                       <Car className="h-4 w-4 mt-0.5 flex-shrink-0 text-primary" />
-                      <p>
-                        We'll dispatch an <strong className="text-foreground">appropriate vehicle</strong> for your group of {groupSize}
-                      </p>
+                      <p>{wt("Your group may need more than one vehicle. The team will confirm the arrangements based on availability.")}</p>
                     </div>
                   </div>
                 ) : groupSize && parseInt(groupSize) === 7 ? (
                   <div className="rounded-lg border border-accent/20 bg-accent/5 p-3">
                     <div className="flex items-start gap-2 text-muted-foreground">
                       <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0 text-accent" />
-                      <p>
-                        Your group will require <strong className="text-foreground">2 vehicles</strong> that will be coordinated to arrive together.
-                      </p>
+                      <p>{wt("Your group may need more than one vehicle. The team will confirm the arrangements based on availability.")}</p>
                     </div>
                   </div>
                 ) : groupSize && parseInt(groupSize) > 7 ? (
                   <div className="rounded-lg border border-accent/20 bg-accent/5 p-3">
                     <div className="flex items-start gap-2 text-muted-foreground">
                       <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0 text-accent" />
-                      <p>
-                        Large group! You'll need <strong className="text-foreground">{Math.ceil(parseInt(groupSize) / 6)} vehicles</strong> coordinated to arrive together.
-                      </p>
+                      <p>{wt("Your group may need more than one vehicle. The team will confirm the arrangements based on availability.")}</p>
                     </div>
                   </div>
                 ) : null}
@@ -584,56 +512,50 @@ export function RequestPickupPage() {
               {/* Current Location */}
               <div className="space-y-2">
                 <Label htmlFor="location" className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-accent" />
-                  Your Current Location
-                </Label>
+                  <MapPin className="h-4 w-4 text-accent" />{wt("Your Current Location")}</Label>
                 <Select value={location} onValueChange={setLocation}>
                   <SelectTrigger id="location">
-                    <SelectValue placeholder="Select your location" />
+                    <SelectValue placeholder={wt("Select your location")} />
                   </SelectTrigger>
                   <SelectContent>
                     {locations.map((loc) => (
                       <SelectItem key={loc.id} value={loc.id}>
-                        {loc.name}
+                        {wt(loc.name)}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
 
-              {/* Destination (Optional) */}
+              {/* Destination */}
               <div className="space-y-2">
                 <Label htmlFor="destination" className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-primary" />
-                  Destination (Optional)
-                </Label>
+                  <MapPin className="h-4 w-4 text-primary" />{wt("Destination")}</Label>
                 <Select value={destination} onValueChange={setDestination}>
                   <SelectTrigger id="destination">
-                    <SelectValue placeholder="Where would you like to go?" />
+                    <SelectValue placeholder={wt("Where would you like to go?")} />
                   </SelectTrigger>
                   <SelectContent>
                     {locations
                       .filter((loc) => loc.id !== location)
                       .map((loc) => (
                         <SelectItem key={loc.id} value={loc.id}>
-                          {loc.name}
+                          {wt(loc.name)}
                         </SelectItem>
                       ))}
                   </SelectContent>
                 </Select>
-                <p className="text-muted-foreground">
-                  You can also decide your destination with the driver
-                </p>
+                <p className="text-muted-foreground">{wt("Choose where you would like to go.")}</p>
               </div>
 
               {/* Info Box */}
               <div className="rounded-lg border border-border bg-white p-6">
                 <div className="mb-3 flex items-center gap-3 text-primary">
                   <Clock className="h-5 w-5" />
-                  <span>Service Hours</span>
+                  <span>{wt("Service Hours")}</span>
                 </div>
                 <p className="text-muted-foreground">
-                  Our vehicles are available from 9:00 AM to 7:00 PM daily.
+                  {getTranslation(language).company.operatingHours}
                 </p>
               </div>
 
@@ -641,11 +563,9 @@ export function RequestPickupPage() {
                 size="lg"
                 className="w-full bg-accent hover:bg-accent/90"
                 onClick={handleRequestPickup}
-                disabled={!location || !groupSize || !customerName || !phoneNumber}
+                disabled={!location || !destination || location===destination || !groupSize || !customerName || !phoneNumber || Number(groupSize)>maxPassengers}
               >
-                <Car className="mr-2 h-5 w-5" />
-                Request Pickup
-              </Button>
+                <Car className="mr-2 h-5 w-5" />{wt("Request Pickup")}</Button>
             </div>
           </Card>
         </div>
@@ -654,7 +574,7 @@ export function RequestPickupPage() {
       {/* How It Works */}
       <section className="border-t border-border bg-white py-12 sm:py-16">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <h2 className="mb-8 text-center text-foreground">How Vehicle Coordination Works</h2>
+          <h2 className="mb-8 text-center text-foreground">{wt("How Vehicle Coordination Works")}</h2>
           <div className="grid gap-6 sm:grid-cols-3">
             <div className="group text-center">
               <div className="mb-4 flex justify-center">
@@ -662,10 +582,8 @@ export function RequestPickupPage() {
                   <Users className="h-7 w-7 text-white" />
                 </div>
               </div>
-              <h3 className="mb-2 text-foreground">1. Tell Us Your Group Size</h3>
-              <p className="text-muted-foreground">
-                Select how many passengers need a ride (1-50 people)
-              </p>
+              <h3 className="mb-2 text-foreground">{wt("1. Tell Us Your Group Size")}</h3>
+              <p className="text-muted-foreground">{wt("Select how many passengers need a ride (1-50 people)")}</p>
             </div>
             <div className="group text-center">
               <div className="mb-4 flex justify-center">
@@ -673,10 +591,8 @@ export function RequestPickupPage() {
                   <Car className="h-7 w-7 text-white" />
                 </div>
               </div>
-              <h3 className="mb-2 text-foreground">2. We Coordinate Vehicles</h3>
-              <p className="text-muted-foreground">
-                Drivers receive your request and coordinate appropriate vehicles for your group
-              </p>
+              <h3 className="mb-2 text-foreground">{wt("2. We Coordinate Vehicles")}</h3>
+              <p className="text-muted-foreground">{wt("Drivers receive your request and coordinate appropriate vehicles for your group")}</p>
             </div>
             <div className="group text-center">
               <div className="mb-4 flex justify-center">
@@ -684,10 +600,8 @@ export function RequestPickupPage() {
                   <CheckCircle className="h-7 w-7 text-white" />
                 </div>
               </div>
-              <h3 className="mb-2 text-foreground">3. Vehicles Arrive</h3>
-              <p className="text-muted-foreground">
-                Your vehicle(s) arrive shortly, coordinated for groups over 6
-              </p>
+              <h3 className="mb-2 text-foreground">{wt("3. Vehicles Arrive")}</h3>
+              <p className="text-muted-foreground">{wt("Your vehicle(s) arrive shortly, coordinated for groups over 6")}</p>
             </div>
           </div>
         </div>

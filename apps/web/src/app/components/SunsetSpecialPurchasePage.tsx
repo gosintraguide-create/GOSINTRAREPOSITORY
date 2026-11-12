@@ -1,3 +1,5 @@
+import {useWebsiteText} from '../lib/translations/websiteText';
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router";
 import {
@@ -53,6 +55,7 @@ interface OutletContext {
 }
 
 export function SunsetSpecialPurchasePage() {
+  const wt = useWebsiteText();
   const { language, onNavigate } = useOutletContext<OutletContext>();
   const content = useEditableContent(language);
   const sunsetSpecial = content?.homepage?.sunsetSpecial;
@@ -89,7 +92,7 @@ export function SunsetSpecialPurchasePage() {
     );
 
     if (redirectStatus !== "succeeded") {
-      toast.error("Payment was not completed. Please try again.");
+      toast.error(wt("Payment was not completed. Please try again."));
       return;
     }
 
@@ -110,7 +113,7 @@ export function SunsetSpecialPurchasePage() {
         if (data.success) {
           sessionStorage.removeItem("sunset-special-booking-id");
           sessionStorage.removeItem("sunset-special-active");
-          toast.success("Sunset special added to your booking!");
+          toast.success(wt("Sunset special added to your booking!"));
           setTimeout(() => onNavigate("home"), 1500);
         } else {
           console.error(
@@ -118,14 +121,14 @@ export function SunsetSpecialPurchasePage() {
           );
           console.error("⚠️ Payment Intent ID:", returnedPaymentIntentId);
           toast.error(
-            "Your payment succeeded but we couldn't finish adding the sunset special automatically. Please contact us with your payment confirmation.",
+            wt("Your payment succeeded but we couldn't finish adding the sunset special automatically. Please contact us with your payment confirmation."),
             { duration: 15000 },
           );
         }
       } catch (err) {
         console.error("Error finalizing redirect sunset-special payment:", err);
         toast.error(
-          "Your payment may have succeeded but we couldn't confirm it automatically. Please contact us with your payment confirmation.",
+          wt("Your payment may have succeeded but we couldn't confirm it automatically. Please contact us with your payment confirmation."),
           { duration: 15000 },
         );
       }
@@ -146,7 +149,7 @@ export function SunsetSpecialPurchasePage() {
       );
 
       if (!bookingId) {
-        setError("No booking ID found. Please try again.");
+        setError(wt("Booking not found"));
         setIsLoading(false);
         return;
       }
@@ -168,17 +171,17 @@ export function SunsetSpecialPurchasePage() {
         if (data.booking) {
           setBooking(data.booking);
         } else {
-          setError("Booking not found. Please try again.");
+          setError(wt("Booking not found"));
         }
       } else {
         setError(
-          "Unable to load booking details. Please try again.",
+          wt("Failed to look up booking. Please try again."),
         );
       }
     } catch (error) {
       console.error("Error loading booking:", error);
       setError(
-        "Unable to load booking details. Please try again.",
+        wt("Failed to look up booking. Please try again."),
       );
     } finally {
       setIsLoading(false);
@@ -208,7 +211,7 @@ export function SunsetSpecialPurchasePage() {
         
         // Check if enough seats for this booking
         if (data.availableSeats < booking.passengers.length) {
-          setError(`Sorry, only ${data.availableSeats} seat(s) available for the sunset special on this date.`);
+          setError(wt("Only {available} places are available; your group needs {needed}.", {available: data.availableSeats, needed: booking.passengers.length}));
         }
       }
     } catch (error) {
@@ -221,7 +224,7 @@ export function SunsetSpecialPurchasePage() {
   const handleContinueToPayment = async () => {
     // Check availability one more time before payment
     if (availableSeats !== null && availableSeats < booking!.passengers.length) {
-      toast.error(`Sorry, only ${availableSeats} seat(s) available. Please contact support.`);
+      toast.error(wt("Available places: {count}", {count: availableSeats ?? 0}));
       return;
     }
 
@@ -267,20 +270,19 @@ export function SunsetSpecialPurchasePage() {
           analytics.checkoutStarted(totalPrice, booking!.passengers.length);
         } else {
           toast.error(
-            "Failed to initialize payment. Please try again.",
+            wt("Payment could not be started. Please try again."),
           );
         }
       } else {
         const data = await response.json();
         toast.error(
-          data.error ||
-            "Failed to initialize payment. Please try again.",
+          wt("Payment could not be started. Please try again."),
         );
       }
     } catch (error) {
       console.error("Error creating payment intent:", error);
       toast.error(
-        "Failed to initialize payment. Please try again.",
+        wt("Payment could not be started. Please try again."),
       );
     } finally {
       setIsCreatingPayment(false);
@@ -318,7 +320,7 @@ export function SunsetSpecialPurchasePage() {
         sessionStorage.removeItem("sunset-special-booking-id");
         sessionStorage.removeItem("sunset-special-active");
 
-        toast.success("Sunset special added to your booking!");
+        toast.success(wt("Sunset special added to your booking!"));
         analytics.sunsetSpecialPurchased(booking!.id, totalPrice, booking!.passengers.length);
 
         // Navigate to confirmation or booking details
@@ -328,14 +330,13 @@ export function SunsetSpecialPurchasePage() {
       } else {
         const data = await response.json();
         toast.error(
-          data.error ||
-            "Failed to update booking. Please contact support.",
+          wt("Booking failed. Please contact support with your payment confirmation."),
         );
       }
     } catch (error) {
       console.error("Error updating booking:", error);
       toast.error(
-        "Failed to update booking. Please contact support.",
+        wt("Booking failed. Please contact support with your payment confirmation."),
       );
     } finally {
       setIsProcessing(false);
@@ -347,9 +348,7 @@ export function SunsetSpecialPurchasePage() {
       <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="h-12 w-12 animate-spin text-orange-500 mx-auto mb-4" />
-          <p className="text-gray-600">
-            Loading booking details...
-          </p>
+          <p className="text-gray-600">{wt("Loading booking details...")}</p>
         </div>
       </div>
     );
@@ -361,7 +360,7 @@ export function SunsetSpecialPurchasePage() {
         <div className="max-w-2xl mx-auto pt-8">
           <Alert variant="destructive">
             <AlertDescription>
-              {error || "Booking not found"}
+              {error || wt("Booking not found")}
             </AlertDescription>
           </Alert>
           <Button
@@ -369,9 +368,7 @@ export function SunsetSpecialPurchasePage() {
             variant="outline"
             className="mt-4"
           >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Home
-          </Button>
+            <ArrowLeft className="mr-2 h-4 w-4" />{wt("Back to Home")}</Button>
         </div>
       </div>
     );
@@ -381,7 +378,7 @@ export function SunsetSpecialPurchasePage() {
     booking.passengers.length * SUNSET_SPECIAL_PRICE;
   const formattedDate = new Date(
     booking.selectedDate,
-  ).toLocaleDateString("en-US", {
+  ).toLocaleDateString(language === 'pt' ? 'pt-PT' : language, {
     weekday: "long",
     year: "numeric",
     month: "long",
@@ -398,16 +395,12 @@ export function SunsetSpecialPurchasePage() {
             variant="ghost"
             className="mb-4"
           >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
+            <ArrowLeft className="mr-2 h-4 w-4" />{wt("Back")}</Button>
           <div className="flex items-center gap-3 mb-2">
             <Sunset className="h-6 w-6 text-orange-500" />
-            <h1 className="text-2xl text-foreground">Add Sunset Special</h1>
+            <h1 className="text-2xl text-foreground">{wt("Add Sunset Special")}</h1>
           </div>
-          <p className="text-muted-foreground">
-            Enhance your Hop On Sintra experience with an exclusive sunset drive
-          </p>
+          <p className="text-muted-foreground">{wt("Enhance your Hop On Sintra experience with an exclusive sunset drive")}</p>
         </div>
       </div>
 
@@ -417,20 +410,15 @@ export function SunsetSpecialPurchasePage() {
           <div>
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">
-                  Your Booking
-                </CardTitle>
-                <CardDescription>
-                  Booking ID: {booking.id}
+                <CardTitle className="text-lg">{wt("Your Booking")}</CardTitle>
+                <CardDescription>{wt("Booking ID:")}{booking.id}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-start gap-3">
                   <Calendar className="h-5 w-5 text-teal-600 mt-0.5" />
                   <div>
-                    <p className="text-sm text-gray-500">
-                      Date
-                    </p>
+                    <p className="text-sm text-gray-500">{wt("Date")}</p>
                     <p className="font-medium">
                       {formattedDate}
                     </p>
@@ -440,9 +428,7 @@ export function SunsetSpecialPurchasePage() {
                 <div className="flex items-start gap-3">
                   <Users className="h-5 w-5 text-teal-600 mt-0.5" />
                   <div>
-                    <p className="text-sm text-gray-500">
-                      Passengers
-                    </p>
+                    <p className="text-sm text-gray-500">{wt("Passengers")}</p>
                     <p className="font-medium">
                       {booking.passengers.length}{" "}
                       {booking.passengers.length === 1
@@ -454,9 +440,7 @@ export function SunsetSpecialPurchasePage() {
 
                 {booking.contactInfo && (
                   <div className="pt-4 border-t">
-                    <p className="text-sm text-gray-500">
-                      Contact
-                    </p>
+                    <p className="text-sm text-gray-500">{wt("Contact")}</p>
                     <p className="font-medium">
                       {booking.contactInfo.name}
                     </p>
@@ -472,9 +456,7 @@ export function SunsetSpecialPurchasePage() {
             <Card className="mt-6 border-orange-200 bg-gradient-to-br from-orange-50 to-pink-50">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <Sunset className="h-5 w-5 text-orange-500" />
-                  Sunset Special Details
-                </CardTitle>
+                  <Sunset className="h-5 w-5 text-orange-500" />{wt("Sunset Special Details")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 {sunsetSpecial && (
@@ -487,9 +469,7 @@ export function SunsetSpecialPurchasePage() {
                       <div className="flex items-center gap-2">
                         <Clock className="h-4 w-4 text-orange-600" />
                         <div>
-                          <p className="text-xs text-gray-500">
-                            Departure
-                          </p>
+                          <p className="text-xs text-gray-500">{wt("Departure")}</p>
                           <p className="text-sm font-medium">
                             {sunsetSpecial.departureTime}
                           </p>
@@ -498,9 +478,7 @@ export function SunsetSpecialPurchasePage() {
                       <div className="flex items-center gap-2">
                         <MapPin className="h-4 w-4 text-orange-600" />
                         <div>
-                          <p className="text-xs text-gray-500">
-                            Duration
-                          </p>
+                          <p className="text-xs text-gray-500">{wt("Duration")}</p>
                           <p className="text-sm font-medium">
                             {sunsetSpecial.duration}
                           </p>
@@ -529,19 +507,14 @@ export function SunsetSpecialPurchasePage() {
           <div>
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">
-                  Add-On Summary
-                </CardTitle>
+                <CardTitle className="text-lg">{wt("Add-On Summary")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">
-                      Sunset Special
-                    </span>
+                    <span className="text-gray-600">{wt("Sunset Special")}</span>
                     <span>
-                      €{SUNSET_SPECIAL_PRICE} per person
-                    </span>
+                      €{SUNSET_SPECIAL_PRICE}{wt("per person")}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">
@@ -557,9 +530,7 @@ export function SunsetSpecialPurchasePage() {
                 <Separator />
 
                 <div className="flex justify-between items-center">
-                  <span className="font-semibold">
-                    Total to Pay
-                  </span>
+                  <span className="font-semibold">{wt("Total to Pay")}</span>
                   <span className="text-2xl font-bold text-orange-600">
                     €{totalPrice}
                   </span>
@@ -570,16 +541,15 @@ export function SunsetSpecialPurchasePage() {
                   <Alert className={availableSeats >= booking.passengers.length ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"}>
                     <AlertDescription className={`text-sm ${availableSeats >= booking.passengers.length ? "text-green-900" : "text-red-900"}`}>
                       {availableSeats >= booking.passengers.length 
-                        ? `✓ ${availableSeats} seat(s) available for this date`
-                        : `⚠️ Only ${availableSeats} seat(s) available. You need ${booking.passengers.length}.`
+                        ? wt("Available places: {count}", {count: availableSeats})
+                        : wt("Only {available} places are available; your group needs {needed}.", {available: availableSeats, needed: booking.passengers.length})
                       }
                     </AlertDescription>
                   </Alert>
                 )}
 
                 <Alert className="bg-blue-50 border-blue-200">
-                  <AlertDescription className="text-sm text-blue-900">
-                    This will be added to your existing booking{" "}
+                  <AlertDescription className="text-sm text-blue-900">{wt("This will be added to your existing booking")}{" "}
                     {booking.id}
                   </AlertDescription>
                 </Alert>
@@ -593,23 +563,15 @@ export function SunsetSpecialPurchasePage() {
                   >
                     {isCheckingAvailability ? (
                       <>
-                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                        Checking Availability...
-                      </>
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />{wt("Checking Availability...")}</>
                     ) : isCreatingPayment ? (
                       <>
-                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                        Preparing Payment...
-                      </>
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />{wt("Preparing Payment...")}</>
                     ) : availableSeats !== null && availableSeats < booking.passengers.length ? (
-                      <>
-                        Sold Out
-                      </>
+                      <>{wt("Sold Out")}</>
                     ) : (
                       <>
-                        <CreditCard className="mr-2 h-5 w-5" />
-                        Continue to Payment
-                      </>
+                        <CreditCard className="mr-2 h-5 w-5" />{wt("Continue to Payment")}</>
                     )}
                   </Button>
                 )}
@@ -620,12 +582,8 @@ export function SunsetSpecialPurchasePage() {
             {showPayment && clientSecret && (
               <Card className="mt-6">
                 <CardHeader>
-                  <CardTitle className="text-lg">
-                    Payment Details
-                  </CardTitle>
-                  <CardDescription>
-                    Secure payment processed by Stripe
-                  </CardDescription>
+                  <CardTitle className="text-lg">{wt("Payment Details")}</CardTitle>
+                  <CardDescription>{wt("Secure payment processed by Stripe")}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <StripePaymentForm
@@ -646,13 +604,8 @@ export function SunsetSpecialPurchasePage() {
                 <div className="flex items-center gap-3">
                   <Loader2 className="h-5 w-5 animate-spin text-orange-600" />
                   <div>
-                    <p className="font-medium text-orange-900">
-                      Processing your booking...
-                    </p>
-                    <p className="text-sm text-orange-700">
-                      Please wait while we update your
-                      reservation
-                    </p>
+                    <p className="font-medium text-orange-900">{wt("Processing your booking...")}</p>
+                    <p className="text-sm text-orange-700">{wt("Please wait while we update your reservation")}</p>
                   </div>
                 </div>
               </div>
@@ -664,9 +617,7 @@ export function SunsetSpecialPurchasePage() {
         <Card className="mt-8">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <CheckCircle className="h-5 w-5 text-orange-600" />
-              Important Instructions
-            </CardTitle>
+              <CheckCircle className="h-5 w-5 text-orange-600" />{wt("Important Instructions")}</CardTitle>
           </CardHeader>
           <CardContent>
             {sunsetSpecial?.instructions ? (
@@ -677,11 +628,7 @@ export function SunsetSpecialPurchasePage() {
               </div>
             ) : (
               <div className="text-gray-600 text-sm">
-                <p>
-                  Please arrive 10 minutes before departure time
-                  at the Historical Center. Bring warm clothing
-                  as it can be windy at the coast.
-                </p>
+                <p>{wt("Please arrive 10 minutes before departure time at the Historical Center. Bring warm clothing as it can be windy at the coast.")}</p>
               </div>
             )}
           </CardContent>

@@ -1,3 +1,5 @@
+import {MerchantAccess} from './MerchantAccess';
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -49,7 +51,7 @@ const emptyDealForm = {
   isActive: true,
 };
 
-export function MerchantsDealsManagement() {
+export function MerchantsDealsManagement({showProfiles=true}:{showProfiles?:boolean}) {
   const [merchants, setMerchants] = useState<any[]>([]);
   const [deals, setDeals] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -308,7 +310,7 @@ export function MerchantsDealsManagement() {
 
   return (
     <div className="space-y-8">
-      {/* ===== Merchants ===== */}
+      {showProfiles&&<MerchantAccess merchants={merchants}/>}{/* ===== Merchants ===== */}
       <div className="space-y-4 sm:space-y-6">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
@@ -788,3 +790,6 @@ export function MerchantsDealsManagement() {
     </div>
   );
 }
+
+
+

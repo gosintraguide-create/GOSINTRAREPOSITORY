@@ -1,3 +1,4 @@
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useState, useEffect } from "react";
 import {
   Card,
@@ -331,7 +332,7 @@ export function SellTicketsForm({
       if (data.success) {
         // Show success message with login credentials
         const loginInfo = data.customerInfo
-          ? `\n\nCustomer Login:\nEmail: ${data.customerInfo.email}\nPassword: ${data.customerInfo.temporaryPassword}\n\nThey can use these credentials to login and request rides.`
+          ? `\n\nCustomer Login:\nBooking ID: ${data.customerInfo.bookingId}\nLast name: ${data.customerInfo.lastName}\n\nThey can use these credentials to login and request rides.`
           : '';
         
         toast.success(
@@ -348,7 +349,7 @@ export function SellTicketsForm({
             toast.info(
               `Customer Login Credentials`,
               {
-                description: `Email: ${data.customerInfo.email}\nPassword: ${data.customerInfo.temporaryPassword}\n\nShare these with ${firstName} ${lastName} so they can login to request rides.`,
+                description: `Booking ID: ${data.customerInfo.bookingId}\nLast name: ${data.customerInfo.lastName}\n\nShare these with ${firstName} ${lastName} so they can login to request rides.`,
                 duration: 15000,
               },
             );

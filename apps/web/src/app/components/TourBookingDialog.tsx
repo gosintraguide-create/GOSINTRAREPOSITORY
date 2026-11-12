@@ -1,3 +1,5 @@
+import {useWebsiteText} from '../lib/translations/websiteText';
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { Button } from './ui/button';
@@ -101,6 +103,7 @@ function StepIndicator({ current, labels }: { current: Step; labels: { datetime:
 // ─── Main booking form ────────────────────────────────────────────────────────
 
 function BookingForm({ tour, onSuccess, onConfirmed, initialDate, initialPeople, language = 'en' }: { tour: TourBookingDialogProps['tour']; onSuccess: () => void; onConfirmed?: () => void; initialDate?: Date; initialPeople?: number; language?: string }) {
+  const wt = useWebsiteText();
   const tDialog = getTranslation(language).tourBookingDialog;
   // Steps
   const [step, setStep] = useState<Step>('datetime');
@@ -254,7 +257,7 @@ function BookingForm({ tour, onSuccess, onConfirmed, initialDate, initialPeople,
         : '';
 
   const handleContinueToPayment = async () => {
-    if (!name || !email || !phone) { setError('Please fill in all required fields'); return; }
+    if (!name || !email || !phone) { setError(wt("Please fill in all required fields")); return; }
     setError('');
     setProcessing(true);
     try {
@@ -316,7 +319,7 @@ function BookingForm({ tour, onSuccess, onConfirmed, initialDate, initialPeople,
       setClientSecret(data.clientSecret);
       setStep('payment');
     } catch (err: any) {
-      setError(err.message || 'An error occurred. Please try again.');
+      setError(wt(quoteMode ? "Failed to submit request. Please try again." : "Payment could not be started. Please try again."));
     } finally {
       setProcessing(false);
     }
@@ -344,7 +347,7 @@ function BookingForm({ tour, onSuccess, onConfirmed, initialDate, initialPeople,
       setStep('confirmed');
       onConfirmed?.();
     } catch (err: any) {
-      toast.error(err.message || 'Booking failed. Please contact support with your payment confirmation.');
+      toast.error(wt("Booking failed. Please contact support with your payment confirmation."));
     }
   };
 
@@ -370,7 +373,7 @@ function BookingForm({ tour, onSuccess, onConfirmed, initialDate, initialPeople,
         <div className="flex flex-col gap-6 md:flex-row md:gap-0 md:min-h-[460px]">
 
           {/* ── Left: Calendar ─────────────────────────────────────────────── */}
-          <div className="flex-shrink-0 md:w-[55%] md:pr-8">
+          <div className="min-w-0 flex-shrink-0 md:w-[55%] md:pr-8">
             <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
               {tDialog.selectDate}
             </p>
@@ -391,12 +394,12 @@ function BookingForm({ tour, onSuccess, onConfirmed, initialDate, initialPeople,
                 nav_button: 'h-8 w-8 bg-white rounded-full border border-border shadow-sm flex items-center justify-center opacity-70 hover:opacity-100 transition-opacity',
                 nav_button_previous: 'absolute left-0',
                 nav_button_next: 'absolute right-0',
-                table: 'w-full border-collapse',
+                table: 'w-full table-fixed border-collapse',
                 head_row: 'flex w-full mb-1',
-                head_cell: 'text-muted-foreground flex-1 text-xs font-semibold text-center py-1.5 uppercase tracking-wide',
+                head_cell: 'text-muted-foreground min-w-0 flex-1 text-xs font-semibold text-center py-1.5 uppercase tracking-wide',
                 row: 'flex w-full',
-                cell: 'flex-1 text-center p-0.5 relative',
-                day: 'h-10 w-full rounded-full font-normal text-sm aria-selected:opacity-100 hover:bg-stone-200 transition-colors',
+                cell: 'min-w-0 flex-1 text-center p-0.5 relative',
+                day: 'h-11 w-full !min-w-0 rounded-full font-normal text-sm aria-selected:opacity-100 hover:bg-stone-200 transition-colors',
                 day_selected: 'bg-foreground text-background hover:bg-foreground hover:text-background focus:bg-foreground focus:text-background font-bold rounded-full',
                 day_today: 'font-bold text-primary',
                 day_outside: 'text-muted-foreground opacity-30',
@@ -429,7 +432,7 @@ function BookingForm({ tour, onSuccess, onConfirmed, initialDate, initialPeople,
               {selectedDate ? (
                 <>
                   <p className="mb-3 text-sm font-semibold text-foreground">
-                    {format(selectedDate, 'EEEE, MMMM d')}
+                    {new Intl.DateTimeFormat(language === 'pt' ? 'pt-PT' : language, {dateStyle: 'long'}).format(selectedDate)}
                   </p>
                   <div className="grid grid-cols-3 gap-2">
                     {timeSlots.map((slot) => (
@@ -550,7 +553,7 @@ function BookingForm({ tour, onSuccess, onConfirmed, initialDate, initialPeople,
                 <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {LANGUAGES.map((l) => (
-                    <SelectItem key={l} value={l}>{l}</SelectItem>
+                    <SelectItem key={l} value={l}>{new Intl.DisplayNames([language], {type: 'language'}).of(({English:'en',Portuguese:'pt',Spanish:'es',French:'fr',German:'de',Italian:'it',Dutch:'nl'} as Record<string,string>)[l])}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -582,7 +585,7 @@ function BookingForm({ tour, onSuccess, onConfirmed, initialDate, initialPeople,
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">{tDialog.summaryDate}</span>
-              <span className="font-medium">{selectedDate ? format(selectedDate, 'dd MMM yyyy') : '—'}</span>
+              <span className="font-medium">{selectedDate ? new Intl.DateTimeFormat(language === 'pt' ? 'pt-PT' : language, {dateStyle: 'long'}).format(selectedDate) : '—'}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">{tDialog.summaryTime}</span>
@@ -645,7 +648,7 @@ function BookingForm({ tour, onSuccess, onConfirmed, initialDate, initialPeople,
               </div>
               <div className="rounded-lg border border-border bg-secondary/20 p-4 text-sm w-full text-left space-y-1">
                 <div className="flex justify-between"><span className="text-muted-foreground">{tDialog.summaryTour}</span><span className="font-medium">{tour.title}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">{tDialog.summaryDate}</span><span className="font-medium">{selectedDate ? format(selectedDate, 'dd MMM yyyy') : '—'}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">{tDialog.summaryDate}</span><span className="font-medium">{selectedDate ? new Intl.DateTimeFormat(language === 'pt' ? 'pt-PT' : language, {dateStyle: 'long'}).format(selectedDate) : '—'}</span></div>
                 <div className="flex justify-between"><span className="text-muted-foreground">{tDialog.summaryTime}</span><span className="font-medium">{selectedTime}</span></div>
                 <div className="flex justify-between"><span className="text-muted-foreground">{tDialog.summaryGuests}</span><span className="font-medium">{numberOfPeople}</span></div>
               </div>
@@ -665,7 +668,7 @@ function BookingForm({ tour, onSuccess, onConfirmed, initialDate, initialPeople,
                   <div className="flex-1 space-y-0.5">
                     <p className="font-semibold text-foreground">{tour.title}</p>
                     <p className="text-muted-foreground">
-                      {selectedDate ? format(selectedDate, 'dd MMM yyyy') : ''} · {selectedTime} · {numberOfPeople} {numberOfPeople === 1 ? tDialog.guest : tDialog.guestsPlural}
+                      {selectedDate ? new Intl.DateTimeFormat(language === 'pt' ? 'pt-PT' : language, {dateStyle: 'long'}).format(selectedDate) : ''} · {selectedTime} · {numberOfPeople} {numberOfPeople === 1 ? tDialog.guest : tDialog.guestsPlural}
                     </p>
                   </div>
                   <p className="text-base font-bold text-primary">€{tourPrice.toFixed(2)}</p>
@@ -714,7 +717,7 @@ function BookingForm({ tour, onSuccess, onConfirmed, initialDate, initialPeople,
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">{tDialog.summaryDate}</span>
-              <span className="font-semibold text-foreground">{selectedDate ? format(selectedDate, 'dd MMM yyyy') : '—'}</span>
+              <span className="font-semibold text-foreground">{selectedDate ? new Intl.DateTimeFormat(language === 'pt' ? 'pt-PT' : language, {dateStyle: 'long'}).format(selectedDate) : '—'}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">{tDialog.summaryTime}</span>
@@ -784,6 +787,7 @@ function BookingForm({ tour, onSuccess, onConfirmed, initialDate, initialPeople,
 // ─── Dialog wrapper ───────────────────────────────────────────────────────────
 
 export function TourBookingDialog({ open, onOpenChange, tour, initialDate, initialPeople, language = 'en' }: TourBookingDialogProps) {
+  const wt = useWebsiteText();
   const tDialog = getTranslation(language).tourBookingDialog;
   const [confirmed, setConfirmed] = useState(false);
 
@@ -795,12 +799,12 @@ export function TourBookingDialog({ open, onOpenChange, tour, initialDate, initi
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="w-[95vw] sm:max-w-3xl md:max-w-5xl max-h-[90vh] overflow-y-auto bg-[#F9F6F1] p-5 sm:p-7">
+      <DialogContent className="w-[95vw] grid-cols-[minmax(0,1fr)] sm:max-w-3xl md:max-w-5xl max-h-[90dvh] overflow-y-auto bg-[#F9F6F1] p-5 sm:p-7">
         {/* Header is hidden once the booking is confirmed — the confirmation screen has its own heading */}
         {!confirmed && (
           <DialogHeader className="mb-1">
             <DialogTitle className="text-xl font-bold">{tDialog.title}</DialogTitle>
-            <DialogDescription className="text-sm text-muted-foreground">Ready to book your {tour.title}? Just follow the steps below and we'll take care of the rest.</DialogDescription>
+            <DialogDescription className="text-sm text-muted-foreground">{wt('Ready to book {tour}? Follow the steps below.', {tour: tour.title})}</DialogDescription>
           </DialogHeader>
         )}
         {/* sr-only title required by dialog for a11y even when header is hidden */}

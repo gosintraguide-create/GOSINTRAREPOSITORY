@@ -1,3 +1,4 @@
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useState, useEffect } from "react";
 import { Upload, Copy, Trash2, Image as ImageIcon, ExternalLink, RefreshCw } from "lucide-react";
 import { Button } from "./ui/button";

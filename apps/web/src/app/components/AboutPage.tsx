@@ -1,3 +1,4 @@
+import {useWebsiteText} from '../lib/translations/websiteText';
 import { useOutletContext } from "react-router";
 import { Users, Car, Award, Camera, Heart, Shield, Target } from "lucide-react";
 import { getTranslation } from "../lib/translations/loader";
@@ -13,6 +14,7 @@ interface OutletContext {
 const PERK_ICONS = [Users, Car, Award, Camera];
 
 export function AboutPage() {
+  const wt = useWebsiteText();
   const { language = "en" } = useOutletContext<OutletContext>();
   const content = getTranslation(language).about;
 
@@ -68,7 +70,7 @@ export function AboutPage() {
             <div className="overflow-hidden rounded-2xl shadow-2xl transition-transform hover:scale-[1.02]">
               <ImageWithFallback
                 src="https://images.unsplash.com/photo-1668945306762-a31d14d8a940?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzaW50cmElMjBwb3J0dWdhbCUyMHBhbGFjZXxlbnwxfHx8fDE3NjAxNDAyMDB8MA&ixlib=rb-4.1.0&q=80&w=1080"
-                alt="Sintra Palace"
+                alt={wt("Sintra Palace")}
                 className="h-full w-full object-cover"
               />
             </div>

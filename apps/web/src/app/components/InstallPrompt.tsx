@@ -1,3 +1,4 @@
+import {useWebsiteText} from '../lib/translations/websiteText';
 import { useState, useEffect } from "react";
 import { X, Download, Smartphone } from "lucide-react";
 import { Button } from "./ui/button";
@@ -9,6 +10,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export function InstallPrompt() {
+  const wt = useWebsiteText();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
@@ -121,7 +123,7 @@ export function InstallPrompt() {
         <button
           onClick={handleDismiss}
           className="absolute right-2 top-2 rounded-full p-1 text-muted-foreground hover:bg-secondary hover:text-foreground"
-          aria-label="Dismiss"
+          aria-label={wt("Dismiss")}
         >
           <X className="h-4 w-4" />
         </button>
@@ -131,25 +133,23 @@ export function InstallPrompt() {
             <Smartphone className="h-6 w-6 text-primary" />
           </div>
           <div className="flex-1 pr-6">
-            <h3 className="text-foreground mb-1">Install Hop On Sintra</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Get quick access and work offline. Perfect for drivers!
-            </p>
+            <h3 className="text-foreground mb-1">{wt("Install Hop On Sintra")}</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">{wt("Get quick access and work offline. Perfect for drivers!")}</p>
           </div>
         </div>
 
         <div className="mb-3 space-y-2 rounded-lg bg-secondary/50 p-3">
           <div className="flex items-center gap-2 text-sm">
             <span className="text-green-600">✓</span>
-            <span className="text-foreground">Works offline</span>
+            <span className="text-foreground">{wt("Works offline")}</span>
           </div>
           <div className="flex items-center gap-2 text-sm">
             <span className="text-green-600">✓</span>
-            <span className="text-foreground">Home screen icon</span>
+            <span className="text-foreground">{wt("Home screen icon")}</span>
           </div>
           <div className="flex items-center gap-2 text-sm">
             <span className="text-green-600">✓</span>
-            <span className="text-foreground">Faster loading</span>
+            <span className="text-foreground">{wt("Faster loading")}</span>
           </div>
         </div>
 
@@ -159,16 +159,12 @@ export function InstallPrompt() {
             className="flex-1"
             size="sm"
           >
-            <Download className="mr-2 h-4 w-4" />
-            Install App
-          </Button>
+            <Download className="mr-2 h-4 w-4" />{wt("Install App")}</Button>
           <Button
             onClick={handleDismiss}
             variant="outline"
             size="sm"
-          >
-            Later
-          </Button>
+          >{wt("Later")}</Button>
         </div>
       </Card>
     </div>

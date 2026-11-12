@@ -1,3 +1,4 @@
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 // Monument Management System for Hop On Sintra
 // Manages the attractions/monuments displayed on the Attractions page
 

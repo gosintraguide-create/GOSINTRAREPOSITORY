@@ -1,3 +1,4 @@
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useState, useEffect } from "react";
 import { Clock, Navigation } from "lucide-react";
 import { projectId, publicAnonKey } from "../utils/supabase/info";

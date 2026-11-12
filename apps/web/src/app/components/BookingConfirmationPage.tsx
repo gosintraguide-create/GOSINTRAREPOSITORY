@@ -1,3 +1,5 @@
+import {useWebsiteText} from '../lib/translations/websiteText';
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useState, useEffect } from "react";
 import { CheckCircle, Download, Mail, Calendar, Users, ArrowRight, Printer, AlertCircle, FileDown, Ticket, Home, Settings, LogIn, Car, MessageCircle, MapPin } from "lucide-react";
 import { Button } from "./ui/button";
@@ -17,6 +19,7 @@ interface BookingConfirmationPageProps {
 }
 
 export function BookingConfirmationPage({ onNavigate, booking, language = "en" }: BookingConfirmationPageProps) {
+  const wt = useWebsiteText();
   const [emailSent, setEmailSent] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -92,7 +95,7 @@ export function BookingConfirmationPage({ onNavigate, booking, language = "en" }
     );
   }
 
-  const formattedDate = new Date(booking.selectedDate).toLocaleDateString('en-US', {
+  const formattedDate = new Date(booking.selectedDate).toLocaleDateString(language === 'pt' ? 'pt-PT' : language, {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
@@ -216,7 +219,7 @@ export function BookingConfirmationPage({ onNavigate, booking, language = "en" }
               <div>
                 <p className="font-medium">{t.bookingConfirmation.date}</p>
                 <p className="text-muted-foreground">{formattedDate}</p>
-                <p className="text-muted-foreground">9:00 AM - 7:00 PM</p>
+                <p className="text-muted-foreground">{wt("9:00 AM - 7:00 PM")}</p>
               </div>
             </div>
 
@@ -247,17 +250,14 @@ export function BookingConfirmationPage({ onNavigate, booking, language = "en" }
               <div className="space-y-2">
                 <p className="font-semibold text-secondary text-lg">🌟 {t.bookingConfirmation.insightTourPickup}</p>
                 <p className="text-foreground">
-                  <strong>{t.bookingConfirmation.departsAt} {new Date(booking.selectedDate).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}</strong>
+                  <strong>{t.bookingConfirmation.departsAt} {new Date(booking.selectedDate).toLocaleTimeString(language === 'pt' ? 'pt-PT' : language, { hour: 'numeric', minute: '2-digit', timeZone:'Europe/Lisbon' })}</strong>
                 </p>
                 <p className="text-foreground">
-                  <strong>📍 {t.bookingConfirmation.meetingPoint}:</strong> Historical Center of Sintra (downtown area near the main square)
-                </p>
+                  <strong>📍 {t.bookingConfirmation.meetingPoint}:</strong>{wt("Historical Center of Sintra (downtown area near the main square)")}</p>
                 <p className="text-foreground">
                   <strong>⏰ {t.bookingConfirmation.arriveEarly}</strong> {t.bookingConfirmation.lookForVehicle}
                 </p>
-                <p className="text-sm text-muted-foreground italic mt-2">
-                  💡 This information is also included in your PDF ticket attachment and confirmation email.
-                </p>
+                <p className="text-sm text-muted-foreground italic mt-2">{wt("💡 This information is also included in your PDF ticket attachment and confirmation email.")}</p>
               </div>
             </AlertDescription>
           </Alert>
@@ -443,7 +443,7 @@ export function BookingConfirmationPage({ onNavigate, booking, language = "en" }
 
           <div className="mt-6 space-y-2 text-sm text-muted-foreground">
             <p>💡 <strong>{t.bookingConfirmation.tip}:</strong> {t.bookingConfirmation.tipUseBookingId.replace('{bookingId}', booking.id)}</p>
-            <p>📍 View our <button onClick={() => onNavigate("route-map")} className="text-primary hover:underline">{t.bookingConfirmation.viewRouteMap}</button> to plan your stops</p>
+            <p>📍 <button onClick={() => onNavigate("route-map")} className="text-primary hover:underline">{wt("View the route map to plan your stops")}</button></p>
           </div>
         </Card>
 

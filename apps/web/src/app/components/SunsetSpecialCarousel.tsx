@@ -1,3 +1,5 @@
+import {useWebsiteText} from '../lib/translations/websiteText';
+import { authenticatedFetch as fetch } from "@/lib/authenticatedFetch";
 import { useState, useEffect } from "react";
 import { Sunset, Clock, Users, MapPin, Sparkles, ChevronLeft, ChevronRight, Loader2, CheckCircle } from "lucide-react";
 import { Button } from "./ui/button";
@@ -17,6 +19,7 @@ interface SunsetSpecialCarouselProps {
 }
 
 export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpecialCarouselProps) {
+  const wt = useWebsiteText();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAvailable, setIsAvailable] = useState(false);
   
@@ -249,14 +252,14 @@ export function SunsetSpecialCarousel({ onNavigate, language = "en" }: SunsetSpe
             <button
               onClick={prevSlide}
               className="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/80 p-1.5 shadow-md backdrop-blur-sm transition-all hover:bg-white hidden sm:block"
-              aria-label="Previous image"
+              aria-label={wt("Previous image")}
             >
               <ChevronLeft className="h-4 w-4 text-gray-700" />
             </button>
             <button
               onClick={nextSlide}
               className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/80 p-1.5 shadow-md backdrop-blur-sm transition-all hover:bg-white hidden sm:block"
-              aria-label="Next image"
+              aria-label={wt("Next image")}
             >
               <ChevronRight className="h-4 w-4 text-gray-700" />
             </button>

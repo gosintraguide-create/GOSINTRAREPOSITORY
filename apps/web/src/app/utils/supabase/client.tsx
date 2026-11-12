@@ -1,8 +1,7 @@
-import { createClient as createSupabaseClient } from '@supabase/supabase-js';
-import { projectId, publicAnonKey } from './info';
-
-const supabaseUrl = `https://${projectId}.supabase.co`;
+import { adminClient } from '../../lib/adminClient';
 
 export function createClient() {
-  return createSupabaseClient(supabaseUrl, publicAnonKey);
+  // Realtime must use the same verified session as admin API requests.
+  // A fresh client with the default storage key silently subscribes as anon.
+  return adminClient;
 }
