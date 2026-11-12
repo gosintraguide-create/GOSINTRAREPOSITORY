@@ -1,3 +1,4 @@
+import {localizeWebsiteContent} from './translations/websiteText';
 // Central content management system for the website
 // Version: 2.0 - Updated branding to Hop On Sintra
 import {
@@ -1473,43 +1474,21 @@ export function loadContent(): WebsiteContent {
 }
 
 // Load content with language support
-export function loadContentWithLanguage(
-  languageCode: string = "en",
-): WebsiteContent {
-  // Get translation for the language
+export function loadContentWithLanguage(languageCode: string = "en"): WebsiteContent {
   const translation = getTranslation(languageCode) as unknown as WebsiteContent;
-
-  // Check if there's custom content saved by admin
-  const saved = localStorage.getItem("website-content");
-  if (saved) {
-    try {
-      const parsed = JSON.parse(saved);
-      // Merge custom content with translation (custom content takes precedence)
-      return {
-        ...translation,
-        ...parsed,
-        company: { ...translation.company, ...parsed.company },
-        homepage: {
-          ...translation.homepage,
-          ...parsed.homepage,
-        },
-        about: { ...translation.about, ...parsed.about },
-        attractions: {
-          ...translation.attractions,
-          ...parsed.attractions,
-        },
-        seo: { ...translation.seo, ...parsed.seo },
-        blog: { ...translation.blog, ...parsed.blog },
-        featureFlags: {
-          ...translation.featureFlags,
-          ...parsed.featureFlags,
-        },
-      };
-    } catch {
-      return translation;
-    }
-  }
-  return translation;
+  try {
+    const saved = localStorage.getItem("website-content");
+    if (!saved) return translation;
+    const parsed = JSON.parse(saved);
+    const merge = (base: any, override: any): any => {
+      if (!override || typeof override !== 'object' || Array.isArray(override)) return override ?? base;
+      const result = {...base};
+      for (const [key, value] of Object.entries(override)) result[key] = merge(base?.[key], value);
+      return result;
+    };
+    const shared = localizeWebsiteContent(parsed, languageCode);
+    return merge(merge(translation, shared), parsed._translations?.[languageCode] ?? {});
+  } catch { return translation; }
 }
 
 // Async function to sync content from database
@@ -1529,7 +1508,7 @@ export async function syncContentFromDatabase(): Promise<WebsiteContent> {
         // Clear localStorage
         localStorage.removeItem("website-content");
         // Save fresh defaults to database
-        await saveContentToAPI(DEFAULT_CONTENT);
+        // Keep fallback local; content writes belong to the admin editor.
         return DEFAULT_CONTENT;
       }
 
@@ -1606,7 +1585,7 @@ export async function syncContentFromDatabaseWithLanguage(
         // Clear localStorage
         localStorage.removeItem("website-content");
         // Save fresh defaults to database
-        await saveContentToAPI(DEFAULT_CONTENT);
+        // Keep fallback local; content writes belong to the admin editor.
         // Return translation merged with fresh defaults
         return {
           ...DEFAULT_CONTENT,
@@ -1624,30 +1603,7 @@ export async function syncContentFromDatabaseWithLanguage(
           JSON.stringify(content),
         );
 
-        // Merge database content with translation (database content takes precedence)
-        return {
-          ...translation,
-          ...content,
-          company: {
-            ...translation.company,
-            ...content.company,
-          },
-          homepage: {
-            ...translation.homepage,
-            ...content.homepage,
-          },
-          about: { ...translation.about, ...content.about },
-          attractions: {
-            ...translation.attractions,
-            ...content.attractions,
-          },
-          seo: { ...translation.seo, ...content.seo },
-          blog: { ...translation.blog, ...content.blog },
-          featureFlags: {
-            ...translation.featureFlags,
-            ...content.featureFlags,
-          },
-        };
+        return loadContentWithLanguage(languageCode);
       }
     }
   } catch (error) {

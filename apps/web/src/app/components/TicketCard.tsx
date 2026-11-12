@@ -1,4 +1,6 @@
 import { QRCodeSVG } from "qrcode.react";
+import {useContext} from 'react';
+import {useWebsiteText, WebsiteLanguageContext} from '../lib/translations/websiteText';
 
 interface TicketCardProps {
   bookingId: string;
@@ -25,8 +27,10 @@ export function TicketCard({
   totalPassengers,
   pickupLocation,
 }: TicketCardProps) {
+  const wt = useWebsiteText();
+  const language = useContext(WebsiteLanguageContext);
   // Format date nicely
-  const formattedDate = new Date(date).toLocaleDateString("en-US", {
+  const formattedDate = new Date(date).toLocaleDateString(language === 'pt' ? 'pt-PT' : language, {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -57,7 +61,7 @@ export function TicketCard({
           {/* Header */}
           <div className="bg-accent px-6 py-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span className="text-[#FFF8F0] tracking-wider">DAY PASS</span>
+              <span className="text-[#FFF8F0] tracking-wider">{wt('DAY PASS')}</span>
             </div>
             <div className="text-[#FFF8F0] text-sm border border-[#FFF8F0]/30 px-3 py-1 rounded">
               {bookingId}
@@ -70,7 +74,7 @@ export function TicketCard({
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                  Name of Passenger
+                  {wt('Name of Passenger')}
                 </div>
                 <div className="text-foreground uppercase tracking-wide">
                   {passengerName}
@@ -78,10 +82,10 @@ export function TicketCard({
               </div>
               <div>
                 <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                  Ticket Type
+                  {wt('Ticket Type')}
                 </div>
                 <div className="text-foreground uppercase tracking-wide">
-                  {passengerType}
+                  {wt(passengerType)}
                 </div>
               </div>
             </div>
@@ -90,7 +94,7 @@ export function TicketCard({
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                  Service Area
+                  {wt('Service Area')}
                 </div>
                 <div className="text-foreground uppercase tracking-wide">
                   SINTRA
@@ -98,10 +102,10 @@ export function TicketCard({
               </div>
               <div>
                 <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                  Coverage
+                  {wt('Coverage')}
                 </div>
                 <div className="text-foreground uppercase tracking-wide">
-                  ALL ROUTES
+                  {wt('ALL ROUTES')}
                 </div>
               </div>
             </div>
@@ -110,7 +114,7 @@ export function TicketCard({
             <div className="grid grid-cols-3 gap-4 pt-2 border-t border-[#DDD0C0]">
               <div>
                 <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                  Date
+                  {wt('Date')}
                 </div>
                 <div className="text-foreground tracking-wide">
                   {formattedDate}
@@ -118,13 +122,13 @@ export function TicketCard({
               </div>
               <div>
                 <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                  Start Time
+                  {wt('Start Time')}
                 </div>
                 <div className="text-foreground tracking-wide">{timeSlot}</div>
               </div>
               <div>
                 <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                  Valid Until
+                  {wt('Valid Until')}
                 </div>
                 <div className="text-foreground tracking-wide">20:00</div>
               </div>
@@ -134,10 +138,10 @@ export function TicketCard({
             {pickupLocation && (
               <div className="pt-2 border-t border-[#DDD0C0]">
                 <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                  Pickup Location
+                  {wt('Pickup Location')}
                 </div>
                 <div className="text-foreground uppercase tracking-wide">
-                  {pickupLocation.replace(/-/g, ' ')}
+                  {wt(pickupLocation.replace(/-/g, ' '))}
                 </div>
               </div>
             )}
@@ -147,10 +151,10 @@ export function TicketCard({
               <div className="pt-2 border-t border-[#DDD0C0]">
                 <div className="bg-accent/10 px-4 py-2 rounded flex justify-between items-center">
                   <span className="text-sm uppercase tracking-wide text-muted-foreground">
-                    Total Price
+                    {wt('Total Price')}
                   </span>
                   <span className="text-accent tracking-wider">
-                    €{totalPrice.toFixed(2)}
+                    {new Intl.NumberFormat(language === 'pt' ? 'pt-PT' : language, {style:'currency',currency:'EUR'}).format(totalPrice)}
                   </span>
                 </div>
               </div>
@@ -173,7 +177,7 @@ export function TicketCard({
           {/* Stub Header */}
           <div className="bg-accent px-4 py-3">
             <span className="text-[#FFF8F0] text-sm tracking-wider">
-              DAY PASS
+              {wt('DAY PASS')}
             </span>
           </div>
 
@@ -181,7 +185,7 @@ export function TicketCard({
           <div className="p-4 space-y-4">
             <div>
               <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                Passenger
+                {wt('Passenger')}
               </div>
               <div className="text-sm uppercase tracking-wide truncate">
                 {passengerName.split(" ")[0]}
@@ -190,7 +194,7 @@ export function TicketCard({
 
             <div>
               <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                Service
+                {wt('Service')}
               </div>
               <div className="text-sm uppercase tracking-wide">SINTRA</div>
             </div>
@@ -200,21 +204,21 @@ export function TicketCard({
               <div className="bg-white p-2 rounded flex items-center justify-center">
                 {qrCode.startsWith('data:image') ? (
                   // If qrCode is already a data URL (base64 image), display it directly
-                  <img src={qrCode} alt="QR Code" className="w-[100px] h-[100px]" />
+                  <img src={qrCode} alt={wt('QR Code')} className="w-[100px] h-[100px]" />
                 ) : (
                   // Otherwise, generate QR code from the data string
                   <QRCodeSVG value={qrCode} size={100} level="H" />
                 )}
               </div>
               <div className="text-[10px] text-center text-muted-foreground mt-2">
-                Scan to validate
+                {wt('Scan to validate')}
               </div>
             </div>
 
             {/* Date */}
             <div className="text-xs text-center pt-2 border-t border-[#DDD0C0]">
               <div className="text-muted-foreground uppercase tracking-wide mb-1">
-                Date
+                {wt('Date')}
               </div>
               <div className="text-foreground tracking-wide">
                 {formattedDate}
@@ -234,7 +238,7 @@ export function TicketCard({
         <div className="absolute -top-3 -right-3 bg-primary text-primary-foreground rounded-full w-12 h-12 flex items-center justify-center shadow-lg border-4 border-background z-20">
           <div className="text-center">
             <div className="text-xs leading-none">{passengerNumber}</div>
-            <div className="text-[10px] leading-none">of {totalPassengers}</div>
+            <div className="text-[10px] leading-none">{wt('of {total}', {total: totalPassengers})}</div>
           </div>
         </div>
       )}

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import {onLocaleLoad} from './translations/loader';
 import {
   loadComprehensiveContentForLanguage,
   syncComprehensiveContentFromDatabase,
@@ -22,9 +23,11 @@ export function useEditableContent(language: string = "en"): ComprehensiveConten
 
   // Sync from database on mount (deduplicated + TTL-gated inside syncComprehensiveContentFromDatabase)
   useEffect(() => {
+    let active = true;
     syncComprehensiveContentFromDatabase()
-      .then(() => setContent(loadComprehensiveContentForLanguage(language)))
+      .then(() => { if (active) setContent(loadComprehensiveContentForLanguage(language)); })
       .catch(() => { /* fall through to localStorage/defaults */ });
+    return () => { active = false; };
   }, [language]);
 
   useEffect(() => {
@@ -33,6 +36,7 @@ export function useEditableContent(language: string = "en"): ComprehensiveConten
     };
 
     window.addEventListener("content-updated", handleContentUpdate);
+    const unsubscribeLocale = onLocaleLoad(handleContentUpdate);
 
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key?.startsWith("comprehensive-content")) {
@@ -44,6 +48,7 @@ export function useEditableContent(language: string = "en"): ComprehensiveConten
 
     return () => {
       window.removeEventListener("content-updated", handleContentUpdate);
+      unsubscribeLocale();
       window.removeEventListener("storage", handleStorageChange);
     };
   }, [language]);

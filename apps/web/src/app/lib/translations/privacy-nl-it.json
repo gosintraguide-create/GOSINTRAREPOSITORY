@@ -1,0 +1,268 @@
+{
+  "nl": {
+    "title": "Privacybeleid",
+    "lastUpdated": "Laatst bijgewerkt",
+    "date": "12 oktober 2025",
+    "backToHome": "Terug naar de homepage",
+    "sections": {
+      "introduction": {
+        "title": "Inleiding",
+        "content": [
+          "Hop On Sintra (\"wij\", \"onze\" of \"ons\") zet zich in voor de bescherming van je privacy. Dit privacybeleid legt uit hoe we je gegevens verzamelen, gebruiken, delen en beschermen wanneer je onze hop-on/hop-off-dagpasdienst in Sintra, Portugal, gebruikt.",
+          "Lees dit privacybeleid zorgvuldig. Als je niet akkoord gaat met dit privacybeleid, bezoek dan de website niet en gebruik onze diensten niet."
+        ]
+      },
+      "dataCollection": {
+        "title": "Gegevens die we verzamelen",
+        "intro": "We verzamelen gegevens die je rechtstreeks verstrekt bij het boeken van onze diensten:",
+        "items": [
+          {
+            "title": "Persoonsgegevens",
+            "description": "Naam, e-mailadres, telefoonnummer en andere contactgegevens die je bij het boeken opgeeft"
+          },
+          {
+            "title": "Betaalgegevens",
+            "description": "Creditcardgegevens en factuurgegevens, veilig verwerkt via onze betalingsprovider"
+          },
+          {
+            "title": "Boekingsgegevens",
+            "description": "Dienstdatum, aantal passagiers, gekozen bezienswaardigheden en ophaallocaties"
+          },
+          {
+            "title": "Gebruiksgegevens",
+            "description": "Informatie over je gebruik van onze website, waaronder bezochte pagina’s, bestede tijd en navigatiepaden"
+          },
+          {
+            "title": "Locatiegegevens",
+            "description": "GPS-locatie wanneer je een ophaalverzoek indient, uitsluitend met je toestemming"
+          },
+          {
+            "title": "Apparaatgegevens",
+            "description": "Browsertype, besturingssysteem, IP-adres en apparaatidentificatoren"
+          }
+        ]
+      },
+      "dataUse": {
+        "title": "Hoe we je gegevens gebruiken",
+        "items": [
+          "Je boekingen en aankopen van dagpassen verwerken en uitvoeren",
+          "Boekingsbevestigingen, QR-codes en dienstgerelateerde berichten sturen",
+          "Klantenservice bieden en je vragen beantwoorden",
+          "Onze diensten verbeteren en nieuwe functies ontwikkelen",
+          "Marketingberichten sturen, uitsluitend met je toestemming",
+          "Fraude voorkomen en de beveiliging verbeteren",
+          "Wettelijke verplichtingen nakomen en onze voorwaarden handhaven"
+        ]
+      },
+      "dataSharing": {
+        "title": "Hoe we je gegevens delen",
+        "intro": "We verkopen je persoonsgegevens niet. We kunnen je gegevens delen met:",
+        "items": [
+          "Dienstverleners die ons bedrijf ondersteunen, zoals betalingsverwerkers, e-maildiensten en cloudhosting",
+          "Onze voertuigexploitanten om ophaalritten te coördineren en passagiers te verifiëren",
+          "Partners bij bezienswaardigheden wanneer je gecombineerde tickets koopt",
+          "Politie of overheidsinstanties wanneer de wet dit vereist",
+          "Bedrijfsopvolgers bij een fusie, overname of verkoop van activa"
+        ]
+      },
+      "cookies": {
+        "title": "Cookies en trackingtechnologieën",
+        "intro": "We gebruiken cookies en vergelijkbare technologieën om je ervaring te verbeteren:",
+        "items": [
+          {
+            "type": "Noodzakelijke cookies",
+            "description": "Essentieel voor de werking en beveiliging van de website en het boekingsproces"
+          },
+          {
+            "type": "Functionele cookies",
+            "description": "Onthouden je voorkeuren, zoals de taalkeuze"
+          },
+          {
+            "type": "Analytische cookies",
+            "description": "Helpen ons begrijpen hoe bezoekers onze website gebruiken, zodat we de diensten kunnen verbeteren"
+          },
+          {
+            "type": "Marketingcookies",
+            "description": "Worden gebruikt om relevante advertenties te tonen, uitsluitend met je toestemming"
+          }
+        ]
+      },
+      "rights": {
+        "title": "Je rechten (AVG)",
+        "intro": "Als gebruiker in de Europese Unie heb je de volgende rechten:",
+        "items": [
+          "Recht op inzage: vraag een kopie van je persoonsgegevens die we bewaren",
+          "Recht op rectificatie: vraag om correctie van onjuiste of onvolledige gegevens",
+          "Recht op wissing: vraag om verwijdering van je persoonsgegevens (\"recht om vergeten te worden\")",
+          "Recht op beperking van verwerking: vraag om beperking van ons gebruik van je gegevens",
+          "Recht op gegevensoverdraagbaarheid: ontvang je gegevens in een gestructureerd, machineleesbaar formaat",
+          "Recht van bezwaar: maak bezwaar tegen onze verwerking van je persoonsgegevens",
+          "Recht om toestemming in te trekken: trek je toestemming op elk moment in, zonder gevolgen voor eerdere verwerking"
+        ]
+      },
+      "security": {
+        "title": "Gegevensbeveiliging",
+        "content": [
+          "We nemen passende technische en organisatorische beveiligingsmaatregelen om je persoonsgegevens te beschermen tegen ongeoorloofde toegang, wijziging, openbaarmaking of vernietiging.",
+          "Betaalgegevens worden versleuteld met de gebruikelijke SSL/TLS-protocollen. We bewaren geen volledige creditcardgegevens op onze servers.",
+          "Geen enkele verzendmethode via internet is echter 100% veilig. Hoewel we je gegevens proberen te beschermen, kunnen we geen absolute veiligheid garanderen."
+        ]
+      },
+      "thirdParty": {
+        "title": "Diensten van derden",
+        "intro": "Onze website en diensten maken gebruik van externe aanbieders:",
+        "items": [
+          "Betalingsverwerking, zoals Stripe of vergelijkbare betaalplatforms",
+          "E-mailbezorging, via Resend voor boekingsbevestigingen",
+          "Cloudhosting en databasediensten via Supabase",
+          "WhatsApp voor communicatie met de klantenservice",
+          "Analysediensten om onze website te verbeteren"
+        ]
+      },
+      "children": {
+        "title": "Privacy van kinderen",
+        "content": [
+          "Onze diensten zijn niet gericht op kinderen jonger dan 16 jaar. We verzamelen niet bewust persoonsgegevens van kinderen jonger dan 16 jaar.",
+          "Als je een ouder of voogd bent en denkt dat je kind ons persoonsgegevens heeft verstrekt, neem dan contact op zodat we deze kunnen verwijderen."
+        ]
+      },
+      "contact": {
+        "title": "Contact opnemen",
+        "intro": "Neem contact met ons op als je vragen hebt over dit privacybeleid of je rechten wilt uitoefenen:"
+      }
+    }
+  },
+  "it": {
+    "title": "Informativa sulla privacy",
+    "lastUpdated": "Ultimo aggiornamento",
+    "date": "12 ottobre 2025",
+    "backToHome": "Torna alla home",
+    "sections": {
+      "introduction": {
+        "title": "Introduzione",
+        "content": [
+          "Hop On Sintra (\"noi\" o \"nostro\") si impegna a proteggere la tua privacy. Questa informativa spiega come raccogliamo, utilizziamo, divulghiamo e proteggiamo le informazioni quando usi il servizio hop-on/hop-off con pass giornaliero a Sintra, Portogallo.",
+          "Leggi attentamente questa informativa. Se non ne accetti i termini, non accedere al sito e non utilizzare i nostri servizi."
+        ]
+      },
+      "dataCollection": {
+        "title": "Informazioni che raccogliamo",
+        "intro": "Raccogliamo le informazioni che ci fornisci direttamente quando prenoti i servizi:",
+        "items": [
+          {
+            "title": "Informazioni personali",
+            "description": "Nome, indirizzo email, numero di telefono e altri recapiti forniti durante la prenotazione"
+          },
+          {
+            "title": "Informazioni di pagamento",
+            "description": "Dati della carta di credito e di fatturazione, elaborati in sicurezza dal nostro fornitore di pagamenti"
+          },
+          {
+            "title": "Informazioni di prenotazione",
+            "description": "Data del servizio, numero di passeggeri, attrazioni selezionate e punti di prelievo"
+          },
+          {
+            "title": "Dati di utilizzo",
+            "description": "Informazioni sull’interazione con il sito, incluse pagine visitate, tempo trascorso e percorsi di navigazione"
+          },
+          {
+            "title": "Dati di posizione",
+            "description": "Posizione GPS quando richiedi il prelievo, solo con il tuo consenso"
+          },
+          {
+            "title": "Informazioni sul dispositivo",
+            "description": "Tipo di browser, sistema operativo, indirizzo IP e identificativi del dispositivo"
+          }
+        ]
+      },
+      "dataUse": {
+        "title": "Come utilizziamo le informazioni",
+        "items": [
+          "Elaborare e completare prenotazioni e acquisti di pass giornalieri",
+          "Inviare conferme, codici QR e comunicazioni relative al servizio",
+          "Fornire assistenza e rispondere alle richieste",
+          "Migliorare i servizi e sviluppare nuove funzionalità",
+          "Inviare comunicazioni di marketing, solo con il tuo consenso",
+          "Prevenire frodi e migliorare la sicurezza",
+          "Rispettare gli obblighi di legge e applicare i nostri termini"
+        ]
+      },
+      "dataSharing": {
+        "title": "Come condividiamo le informazioni",
+        "intro": "Non vendiamo le tue informazioni personali. Possiamo condividerle con:",
+        "items": [
+          "Fornitori che ci aiutano a operare, come gestori dei pagamenti, servizi email e hosting cloud",
+          "Gli operatori dei veicoli per coordinare i prelievi e verificare i passeggeri",
+          "Partner delle attrazioni quando acquisti biglietti combinati",
+          "Forze dell’ordine o autorità pubbliche quando richiesto dalla legge",
+          "Successori aziendali in caso di fusione, acquisizione o vendita di beni"
+        ]
+      },
+      "cookies": {
+        "title": "Cookie e tecnologie di tracciamento",
+        "intro": "Utilizziamo cookie e tecnologie simili per migliorare la tua esperienza:",
+        "items": [
+          {
+            "type": "Cookie necessari",
+            "description": "Essenziali per il funzionamento, la sicurezza del sito e il processo di prenotazione"
+          },
+          {
+            "type": "Cookie funzionali",
+            "description": "Ricordano le preferenze, come la lingua selezionata"
+          },
+          {
+            "type": "Cookie analitici",
+            "description": "Ci aiutano a capire come viene usato il sito per migliorare i servizi"
+          },
+          {
+            "type": "Cookie di marketing",
+            "description": "Usati per mostrare pubblicità pertinenti, solo con il tuo consenso"
+          }
+        ]
+      },
+      "rights": {
+        "title": "I tuoi diritti (GDPR)",
+        "intro": "Come utente nell’Unione europea hai i seguenti diritti:",
+        "items": [
+          "Diritto di accesso: richiedere una copia dei dati personali che conserviamo",
+          "Diritto di rettifica: richiedere la correzione di dati inesatti o incompleti",
+          "Diritto alla cancellazione: richiedere l’eliminazione dei dati personali (\"diritto all’oblio\")",
+          "Diritto di limitazione del trattamento: richiedere limiti all’uso dei dati",
+          "Diritto alla portabilità: ricevere i dati in un formato strutturato e leggibile da dispositivo automatico",
+          "Diritto di opposizione: opporti al trattamento dei dati personali",
+          "Diritto di revoca del consenso: revocarlo in qualsiasi momento, senza influire sul trattamento precedente"
+        ]
+      },
+      "security": {
+        "title": "Sicurezza dei dati",
+        "content": [
+          "Adottiamo misure tecniche e organizzative adeguate per proteggere le informazioni personali da accessi, modifiche, divulgazioni o distruzioni non autorizzati.",
+          "Le informazioni di pagamento sono crittografate tramite protocolli SSL/TLS standard. Non conserviamo i dati completi delle carte di credito sui nostri server.",
+          "Nessun metodo di trasmissione via internet è sicuro al 100%. Pur impegnandoci a proteggere i dati, non possiamo garantire una sicurezza assoluta."
+        ]
+      },
+      "thirdParty": {
+        "title": "Servizi di terzi",
+        "intro": "Il sito e i servizi si integrano con fornitori terzi:",
+        "items": [
+          "Elaborazione dei pagamenti, come Stripe o piattaforme simili",
+          "Invio email tramite Resend per le conferme di prenotazione",
+          "Hosting cloud e servizi di database tramite Supabase",
+          "WhatsApp per le comunicazioni con l’assistenza",
+          "Servizi di analisi per migliorare il sito"
+        ]
+      },
+      "children": {
+        "title": "Privacy dei minori",
+        "content": [
+          "I nostri servizi non sono rivolti ai minori di 16 anni. Non raccogliamo consapevolmente informazioni personali da minori di 16 anni.",
+          "Se sei un genitore o tutore e ritieni che tuo figlio ci abbia fornito informazioni personali, contattaci affinché possiamo eliminarle."
+        ]
+      },
+      "contact": {
+        "title": "Contattaci",
+        "intro": "Per domande su questa informativa o per esercitare i tuoi diritti, contattaci:"
+      }
+    }
+  }
+}

@@ -1,3 +1,4 @@
+import {useWebsiteText} from '../lib/translations/websiteText';
 import { useState } from "react";
 import {
   Check,
@@ -35,6 +36,7 @@ export function ProductCard({
   customImages,
   customContent,
 }: ProductCardProps) {
+  const wt = useWebsiteText();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
@@ -117,9 +119,7 @@ export function ProductCard({
       >
         {images.length === 0 ? (
           <div className="flex items-center justify-center h-full bg-gray-200">
-            <p className="text-gray-500 text-sm">
-              No images added
-            </p>
+            <p className="text-gray-500 text-sm">{wt("No images added")}</p>
           </div>
         ) : (
           <>
@@ -147,14 +147,14 @@ export function ProductCard({
             <button
               onClick={prevImage}
               className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-1.5 shadow-lg transition-all opacity-0 group-hover:opacity-100 hidden sm:block"
-              aria-label="Previous image"
+              aria-label={wt("Previous image")}
             >
               <ChevronLeft className="h-3.5 w-3.5 text-gray-800" />
             </button>
             <button
               onClick={nextImage}
               className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-1.5 shadow-lg transition-all opacity-0 group-hover:opacity-100 hidden sm:block"
-              aria-label="Next image"
+              aria-label={wt("Next image")}
             >
               <ChevronRight className="h-3.5 w-3.5 text-gray-800" />
             </button>
@@ -259,22 +259,16 @@ export function ProductCard({
             <button
               onClick={() => setContactOpen(true)}
               className="text-xs text-muted-foreground hover:text-primary transition-colors underline underline-offset-2"
-            >
-              Have questions? Contact us
-            </button>
+            >{wt("Have questions? Contact us")}</button>
           </div>
 
           {/* Contact modal */}
           <Dialog open={contactOpen} onOpenChange={setContactOpen}>
             <DialogContent className="max-w-xs rounded-2xl p-6 text-center">
               <DialogHeader>
-                <DialogTitle className="text-base font-semibold text-foreground">
-                  We're here to help
-                </DialogTitle>
+                <DialogTitle className="text-base font-semibold text-foreground">{wt("We're here to help")}</DialogTitle>
               </DialogHeader>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Choose how you'd like to reach us
-              </p>
+              <p className="mt-1 text-sm text-muted-foreground">{wt("Choose how you'd like to reach us")}</p>
               <div className="mt-5 flex flex-col gap-3">
                 <a
                   href="https://wa.me/351932967279"

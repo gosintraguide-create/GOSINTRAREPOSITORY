@@ -1,3 +1,4 @@
+import {useWebsiteText} from '../lib/translations/websiteText';
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useOutletContext, useNavigate } from "react-router";
 import { Button } from "./ui/button";
@@ -32,6 +33,7 @@ interface OutletContext {
 
 
 export function AttractionsPage() {
+  const wt = useWebsiteText();
   const { language = "en", onNavigate } =
     useOutletContext<OutletContext>();
   const navigate = useNavigate();
@@ -248,7 +250,7 @@ export function AttractionsPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="h-12 rounded-xl bg-secondary/30 pl-12 pr-4"
-              aria-label="Search attractions and articles"
+              aria-label={wt("Search attractions and articles")}
               autoComplete="off"
             />
 

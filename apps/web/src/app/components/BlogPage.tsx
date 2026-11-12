@@ -1,3 +1,4 @@
+import {useWebsiteText} from '../lib/translations/websiteText';
 import { useOutletContext, useNavigate, useSearchParams } from "react-router";
 import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
@@ -27,7 +28,7 @@ import { getUITranslation } from "../lib/translations";
 import { getTranslation } from "../lib/translations/loader";
 import {
   loadArticles,
-  getArticleTranslation,
+  getPublicArticleTranslation as getArticleTranslation,
   loadCategories,
   getBlogSettings,
   getBlogStats,
@@ -46,6 +47,7 @@ interface OutletContext {
 }
 
 export function BlogPage() {
+  const wt = useWebsiteText();
   const { language = "en", onNavigate } = useOutletContext<OutletContext>();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -164,7 +166,7 @@ export function BlogPage() {
     if (category) {
       return getCategoryTranslation(category, language).name;
     }
-    return categorySlug;
+    return wt(categorySlug);
   };
 
   const getCategoryIcon = (categoryName: string) => {
@@ -226,8 +228,8 @@ export function BlogPage() {
             {selectedTag && (
               <div className="flex shrink-0 items-center gap-1.5 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-xs text-primary">
                 <Tag className="h-3 w-3" />
-                {selectedTag}
-                <button onClick={() => setSelectedTag("")} className="ml-0.5 hover:text-destructive">
+                {wt(selectedTag)}
+                <button onClick={() => setSelectedTag("")} aria-label={wt("Clear tag filter")} className="ml-0.5 hover:text-destructive">
                   <X className="h-3 w-3" />
                 </button>
               </div>
@@ -243,9 +245,7 @@ export function BlogPage() {
             <div className="py-20 text-center">
               <div className="flex flex-col items-center gap-4">
                 <SmallSpinner className="h-12 w-12" />
-                <p className="text-muted-foreground">
-                  Loading articles...
-                </p>
+                <p className="text-muted-foreground">{wt("Loading articles...")}</p>
               </div>
             </div>
           ) : filteredArticles.length === 0 ? (
@@ -349,12 +349,8 @@ export function BlogPage() {
       <section className="py-16 sm:py-20 bg-white">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="mb-12 text-center">
-            <h2 className="mb-4 text-foreground">
-              Plan Your Sintra Adventure
-            </h2>
-            <p className="mx-auto max-w-2xl text-muted-foreground">
-              Ready to explore? Choose the best way to experience Sintra
-            </p>
+            <h2 className="mb-4 text-foreground">{wt("Plan Your Sintra Adventure")}</h2>
+            <p className="mx-auto max-w-2xl text-muted-foreground">{wt("Ready to explore? Choose the best way to experience Sintra")}</p>
           </div>
 
           <div className="grid gap-6 md:grid-cols-3">
@@ -368,16 +364,10 @@ export function BlogPage() {
                   <Car className="h-7 w-7" />
                 </div>
               </div>
-              <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
-                Hop On Service
-                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+              <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">{wt("Hop On Service")}<ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
               </h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Unlimited hop-on/hop-off day pass to all major attractions with guaranteed seating
-              </p>
-              <Badge className="bg-primary/10 text-primary">
-                Most Flexible
-              </Badge>
+              <p className="text-sm text-muted-foreground mb-4">{wt("Unlimited hop-on/hop-off day pass to all major attractions with guaranteed seating")}</p>
+              <Badge className="bg-primary/10 text-primary">{wt("Most Flexible")}</Badge>
             </Card>
 
             {/* Attractions Link */}
@@ -390,16 +380,10 @@ export function BlogPage() {
                   <Landmark className="h-7 w-7" />
                 </div>
               </div>
-              <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
-                Attractions
-                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+              <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">{wt("Attractions")}<ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
               </h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Explore UNESCO palaces, castles, and historic sites across Sintra
-              </p>
-              <Badge className="bg-amber-500/10 text-amber-600">
-                11+ Destinations
-              </Badge>
+              <p className="text-sm text-muted-foreground mb-4">{wt("Explore UNESCO palaces, castles, and historic sites across Sintra")}</p>
+              <Badge className="bg-amber-500/10 text-amber-600">{wt("11+ Destinations")}</Badge>
             </Card>
 
             {/* Private Tours Link */}
@@ -412,16 +396,10 @@ export function BlogPage() {
                   <Compass className="h-7 w-7" />
                 </div>
               </div>
-              <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
-                Private Tours
-                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+              <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">{wt("Private Tours")}<ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
               </h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Personalized guided experiences with local experts and custom itineraries
-              </p>
-              <Badge className="bg-purple-500/10 text-purple-600">
-                Exclusive Access
-              </Badge>
+              <p className="text-sm text-muted-foreground mb-4">{wt("Personalized guided experiences with local experts and custom itineraries")}</p>
+              <Badge className="bg-purple-500/10 text-purple-600">{wt("Exclusive Access")}</Badge>
             </Card>
           </div>
         </div>

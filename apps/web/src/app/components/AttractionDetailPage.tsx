@@ -1,3 +1,4 @@
+import {useWebsiteText} from '../lib/translations/websiteText';
 import { useState, useEffect, useMemo } from "react";
 import { useOutletContext, useParams } from "react-router";
 import { Helmet } from "react-helmet-async";
@@ -30,12 +31,13 @@ import "../../styles/slick-custom.css";
 
 // Custom arrow components for slider
 const PrevArrow = (props: any) => {
+  const wt = useWebsiteText();
   const { currentSlide, slideCount, ...restProps } = props;
   return (
     <button
       {...restProps}
       className="slick-prev"
-      aria-label="Previous slide"
+      aria-label={wt("Previous slide")}
     >
       <ChevronLeft className="h-6 w-6" />
     </button>
@@ -43,12 +45,13 @@ const PrevArrow = (props: any) => {
 };
 
 const NextArrow = (props: any) => {
+  const wt = useWebsiteText();
   const { currentSlide, slideCount, ...restProps } = props;
   return (
     <button
       {...restProps}
       className="slick-next"
-      aria-label="Next slide"
+      aria-label={wt("Next slide")}
     >
       <ChevronRight className="h-6 w-6" />
     </button>
@@ -122,6 +125,7 @@ const attractionAddresses: { [key: string]: any } = {
 };
 
 export function AttractionDetailPage() {
+  const wt = useWebsiteText();
   const { language = "en", onNavigate } =
     useOutletContext<OutletContext>();
   const { slug } = useParams<{ slug: string }>();
@@ -308,11 +312,11 @@ export function AttractionDetailPage() {
       {/* SEO Meta Tags - React Helmet Async */}
       <Helmet>
         {/* Primary Meta Tags */}
-        <title>{attraction.name} - Tickets, Hours & Visitor Guide | Hop On Sintra</title>
-        <meta name="title" content={`${attraction.name} - Tickets, Hours & Visitor Guide | Hop On Sintra`} />
+        <title>{attraction.name} | Hop On Sintra</title>
+        <meta name="title" content={`${attraction.name} | Hop On Sintra`} />
         <meta 
           name="description" 
-          content={`${attraction.shortDescription} Entry tickets from €${attraction.price}. ${attraction.duration}. ${attraction.longDescription.substring(0, 100)}...`} 
+          content={attraction.shortDescription}
         />
         <meta 
           name="keywords" 
@@ -584,9 +588,7 @@ export function AttractionDetailPage() {
                         <button
                           onClick={() => setContactOpen(true)}
                           className="text-xs text-muted-foreground hover:text-primary transition-colors underline underline-offset-2"
-                        >
-                          Have questions? Contact us
-                        </button>
+                        >{wt("Have questions? Contact us")}</button>
                       </div>
                     </div>
                   </Card>
@@ -642,9 +644,7 @@ export function AttractionDetailPage() {
               {/* FAQ Section */}
               {faqItems.length > 0 && (
                 <div>
-                  <h3 className="mb-5 sm:mb-6 text-xl sm:text-2xl md:text-3xl font-bold text-foreground">
-                    Frequently Asked Questions
-                  </h3>
+                  <h3 className="mb-5 sm:mb-6 text-xl sm:text-2xl md:text-3xl font-bold text-foreground">{wt("Frequently Asked Questions")}</h3>
                   <div className="space-y-4">
                     {faqItems.map((item, i) => (
                       <div
@@ -834,13 +834,9 @@ export function AttractionDetailPage() {
       <Dialog open={contactOpen} onOpenChange={setContactOpen}>
         <DialogContent className="max-w-xs rounded-2xl p-6 text-center">
           <DialogHeader>
-            <DialogTitle className="text-base font-semibold text-foreground">
-              We're here to help
-            </DialogTitle>
+            <DialogTitle className="text-base font-semibold text-foreground">{wt("We're here to help")}</DialogTitle>
           </DialogHeader>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Choose how you'd like to reach us
-          </p>
+          <p className="mt-1 text-sm text-muted-foreground">{wt("Choose how you'd like to reach us")}</p>
           <div className="mt-5 flex flex-col gap-3">
             <a
               href="https://wa.me/351932967279"

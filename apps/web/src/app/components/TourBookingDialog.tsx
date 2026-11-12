@@ -1,3 +1,4 @@
+import {useWebsiteText} from '../lib/translations/websiteText';
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { Button } from './ui/button';
@@ -101,6 +102,7 @@ function StepIndicator({ current, labels }: { current: Step; labels: { datetime:
 // ─── Main booking form ────────────────────────────────────────────────────────
 
 function BookingForm({ tour, onSuccess, onConfirmed, initialDate, initialPeople, language = 'en' }: { tour: TourBookingDialogProps['tour']; onSuccess: () => void; onConfirmed?: () => void; initialDate?: Date; initialPeople?: number; language?: string }) {
+  const wt = useWebsiteText();
   const tDialog = getTranslation(language).tourBookingDialog;
   // Steps
   const [step, setStep] = useState<Step>('datetime');
@@ -254,7 +256,7 @@ function BookingForm({ tour, onSuccess, onConfirmed, initialDate, initialPeople,
         : '';
 
   const handleContinueToPayment = async () => {
-    if (!name || !email || !phone) { setError('Please fill in all required fields'); return; }
+    if (!name || !email || !phone) { setError(wt("Please fill in all required fields")); return; }
     setError('');
     setProcessing(true);
     try {
@@ -316,7 +318,7 @@ function BookingForm({ tour, onSuccess, onConfirmed, initialDate, initialPeople,
       setClientSecret(data.clientSecret);
       setStep('payment');
     } catch (err: any) {
-      setError(err.message || 'An error occurred. Please try again.');
+      setError(wt(quoteMode ? "Failed to submit request. Please try again." : "Payment could not be started. Please try again."));
     } finally {
       setProcessing(false);
     }
@@ -344,7 +346,7 @@ function BookingForm({ tour, onSuccess, onConfirmed, initialDate, initialPeople,
       setStep('confirmed');
       onConfirmed?.();
     } catch (err: any) {
-      toast.error(err.message || 'Booking failed. Please contact support with your payment confirmation.');
+      toast.error(wt("Booking failed. Please contact support with your payment confirmation."));
     }
   };
 
@@ -429,7 +431,7 @@ function BookingForm({ tour, onSuccess, onConfirmed, initialDate, initialPeople,
               {selectedDate ? (
                 <>
                   <p className="mb-3 text-sm font-semibold text-foreground">
-                    {format(selectedDate, 'EEEE, MMMM d')}
+                    {new Intl.DateTimeFormat(language === 'pt' ? 'pt-PT' : language, {dateStyle: 'long'}).format(selectedDate)}
                   </p>
                   <div className="grid grid-cols-3 gap-2">
                     {timeSlots.map((slot) => (
@@ -550,7 +552,7 @@ function BookingForm({ tour, onSuccess, onConfirmed, initialDate, initialPeople,
                 <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {LANGUAGES.map((l) => (
-                    <SelectItem key={l} value={l}>{l}</SelectItem>
+                    <SelectItem key={l} value={l}>{new Intl.DisplayNames([language], {type: 'language'}).of(({English:'en',Portuguese:'pt',Spanish:'es',French:'fr',German:'de',Italian:'it',Dutch:'nl'} as Record<string,string>)[l])}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -582,7 +584,7 @@ function BookingForm({ tour, onSuccess, onConfirmed, initialDate, initialPeople,
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">{tDialog.summaryDate}</span>
-              <span className="font-medium">{selectedDate ? format(selectedDate, 'dd MMM yyyy') : '—'}</span>
+              <span className="font-medium">{selectedDate ? new Intl.DateTimeFormat(language === 'pt' ? 'pt-PT' : language, {dateStyle: 'long'}).format(selectedDate) : '—'}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">{tDialog.summaryTime}</span>
@@ -645,7 +647,7 @@ function BookingForm({ tour, onSuccess, onConfirmed, initialDate, initialPeople,
               </div>
               <div className="rounded-lg border border-border bg-secondary/20 p-4 text-sm w-full text-left space-y-1">
                 <div className="flex justify-between"><span className="text-muted-foreground">{tDialog.summaryTour}</span><span className="font-medium">{tour.title}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">{tDialog.summaryDate}</span><span className="font-medium">{selectedDate ? format(selectedDate, 'dd MMM yyyy') : '—'}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">{tDialog.summaryDate}</span><span className="font-medium">{selectedDate ? new Intl.DateTimeFormat(language === 'pt' ? 'pt-PT' : language, {dateStyle: 'long'}).format(selectedDate) : '—'}</span></div>
                 <div className="flex justify-between"><span className="text-muted-foreground">{tDialog.summaryTime}</span><span className="font-medium">{selectedTime}</span></div>
                 <div className="flex justify-between"><span className="text-muted-foreground">{tDialog.summaryGuests}</span><span className="font-medium">{numberOfPeople}</span></div>
               </div>
@@ -665,7 +667,7 @@ function BookingForm({ tour, onSuccess, onConfirmed, initialDate, initialPeople,
                   <div className="flex-1 space-y-0.5">
                     <p className="font-semibold text-foreground">{tour.title}</p>
                     <p className="text-muted-foreground">
-                      {selectedDate ? format(selectedDate, 'dd MMM yyyy') : ''} · {selectedTime} · {numberOfPeople} {numberOfPeople === 1 ? tDialog.guest : tDialog.guestsPlural}
+                      {selectedDate ? new Intl.DateTimeFormat(language === 'pt' ? 'pt-PT' : language, {dateStyle: 'long'}).format(selectedDate) : ''} · {selectedTime} · {numberOfPeople} {numberOfPeople === 1 ? tDialog.guest : tDialog.guestsPlural}
                     </p>
                   </div>
                   <p className="text-base font-bold text-primary">€{tourPrice.toFixed(2)}</p>
@@ -714,7 +716,7 @@ function BookingForm({ tour, onSuccess, onConfirmed, initialDate, initialPeople,
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">{tDialog.summaryDate}</span>
-              <span className="font-semibold text-foreground">{selectedDate ? format(selectedDate, 'dd MMM yyyy') : '—'}</span>
+              <span className="font-semibold text-foreground">{selectedDate ? new Intl.DateTimeFormat(language === 'pt' ? 'pt-PT' : language, {dateStyle: 'long'}).format(selectedDate) : '—'}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">{tDialog.summaryTime}</span>
@@ -784,6 +786,7 @@ function BookingForm({ tour, onSuccess, onConfirmed, initialDate, initialPeople,
 // ─── Dialog wrapper ───────────────────────────────────────────────────────────
 
 export function TourBookingDialog({ open, onOpenChange, tour, initialDate, initialPeople, language = 'en' }: TourBookingDialogProps) {
+  const wt = useWebsiteText();
   const tDialog = getTranslation(language).tourBookingDialog;
   const [confirmed, setConfirmed] = useState(false);
 
@@ -800,7 +803,7 @@ export function TourBookingDialog({ open, onOpenChange, tour, initialDate, initi
         {!confirmed && (
           <DialogHeader className="mb-1">
             <DialogTitle className="text-xl font-bold">{tDialog.title}</DialogTitle>
-            <DialogDescription className="text-sm text-muted-foreground">Ready to book your {tour.title}? Just follow the steps below and we'll take care of the rest.</DialogDescription>
+            <DialogDescription className="text-sm text-muted-foreground">{wt('Ready to book {tour}? Follow the steps below.', {tour: tour.title})}</DialogDescription>
           </DialogHeader>
         )}
         {/* sr-only title required by dialog for a11y even when header is hidden */}
