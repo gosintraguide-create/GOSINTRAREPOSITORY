@@ -1,4 +1,5 @@
 // Comprehensive Content Management System
+import {localizeWebsiteContent} from './translations/websiteText';
 // This file defines ALL editable content across the entire website
 
 export interface ComprehensiveContent {
@@ -2266,7 +2267,7 @@ export function loadComprehensiveContentForLanguage(languageCode: string = 'en')
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        return deepMerge(DEFAULT_COMPREHENSIVE_CONTENT, parsed);
+        return deepMerge(localizeWebsiteContent(loadComprehensiveContent(), languageCode), parsed);
       } catch (error) {
         console.error(`Error parsing saved ${languageCode} content:`, error);
       }
@@ -2274,7 +2275,7 @@ export function loadComprehensiveContentForLanguage(languageCode: string = 'en')
   }
   
   // Fall back to English (default)
-  return loadComprehensiveContent();
+  return localizeWebsiteContent(loadComprehensiveContent(), languageCode);
 }
 
 /**

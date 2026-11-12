@@ -1,3 +1,4 @@
+import {useWebsiteText} from '../lib/translations/websiteText';
 import { Menu, X } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Link, useLocation } from "react-router";
@@ -15,6 +16,7 @@ interface HeaderProps {
 }
 
 export function Header({ currentPage, onNavigate, language, onLanguageChange }: HeaderProps) {
+  const wt = useWebsiteText();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const location = useLocation();
@@ -95,7 +97,7 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
               className="text-primary hover:bg-secondary lg:hidden relative z-10 flex-shrink-0 min-h-[44px] min-w-[44px]"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               ref={menuButtonRef}
-              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+              aria-label={isMenuOpen ? wt("Close menu") : wt("Open menu")}
               aria-expanded={isMenuOpen}
               aria-controls="mobile-nav"
             >
@@ -107,7 +109,7 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
               to="/"
               onClick={closeMenu}
               className="group absolute left-1/2 -translate-x-1/2 lg:relative lg:left-auto lg:translate-x-0 flex items-center transition-all hover:opacity-90 flex-shrink-0"
-              aria-label="Hop On Sintra - Home"
+              aria-label={wt("Hop On Sintra - Home")}
             >
               <div className="h-[30px] w-auto sm:h-10">
                 <Logo />
@@ -115,7 +117,7 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden items-center gap-2 xl:gap-4 lg:flex lg:ml-6 xl:ml-12 flex-shrink min-w-0" aria-label="Main navigation">
+            <nav className="hidden items-center gap-2 xl:gap-4 lg:flex lg:ml-6 xl:ml-12 flex-shrink min-w-0" aria-label={wt("Main navigation")}>
               {navItems.map((item) => (
                 <Link
                   key={item.id}
@@ -160,7 +162,7 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
           ref={menuRef}
           id="mobile-nav"
           role="navigation"
-          aria-label="Mobile navigation"
+          aria-label={wt("Mobile navigation")}
           className={`overflow-hidden border-t border-border bg-white shadow-lg lg:hidden transition-all duration-300 ease-in-out ${
             isMenuOpen ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'
           }`}
@@ -219,7 +221,7 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
                     : "text-muted-foreground hover:bg-secondary hover:text-primary"
                 }`}
               >
-                {t.routeMap || "Route Map"}
+                {t.routeMap || wt("Route Map")}
               </Link>
             </div>
 

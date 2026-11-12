@@ -1,3 +1,6 @@
+import {useEffect, useState} from 'react';
+import {WebsiteLanguageContext} from './lib/translations/websiteText';
+import {selectWebsiteLanguage} from './lib/translations/language';
 import { RouterProvider } from "react-router";
 import { router } from "@/routes";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
@@ -13,8 +16,15 @@ const GA_MEASUREMENT_ID = "G-VM2HFTLH4R";
 const CLARITY_PROJECT_ID = "";
 
 function App() {
+  const [language,setLanguage] = useState(() => selectWebsiteLanguage(localStorage.getItem('language'), navigator.languages?.length ? navigator.languages : [navigator.language], ['en','pt','es','fr','de','nl','it']));
+  useEffect(() => {
+    const observer = new MutationObserver(() => setLanguage(document.documentElement.lang || 'en'));
+    observer.observe(document.documentElement, {attributes:true, attributeFilter:['lang']});
+    return () => observer.disconnect();
+  }, []);
   return (
     <HelmetProvider>
+      <WebsiteLanguageContext.Provider value={language}>
       {GA_MEASUREMENT_ID && (
         <GoogleAnalytics measurementId={GA_MEASUREMENT_ID} />
       )}
@@ -25,8 +35,9 @@ function App() {
       <DynamicFavicon />
       <InstallPrompt />
       <OfflineIndicator />
-      <CookieConsent />
+      <CookieConsent language={language} />
       <RouterProvider router={router} />
+    </WebsiteLanguageContext.Provider>
     </HelmetProvider>
   );
 }

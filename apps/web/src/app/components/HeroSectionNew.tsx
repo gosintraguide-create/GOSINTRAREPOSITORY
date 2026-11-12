@@ -1,3 +1,4 @@
+import {useWebsiteText} from '../lib/translations/websiteText';
 import { useState, useEffect } from "react";
 import { loadComprehensiveContentForLanguage, syncComprehensiveContentFromDatabase } from "../lib/comprehensiveContent";
 import { ArrowRight, MessageCircle, Mail } from "lucide-react";
@@ -36,17 +37,14 @@ function ContactModal({
   open: boolean;
   onOpenChange: (v: boolean) => void;
 }) {
+  const wt = useWebsiteText();
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-xs rounded-2xl p-6 text-center">
         <DialogHeader>
-          <DialogTitle className="text-base font-semibold text-foreground">
-            We're here to help
-          </DialogTitle>
+          <DialogTitle className="text-base font-semibold text-foreground">{wt("We're here to help")}</DialogTitle>
         </DialogHeader>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Choose how you'd like to reach us
-        </p>
+        <p className="mt-1 text-sm text-muted-foreground">{wt("Choose how you'd like to reach us")}</p>
         <div className="mt-5 flex flex-col gap-3">
           <a
             href="https://wa.me/351932967279"
@@ -118,6 +116,7 @@ function OfferCard({
   dark = false,
   showContact = false,
 }: OfferCardProps) {
+  const wt = useWebsiteText();
   const [contactOpen, setContactOpen] = useState(false);
 
   return (
@@ -161,8 +160,7 @@ function OfferCard({
             className={`absolute right-3 top-3 hidden rounded-full px-3 py-1 text-xs font-semibold shadow sm:block ${
               dark ? "bg-slate-700/90 text-white" : "bg-white/90 text-foreground"
             }`}
-          >
-            From <span className="font-bold">€{fromPrice}</span>
+          >{wt("From")}<span className="font-bold">€{fromPrice}</span>
             {priceUnit ? `/${priceUnit}` : ""}
           </div>
         )}
@@ -176,8 +174,7 @@ function OfferCard({
 
           {/* Price line — mobile only (replaces image overlay pill) */}
           {fromPrice != null && (
-            <p className={`mb-1 text-xs font-semibold sm:hidden ${dark ? "text-slate-300" : "text-foreground"}`}>
-              From <span className="font-bold">€{fromPrice}</span>{priceUnit ? `/${priceUnit}` : ""}
+            <p className={`mb-1 text-xs font-semibold sm:hidden ${dark ? "text-slate-300" : "text-foreground"}`}>{wt("From")}<span className="font-bold">€{fromPrice}</span>{priceUnit ? `/${priceUnit}` : ""}
             </p>
           )}
 
@@ -279,9 +276,7 @@ function OfferCard({
                     ? "text-slate-500 hover:text-slate-300"
                     : "text-muted-foreground hover:text-primary"
                 }`}
-              >
-                Have questions? Chat with us
-              </button>
+              >{wt("Have questions? Chat with us")}</button>
             </div>
           )}
         </div>
@@ -302,6 +297,7 @@ export function HeroSection({
   priceLoaded,
   lowestTourPrice,
 }: HeroSectionProps) {
+  const wt = useWebsiteText();
   const editableContent = content || legacyContent;
   const t = getTranslation(language).homepage;
   const travelGuideTitle = getTranslation(language).homepage.quickLinks.travelGuide.title;
@@ -357,7 +353,7 @@ export function HeroSection({
         <div className="relative h-[220px] overflow-hidden">
           <img
             src={mainImage}
-            alt="Wide landscape of Sintra forest and palace"
+            alt={wt("Wide landscape of Sintra forest and palace")}
             className="h-full w-full object-cover"
             loading="eager"
             fetchPriority="high"
@@ -368,9 +364,7 @@ export function HeroSection({
 
         {/* 2. Social proof */}
         <div className="px-4 pt-4 text-center">
-          <span className="text-xs text-muted-foreground">
-            Local guides &nbsp;·&nbsp; Instant confirmation &nbsp;·&nbsp; Flexible booking
-          </span>
+          <span className="text-xs text-muted-foreground">{wt("Local guides · Instant confirmation · Flexible booking")}</span>
         </div>
 
         {/* 3. Heading */}
@@ -396,9 +390,7 @@ export function HeroSection({
               document.getElementById("offer-cards")?.scrollIntoView({ behavior: "smooth" })
             }
             className="flex w-full items-center justify-center gap-2 rounded-xl bg-foreground px-6 py-3.5 text-sm font-bold text-background transition-opacity active:opacity-80"
-          >
-            Find your experience
-            <ArrowRight className="h-4 w-4" />
+          >{wt("Find your experience")}<ArrowRight className="h-4 w-4" />
           </button>
         </div>
 
@@ -407,9 +399,7 @@ export function HeroSection({
           <button
             onClick={() => onNavigate("private-tours")}
             className="text-sm font-medium text-accent hover:text-accent/80"
-          >
-            Book a private tour →
-          </button>
+          >{wt("Book a private tour →")}</button>
         </div>
 
       </div>
@@ -465,9 +455,7 @@ export function HeroSection({
             </div>
 
             {/* Social proof */}
-            <p className="mt-4 text-xs text-muted-foreground">
-              Local guides &nbsp;·&nbsp; Instant confirmation &nbsp;·&nbsp; Flexible booking
-            </p>
+            <p className="mt-4 text-xs text-muted-foreground">{wt("Local guides · Instant confirmation · Flexible booking")}</p>
           </div>
 
           {/* Right column — photo grid */}
@@ -476,7 +464,7 @@ export function HeroSection({
             <div className="col-span-2 overflow-hidden rounded-2xl bg-stone-200" style={{ aspectRatio: "16/9" }}>
               <img
                 src={mainImage}
-                alt="Wide landscape of Sintra forest and palace"
+                alt={wt("Wide landscape of Sintra forest and palace")}
                 className="h-full w-full object-cover"
                 loading="eager"
                 fetchPriority="high"
@@ -489,7 +477,7 @@ export function HeroSection({
               {tukTukImage ? (
                 <img
                   src={tukTukImage}
-                  alt="Tuk tuk in action in Sintra"
+                  alt={wt("Tuk tuk in action in Sintra")}
                   className="h-full w-full object-cover"
                   loading="lazy"
                 />
@@ -503,7 +491,7 @@ export function HeroSection({
               {jeepImage ? (
                 <img
                   src={jeepImage}
-                  alt="Vintage jeep in action in Sintra"
+                  alt={wt("Vintage jeep in action in Sintra")}
                   className="h-full w-full object-cover"
                   loading="lazy"
                 />
@@ -525,9 +513,7 @@ export function HeroSection({
       <div id="offer-cards" className="md:hidden px-4 pb-10 pt-3">
 
         {/* Section header */}
-        <p style={{ fontSize: '11px', fontWeight: 700, color: '#888', letterSpacing: '1.5px', marginBottom: '12px', textTransform: 'uppercase' }}>
-          How do you want to explore?
-        </p>
+        <p style={{ fontSize: '11px', fontWeight: 700, color: '#888', letterSpacing: '1.5px', marginBottom: '12px', textTransform: 'uppercase' }}>{wt("How do you want to explore?")}</p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
 
@@ -542,9 +528,7 @@ export function HeroSection({
                 ? <img src={privateToursImg} alt={t.hero.privateToursTitle} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 : <div style={{ width: '100%', height: '100%', background: '#333' }} />
               }
-              <span style={{ position: 'absolute', top: '8px', left: '8px', background: '#ff6b35', color: 'white', fontSize: '9px', fontWeight: 700, padding: '3px 8px', borderRadius: '20px' }}>
-                MOST POPULAR
-              </span>
+              <span style={{ position: 'absolute', top: '8px', left: '8px', background: '#ff6b35', color: 'white', fontSize: '9px', fontWeight: 700, padding: '3px 8px', borderRadius: '20px' }}>{wt("MOST POPULAR")}</span>
             </div>
             <div style={{ flex: 1, padding: '14px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', overflow: 'hidden' }}>
               <div style={{ overflow: 'hidden' }}>
@@ -552,9 +536,7 @@ export function HeroSection({
                   {t.hero.privateToursTitle}
                 </h3>
                 {priceLoaded && lowestTourPrice != null && (
-                  <p style={{ fontSize: '11px', color: '#aaa', marginTop: 0, marginBottom: '6px' }}>
-                    From €{lowestTourPrice}/person
-                  </p>
+                  <p style={{ fontSize: '11px', color: '#aaa', marginTop: 0, marginBottom: '6px' }}>{wt("From €")}{lowestTourPrice}{wt("/person")}</p>
                 )}
                 <p style={{ fontSize: '11px', color: '#bbb', lineHeight: 1.4, margin: 0, overflow: 'hidden' }}>
                   {t.hero.privateToursDescription}
@@ -581,9 +563,7 @@ export function HeroSection({
                 ? <img src={daypassImg} alt={t.hero.daypassTitle} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 : <div style={{ width: '100%', height: '100%', background: '#e0d8cc' }} />
               }
-              <span style={{ position: 'absolute', top: '8px', left: '8px', background: '#0d4a4a', color: 'white', fontSize: '9px', fontWeight: 700, padding: '3px 8px', borderRadius: '20px' }}>
-                GREAT VALUE
-              </span>
+              <span style={{ position: 'absolute', top: '8px', left: '8px', background: '#0d4a4a', color: 'white', fontSize: '9px', fontWeight: 700, padding: '3px 8px', borderRadius: '20px' }}>{wt("GREAT VALUE")}</span>
             </div>
             <div style={{ flex: 1, padding: '14px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', overflow: 'hidden' }}>
               <div style={{ overflow: 'hidden' }}>
@@ -591,9 +571,7 @@ export function HeroSection({
                   {t.hero.daypassTitle}
                 </h3>
                 {priceLoaded && basePrice ? (
-                  <p style={{ fontSize: '11px', color: '#888', marginTop: 0, marginBottom: '6px' }}>
-                    From €{basePrice}/person
-                  </p>
+                  <p style={{ fontSize: '11px', color: '#888', marginTop: 0, marginBottom: '6px' }}>{wt("From €")}{basePrice}{wt("/person")}</p>
                 ) : null}
                 <p style={{ fontSize: '11px', color: '#666', lineHeight: 1.4, margin: 0, overflow: 'hidden' }}>
                   {t.hero.daypassDescription}
@@ -625,9 +603,7 @@ export function HeroSection({
               <h3 style={{ fontSize: '14px', fontWeight: 800, color: '#1a1a1a', marginTop: 0, marginBottom: '3px', lineHeight: 1.2 }}>
                 {travelGuideTitle}
               </h3>
-              <span style={{ display: 'inline-block', background: '#e8f5e9', color: '#2e7d32', fontSize: '9px', fontWeight: 700, padding: '3px 8px', borderRadius: '20px', marginBottom: '6px', width: 'fit-content' }}>
-                100% FREE
-              </span>
+              <span style={{ display: 'inline-block', background: '#e8f5e9', color: '#2e7d32', fontSize: '9px', fontWeight: 700, padding: '3px 8px', borderRadius: '20px', marginBottom: '6px', width: 'fit-content' }}>{wt("100% FREE")}</span>
               <p style={{ fontSize: '11px', color: '#777', lineHeight: 1.4, margin: 0, overflow: 'hidden' }}>
                 {t.hero.travelGuideDescription}
               </p>
@@ -655,8 +631,8 @@ export function HeroSection({
             description={t.hero.daypassDescription}
             badge="Great Value"
             badgeVariant="primary"
-            pills={["Hop on & off", "All attractions", "Guaranteed seat"]}
-            ctaButtonLabel="Buy a day pass"
+            pills={getTranslation(language).productComponents.productCard.daypass.features.slice(0, 3)}
+            ctaButtonLabel={t.hero.ctaButton}
             onBookClick={() => onNavigate("buy-ticket")}
             ctaLabel={t.hero.daypassCta}
             onClick={() => onNavigate("hop-on-hop-off-sintra")}

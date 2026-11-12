@@ -1,3 +1,4 @@
+import {useWebsiteText} from '../lib/translations/websiteText';
 import { useState, useRef, useEffect } from "react";
 import { MessageCircle, X, Send, Car, ArrowLeft } from "lucide-react";
 import { Button } from "./ui/button";
@@ -24,6 +25,7 @@ interface Message {
 }
 
 export function LiveChat({ onNavigate, language = "en" }: LiveChatProps) {
+  const wt = useWebsiteText();
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [content, setContent] = useState<WebsiteContent>(DEFAULT_CONTENT);
@@ -195,12 +197,12 @@ export function LiveChat({ onNavigate, language = "en" }: LiveChatProps) {
       // Just show the existing chat
       setHasStartedChat(true);
       loadMessages(conversationId);
-      toast.success("Welcome back! Resuming your conversation.");
+      toast.success(wt("Welcome back! Resuming your conversation."));
       return;
     }
 
     if (!customerName.trim() || !customerEmail.trim()) {
-      toast.error("Please enter your name and email");
+      toast.error(wt("Please enter your name and email"));
       return;
     }
 
@@ -234,16 +236,16 @@ export function LiveChat({ onNavigate, language = "en" }: LiveChatProps) {
         // Load messages if resuming existing conversation
         if (result.resumed) {
           loadMessages(result.conversationId);
-          toast.success("Welcome back! Resuming your conversation.");
+          toast.success(wt("Welcome back! Resuming your conversation."));
         } else {
-          toast.success("Chat started! We'll respond shortly.");
+          toast.success(wt("Chat started! We'll respond shortly."));
         }
       } else {
         throw new Error(result.error || "Failed to start chat");
       }
     } catch (error) {
       console.error("Error starting conversation:", error);
-      toast.error("Chat unavailable. Please use WhatsApp instead.");
+      toast.error(wt("Chat unavailable. Please use WhatsApp instead."));
       // Automatically show WhatsApp as fallback
     } finally {
       setLoading(false);
@@ -308,7 +310,7 @@ export function LiveChat({ onNavigate, language = "en" }: LiveChatProps) {
       }
     } catch (error) {
       console.error("Error sending message:", error);
-      toast.error("Failed to send message. Please try WhatsApp instead.");
+      toast.error(wt("Failed to send message. Please try WhatsApp instead."));
       setMessage(messageText); // Restore the message
     }
   };
@@ -369,7 +371,7 @@ export function LiveChat({ onNavigate, language = "en" }: LiveChatProps) {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="fixed bottom-4 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-lg transition-all hover:scale-110 hover:shadow-xl sm:bottom-6 sm:right-6 sm:h-16 sm:w-16"
-        aria-label="Toggle live chat"
+        aria-label={wt("Toggle live chat")}
       >
         {isOpen ? (
           <X className="h-6 w-6 sm:h-7 sm:w-7" />
@@ -388,7 +390,7 @@ export function LiveChat({ onNavigate, language = "en" }: LiveChatProps) {
                 <button
                   onClick={handleGoBack}
                   className="flex h-8 w-8 items-center justify-center rounded-full text-accent-foreground transition-colors hover:bg-accent-foreground/10"
-                  aria-label="Go back to contact options"
+                  aria-label={wt("Go back to contact options")}
                 >
                   <ArrowLeft className="h-5 w-5" />
                 </button>
@@ -404,7 +406,7 @@ export function LiveChat({ onNavigate, language = "en" }: LiveChatProps) {
             <button
               onClick={() => setIsOpen(false)}
               className="flex h-8 w-8 items-center justify-center rounded-full text-accent-foreground transition-colors hover:bg-accent-foreground/10"
-              aria-label="Close chat"
+              aria-label={wt("Close chat")}
             >
               <X className="h-5 w-5" />
             </button>
@@ -438,9 +440,7 @@ export function LiveChat({ onNavigate, language = "en" }: LiveChatProps) {
                     variant="outline"
                     className="w-full"
                   >
-                    <Car className="mr-2 h-5 w-5" />
-                    Request Pickup
-                  </Button>
+                    <Car className="mr-2 h-5 w-5" />{wt("Request Pickup")}</Button>
 
                   <div className="relative">
                     <div className="absolute inset-0 flex items-center">
@@ -452,7 +452,7 @@ export function LiveChat({ onNavigate, language = "en" }: LiveChatProps) {
                   </div>
 
                   <div>
-                    <label className="text-foreground">Your Name</label>
+                    <label className="text-foreground">{wt("Your Name")}</label>
                     <Input
                       value={customerName}
                       onChange={(e) => setCustomerName(e.target.value)}
@@ -461,12 +461,12 @@ export function LiveChat({ onNavigate, language = "en" }: LiveChatProps) {
                       readOnly={!!getSession()}
                     />
                     {getSession() && (
-                      <p className="mt-1 text-xs text-primary">✓ Auto-filled from your profile</p>
+                      <p className="mt-1 text-xs text-primary">{wt("✓ Auto-filled from your profile")}</p>
                     )}
                   </div>
 
                   <div>
-                    <label className="text-foreground">Email</label>
+                    <label className="text-foreground">{wt("Email")}</label>
                     <Input
                       type="email"
                       value={customerEmail}
@@ -476,7 +476,7 @@ export function LiveChat({ onNavigate, language = "en" }: LiveChatProps) {
                       readOnly={!!getSession()}
                     />
                     {getSession() && (
-                      <p className="mt-1 text-xs text-primary">✓ Auto-filled from your profile</p>
+                      <p className="mt-1 text-xs text-primary">{wt("✓ Auto-filled from your profile")}</p>
                     )}
                   </div>
 
@@ -488,15 +488,11 @@ export function LiveChat({ onNavigate, language = "en" }: LiveChatProps) {
                     {loading ? t.liveChat.starting : t.liveChat.startWebChat}
                   </Button>
 
-                  <p className="text-center text-xs text-muted-foreground">
-                    For fastest response, use WhatsApp
-                  </p>
+                  <p className="text-center text-xs text-muted-foreground">{wt("For fastest response, use WhatsApp")}</p>
 
                   <div className="rounded-lg border border-border bg-muted/30 p-3">
                     <p className="text-xs text-muted-foreground">
-                      <strong>Alternative Contact:</strong><br />
-                      Email: {content.company.email}<br />
-                      Phone: {content.company.phone}
+                      <strong>{wt("Alternative Contact:")}</strong><br />{wt("Email:")}{content.company.email}<br />{wt("Phone:")}{content.company.phone}
                     </p>
                   </div>
                 </div>
@@ -558,9 +554,7 @@ export function LiveChat({ onNavigate, language = "en" }: LiveChatProps) {
                   <Send className="h-4 w-4" />
                 </Button>
               </div>
-              <p className="mt-2 text-center text-muted-foreground">
-                We typically respond within a few minutes
-              </p>
+              <p className="mt-2 text-center text-muted-foreground">{wt("We typically respond within a few minutes")}</p>
             </div>
           )}
         </Card>

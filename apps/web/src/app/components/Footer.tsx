@@ -1,3 +1,4 @@
+import {useWebsiteText} from '../lib/translations/websiteText';
 import { Mail, MapPin, Clock, Phone } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
@@ -28,6 +29,7 @@ export function Footer({
   onNavigate,
   language = "en",
 }: FooterProps) {
+  const wt = useWebsiteText();
   const [content, setContent] =
     useState<WebsiteContent>(DEFAULT_CONTENT);
   const [showReservedMenu, setShowReservedMenu] = useState(false);
@@ -55,10 +57,7 @@ export function Footer({
             <div className="mb-4 h-8 w-auto">
               <Logo />
             </div>
-            <p className="text-muted-foreground text-sm sm:text-base">
-              Your friendly hop-on/hop-off adventure through
-              Sintra's magical landscapes.
-            </p>
+            <p className="text-muted-foreground text-sm sm:text-base">{wt("Your friendly hop-on/hop-off adventure through Sintra's magical landscapes.")}</p>
           </div>
 
           <div>
@@ -67,9 +66,7 @@ export function Footer({
             </h3>
             <ul className="space-y-2 text-muted-foreground">
               <li>
-                <Link to="/hop-on-hop-off-sintra" className="py-1 transition-colors hover:text-primary block">
-                  Hop On Service
-                </Link>
+                <Link to="/hop-on-hop-off-sintra" className="py-1 transition-colors hover:text-primary block">{wt("Hop On Service")}</Link>
               </li>
               <li>
                 <Link to="/attractions" className="py-1 transition-colors hover:text-primary block">
@@ -78,7 +75,7 @@ export function Footer({
               </li>
               <li>
                 <Link to="/private-tours" className="py-1 transition-colors hover:text-primary block">
-                  {legacyContent.footer.privateTours || "Private Tours"}
+                  {legacyContent.footer.privateTours || wt("Private Tours")}
                 </Link>
               </li>
               <li>

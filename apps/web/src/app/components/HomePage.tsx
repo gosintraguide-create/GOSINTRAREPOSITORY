@@ -1,3 +1,5 @@
+import {onLocaleLoad} from '../lib/translations/loader';
+import {useWebsiteText} from '../lib/translations/websiteText';
 import image_71ee40946db4b4bf36ff2a3323e15fbad96b7af0 from 'figma:asset/71ee40946db4b4bf36ff2a3323e15fbad96b7af0.png'
 import image_8fa5e0f9f1551c4c27ecf6c304e93b992f85fb68 from 'figma:asset/8fa5e0f9f1551c4c27ecf6c304e93b992f85fb68.png'
 import image_72471611660200b2275398b6c3d4ca944a3262f9 from 'figma:asset/72471611660200b2275398b6c3d4ca944a3262f9.png'
@@ -19,7 +21,7 @@ import {
   type WebsiteContent,
   DEFAULT_CONTENT,
 } from "../lib/contentManager";
-import { getUITranslation } from "../lib/translations";
+import { getUITranslation, getTranslation } from "../lib/translations";
 import { useEditableContent } from "../lib/useEditableContent";
 import {
   ArrowRight,
@@ -60,6 +62,7 @@ interface OutletContext {
 }
 
 export function HomePage() {
+  const wt = useWebsiteText();
   const { language = "en", onNavigate } = useOutletContext<OutletContext>();
 
   // Check feature flags
@@ -144,6 +147,7 @@ export function HomePage() {
   const [showInstallCard, setShowInstallCard] = useState(false);
   const [showFloatingButton, setShowFloatingButton] = useState(false);
   const t = getUITranslation(language);
+  const homepageCopy = getTranslation(language).homepage;
   // Use editable content from admin panel with language support
   const content = useEditableContent(language);
 
@@ -220,6 +224,8 @@ export function HomePage() {
     // Update legacy content when language changes (immediate, from cache)
     setLegacyContent(loadContentWithLanguage(language));
   }, [language]);
+
+  useEffect(() => onLocaleLoad(() => setLegacyContent(loadContentWithLanguage(language))), [language]);
 
   // Listen for PWA install prompt
   useEffect(() => {
@@ -378,7 +384,7 @@ export function HomePage() {
     "url": "https://www.hoponsintra.com",
     "logo": "https://www.hoponsintra.com/logo.png",
     "image": "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=630&fit=crop&q=80",
-    "description": "Hop-on hop-off tuk tuk day pass for Sintra's UNESCO palaces with unlimited rides and guaranteed seating. Also offering private tours of Sintra.",
+    "description": homepageCopy.serviceDescription,
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Avenida Dr. Miguel Bombarda",
@@ -412,7 +418,7 @@ export function HomePage() {
     ]
   };
 
-  const homepageFaq = (legacyContent.homepage as any).faq;
+  const homepageFaq = homepageCopy.faq;
 
   const faqSchema = homepageFaq ? {
     "@context": "https://schema.org",
@@ -429,7 +435,7 @@ export function HomePage() {
     "@type": "WebSite",
     "name": "Hop On Sintra",
     "url": "https://www.hoponsintra.com",
-    "description": "Hop-on/hop-off tuk-tuk and jeep day pass for Sintra, Portugal. Private guided tours also available.",
+    "description": homepageCopy.serviceDescription,
     "inLanguage": ["en","pt","fr","de","es","nl","it"],
     "potentialAction": {
       "@type": "SearchAction",
@@ -504,7 +510,7 @@ export function HomePage() {
               <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl sm:h-20 sm:w-20">
                 <ImageWithFallback
                   src={image_72471611660200b2275398b6c3d4ca944a3262f9}
-                  alt="Attractions"
+                  alt={wt("Attractions")}
                   className="h-full w-full object-cover"
                 />
               </div>
@@ -527,7 +533,7 @@ export function HomePage() {
               <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl sm:h-20 sm:w-20">
                 <ImageWithFallback
                   src={image_8fa5e0f9f1551c4c27ecf6c304e93b992f85fb68}
-                  alt="Travel Guide"
+                  alt={wt("Travel Guide")}
                   className="h-full w-full object-cover"
                 />
               </div>
@@ -550,7 +556,7 @@ export function HomePage() {
               <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl sm:h-20 sm:w-20">
                 <ImageWithFallback
                   src={image_71ee40946db4b4bf36ff2a3323e15fbad96b7af0}
-                  alt="Private Tours"
+                  alt={wt("Private Tours")}
                   className="h-full w-full object-cover"
                 />
               </div>
@@ -574,9 +580,7 @@ export function HomePage() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-full border-2 border-white/30 bg-white/10 px-6 py-3 text-sm font-medium text-white backdrop-blur-sm transition-all hover:border-white/60 hover:bg-white/20"
             >
-              <Calendar className="h-4 w-4" />
-              Plan your day in Sintra
-              <ArrowRight className="h-4 w-4" />
+              <Calendar className="h-4 w-4" />{wt("Plan your day in Sintra")}<ArrowRight className="h-4 w-4" />
             </a>
             <a
               href="/cinema-no-mato.html"
@@ -629,10 +633,10 @@ export function HomePage() {
           </div>
 
           <h2 className="mb-3 sm:mb-4 text-white drop-shadow-lg">
-            {legacyContent.homepage.finalCtaTitle}
+            {homepageCopy.finalCtaTitle}
           </h2>
           <p className="mb-6 sm:mb-8 text-lg sm:text-xl text-white/95 drop-shadow-md">
-            {legacyContent.homepage.finalCtaSubtitle}
+            {homepageCopy.finalCtaSubtitle}
           </p>
 
           <Button
@@ -641,12 +645,12 @@ export function HomePage() {
             onClick={() => onNavigate("buy-ticket")}
           >
             <Ticket className="mr-2 h-5 w-5" />
-            {legacyContent.homepage.finalCtaButton} - €{basePrice}
+            {homepageCopy.finalCtaButton} - €{basePrice}
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
 
           <p className="mt-4 text-sm text-white/80">
-            {legacyContent.homepage.finalCtaSubtext}
+            {homepageCopy.finalCtaSubtext}
           </p>
         </div>
       </section>
@@ -658,10 +662,10 @@ export function HomePage() {
             size="lg"
             className="h-12 gap-2 bg-accent px-6 text-white shadow-2xl transition-all hover:scale-105 hover:bg-accent/90 rounded-full"
             onClick={() => onNavigate("buy-ticket")}
-            aria-label="Buy Day Pass"
+            aria-label={t.buyTicket}
           >
             <Ticket className="h-4 w-4" />
-            {t.buyTicket || "Buy Day Pass"}
+            {t.buyTicket}
             <ArrowRight className="h-4 w-4" />
           </Button>
         </div>

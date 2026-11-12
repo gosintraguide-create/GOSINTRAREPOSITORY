@@ -1,3 +1,5 @@
+import {useWebsiteText} from '../lib/translations/websiteText';
+import {reviewedTour, reviewFixture} from '../lib/translations/publishedContent';
 import { useParams, useNavigate, useOutletContext, Link } from "react-router";
 import { Breadcrumbs } from "./Breadcrumbs";
 import { useEffect, useState } from "react";
@@ -13,7 +15,7 @@ import {
 import { Button } from "./ui/button";
 import {
   loadArticlesFromServer,
-  getArticleTranslation,
+  getPublicArticleTranslation as getArticleTranslation,
   loadCategoriesFromServer,
   getCategoryTranslation,
 } from "../lib/blogManager";
@@ -43,6 +45,7 @@ function renderMarkdown(content: string): string {
 }
 
 export function BlogArticlePage() {
+  const wt = useWebsiteText();
   const { slug } = useParams<{ slug: string }>();
   const { language: lang = "en" } = useOutletContext<OutletContext>();
   const navigate = useNavigate();
@@ -51,11 +54,14 @@ export function BlogArticlePage() {
   const [allArticles, setAllArticles] = useState<BlogArticle[]>([]);
   const [categories, setCategories] = useState<BlogCategory[]>([]);
   const [loading, setLoading] = useState(true);
-  const [relatedTours, setRelatedTours] = useState<Array<{ id: string; title: string; duration?: string; heroImage?: string; published: boolean }>>([]);
+  const [rawRelatedTours, setRelatedTours] = useState<Array<{ id: string; title: string; duration: string; heroImage?: string; published: boolean }>>([]);
+  const relatedTours = rawRelatedTours.map(tour => reviewedTour(tour, lang));
 
   useEffect(() => {
     const loadTours = async () => {
       try {
+        const fixture = await reviewFixture('tours');
+        if (fixture) { setRelatedTours(fixture.slice(0, 3)); return; }
         const res = await fetch(
           `https://${projectId}.supabase.co/functions/v1/make-server-3bd0ade8/private-tours`
         );
@@ -111,7 +117,7 @@ export function BlogArticlePage() {
 
   const categoryName = category
     ? getCategoryTranslation(category, lang).name
-    : article?.category || "Guide";
+    : wt(article?.category || "Guide");
 
   // Related: same category first, then shared tags, max 3
   const relatedArticles = article
@@ -137,7 +143,7 @@ export function BlogArticlePage() {
   const nextArticle = currentIndex > 0 ? sortedArticles[currentIndex - 1] : null;
 
   const formatDate = (dateString: string) =>
-    new Date(dateString).toLocaleDateString("en-US", {
+    new Date(dateString).toLocaleDateString(lang === "pt" ? "pt-PT" : lang, {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -192,9 +198,9 @@ export function BlogArticlePage() {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet" />
-        <title>{translation.title} — Hop On Sintra Blog</title>
+        <title>{translation.title} — Hop On Sintra</title>
         <meta name="description" content={translation.excerpt || translation.content.substring(0, 155)} />
-        <meta name="keywords" content={article.seoKeywords || article.tags?.join(", ")} />
+        <meta name="keywords" content={translation.seo?.keywords || article.tags?.map(tag => wt(tag)).join(", ")} />
         <link rel="canonical" href={`https://www.hoponsintra.com/travel-guide/${article.slug}`} />
         <meta property="og:type" content="article" />
         <meta property="og:url" content={`https://www.hoponsintra.com/travel-guide/${article.slug}`} />
@@ -353,7 +359,7 @@ export function BlogArticlePage() {
                     className="flex items-center gap-1 rounded-full border border-border bg-secondary/30 px-3 py-1 text-sm text-muted-foreground transition-colors hover:border-primary hover:bg-primary/5 hover:text-primary"
                   >
                     <Tag className="h-3 w-3" />
-                    {tag}
+                    {wt(tag)}
                   </button>
                 ))}
               </div>
@@ -410,7 +416,7 @@ export function BlogArticlePage() {
                     {relatedArticles.map((rel) => {
                       const relT = getArticleTranslation(rel, lang);
                       const relCat = categories.find((c) => c.id === rel.category || c.slug === rel.category);
-                      const relCatName = relCat ? getCategoryTranslation(relCat, lang).name : rel.category;
+                      const relCatName = relCat ? getCategoryTranslation(relCat, lang).name : wt(rel.category);
                       const relImage = rel.thumbnailImage || rel.featuredImage || rel.heroImage;
                       return (
                         <button
@@ -453,7 +459,7 @@ export function BlogArticlePage() {
               {/* Related private tours */}
               {relatedTours.length > 0 && (
                 <div>
-                  <h2 className="mb-4 text-base font-semibold text-foreground">Private Tours</h2>
+                  <h2 className="mb-4 text-base font-semibold text-foreground">{wt("Private Tours")}</h2>
                   <div className="space-y-3">
                     {relatedTours.map((tour) => (
                       <Link

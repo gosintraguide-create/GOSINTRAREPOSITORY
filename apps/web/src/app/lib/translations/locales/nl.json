@@ -4,75 +4,102 @@
     "email": "hoponsintra@gmail.com",
     "phone": "+351 932 967 279",
     "location": "Sintra, Portugal",
-    "operatingHours": "9:00 - 19:00 Dagelijks",
+    "operatingHours": "Tijden voor je bezoekdatum",
     "whatsappNumber": "+351932967279"
   },
   "homepage": {
     "hero": {
       "title": "Ontdek Sintra op Jouw Manier",
-      "subtitle": "Hop-on/hop-off dagpas met gegarandeerde zitplaatsen en professionele chauffeur-gidsen. Onbeperkte ritten in kleine tuk tuks en vintage jeeps.",
-      "ctaButton": "Boek Je Dagpas",
+      "subtitle": "Ontdek Sintra met onbeperkte hop-on/hop-offritten op je gekozen bezoekdag. City Cards voor het volle tarief bieden ook geselecteerde voordelen bij onze partners.",
+      "ctaButton": "City Cards kopen",
       "heroEyebrow": "Sintra, Portugal",
-      "heroHeadingPre": "Sintra verdient meer dan een gehaaste middag. Verken het in een",
+      "heroHeadingPre": "Ontdek Sintra met een",
       "heroTukTuk": "tuk tuk",
       "heroHeadingMid": "of een",
-      "heroVintageJeep": "vintage jeep",
-      "heroHeadingPost": ", op je eigen tempo.",
-      "heroSubtitleNew": "Stap zo vaak in en uit als je wilt, met een lokale gids in elk voertuig en altijd beschikbare ritten. Privé dagtochten ook beschikbaar.",
-      "privateToursButton": "Privétours",
+      "heroVintageJeep": "klassieke jeep",
+      "heroHeadingPost": ", in je eigen tempo.",
+      "heroSubtitleNew": "Ontdek Sintra met onbeperkte hop-on/hop-offritten op je gekozen bezoekdag. City Cards voor het volle tarief bieden ook geselecteerde voordelen bij onze partners.",
+      "privateToursButton": "Privétour boeken",
       "whatWeOffer": "Wat wij aanbieden",
-      "daypassTitle": "Volledige dagpas",
-      "daypassDescription": "Onbeperkte ritten naar alle attracties in Sintra. Lokale gids in elk voertuig.",
+      "daypassTitle": "City Card",
+      "daypassDescription": "Ontdek Sintra met onbeperkte hop-on/hop-offritten op je gekozen bezoekdag. City Cards voor het volle tarief bieden ook geselecteerde voordelen bij onze partners.",
       "daypassCta": "Bekijk wat is inbegrepen",
       "privateToursTitle": "Privétours",
-      "privateToursDescription": "Daglange ervaringen op maat van uw groep. Verborgen plekjes, kustlijn, monumenten.",
+      "privateToursDescription": "Een dag op maat voor jouw groep, met paleizen, kustlandschappen en plekken buiten de gebaande paden.",
       "privateToursCta": "Bekijk privétours",
-      "travelGuideDescription": "Lokale inzichten, verborgen plekken en praktisch advies voor het plannen van uw dag in Sintra.",
+      "travelGuideDescription": "Lokale tips, rustige plekken en praktische informatie om je dag in Sintra te plannen.",
       "travelGuideCta": "Lees de gids",
       "benefitPills": [
-        { "icon": "Users", "text": "Kleine Groepen (2-6)" },
-        { "icon": "Shield", "text": "Lokale Gidsen" },
-        { "icon": "MapPin", "text": "Alle Attracties" }
+        {
+          "icon": "Users",
+          "text": "Eén kaart op naam per persoon"
+        },
+        {
+          "icon": "Shield",
+          "text": "Lokale Gidsen"
+        },
+        {
+          "icon": "MapPin",
+          "text": "Toegang tot attracties apart"
+        }
       ]
     },
     "quickLinks": {
       "title": "Ontdek Meer",
       "subtitle": "Ontdek attracties, tips en gepersonaliseerde tours",
-      "attractions": { "title": "Ontdek Attracties", "subtitle": "UNESCO-sites & paleizen" },
-      "travelGuide": { "title": "Reisgids", "subtitle": "Tips & lokale geheimen" },
-      "privateTours": { "title": "Voorkeur voor een Privétour?", "subtitle": "Exclusieve gepersonaliseerde ervaring" }
+      "attractions": {
+        "title": "Ontdek Attracties",
+        "subtitle": "UNESCO-sites & paleizen"
+      },
+      "travelGuide": {
+        "title": "Reisgids",
+        "subtitle": "Tips & lokale geheimen"
+      },
+      "privateTours": {
+        "title": "Voorkeur voor een Privétour?",
+        "subtitle": "Exclusieve gepersonaliseerde ervaring"
+      }
     },
     "heroTitle": "Ontdek Sintra op Jouw Manier",
-    "heroSubtitle": "Hop-on/hop-off dagpas met gegarandeerde zitplaatsen en professionele chauffeur-gidsen. Onbeperkte ritten in kleine tuk tuks en vintage jeeps.",
-    "heroCallToAction": "Boek Je Dagpas",
+    "heroSubtitle": "Ontdek Sintra met onbeperkte hop-on/hop-offritten op je gekozen bezoekdag. City Cards voor het volle tarief bieden ook geselecteerde voordelen bij onze partners.",
+    "heroCallToAction": "City Cards kopen",
     "benefitPills": [
-      { "icon": "Users", "text": "Kleine Groepen (2-6)" },
-      { "icon": "Shield", "text": "Lokale Gidsen" },
-      { "icon": "MapPin", "text": "Alle Attracties" }
+      {
+        "icon": "Users",
+        "text": "Eén kaart op naam per persoon"
+      },
+      {
+        "icon": "Shield",
+        "text": "Lokale Gidsen"
+      },
+      {
+        "icon": "MapPin",
+        "text": "Toegang tot attracties apart"
+      }
     ],
     "sectionOneTitle": "Waarom Kiezen Voor Hop On Sintra?",
     "sectionOneDescription": "Vermijd drukke toerbussen en ervaar Sintra zoals het bedoeld is—met professionele lokale gidsen",
-    "hopOnHopOffDayPass": "Hop-On/Hop-Off-Dagpas",
+    "hopOnHopOffDayPass": "City Card",
     "unlimitedAdventureTitle": "Jouw Onbeperkte Sintra Avontuur",
-    "serviceDescription": "Hop On Sintra is een flexibele hop-on/hop-off dagpas-service met kleine, intieme voertuigen zoals tuk tuks en vintage UMM jeeps. Van 9 tot 19 uur krijg je gegarandeerde zitplaatsen en onbeperkte ritten naar alle belangrijke attracties.",
+    "serviceDescription": "Ontdek Sintra met onbeperkte hop-on/hop-offritten op je gekozen bezoekdag. City Cards voor het volle tarief bieden ook geselecteerde voordelen bij onze partners.",
     "serviceDescription2": "In tegenstelling tot drukke toerbussen, geven onze kleine groepen (2-6 passagiers) met professionele lokale gidsen je de vrijheid om Sintra in je eigen tempo te verkennen terwijl je geniet van persoonlijke aandacht.",
     "unlimitedRidesTitle": "Onbeperkte Ritten De Hele Dag",
-    "unlimitedRidesSubtitle": "Eén pas, alle attracties",
+    "unlimitedRidesSubtitle": "Toegang tot attracties apart",
     "frequentServiceTitle": "Betrouwbare Service",
-    "frequentServiceSubtitle": "De hele dag beschikbaar",
+    "frequentServiceSubtitle": "Afhankelijk van beschikbare voertuigen",
     "smallGroupsTitle": "Kleine Intieme Groepen",
-    "smallGroupsSubtitle": "Maximaal 2-6 passagiers",
+    "smallGroupsSubtitle": "Eén kaart op naam per persoon",
     "professionalGuidesTitle": "Professionele Gidsen",
     "professionalGuidesSubtitle": "Lokale experts",
     "requestPickupTitle": "Vraag Ophaalservice Op Verzoek",
-    "requestPickupSubtitle": "Bel op elk moment een voertuig",
-    "realTimeTrackingTitle": "Real-Time Voertuigtracking",
-    "realTimeTrackingSubtitle": "Zie je rit aankomen",
+    "requestPickupSubtitle": "Afhankelijk van beschikbare voertuigen",
+    "realTimeTrackingTitle": "Afhankelijk van beschikbare voertuigen",
+    "realTimeTrackingSubtitle": "Afhankelijk van beschikbare voertuigen",
     "priceFrom": "Vanaf",
     "pricePerPerson": "per persoon",
     "sunsetSpecialTitle": "Off-road zonsondergangsrit naar Cabo da Roca",
-    "sunsetSpecialDescription": "Sluit u bij ons aan terwijl onze voertuigen de kustpaden van het meest westelijke punt van het Europese vasteland afleggen. Begint en eindigt bij het treinstation van Sintra.",
-    "sunsetSpecialBadge":"Special van Vandaag",
+    "sunsetSpecialDescription": "Sluit je bij ons aan terwijl onze voertuigen de kustpaden van het meest westelijke punt van het Europese vasteland afleggen. Begint en eindigt bij het treinstation van Sintra.",
+    "sunsetSpecialBadge": "Special van Vandaag",
     "sunsetSpecialSeatsOnly": "Slechts",
     "sunsetSpecialSeats": "Plaatsen",
     "sunsetSpecialAvailableNow": "Nu Beschikbaar",
@@ -82,39 +109,39 @@
     "sunsetSpecialAvailableAt": "Beschikbaar om",
     "sunsetSpecialMinutes": "minuten",
     "sunsetSpecialAvailableSoon": "Binnenkort beschikbaar",
-    "sunsetSpecialVerifyTitle": "Verifieer Uw Boeking",
-    "sunsetSpecialVerifyDescription": "Deze exclusieve zonsondergangservaring is alleen beschikbaar voor bestaande Hop On Sintra klanten. Voer uw boekings-ID in om door te gaan.",
+    "sunsetSpecialVerifyTitle": "Verifieer Je Boeking",
+    "sunsetSpecialVerifyDescription": "Deze exclusieve zonsondergangservaring is alleen beschikbaar voor bestaande Hop On Sintra klanten. Voer je boekings-ID in om door te gaan.",
     "sunsetSpecialBookingIdLabel": "Boekings-ID",
     "sunsetSpecialBookingIdPlaceholder": "bijv., GS-ABC123",
-    "sunsetSpecialBookingIdHint": "U kunt uw boekings-ID vinden in uw bevestigingsmail",
+    "sunsetSpecialBookingIdHint": "Je kunt je boekings-ID vinden in je bevestigingsmail",
     "sunsetSpecialVerifying": "Verifiëren...",
     "sunsetSpecialVerifyButton": "Verifieer en Ga Verder",
     "sunsetSpecialCancel": "Annuleren",
     "sunsetSpecialNoBookingYet": "Nog geen boeking?",
-    "sunsetSpecialNoBookingText": "U moet eerst een Hop On Sintra dagpas boeken om toegang te krijgen tot deze exclusieve ervaring.",
+    "sunsetSpecialNoBookingText": "Je moet eerst een Hop On Sintra dagpas boeken om toegang te krijgen tot deze exclusieve ervaring.",
     "sunsetSpecialGetDayPass": "Krijg een Dagpas",
-    "sunsetSpecialErrorEnterBookingId": "Voer uw boekings-ID in",
+    "sunsetSpecialErrorEnterBookingId": "Voer je boekings-ID in",
     "sunsetSpecialErrorNotFound": "Boekings-ID niet gevonden. Controleer en probeer opnieuw.",
     "sunsetSpecialErrorUnableToVerify": "Kan boekings-ID niet verifiëren. Probeer opnieuw.",
     "sunsetSpecialBookingVerified": "Boeking geverifieerd! Doorverwijzen...",
-    "finalCtaTitle": "Uw Beste Dag in Sintra Begint Hier",
-    "finalCtaSubtitle": "De hele dag in- en uitstappen bij Sintra's paleizen en kastelen. Gegarandeerde zitplaats, lokale gidsen, geen vast schema.",
-    "finalCtaButton": "Krijg Nu Uw Dagpas",
-    "finalCtaSubtext": "Directe bevestiging · Mobiel ticket · Veilige betaling",
+    "finalCtaTitle": "Je Beste Dag in Sintra Begint Hier",
+    "finalCtaSubtitle": "Ontdek Sintra met onbeperkte hop-on/hop-offritten op je gekozen bezoekdag. City Cards voor het volle tarief bieden ook geselecteerde voordelen bij onze partners.",
+    "finalCtaButton": "City Cards kopen",
+    "finalCtaSubtext": "Betaling geverifieerd",
     "faq": {
       "sectionTitle": "Veelgestelde vragen over Sintra",
       "q1": "Is Sintra een dagtrip waard vanuit Lissabon?",
       "a1": "Ja — Sintra is een van Europa's meest bijzondere daguitstapjes, op slechts 40 minuten directe trein van het Rossio-station in Lissabon. De UNESCO-paleizen, het Moorse kasteel en de beboste heuvels maken het tot een onmisbare bestemming. De meeste bezoekers zeggen dat het het hoogtepunt van hun Portugal-reis is.",
       "q2": "Kun je Sintra bezoeken zonder auto?",
-      "a2": "Ja, makkelijk. Treinen vanuit Lissabon Rossio rijden elke 20-30 minuten naar Sintra voor ongeveer €2,30. Eenmaal in Sintra is een hop-on/hop-off dagpas de handigste manier om Palácio da Pena, Quinta da Regaleira, Monserrate, Cabo da Roca en andere attracties te bereiken — geen auto of taxi nodig.",
+      "a2": "Ontdek Sintra met onbeperkte hop-on/hop-offritten op je gekozen bezoekdag. City Cards voor het volle tarief bieden ook geselecteerde voordelen bij onze partners. De vervoerstijden hangen af van de bezoekdatum en staan vóór betaling en op de kaart vermeld. De tijdzone Europe/Lisbon geldt. Een City Card is geen pas voor 24 opeenvolgende uren.",
       "q3": "Hoeveel tijd heb je nodig in Sintra?",
-      "a3": "Een volle dag is ideaal. Palácio da Pena alleen al duurt 2-3 uur inclusief wachtrijen. Met een dagpas van 9u tot 19u kunt u comfortabel 3-4 attracties bezoeken, het historisch centrum verkennen en nog de avondtrein terug naar Lissabon halen.",
+      "a3": "De vervoerstijden hangen af van de bezoekdatum en staan vóór betaling en op de kaart vermeld. De tijdzone Europe/Lisbon geldt. Een City Card is geen pas voor 24 opeenvolgende uren.",
       "q4": "Wat is de beste manier om door Sintra te reizen?",
-      "a4": "Een hop-on/hop-off dagpas is de meest flexibele optie. Kleine tuk-tuks en vintage UMM jeeps rijden doorlopend van 9u tot 19u en verbinden het treinstation met Palácio da Pena, Quinta da Regaleira, Monserrate en andere haltes. Anders dan grote touringcars vervoeren de voertuigen 2-6 passagiers met een lokale chauffeur-gids.",
+      "a4": "Ontdek Sintra met onbeperkte hop-on/hop-offritten op je gekozen bezoekdag. City Cards voor het volle tarief bieden ook geselecteerde voordelen bij onze partners. De vervoerstijden hangen af van de bezoekdatum en staan vóór betaling en op de kaart vermeld. De tijdzone Europe/Lisbon geldt. Een City Card is geen pas voor 24 opeenvolgende uren.",
       "q5": "Moet ik Sintra-tours van tevoren boeken?",
-      "a5": "Voor weekenden en de drukke zomermaanden (juli-september) is vooraf boeken sterk aanbevolen. Palácio da Pena raakt snel vol. Dagpassen kunt u in enkele minuten online boeken met directe QR-code bevestiging per e-mail.",
-      "q6": "Wat is inbegrepen in een hop-on/hop-off dagpas?",
-      "a6": "De dagpas geeft onbeperkte ritten over alle haltes in Sintra van 9u tot 19u. Elk voertuig heeft een lokale chauffeur-gids aan boord. Gegarandeerde zitplaats betekent geen wachten. Stap uit bij een attractie, blijf zo lang als u wilt en stap gratis in het volgende voertuig."
+      "a5": "Log in met een geverifieerd e-mailadres, kies de datum en geef elke kaarthouder een naam. De kaarten verschijnen in Mijn kaarten na betalingsverificatie. Gebruik hetzelfde e-mailadres op de website en in de app.",
+      "q6": "Wat is inbegrepen bij de City Card?",
+      "a6": "Ontdek Sintra met onbeperkte hop-on/hop-offritten op je gekozen bezoekdag. City Cards voor het volle tarief bieden ook geselecteerde voordelen bij onze partners. Toegang tot attracties, privétours en zonsondergangstochten zijn aparte producten en niet inbegrepen bij de City Card."
     }
   },
   "routes": {
@@ -125,7 +152,7 @@
     "bothRoutes": "Beide routes",
     "loopsBack": "keert terug",
     "onePassBothRoutes": "Één Pass, Beide Routes",
-    "onePassDescription": "Uw dagpas geeft u onbeperkte toegang tot beide routes. Onze voertuigen bezoeken alle haltes tijdens de openingstijden (9 tot 19 uur), en u hoeft nooit van voertuig te wisselen - blijf aan boord terwijl routes verbinden bij het Station en Historisch Centrum Noord.",
+    "onePassDescription": "Ontdek Sintra met onbeperkte hop-on/hop-offritten op je gekozen bezoekdag. City Cards voor het volle tarief bieden ook geselecteerde voordelen bij onze partners. De vervoerstijden hangen af van de bezoekdatum en staan vóór betaling en op de kaart vermeld. De tijdzone Europe/Lisbon geldt. Een City Card is geen pas voor 24 opeenvolgende uren.",
     "viewMapButton": "Bekijk de interactieve kaart",
     "stops": {
       "trainStation": "Treinstation",
@@ -140,39 +167,39 @@
   },
   "header": {
     "hopOnService": "Hop On Hop Off",
-    "privateTours": "Privé Tours",
+    "privateTours": "Privétours",
     "travelGuide": "Reisgids"
   },
   "footer": {
-    "quickLinks": "Snelle Links",
+    "quickLinks": "Handige links",
     "attractions": "Attracties",
     "travelGuide": "Reisgids",
-    "buyDayPass": "Dagpas Kopen",
+    "buyDayPass": "City Cards kopen",
     "privacyPolicy": "Privacybeleid",
     "terms": "Voorwaarden",
-    "reservedArea": "Gereserveerd Gebied",
-    "adminPortal": "Admin Portal",
-    "driverPortal": "Chauffeur Portal",
+    "reservedArea": "Medewerkersgedeelte",
+    "adminPortal": "Beheerportaal",
+    "driverPortal": "Chauffeursportaal",
     "allRightsReserved": "Alle rechten voorbehouden. Gemaakt met ❤️ voor reizigers."
   },
   "manageBooking": {
-    "pageTitle": "Uw Boeking Beheren",
-    "pageSubtitle": "Voer uw boekingsgegevens in om uw dagpas te bekijken",
+    "pageTitle": "Je Boeking Beheren",
+    "pageSubtitle": "Voer je boekingsgegevens in om je dagpas te bekijken",
     "bookingIdLabel": "Boekings-ID",
     "bookingIdPlaceholder": "bijv. HOS-ABC123",
     "lastNameLabel": "Achternaam",
     "lastNamePlaceholder": "Zoals op boeking",
     "findBookingButton": "Mijn Boeking Vinden",
-    "whereToFindBookingId": "Waar vindt u uw Boekings-ID?",
-    "inConfirmationEmail": "In uw bevestigingsmail",
-    "subjectLine": "Onderwerp: Uw Hop On Sintra Dagpas",
+    "whereToFindBookingId": "Waar vindt je je Boekings-ID?",
+    "inConfirmationEmail": "In je bevestigingsmail",
+    "subjectLine": "Onderwerp: Je Hop On Sintra Dagpas",
     "lookFor": "Zoek naar: \"Boekings-ID: HOS-XXXXXX\"",
     "needHelp": "Hulp nodig?",
     "contactSupport": "Neem contact met ons op via WhatsApp",
-    "yourBooking": "Uw Boeking",
+    "yourBooking": "Je Boeking",
     "bookingId": "Boekings-ID:",
-    "validToday": "Uw pas is VANDAAG geldig!",
-    "enjoyYourDay": "Geniet van uw dag in Sintra",
+    "validToday": "Je pas is VANDAAG geldig!",
+    "enjoyYourDay": "Geniet van je dag in Sintra",
     "startsIn": "Begint over",
     "days": "dagen",
     "validOn": "Geldig op",
@@ -189,26 +216,26 @@
     "totalPaid": "Totaal Betaald",
     "importantInformation": "Belangrijke Informatie",
     "serviceHours": "Service Uren",
-    "serviceHoursDescription": "Voertuigen rijden van 9 tot 19 uur. Uw dagpas is geldig voor onbeperkte ritten de hele dag.",
+    "serviceHoursDescription": "Voertuigen rijden van 9 tot 19 uur. Je dagpas is geldig voor onbeperkte ritten de hele dag.",
     "digitalTickets": "Digitale Tickets",
-    "digitalTicketsDescription": "Toon uw QR-code om in elk voertuig te stappen. Alle passagiers moeten hun eigen QR-code klaar hebben.",
+    "digitalTicketsDescription": "Toon je QR-code om in elk voertuig te stappen. Alle passagiers moeten hun eigen QR-code klaar hebben.",
     "guaranteedSeating": "Gegarandeerde Zitplaatsen",
-    "guaranteedSeatingDescription": "Uw zitplaats is vooraf gereserveerd. Niet staan, geen overbevolking, alleen comfortabel vervoer in kleine groepen.",
+    "guaranteedSeatingDescription": "Je zitplaats is vooraf gereserveerd. Niet staan, geen overbevolking, alleen comfortabel vervoer in kleine groepen.",
     "hopOnOff": "Hop On/Off",
-    "hopOnOffDescription": "Stap op bij elke halte, verken in uw eigen tempo en stap weer op wanneer u klaar bent. Totale flexibiliteit!",
+    "hopOnOffDescription": "Stap op bij elke halte, verken in je eigen tempo en stap weer op wanneer je klaar bent. Totale flexibiliteit!",
     "downloadTickets": "Alle Tickets Downloaden",
     "downloadQRCodes": "QR-Codes Downloaden",
     "bookingNotFound": "Boeking Niet Gevonden",
-    "bookingNotFoundDescription": "We konden geen boeking vinden met deze gegevens. Controleer alstublieft uw Boekings-ID en achternaam.",
+    "bookingNotFoundDescription": "We konden geen boeking vinden met deze gegevens. Controleer alstublieft je Boekings-ID en achternaam.",
     "checkDetails": "Controleer alstublieft:",
     "tryAgain": "Opnieuw Proberen",
     "backToSearch": "Terug naar Zoeken",
-    "loading": "Uw boeking wordt geladen...",
+    "loading": "Je boeking wordt geladen...",
     "backToHome": "Terug naar Home",
-    "lastNameHint": "Voer uw achternaam in zoals die verschijnt in uw boekingsbevestigingsmail",
+    "lastNameHint": "Voer je achternaam in zoals die verschijnt in je boekingsbevestigingsmail",
     "dateAndTime": "Datum en Tijd",
     "contactInformation": "Contactgegevens",
-    "yourDayPassTickets": "Uw Dagpas Tickets",
+    "yourDayPassTickets": "Je Dagpas Tickets",
     "showTicketsDescription": "Toon deze tickets bij het instappen. Elke passagier heeft zijn eigen ticket nodig.",
     "downloadAllTickets": "Alle Tickets Downloaden (PDF)",
     "pickupInformation": "Ophaalinformatie",
@@ -218,29 +245,29 @@
     "requestPickupButton": "Ophaling Aanvragen",
     "contactSupportButton": "Klantenservice",
     "contactSupportTitle": "Klantenservice",
-    "contactSupportDescription": "Heeft u hulp nodig? We zijn er voor u! Neem contact met ons op via een van deze kanalen."
+    "contactSupportDescription": "Heeft je hulp nodig? We zijn er voor je! Neem contact met ons op via een van deze kanalen."
   },
   "about": {
     "title": "Over Hop On Sintra",
-    "subtitle": "Uw premium hop-on/hop-off dagpas door de magische landschappen van Sintra met professionele lokale gidsen",
+    "subtitle": "Ontdek Sintra met onbeperkte hop-on/hop-offritten op je gekozen bezoekdag. City Cards voor het volle tarief bieden ook geselecteerde voordelen bij onze partners.",
     "story": [
       "Hop On Sintra ontstond vanuit een simpele observatie: bezoekers van dit UNESCO Werelderfgoed verdienden meer dan overvolle bussen en strakke schema's.",
-      "We creëerden een flexibele, premium dagpas-service die de intimiteit van kleine voertuigen met professionele lokale gidsen combineert met de vrijheid van hop-on/hop-off gemak.",
-      "Vandaag kiezen duizenden bezoekers voor Hop On Sintra vanwege gegarandeerde zitplaatsen, professionele chauffeur-gidsen, betrouwbare service de hele dag, en een authentieke, intieme manier om deze prachtige bestemming te verkennen."
+      "We helpen je Sintra in je eigen tempo te ontdekken, met lokale gidsen en gedeelde ritten tussen de belangrijkste haltes.",
+      "Kies een City Card voor gedeeld vervoer of boek een privétour met een route op maat voor jouw groep."
     ],
     "mission": "Onze missie is om de meest gemakkelijke, comfortabele en authentieke manier te bieden om Sintra's paleizen, kastelen en tuinen te verkennen met professionele lokale gidsen.",
     "values": [
       {
-        "title": "Gegarandeerd Comfort",
-        "description": "Elke passagier heeft een gegarandeerde zitplaats in een klein, sfeervol voertuig met een professionele lokale gids. Geen staan, geen gedrang."
+        "title": "Eén kaart op naam per persoon",
+        "description": "Kies de leeftijd van elke persoon op de bezoekdatum: jonger dan 7 gratis, 7–11 half tarief, vanaf 12 vol tarief. Iedereen, ook een kind met een gratis kaart, heeft een kaart op naam nodig en neemt één plaats in."
       },
       {
         "title": "Totale Vrijheid",
-        "description": "Stap uit bij elke attractie, blijf zo lang als u wilt, en stap dan weer in. Uw dag, uw tempo."
+        "description": "Stap uit bij elke attractie, blijf zo lang als je wilt, en stap dan weer in. Je dag, je tempo."
       },
       {
         "title": "Professionele Lokale Gidsen",
-        "description": "Al onze voertuigen worden bestuurd door professionele lokale gidsen die Sintra van binnen en van buiten kennen en inzichten bieden die u nergens anders vindt."
+        "description": "Al onze voertuigen worden bestuurd door professionele lokale gidsen die Sintra van binnen en van buiten kennen en inzichten bieden die je nergens anders vindt."
       }
     ],
     "storyBadge": "Ons Verhaal",
@@ -249,25 +276,52 @@
     "missionHeading": "Wat Ons Drijft",
     "perksBadge": "Wat Ons Bijzonder Maakt",
     "perksHeading": "Het Hop On Sintra Verschil",
-    "perksSubtitle": "We hebben de manier waarop u Sintra verkent opnieuw bedacht—geen overvolle bussen, geen starre schema's!",
+    "perksSubtitle": "We hebben de manier waarop je Sintra verkent opnieuw bedacht—geen overvolle bussen, geen starre schema's!",
     "perks": [
-      { "title": "Kleine Groepen", "description": "Slechts 2-6 gasten per voertuig voor een gezellige, persoonlijke ervaring" },
-      { "title": "Professionele Gidsen", "description": "Elke bestuurder is een gecertificeerde lokale expert die dol is op Sintra" },
-      { "title": "Gegarandeerde Plaatsen", "description": "Vooraf gereserveerd comfort zonder wachten of staan" },
-      { "title": "Uw Tempo", "description": "Stap de hele dag zo vaak in en uit als u wilt" }
+      {
+        "title": "Kleine Groepen",
+        "description": "Reis in kleine voertuigen voor een persoonlijkere ervaring."
+      },
+      {
+        "title": "Professionele Gidsen",
+        "description": "Elke bestuurder is een gecertificeerde lokale expert die dol is op Sintra"
+      },
+      {
+        "title": "Eén kaart op naam per persoon",
+        "description": "Elke reiziger heeft een persoonlijke QR-kaart. Vervoer is afhankelijk van beschikbare voertuigen."
+      },
+      {
+        "title": "Je Tempo",
+        "description": "Stap de hele dag zo vaak in en uit als je wilt"
+      }
     ],
     "valuesBadge": "Onze Waarden",
     "valuesHeading": "Waar We Voor Staan",
     "valuesSubtitle": "Elke beslissing die we nemen wordt geleid door deze principes",
     "faqBadge": "FAQ",
     "faqHeading": "Veelgestelde Vragen",
-    "faqSubtitle": "Alles wat u moet weten over Hop On Sintra",
+    "faqSubtitle": "Alles wat je moet weten over Hop On Sintra",
     "faq": [
-      { "q": "Wat is inbegrepen in het dagpas?", "a": "Onbeperkte ritten op alle deelnemende voertuigen (tuk-tuks, UMM-jeeps) met professionele bestuurder-gidsen voor een volledige dag. Gegarandeerde zitplaatsen in elk voertuig. Optioneel kunt u entreebiljetten voor attracties toevoegen." },
-      { "q": "Kan ik attractiebiljetten kopen met mijn pas?", "a": "Ja! Tijdens het boeken kunt u entreebiljetten toevoegen voor populaire attracties zoals het Pena Paleis, Quinta da Regaleira en meer. Dit bespaart tijd—geen wachten bij de kaartjesloketten." },
-      { "q": "Wat zijn rondleidingen?", "a": "Onze vertrekken om 10:00 en 14:00 bieden rondleidingen waar uw professionele bestuurder-gids stopt bij belangrijke attracties om deskundige toelichting te geven over de geschiedenis en verborgen schatten van Sintra." },
-      { "q": "Hoe gebruik ik mijn QR-code?", "a": "Toon gewoon uw QR-code (verzonden per e-mail) aan elke Hop On Sintra-bestuurder voordat u instapt. Ze scannen hem om uw pas te verifiëren." },
-      { "q": "Hoe vaak vertrekken de voertuigen?", "a": "We bieden doorlopende service van alle grote attracties tijdens openingsuren (9:00 - 19:00). Meld je gewoon aan bij een halte." }
+      {
+        "q": "Wat is inbegrepen bij de City Card?",
+        "a": "Ontdek Sintra met onbeperkte hop-on/hop-offritten op je gekozen bezoekdag. City Cards voor het volle tarief bieden ook geselecteerde voordelen bij onze partners. Toegang tot attracties, privétours en zonsondergangstochten zijn aparte producten en niet inbegrepen bij de City Card."
+      },
+      {
+        "q": "Zijn toegangskaarten voor bezienswaardigheden inbegrepen?",
+        "a": "Nee. Toegang tot bezienswaardigheden is niet inbegrepen bij de City Card. Bekijk vooraf de tickets en toegangstijden van elke locatie."
+      },
+      {
+        "q": "Kan ik een privétour met gids boeken?",
+        "a": "Ja. Bekijk de privétours voor routes, beschikbare datums en prijzen. Je boekt ze apart van de City Card."
+      },
+      {
+        "q": "Hoe gebruik ik mijn QR-code?",
+        "a": "Open Mijn kaarten op de website of in de app en toon vóór het instappen de QR-kaart van elke reiziger aan de chauffeur."
+      },
+      {
+        "q": "Hoe vaak vertrekken de voertuigen?",
+        "a": "Bekijk de dienstregeling voor je bezoekdatum. De ophaaltijd hangt af van beschikbare voertuigen en de toewijzing aan een chauffeur."
+      }
     ]
   },
   "attractions": {
@@ -517,33 +571,33 @@
   },
   "seo": {
     "home": {
-      "title": "Hop On Sintra - Premium Dagpas Hop-On/Hop-Off | Professionele Lokale Gidsen",
-      "description": "Verken Sintra's UNESCO Werelderfgoedlocaties met gegarandeerde zitplaatsen in kleine voertuigen bestuurd door professionele lokale gidsen. Onbeperkte ritten de hele dag. Boek nu je flexibele dagpas online.",
+      "title": "City Cards en privétours in Sintra | Hop On Sintra",
+      "description": "Ontdek Sintra met onbeperkte hop-on/hop-offritten op je gekozen bezoekdag. City Cards voor het volle tarief bieden ook geselecteerde voordelen bij onze partners.",
       "keywords": "dagpas Sintra, hop on hop off Sintra, transport Sintra, kleine groep tours Sintra, Pena Paleis tours, begeleide tours Sintra, professionele gidsen Sintra"
     },
     "attractions": {
-      "title": "Sintra Attracties - Paleizen en Kastelen | Dagpas Hop On Sintra",
-      "description": "Ontdek Pena Paleis, Quinta da Regaleira, Moorse Kasteel en meer met professionele lokale gidsen. Onze dagpas omvat onbeperkt transport naar alle belangrijke Sintra attracties.",
+      "title": "Attracties | Hop On Sintra",
+      "description": "Ontdek de paleizen, kastelen en tuinen van Sintra. Bekijk bezoekersinformatie en plan je stops.",
       "keywords": "Sintra attracties, Pena Paleis, Quinta da Regaleira, Moorse Kasteel, Monserrate Paleis, Nationaal Paleis van Sintra"
     },
     "howItWorks": {
-      "title": "Hoe Het Werkt - Hop-On/Hop-Off Service Hop On Sintra",
-      "description": "Leer hoe onze flexibele dagpas werkt. Boek online, ontvang je QR-codes en stap tijdens openingstijden in elk voertuig met professionele lokale gidsen. Eenvoudig en handig.",
+      "title": "City Card | Hop On Sintra",
+      "description": "Log in met een geverifieerd e-mailadres, kies de datum en geef elke kaarthouder een naam. De kaarten verschijnen in Mijn kaarten na betalingsverificatie. Gebruik hetzelfde e-mailadres op de website en in de app.",
       "keywords": "hoe Sintra te bezoeken, Sintra transportgids, hoe hop on hop off werkt, Sintra dagpas gids"
     },
     "buyTicket": {
-      "title": "Boek Je Dagpas - Hop On Sintra | Directe Bevestiging",
-      "description": "Boek je Sintra dagpas online. Kies je datum, ontvang directe QR-codes voor elke passagier en geniet van onbeperkte ritten met professionele gidsen tot 19:00. Voeg ook attractietickets toe.",
+      "title": "City Cards kopen | Hop On Sintra",
+      "description": "Log in met een geverifieerd e-mailadres, kies de datum en geef elke kaarthouder een naam. De kaarten verschijnen in Mijn kaarten na betalingsverificatie. Gebruik hetzelfde e-mailadres op de website en in de app. Toegang tot attracties, privétours en zonsondergangstochten zijn aparte producten en niet inbegrepen bij de City Card.",
       "keywords": "dagpas Sintra boeken, Sintra tickets kopen, dagpas Sintra online, attractietickets Sintra"
     },
     "about": {
-      "title": "Over Hop On Sintra - Premium Dagpas Service met Professionele Gidsen",
-      "description": "Hop On Sintra biedt premium dagpas service hop-on/hop-off met gegarandeerde zitplaatsen in kleine voertuigen bestuurd door professionele lokale gidsen. Doorlopende service door heel Sintra.",
+      "title": "Over Hop On Sintra | Hop On Sintra",
+      "description": "Onze missie is om de meest gemakkelijke, comfortabele en authentieke manier te bieden om Sintra's paleizen, kastelen en tuinen te verkennen met professionele lokale gidsen.",
       "keywords": "over Hop On Sintra, dagpas bedrijf Sintra, premium tours Sintra, kleine groep Sintra, professionele gidsen"
     },
     "blog": {
       "title": "Sintra Reisgids - Expert Tips, Gidsen & Reisroutes",
-      "description": "Uitgebreide reisgidsen voor het bezoeken van Sintra, Portugal. Expert tips over vervoer, attracties, het plannen van uw reis en hoe u het meeste haalt uit uw Sintra-avontuur.",
+      "description": "Uitgebreide reisgidsen voor het bezoeken van Sintra, Portugal. Expert tips over vervoer, attracties, het plannen van je reis en hoe je het meeste haalt uit je Sintra-avontuur.",
       "keywords": "Sintra reisgids, Sintra blog, Sintra bezoeken, Sintra tips, Pena Paleis gids, Sintra reisroute, hoe Sintra bezoeken, Sintra Portugal"
     }
   },
@@ -567,8 +621,8 @@
     "guide": "gids",
     "guides": "gidsen",
     "ctaTitle": "Klaar Om Je Avontuur Te Beginnen?",
-    "ctaSubtitle": "Nu je gewapend bent met lokale kennis, boek je flexibele dagpas met professionele chauffeur-gidsen! 🎉",
-    "ctaButton": "Boek Je Dagpas",
+    "ctaSubtitle": "Ontdek Sintra met onbeperkte hop-on/hop-offritten op je gekozen bezoekdag. City Cards voor het volle tarief bieden ook geselecteerde voordelen bij onze partners.",
+    "ctaButton": "City Cards kopen",
     "backToBlog": "Terug Naar Blog",
     "articleNotFound": "Artikel niet gevonden",
     "articleNotFoundDesc": "Dit artikel is mogelijk verplaatst of verwijderd.",
@@ -593,8 +647,8 @@
     "viewAllArticles": "Bekijk Alle Artikelen",
     "tableOfContents": "Inhoudsopgave",
     "readyToExperience": "Klaar Om Sintra Te Ontdekken?",
-    "bookFlexibleDayPass": "Boek je flexibele dagpas en begin met het verkennen van Sintra's prachtige paleizen en tuinen",
-    "bookDayPassNow": "Boek Nu Je Dagpas",
+    "bookFlexibleDayPass": "Ontdek Sintra met onbeperkte hop-on/hop-offritten op je gekozen bezoekdag. City Cards voor het volle tarief bieden ook geselecteerde voordelen bij onze partners.",
+    "bookDayPassNow": "City Cards kopen",
     "categories": {
       "planning": "Je Bezoek Plannen",
       "getting-there": "Hoe Er Te Komen",
@@ -719,7 +773,7 @@
     },
     "timeSlots": {
       "guidedTourLabel": "Insight Tour",
-      "guidedTourDescription": "Sommige starttijden bevatten onze Insight Tour, een langere, meer gedetailleerde rit waarbij uw chauffeur de verhalen en geschiedenis achter de monumenten van Sintra deelt. Zoek naar tijdslots gemarkeerd met het Insight Tour-badge hieronder.",
+      "guidedTourDescription": "Sommige starttijden bevatten onze Insight Tour, een langere, meer gedetailleerde rit waarbij je chauffeur de verhalen en geschiedenis achter de monumenten van Sintra deelt. Zoek naar tijdslots gemarkeerd met het Insight Tour-badge hieronder.",
       "viewRouteMaps": "Routekaarten bekijken"
     },
     "routeMap": {
@@ -735,49 +789,81 @@
           "name": "Treinstation Sintra",
           "description": "Verbindingspunt voor beide routes",
           "info": "Gelegen in het hart van Sintra, op slechts een steenworp afstand van het historische centrum. Onze voertuigen halen af direct buiten de hoofdingang van het station. Verbindingspunt voor beide routes.",
-          "highlights": ["Gemakkelijke toegang vanuit Lissabon", "Beide routes stoppen hier", "Frequente vertrektijden"]
+          "highlights": [
+            "Gemakkelijke toegang vanuit Lissabon",
+            "Beide routes stoppen hier",
+            "Frequente vertrektijden"
+          ]
         },
         "historicalCenterNorth": {
           "name": "Historisch Centrum Noord",
           "description": "Historisch centrum met cafés en winkels",
           "info": "Ophalen in het charmante historische centrum, omringd door lokale restaurants, banketbakkerijen en boetieks. Verbindingspunt voor beide routes.",
-          "highlights": ["Historische sfeer", "Beide routes stoppen hier", "Eetgelegenheden in de buurt"]
+          "highlights": [
+            "Historische sfeer",
+            "Beide routes stoppen hier",
+            "Eetgelegenheden in de buurt"
+          ]
         },
         "historicalCenterSouth": {
           "name": "Historisch Centrum Zuid",
           "description": "Stadscentrum bij Nationaal Paleis",
           "info": "Halte in het historische centrum bij het iconische Nationale Paleis met zijn kenmerkende tweeling schoorstenen.",
-          "highlights": ["Koninklijk erfgoed", "Centrale locatie", "Iconische architectuur"]
+          "highlights": [
+            "Koninklijk erfgoed",
+            "Centrale locatie",
+            "Iconische architectuur"
+          ]
         },
         "moorishCastle": {
           "name": "Moorse Kasteel",
           "description": "Oude vesting met middeleeuwse muren",
           "info": "Bezoek deze 10e-eeuwse Moorse versterking op de heuveltop, met spectaculaire uitzichten over de regio.",
-          "highlights": ["Historisch belang", "Panoramische vergezichten", "Authentieke middeleeuwse ruïnes"]
+          "highlights": [
+            "Historisch belang",
+            "Panoramische vergezichten",
+            "Authentieke middeleeuwse ruïnes"
+          ]
         },
         "penaPalace": {
           "name": "Pena Paleis",
           "description": "Iconisch kasteel op de heuveltop met panoramisch uitzicht",
           "info": "Bezoek het beroemdste monument van Sintra. Ons ophaalpunt bevindt zich gunstig bij de ingang van het paleis.",
-          "highlights": ["Adembenemende uitzichten", "Meest bezochte attractie", "Geweldige fotomogelijkheden"]
+          "highlights": [
+            "Adembenemende uitzichten",
+            "Meest bezochte attractie",
+            "Geweldige fotomogelijkheden"
+          ]
         },
         "quintaRegaleira": {
           "name": "Quinta da Regaleira",
           "description": "Mystiek landgoed met initiatieputten en grotten",
           "info": "Bezoek dit betoverende landgoed met mysterieuze tuinen, ondergrondse tunnels en de beroemde Initiatieput. Ophalen bij de hoofdingang.",
-          "highlights": ["Mysterieuze architectuur", "Prachtige tuinen", "Unieke ervaring"]
+          "highlights": [
+            "Mysterieuze architectuur",
+            "Prachtige tuinen",
+            "Unieke ervaring"
+          ]
         },
         "seteais": {
           "name": "Seteais",
           "description": "Historisch paleis en panoramisch uitkijkpunt",
           "info": "Halte bij dit prachtige neoklassieke paleis met adembenemende uitzichten. Nu een luxe hotel, de buitenkant en tuinen zijn open voor bezoekers.",
-          "highlights": ["Indrukwekkende architectuur", "Panoramisch uitkijkpunt", "Historisch belang"]
+          "highlights": [
+            "Indrukwekkende architectuur",
+            "Panoramisch uitkijkpunt",
+            "Historisch belang"
+          ]
         },
         "monserratePalace": {
           "name": "Monserrate Paleis",
           "description": "Romantisch paleis met exotische tuinen",
           "info": "Ophalen bij dit prachtige 19e-eeuwse paleis omringd door botanische tuinen met planten van over de hele wereld. Een verborgen juweel van Sintra.",
-          "highlights": ["Exotische botanische tuinen", "Romantische architectuur", "Vredige sfeer"]
+          "highlights": [
+            "Exotische botanische tuinen",
+            "Romantische architectuur",
+            "Vredige sfeer"
+          ]
         }
       }
     },
@@ -823,27 +909,27 @@
       "subtitle": "We bereiden iets speciaals voor voor degenen die op zoek zijn naar een exclusieve, gepersonaliseerde Sintra-ervaring.",
       "stayTunedText": "Blijf op de hoogte van onze premium privérondleidingsservice met:",
       "feature1": "Toegewijde expert lokale gidsen",
-      "feature2": "Op maat gemaakte reisroutes volgens uw interesses",
+      "feature2": "Op maat gemaakte reisroutes volgens je interesses",
       "feature3": "Flexibele planning en exclusieve ervaringen",
       "notifyButton": "Melding Ontvangen Bij Lancering",
       "exploreDayPassButton": "Ontdek Onze Dagpas",
-      "footerText": "In de tussentijd kunt u onze hop-on/hop-off dagpas proberen om Sintra op uw eigen tempo te verkennen"
+      "footerText": "In de tussentijd kunt je onze hop-on/hop-off dagpas proberen om Sintra op je eigen tempo te verkennen"
     },
     "whyWait": {
-      "title": "Wilt U Sintra Vandaag Verkennen?",
+      "title": "Wilt Je Sintra Vandaag Verkennen?",
       "subtitle": "Onze hop-on/hop-off dagpas is al beschikbaar en perfect voor onafhankelijke reizigers!",
       "card1Title": "Professionele Gidsen",
       "card1Description": "Al onze voertuigen worden bestuurd door expert lokale gidsen",
       "card2Title": "Flexibel Schema",
-      "card2Description": "Stap in en uit in uw eigen tempo, dagelijks van 9 tot 19 uur",
+      "card2Description": "Ontdek Sintra met onbeperkte hop-on/hop-offritten op je gekozen bezoekdag. City Cards voor het volle tarief bieden ook geselecteerde voordelen bij onze partners.",
       "card3Title": "Uitstekende Prijs-Kwaliteitverhouding",
       "card3Description": "Onbeperkte ritten voor een hele dag tegen een betaalbare prijs",
-      "bookDayPassButton": "Boek Nu Uw Dagpas"
+      "bookDayPassButton": "Boek Nu Je Dagpas"
     },
     "hero": {
       "badge": "Premium Ervaring",
       "title": "Privérondleidingen in Sintra",
-      "subtitle": "Ervaar de magie van Sintra in uw eigen tempo met een toegewijde professionele gids en privévoertuig. Perfect voor gezinnen, koppels en iedereen die op zoek is naar een gepersonaliseerd avontuur.",
+      "subtitle": "Ervaar de magie van Sintra in je eigen tempo met een toegewijde professionele gids en privévoertuig. Perfect voor gezinnen, koppels en iedereen die op zoek is naar een gepersonaliseerd avontuur.",
       "pill1": "Tot 8 gasten",
       "pill2": "Flexibele duur",
       "pill3": "Op maat gemaakte reisroute",
@@ -852,7 +938,7 @@
     },
     "packages": {
       "title": "Privérondleiding Pakketten",
-      "subtitle": "Kies het pakket dat het beste bij uw behoeften past, of laat ons een op maat gemaakte reisroute alleen voor u maken.",
+      "subtitle": "Kies het pakket dat het beste bij je behoeften past, of laat ons een op maat gemaakte reisroute alleen voor je maken.",
       "halfDay": {
         "title": "Halve Dag Hoogtepunten",
         "description": "Perfecte introductie tot de wonderen van Sintra",
@@ -883,9 +969,9 @@
       },
       "custom": {
         "title": "Op Maat Gemaakte Ervaring",
-        "description": "Volledig aangepast aan uw voorkeuren",
+        "description": "Volledig aangepast aan je voorkeuren",
         "price": "Op Maat",
-        "duration": "Flexibele duur • Uw keuze",
+        "duration": "Flexibele duur • Je keuze",
         "feature1": "Gepersonaliseerde reisroute",
         "feature2": "Duur naar keuze",
         "feature3": "Gespecialiseerde thema's beschikbaar",
@@ -898,12 +984,12 @@
     "whyChoose": {
       "title": "Waarom Kiezen Voor Een Privérondleiding?",
       "subtitle": "Terwijl onze hop-on/hop-off service perfect is voor onafhankelijke ontdekkers, biedt een privérondleiding een ongeëvenaarde gepersonaliseerde ervaring.",
-      "benefit1Title": "Uw Eigen Schema",
-      "benefit1Description": "Besteed zoveel tijd als u wilt bij elke attractie",
+      "benefit1Title": "Je Eigen Schema",
+      "benefit1Description": "Besteed zoveel tijd als je wilt bij elke attractie",
       "benefit2Title": "Expert Lokale Gids",
       "benefit2Description": "Insider kennis en persoonlijke aanbevelingen",
       "benefit3Title": "Op Maat Gemaakte Reisroute",
-      "benefit3Description": "Bezoek de plaatsen die u het meest interesseren"
+      "benefit3Description": "Bezoek de plaatsen die je het meest interesseren"
     },
     "whatsIncluded": {
       "title": "Wat Is Inbegrepen Bij Elke Rondleiding",
@@ -918,7 +1004,7 @@
     },
     "sampleItineraries": {
       "title": "Voorbeeld Reisroutes",
-      "subtitle": "Laat u inspireren door onze populairste routes (volledig aanpasbaar)",
+      "subtitle": "Laat je inspireren door onze populairste routes (volledig aanpasbaar)",
       "halfDay": {
         "title": "Halve Dag: Koninklijke Paleizen",
         "duration": "4 uur • Perfect voor eerste bezoekers",
@@ -948,11 +1034,11 @@
     },
     "faq": {
       "title": "Veelgestelde Vragen",
-      "subtitle": "Alles wat u moet weten over onze privérondleidingen",
+      "subtitle": "Alles wat je moet weten over onze privérondleidingen",
       "question1": "Wat is inbegrepen in de prijs van de rondleiding?",
       "answer1": "Alle rondleidingen omvatten een professionele gids, privévoertuig, ophalen en terugbrengen bij hotel, flessenwater en verzekering. Toegangsprijzen voor attracties zijn niet inbegrepen.",
       "question2": "Kunnen we de reisroute aanpassen?",
-      "answer2": "Absoluut! We kunnen een op maat gemaakte reisroute maken op basis van uw interesses, of het nu gaat om paleizen, tuinen, fotografie of lokale cultuur.",
+      "answer2": "Absoluut! We kunnen een op maat gemaakte reisroute maken op basis van je interesses, of het nu gaat om paleizen, tuinen, fotografie of lokale cultuur.",
       "question3": "Welke talen spreken de gidsen?",
       "answer3": "Al onze gidsen zijn meertalig en spreken Engels, Portugees, Spaans en Frans. Andere talen beschikbaar op aanvraag.",
       "question4": "Wat als het regent?",
@@ -961,21 +1047,21 @@
       "answer5": "We raden aan om minimaal 48 uur van tevoren te boeken, vooral tijdens het hoogseizoen (mei-oktober). We zullen echter ons best doen om last-minute verzoeken te accommoderen."
     },
     "finalCta": {
-      "title": "Klaar Voor Uw Privé Sintra Avontuur?",
-      "subtitle": "Neem vandaag nog contact op om uw perfecte gepersonaliseerde rondleiding te creëren",
+      "title": "Klaar Voor Je Privé Sintra Avontuur?",
+      "subtitle": "Neem vandaag nog contact op om je perfecte gepersonaliseerde rondleiding te creëren",
       "requestQuoteButton": "Offerte Aanvragen",
       "chatButton": "Chat Met Ons"
     },
     "loading": "Privérondleidingen laden...",
     "noPackagesAvailable": "Geen tourpakketten beschikbaar",
-    "contactForCustomTours": "Neem contact op voor op maat gemaakte privé-tour opties die zijn afgestemd op uw behoeften",
+    "contactForCustomTours": "Neem contact op voor een privétour die past bij jouw wensen.",
     "contactUs": "Neem contact op",
     "viewDetails": "Details Bekijken",
     "exploreMore": {
       "title": "Andere Manieren om Sintra te Ervaren",
       "subtitle": "Verken onze flexibele opties voor het ontdekken van Sintra's schatten",
-      "hopOnTitle": "Hop On Service",
-      "hopOnDescription": "Verken op uw eigen tempo met onbeperkte hop-on/hop-off ritten naar alle grote attracties",
+      "hopOnTitle": "Hop-on-hop-offvervoer",
+      "hopOnDescription": "Verken op je eigen tempo met onbeperkte hop-on/hop-off ritten naar alle grote attracties",
       "hopOnBadge": "Vrijheid & Flexibiliteit",
       "attractionsTitle": "Attracties",
       "attractionsDescription": "Ontdek UNESCO Werelderfgoed paleizen, kastelen en historische plaatsen",
@@ -985,8 +1071,8 @@
       "travelGuideBadge": "Lokale Expertise"
     },
     "customExperience": {
-      "title": "Heeft u een Aangepaste Ervaring Nodig?",
-      "subtitle": "Neem contact op om een gepersonaliseerde privérondleiding te creëren die is afgestemd op uw interesses, schema en groepsgrootte.",
+      "title": "Heeft je een Aangepaste Ervaring Nodig?",
+      "subtitle": "Neem contact op om een gepersonaliseerde privérondleiding te creëren die is afgestemd op je interesses, schema en groepsgrootte.",
       "chatButton": "Chat Met Ons",
       "exploreDayPass": "Dagpas Verkennen"
     }
@@ -994,14 +1080,14 @@
   "routeMap": {
     "badge": "Interactieve Kaart",
     "title": "Haltepunten & Locaties",
-    "subtitle": "Bekijk al onze stops op Google Maps. Plan uw route en zie precies waar wij ophalen en afzetten in Sintra.",
+    "subtitle": "Bekijk al onze stops op Google Maps. Plan je route en zie precies waar wij ophalen en afzetten in Sintra.",
     "mapTitle": "Hop On Sintra Routekaart",
     "infoTitle": "Hoe de Kaart te Gebruiken",
-    "infoDescription": "Deze interactieve kaart toont al onze ophaal- en afzetlocaties in Sintra. U kunt inzoomen, pannen en op markers klikken voor details over elke stop.",
+    "infoDescription": "Deze interactieve kaart toont al onze ophaal- en afzetlocaties in Sintra. Je kunt inzoomen, pannen en op markers klikken voor details over elke stop.",
     "tip1": "Klik op een marker om de naam van de stop en nabijgelegen attracties te zien",
     "tip2": "Gebruik de routefunctie om looproutes tussen stops te berekenen",
     "tip3": "Alle stops worden bediend tijdens openingsuren (9:00 - 19:00)",
-    "ctaButton": "Boek Nu Uw Dagpas",
+    "ctaButton": "City Cards kopen",
     "ctaSubtext": "Onbeperkte ritten naar al deze stops voor een hele dag"
   },
   "ui": {
@@ -1009,7 +1095,7 @@
     "howItWorks": "Hoe Het Werkt",
     "attractions": "Attracties",
     "manageBooking": "Mijn Boeking",
-    "buyTicket": "Koop Dagpas",
+    "buyTicket": "City Cards kopen",
     "about": "Over & Contact",
     "contact": "Contact",
     "bookNow": "Nu Boeken",
@@ -1054,19 +1140,19 @@
     "buyAttractionTicket": "Koop Attractieticket",
     "easyAs1234": "Gemakkelijk als 1-2-3-4",
     "howItWorksTitle": "Hoe Het Werkt",
-    "howItWorksSubtitle": "Drie simpele stappen naar de beste dag van je reis! 🎉",
-    "step1Title": "Boek in Seconden!",
-    "step1Description": "Kies je datum, voeg optionele attracties toe en klaar—je bent er helemaal klaar voor! Je digitale pas komt direct per e-mail. Geen printen, geen gedoe, alleen pure avontuur.",
-    "step1Badge": "⚡ Duurt minder dan 3 minuten",
-    "step2Title": "Ontvang Je Magische QR-Code",
-    "step2Description": "Je smartphone wordt je ticket naar Sintra! Bewaar je QR-code en je bent klaar om in te stappen bij een van onze stops. Zo simpel is het.",
-    "step2Badge": "📱 Werkt ook offline!",
+    "howItWorksSubtitle": "In vier stappen Sintra ontdekken in je eigen tempo.",
+    "step1Title": "Kies je bezoekdatum",
+    "step1Description": "Log in met een geverifieerd e-mailadres, kies de datum en geef elke kaarthouder een naam. De kaarten verschijnen in Mijn kaarten na betalingsverificatie. Gebruik hetzelfde e-mailadres op de website en in de app.",
+    "step1Badge": "Betaling geverifieerd",
+    "step2Title": "Mijn kaarten",
+    "step2Description": "Toon bij het instappen de QR-kaart van elke reiziger. Kaarten zijn persoonlijk en niet overdraagbaar. Geannuleerde kaarten kunnen niet worden gebruikt.",
+    "step2Badge": "Betaling geverifieerd",
     "step3Title": "Stap In en Ontdek!",
-    "step3Description": "Zie je een tuk tuk bij de stop? Laat je code aan je professionele chauffeur-gids zien en stap in! De service rijdt van 9 tot 19 uur. Verken op je eigen tempo—onze gidsen begeleiden je de hele dag.",
-    "step3Badge": "🎉 Onbeperkte ritten met professionele gidsen",
+    "step3Description": "De vervoerstijden hangen af van de bezoekdatum en staan vóór betaling en op de kaart vermeld. De tijdzone Europe/Lisbon geldt. Een City Card is geen pas voor 24 opeenvolgende uren. Kinderen jonger dan 7 mogen niet in tuk-tuks rijden. Een groep met een kind jonger dan 7 heeft een ander voertuig nodig.",
+    "step3Badge": "Onbeperkte ritten",
     "step4Title": "Geen Voertuig bij de Stop?",
-    "step4Description": "Als je geen wachtend voertuig ziet wanneer je bij een stop aankomt, kun je een ophaalverzoek doen! Dit laat ons weten dat je wacht en helpt ons om je sneller te bereiken. Je verzoek helpt ons onze service te optimaliseren en wachttijden voor iedereen te verminderen.",
-    "step4Badge": "🔔 Vraag altijd ophalen aan",
+    "step4Description": "Vraag tijdens de openingstijden een rit aan voor de geselecteerde kaarthouders. De ophaaltijd hangt af van beschikbare voertuigen en toewijzing; direct ophalen is niet gegarandeerd.",
+    "step4Badge": "Afhankelijk van beschikbare voertuigen",
     "installAppTitle": "📱 Installeer Hop On Sintra App",
     "installAppDescription": "Voeg toe aan je startscherm! Werkt offline, laadt sneller en maakt het aanvragen van ophalen soepeler. Duurt slechts 2 seconden!",
     "installAppFaster": "Sneller",
@@ -1096,17 +1182,17 @@
     "searchAttractions": "Attracties zoeken...",
     "exploreMore": "Verkennen",
     "attractionsCtaTitle": "Klaar om Sintra te Verkennen?",
-    "attractionsCtaDescription": "Uw Hop On Sintra dagpas geeft u toegang tot al deze prachtige attracties. Stap in en uit wanneer u wilt en breng zoveel tijd door als u wilt op elke locatie.",
-    "attractionsCtaButton": "Boek Uw Dagpas",
+    "attractionsCtaDescription": "Ontdek Sintra met onbeperkte hop-on/hop-offritten op je gekozen bezoekdag. City Cards voor het volle tarief bieden ook geselecteerde voordelen bij onze partners. Toegang tot attracties, privétours en zonsondergangstochten zijn aparte producten en niet inbegrepen bij de City Card.",
+    "attractionsCtaButton": "City Cards kopen",
     "attractionSingular": "attractie",
     "attractionPlural": "attracties",
     "free": "Gratis",
     "moreWaysTitle": "Meer manieren om Sintra te ontdekken",
-    "moreWaysSubtitle": "Ontdek onze diensten die uw Sintra-ervaring onvergetelijk maken",
+    "moreWaysSubtitle": "Ontdek onze diensten die je Sintra-ervaring onvergetelijk maken",
     "moreWays": {
-      "hopOnTitle": "Hop On Service",
-      "hopOnDescription": "Onbeperkte dagpas om alle attracties in uw eigen tempo te bezoeken",
-      "hopOnBadge": "9u – 19u dagelijks",
+      "hopOnTitle": "Hop-on-hop-offvervoer",
+      "hopOnDescription": "Ontdek Sintra met onbeperkte hop-on/hop-offritten op je gekozen bezoekdag. City Cards voor het volle tarief bieden ook geselecteerde voordelen bij onze partners.",
+      "hopOnBadge": "Tijden voor je bezoekdatum",
       "privateToursTitle": "Privérondleidingen",
       "privateToursDescription": "Gepersonaliseerde rondleidingen met ervaren lokale gidsen en op maat gemaakte routes",
       "privateToursBadge": "Exclusieve Ervaring",
@@ -1127,37 +1213,37 @@
           "subtitle": "Expertadviezen & routes"
         },
         "privateTours": {
-          "title": "Privé Tours",
+          "title": "Privétours",
           "subtitle": "Gepersonaliseerde ervaringen"
         }
       }
     }
   },
   "cookie": {
-    "title": "Wij Respecteren Uw Privacy",
-    "description": "Wij gebruiken cookies om uw browse-ervaring te verbeteren, inhoud te personaliseren en ons verkeer te analyseren. Lees onze",
+    "title": "Wij Respecteren Je Privacy",
+    "description": "Wij gebruiken cookies om je browse-ervaring te verbeteren, inhoud te personaliseren en ons verkeer te analyseren. Lees onze",
     "privacyLink": "Privacybeleid",
     "acceptAll": "Alles Accepteren",
     "rejectAll": "Alles Weigeren",
     "customize": "Aanpassen",
     "settingsTitle": "Cookie-instellingen",
-    "settingsDescription": "Kies welke cookies u wilt accepteren. U kunt uw voorkeuren op elk moment wijzigen.",
+    "settingsDescription": "Kies welke cookies je wilt accepteren. Je kunt je voorkeuren op elk moment wijzigen.",
     "savePreferences": "Voorkeuren Opslaan",
     "categories": {
       "necessary": {
         "title": "Noodzakelijke Cookies",
-        "description": "Essentieel voor het correct functioneren van de website. Deze cookies zorgen voor kernfunctionaliteit zoals beveiliging, netwerkbeheer en toegankelijkheid. U kunt deze cookies niet uitschakelen."
+        "description": "Essentieel voor het correct functioneren van de website. Deze cookies zorgen voor kernfunctionaliteit zoals beveiliging, netwerkbeheer en toegankelijkheid. Je kunt deze cookies niet uitschakelen."
       },
       "functional": {
         "title": "Functionele Cookies",
-        "description": "Helpen ons uw voorkeuren en instellingen te onthouden, zoals taalvoorkeur, zodat we u een persoonlijkere ervaring kunnen bieden."
+        "description": "Helpen ons je voorkeuren en instellingen te onthouden, zoals taalvoorkeur, zodat we je een persoonlijkere ervaring kunnen bieden."
       },
       "analytics": {
         "title": "Analytische Cookies",
         "description": "Helpen ons begrijpen hoe bezoekers de website gebruiken door anoniem informatie te verzamelen en te rapporteren. Dit helpt ons onze service te verbeteren."
       },
       "marketing": {
-        "title": "Marketing Cookies",
+        "title": "Marketingcookies",
         "description": "Worden gebruikt om bezoekers op websites te volgen en relevante advertenties te tonen die hen aanmoedigen onze service te gebruiken."
       }
     }
@@ -1170,11 +1256,11 @@
       "orStartWebChat": "of start webchat",
       "startWebChat": "Webchat Starten",
       "starting": "Starten...",
-      "conversationSaved": "Uw gesprek is opgeslagen.",
-      "welcomeMessage": "Hallo! 👋 Welkom bij Hop On Sintra. Hoe kunnen we u helpen?",
-      "enterName": "Voer uw naam in",
-      "enterEmail": "Voer uw e-mail in",
-      "enterMessage": "Typ uw bericht...",
+      "conversationSaved": "Je gesprek is opgeslagen.",
+      "welcomeMessage": "Hallo! 👋 Welkom bij Hop On Sintra. Hoe kunnen we je helpen?",
+      "enterName": "Voer je naam in",
+      "enterEmail": "Voer je e-mail in",
+      "enterMessage": "Typ je bericht...",
       "sendMessage": "Verzenden",
       "goBack": "Terug"
     },
@@ -1184,8 +1270,8 @@
       "loginToProfile": "Inloggen op Profiel",
       "myBooking": "Mijn Boeking",
       "requestRide": "Rit Aanvragen",
-      "accessYourBooking": "Toegang tot Uw Boeking",
-      "loginDescription": "Log in met uw boekings-ID en achternaam om toegang te krijgen tot uw tijdelijke profiel tijdens uw bezoek.",
+      "accessYourBooking": "Toegang tot Je Boeking",
+      "loginDescription": "Log in met je boekings-ID en achternaam om toegang te krijgen tot je tijdelijke profiel tijdens je bezoek.",
       "bookingId": "Boekings-ID",
       "bookingIdPlaceholder": "bijv., AB-1234",
       "lastName": "Achternaam",
@@ -1193,34 +1279,34 @@
       "login": "Inloggen",
       "loggingIn": "Inloggen...",
       "welcomeBack": "Welkom terug",
-      "loggedOut": "U bent uitgelogd",
+      "loggedOut": "Je bent uitgelogd",
       "pleaseEnterBoth": "Voer zowel boekings-ID als achternaam in",
       "invalidCredentials": "Ongeldige boekingsgegevens",
       "loginFailed": "Inloggen mislukt. Probeer het opnieuw.",
       "logout": "Uitloggen",
-      "yourPasses": "Uw Passen",
+      "yourPasses": "Je Passen",
       "validFor": "Geldig voor"
     },
     "requestPickupPage": {
-      "verifyBooking": "Verifieer Uw Boeking",
-      "verifyBookingDescription": "Voer uw boekingscode in om een ophaalverzoek te doen. Deze service is alleen beschikbaar voor klanten met actieve dagpassen.",
+      "verifyBooking": "Verifieer Je Boeking",
+      "verifyBookingDescription": "Voer je boekingscode in om een ophaalverzoek te doen. Deze service is alleen beschikbaar voor klanten met actieve dagpassen.",
       "requestPickup": "Ophalen Aanvragen",
-      "requestPickupDescription": "Vertel ons uw groepsgrootte en locatie, en we sturen het perfecte voertuig voor u.",
-      "enterName": "Voer uw naam in",
+      "requestPickupDescription": "Vertel ons je groepsgrootte en locatie, en we sturen het perfecte voertuig voor je.",
+      "enterName": "Voer je naam in",
       "groupSize": "Groepsgrootte",
       "pickupLocation": "Ophaallocatie",
       "requestingSent": "Aanvragen...",
       "pickupRequested": "Ophalen Aangevraagd!",
-      "pickupRequestedMessage": "We hebben uw verzoek ontvangen en sturen binnenkort een voertuig.",
+      "pickupRequestedMessage": "We hebben je verzoek ontvangen en sturen binnenkort een voertuig.",
       "errorRequestingPickup": "Fout bij aanvragen van ophalen"
     },
     "bookingConfirmation": {
       "bookingConfirmed": "Boeking Bevestigd!",
-      "checkEmail": "Controleer uw e-mail voor bevestiging en QR-codes.",
+      "checkEmail": "Controleer je e-mail voor bevestiging en QR-codes.",
       "bookingId": "Boekings-ID",
-      "saveForManaging": "Bewaar dit voor het beheren van uw boeking",
+      "saveForManaging": "Bewaar dit voor het beheren van je boeking",
       "emailSentTo": "Bevestigingse-mail verzonden naar",
-      "ticketsSentToEmail": "Uw tickets-PDF en boekingsgegevens zijn naar uw e-mail verzonden.",
+      "ticketsSentToEmail": "Je tickets-PDF en boekingsgegevens zijn naar je e-mail verzonden.",
       "bookingSummary": "Boekingsoverzicht",
       "booking": "Boeking",
       "date": "Datum",
@@ -1228,81 +1314,81 @@
       "person": "persoon",
       "people": "personen",
       "totalPaid": "Totaal Betaald",
-      "yourDayPassTickets": "Uw Dagpas Tickets",
-      "downloadPDF": "Download PDF",
+      "yourDayPassTickets": "Je Dagpas Tickets",
+      "downloadPDF": "Pdf downloaden",
       "downloading": "Downloaden...",
       "printAll": "Alles Afdrukken",
       "pdfTicketsAttached": "PDF-Tickets Bijgevoegd",
-      "pdfTicketsAttachedDesc": "We hebben een PDF met al uw tickets naar uw e-mail gestuurd. U kunt het ook hier downloaden of uw tickets hieronder opslaan.",
-      "ticketsReady": "Uw Tickets Zijn Klaar!",
+      "pdfTicketsAttachedDesc": "We hebben een PDF met al je tickets naar je e-mail gestuurd. Je kunt het ook hier downloaden of je tickets hieronder opslaan.",
+      "ticketsReady": "Je Tickets Zijn Klaar!",
       "ticketsReadyDesc": "Toon deze tickets aan de chauffeur bij het instappen. Elke passagier heeft zijn eigen ticket met QR-code nodig.",
-      "howToUseYourPass": "Hoe U Uw Pas Gebruikt",
+      "howToUseYourPass": "Hoe Je Je Pas Gebruikt",
       "showQRCode": "Toon QR-Code",
-      "showQRCodeDesc": "Toon uw QR-code aan de chauffeur bij het instappen in een voertuig",
+      "showQRCodeDesc": "Toon je QR-code aan de chauffeur bij het instappen in een voertuig",
       "unlimitedRides": "Onbeperkte Ritten",
-      "unlimitedRidesDesc": "Gebruik uw pas voor onbeperkte hop-on/hop-off ritten tot 20:00 uur",
+      "unlimitedRidesDesc": "Gebruik je pas voor onbeperkte hop-on/hop-off ritten tot 20:00 uur",
       "regularService": "Regelmatige Service",
       "regularServiceDesc": "Doorlopende service van alle belangrijke attracties gedurende de hele dag",
       "flexibleSchedule": "Flexibel Schema",
-      "flexibleScheduleDesc": "Besteed zoveel tijd als u wilt bij elke attractie",
+      "flexibleScheduleDesc": "Besteed zoveel tijd als je wilt bij elke attractie",
       "thankYou": "Bedankt voor het Kiezen van Hop On Sintra!",
-      "adventureBegins": "We zijn enthousiast om u de magie van Sintra te laten zien. Uw avontuur begint op",
-      "confirmationSentTo": "Uw boekingsbevestiging en tickets zijn verzonden naar",
+      "adventureBegins": "We zijn enthousiast om je de magie van Sintra te laten zien. Je avontuur begint op",
+      "confirmationSentTo": "Je boekingsbevestiging en tickets zijn verzonden naar",
       "backToHome": "Terug naar Homepage",
       "manageBooking": "Boeking Beheren",
       "viewAttractions": "Attracties Bekijken",
       "tip": "Tip",
-      "tipUseBookingId": "Gebruik uw Boekings-ID {bookingId} om uw reservering te beheren",
+      "tipUseBookingId": "Gebruik je Boekings-ID {bookingId} om je reservering te beheren",
       "viewRouteMap": "interactieve routekaart",
       "questionsOrChanges": "Vragen of wijzigingen nodig?",
       "contactViaEmail": "Neem contact met ons op via",
       "or": "of",
       "unlockFullAccess": "Volledige Toegang Ontgrendelen",
-      "loginNow": "Log nu in om toegang te krijgen tot premiumfuncties tijdens uw bezoek:",
+      "loginNow": "Log nu in om toegang te krijgen tot premiumfuncties tijdens je bezoek:",
       "requestPickup": "Ophalen aanvragen",
       "requestPickupDesc": "vanaf elke attractie in Sintra",
       "liveChatSupport": "Live chat ondersteuning",
       "liveChatSupportDesc": "met opgeslagen gespreksgeschiedenis",
-      "viewTickets": "Bekijk uw tickets",
+      "viewTickets": "Bekijk je tickets",
       "viewTicketsDesc": "en boekingsdetails op elk moment",
-      "loginInstantly": "Gebruik uw {bold}Boekings-ID{/bold} en {bold}achternaam{/bold} om direct in te loggen.",
+      "loginInstantly": "Gebruik je {bold}Boekings-ID{/bold} en {bold}achternaam{/bold} om direct in te loggen.",
       "loginNowButton": "Nu Inloggen",
-      "youreLoggedIn": "U bent Ingelogd!",
-      "fullAccessEnabled": "U heeft volledige toegang tot alle functies, inclusief het aanvragen van ophaalservice en live chat ondersteuning. Uw tickets en boekingsgegevens zijn opgeslagen in uw profiel.",
+      "youreLoggedIn": "Je bent Ingelogd!",
+      "fullAccessEnabled": "Je hebt volledige toegang tot alle functies, inclusief het aanvragen van ophaalservice en live chat ondersteuning. Je tickets en boekingsgegevens zijn opgeslagen in je profiel.",
       "requestPickupFrom": "Ophalen Aanvragen",
       "downloadTickets": "Tickets Downloaden",
       "downloadingTickets": "Downloaden...",
       "noBookingFound": "Geen boeking gevonden. Maak eerst een boeking.",
       "bookNow": "Nu Boeken",
       "insightTourPickup": "Insight Tour - Belangrijke Ophaalinformatie",
-      "departsAt": "Uw begeleide tour vertrekt om",
+      "departsAt": "Je begeleide tour vertrekt om",
       "meetingPoint": "Ontmoetingspunt",
       "arriveEarly": "Kom alstublieft 10 minuten eerder",
-      "lookForVehicle": "om een stipt vertrek te garanderen. Zoek naar ons voertuig met het Hop On Sintra-merk en toon uw ticket aan de chauffeur.",
+      "lookForVehicle": "om een stipt vertrek te garanderen. Zoek naar ons voertuig met het Hop On Sintra-merk en toon je ticket aan de chauffeur.",
       "pdfDownloadSuccess": "PDF succesvol gedownload!",
       "pdfDownloadError": "PDF-download mislukt"
     },
     "buyTicketPage": {
       "stepDescriptions": {
-        "step1": "Selecteer uw voorkeursdatum en starttijd",
+        "step1": "Selecteer je voorkeursdatum en starttijd",
         "step2": "Kies de ophaallocatie en aantal gasten"
       },
       "progressLabels": {
         "dateTime": "Datum & Tijd",
         "pickupSpot": "Ophaallocatie",
         "attractions": "Attracties",
-        "yourDetails": "Uw Gegevens",
+        "yourDetails": "Je Gegevens",
         "confirmation": "Bevestiging"
       },
       "toasts": {
         "paymentInitFailed": "Betaling initialiseren mislukt. Probeer het opnieuw.",
-        "bookingConfirmedCheckEmail": "Reservering bevestigd! Controleer uw e-mail voor QR-codes.",
+        "bookingConfirmedCheckEmail": "Reservering bevestigd! Controleer je e-mail voor QR-codes.",
         "bookingConfirmedQRReady": "Reservering bevestigd! QR-codes zijn klaar.",
         "emailVerificationWarning": "⚠️ E-mailsysteem vereist domeinverificatie. QR-codes zijn beschikbaar op deze pagina.",
-        "emailNoAddress": "⚠️ Geen e-mailadres opgegeven. Bewaar uw QR-codes vanaf deze pagina.",
+        "emailNoAddress": "⚠️ Geen e-mailadres opgegeven. Bewaar je QR-codes vanaf deze pagina.",
         "emailErrorWithDetails": "⚠️ E-mail kon niet worden verzonden",
-        "emailCouldntBeSent": "E-mail kon niet worden verzonden. Bewaar uw QR-codes vanaf deze pagina.",
-        "serverConnectionIssue": "Serververbindingsprobleem. Uw betaling is verwerkt. Neem contact op met support met uw betalingsbevestiging.",
+        "emailCouldntBeSent": "E-mail kon niet worden verzonden. Bewaar je QR-codes vanaf deze pagina.",
+        "serverConnectionIssue": "Serververbindingsprobleem. Je betaling is verwerkt. Neem contact op met support met je betalingsbevestiging.",
         "paymentFailed": "Betaling mislukt. Probeer het opnieuw."
       },
       "paymentError": {
@@ -1334,7 +1420,7 @@
       },
       "step2": {
         "title": "Ophaallocatie & Groepsgrootte",
-        "description": "Kies uw ophaallocatie en aantal gasten",
+        "description": "Kies je ophaallocatie en aantal gasten",
         "total": "Totaal"
       },
       "step3": {
@@ -1342,24 +1428,24 @@
         "skipTicketLines": "Sla de rijen over!",
         "pricesShownFor": "Prijzen getoond voor",
         "guests": "gasten.",
-        "notAvailable": "Attractietickets zijn nog niet beschikbaar voor online aankoop. U kunt tickets kopen bij de ingang van elke attractie.",
+        "notAvailable": "Attractietickets zijn nog niet beschikbaar voor online aankoop. Je kunt tickets kopen bij de ingang van elke attractie.",
         "each": "elk",
         "tipTitle": "Tip:",
-        "tipDescription": "U ontvangt digitale tickets via e-mail samen met",
-        "dayPassQRCode": "uw dagpas QR-code",
-        "dayPassQRCodes": "uw dagpas QR-codes",
+        "tipDescription": "Je ontvangt digitale tickets via e-mail samen met",
+        "dayPassQRCode": "je dagpas QR-code",
+        "dayPassQRCodes": "je dagpas QR-codes",
         "comingSoon": {
           "badge": "Online Boeken Binnenkort",
           "description": "We werken eraan om de mogelijkheid toe te voegen om attractietickets online te kopen. Voorlopig kunnen tickets worden gekocht bij de ingang van elke attractie.",
-          "tip": "💡 Uw Hop On Sintra dagpas geeft u onbeperkt vervoer naar alle attracties. Tickets zijn beschikbaar voor aankoop bij aankomst!"
+          "tip": "💡 Je Hop On Sintra dagpas geeft je onbeperkt vervoer naar alle attracties. Tickets zijn beschikbaar voor aankoop bij aankomst!"
         }
       },
       "step4": {
-        "title": "Uw Informatie",
+        "title": "Je Informatie",
         "fullName": "Volledige Naam",
         "emailAddress": "E-mailadres",
         "confirmEmail": "E-mail Bevestigen",
-        "qrCodeSentHere": "Uw QR-code wordt hierheen gestuurd",
+        "qrCodeSentHere": "Je QR-code wordt hierheen gestuurd",
         "emailsDontMatch": "E-mails komen niet overeen"
       },
       "step5": {
@@ -1392,7 +1478,7 @@
     "aboutPage": {
       "sendMessage": "Bericht Verzenden",
       "sending": "Verzenden...",
-      "messageSent": "Bedankt voor uw bericht! We nemen binnenkort contact met u op.",
+      "messageSent": "Bedankt voor je bericht! We nemen binnenkort contact met je op.",
       "messageError": "Kan bericht niet verzenden. Gebruik WhatsApp of e-mail ons rechtstreeks op hoponsintra@gmail.com",
       "fullName": "Volledige Naam",
       "emailAddress": "E-mailadres"
@@ -1400,7 +1486,7 @@
     "toast": {
       "newVersionAvailable": "Nieuwe versie beschikbaar! Ververs om bij te werken.",
       "contentUpdated": "Inhoud bijgewerkt!",
-      "loginSuccess": "🎉 U bent nu ingelogd!",
+      "loginSuccess": "🎉 Je bent nu ingelogd!",
       "loginError": "Inloggen mislukt. Probeer het opnieuw.",
       "settingsSaved": "Instellingen succesvol opgeslagen in database!",
       "settingsSaveFailed": "Kan instellingen niet opslaan in database. Alleen lokaal opgeslagen.",
@@ -1420,17 +1506,17 @@
     "adult": "Volwassene",
     "productCard": {
       "daypass": {
-        "title": "Dagpas",
-        "description": "Onbeperkte ritten naar alle attracties van Sintra",
+        "title": "City Card",
+        "description": "Ontdek Sintra met onbeperkte hop-on/hop-offritten op je gekozen bezoekdag. City Cards voor het volle tarief bieden ook geselecteerde voordelen bij onze partners.",
         "features": [
-          "Onbeperkte hop-on hop-off ritten",
-          "Gegarandeerde zitplaatsen - geen wachten",
-          "Professionele chauffeur-gidsen",
-          "Service 9-19 uur dagelijks",
-          "Kleine groepen (max. 8 personen)",
-          "Real-time voertuigvolging"
+          "Onbeperkte ritten",
+          "Partnervoordelen bij vol tarief",
+          "Eén kaart op naam per persoon",
+          "Tijden voor je bezoekdatum",
+          "Onder 7: geen tuk-tuks",
+          "Toegang tot attracties apart"
         ],
-        "bookNow": "Boek Uw Pas"
+        "bookNow": "City Cards kopen"
       },
       "insightTour": {
         "title": "Insight Tour",
@@ -1460,7 +1546,7 @@
       }
     },
     "bookingCard": {
-      "title": "Boek Uw Dagpas",
+      "title": "Boek Je Dagpas",
       "selectDate": "Selecteer Datum",
       "quantity": "Aantal",
       "total": "Totaal",
@@ -1486,7 +1572,7 @@
       "guidedTour": "Begeleide Commentaar",
       "guidedTourDescription": "Verbeterde ervaring met gedetailleerde verhalen",
       "attractions": "Attractiekaarten",
-      "selectAttractions": "Selecteer welke attracties u wilt opnemen",
+      "selectAttractions": "Selecteer welke attracties je wilt opnemen",
       "step4Title": "Betaling",
       "step4Description": "Hoe betaalt de klant?",
       "paymentMethod": "Betaalmethode",
@@ -1524,12 +1610,12 @@
     "ticketInformation": "Ticket Informatie",
     "entranceTicket": "Toegangsticket",
     "onlineBookingComingSoon": "Online Boeking Binnenkort Beschikbaar",
-    "ticketsAtEntrance": "Attractietickets zijn nog niet online beschikbaar. U kunt tickets bij de ingang kopen.",
+    "ticketsAtEntrance": "Attractietickets zijn nog niet online beschikbaar. Je kunt tickets bij de ingang kopen.",
     "getThereEasily": "Gemakkelijk Bereikbaar!",
-    "dayPassPromo": "Boek een Hop On Sintra dagpas voor onbeperkt vervoer tussen alle attracties met professionele chauffeur-gidsen!",
-    "getDayPass": "Dagpas Halen",
+    "dayPassPromo": "Ontdek Sintra met onbeperkte hop-on/hop-offritten op je gekozen bezoekdag. City Cards voor het volle tarief bieden ook geselecteerde voordelen bij onze partners.",
+    "getDayPass": "City Cards kopen",
     "dontMissThese": "Mis Dit Niet!",
-    "insiderTips": "Insider Tips",
+    "insiderTips": "Tips van locals",
     "timeNeeded": "Benodigde Tijd",
     "exploreMoreAttractions": "Meer Attracties Ontdekken",
     "learnMore": "Meer weten"
@@ -1546,13 +1632,13 @@
     "morePrivateTours": "Meer privétours",
     "viewTour": "Tour bekijken",
     "date": "Datum",
-    "guests": "Gasten",
+    "guests": "Deelnemers",
     "checkAvailability": "Beschikbaarheid controleren",
     "freeCancellation": "Gratis annulering",
     "freeCancellationDesc": "Annuleer tot 24 uur van tevoren voor volledige terugbetaling",
-    "privateExclusive": "100% privé tour",
-    "privateExclusiveDesc": "Uitsluitend voor uw groep — geen gedeelde bussen of vreemden",
-    "otherToursTitle": "Andere tours die u misschien leuk vindt",
+    "privateExclusive": "100% privétour",
+    "privateExclusiveDesc": "Alleen voor jouw groep, met een eigen gids.",
+    "otherToursTitle": "Andere tours die je misschien leuk vindt",
     "freeGuidesTitle": "Bekijk onze gratis gidsen",
     "readArticle": "Lezen",
     "fromPrice": "Vanaf",
@@ -1561,23 +1647,23 @@
     "privateTourFallback": "Privé Tour"
   },
   "tourBookingDialog": {
-    "title": "Uw Privétour Boeken",
+    "title": "Je Privétour Boeken",
     "stepDateTime": "Datum & Tijd",
-    "stepDetails": "Uw Gegevens",
+    "stepDetails": "Je Gegevens",
     "stepPayment": "Betaling",
     "selectDate": "Datum Selecteren",
     "availableTimes": "Beschikbare Tijden",
     "pickDatePrompt": "Kies een datum om beschikbare tijden te zien",
-    "guests": "Gasten",
-    "guest": "gast",
-    "guestsPlural": "gasten",
-    "minimumGuestsNotice": "Deze tour heeft een minimum van {min} personen — dat wordt in rekening gebracht.",
+    "guests": "Deelnemers",
+    "guest": "deelnemer",
+    "guestsPlural": "deelnemers",
+    "minimumGuestsNotice": "Voor deze tour betaal je minimaal voor {min} deelnemers, ook als je groep kleiner is.",
     "total": "Totaal",
     "quoteOnRequest": "Offerte op aanvraag",
     "next": "Volgende →",
     "legendAvailable": "Beschikbaar",
-    "legendLimited": "Beperkt",
-    "legendFull": "Vol",
+    "legendLimited": "Weinig plaatsen",
+    "legendFull": "Volgeboekt",
     "checkingAvailability": "Beschikbaarheid controleren…",
     "fullName": "Volledige Naam",
     "email": "E-mail",
@@ -1586,30 +1672,30 @@
     "languageNote": "Wij garanderen tours in het Engels, Spaans en Portugees. Voor andere talen doen wij ons best!",
     "specialRequests": "Speciale Verzoeken",
     "specialRequestsOptional": "(optioneel)",
-    "specialRequestsPlaceholder": "Toegankelijkheidsbehoeften, dieetvereisten, specifieke plaatsen die u wilt bezoeken…",
+    "specialRequestsPlaceholder": "Toegankelijkheidsbehoeften, dieetvereisten, specifieke plaatsen die je wilt bezoeken…",
     "summaryTour": "Tour",
     "summaryDate": "Datum",
     "summaryTime": "Tijd",
-    "summaryGuests": "Gasten",
-    "quoteInfo": "We bekijken uw aanvraag en sturen u binnen 24 uur een persoonlijke offerte. Geen betaling nodig tot bevestiging.",
+    "summaryGuests": "Deelnemers",
+    "quoteInfo": "We bekijken je aanvraag en sturen je binnen 24 uur een persoonlijke offerte. Geen betaling nodig tot bevestiging.",
     "back": "Terug",
     "submitting": "Verzenden…",
-    "settingUpPayment": "Betaling instellen…",
+    "settingUpPayment": "Betaling voorbereiden…",
     "requestQuote": "Persoonlijke Offerte Aanvragen",
     "continuePayment": "Doorgaan naar Betaling",
     "quoteSuccess": "Offerteaanvraag Verzonden!",
-    "quoteSuccessMsg": "We bekijken uw aanvraag en sturen u binnen 24 uur een persoonlijke offerte per e-mail.",
+    "quoteSuccessMsg": "We bekijken je aanvraag en sturen je binnen 24 uur een persoonlijke offerte per e-mail.",
     "confirmationSentTo": "Bevestiging verzonden naar",
     "done": "Klaar",
     "backToDetails": "Terug naar details",
     "bookingConfirmed": "Boeking Bevestigd!",
-    "bookingConfirmedSubtitle": "Uw avontuur is zeker. We kunnen niet wachten om u Sintra te laten zien!",
+    "bookingConfirmedSubtitle": "Je avontuur is zeker. We kunnen niet wachten om je Sintra te laten zien!",
     "summaryAmountPaid": "Totaal Betaald",
     "whatHappensNext": "Wat gebeurt er nu?",
     "nextStep1Title": "Bevestigings-e-mail",
-    "nextStep1Body": "Een volledig overzicht is naar uw inbox verzonden.",
+    "nextStep1Body": "Een volledig overzicht is naar je inbox verzonden.",
     "nextStep2Title": "Contact met gids",
-    "nextStep2Body": "Uw gids neemt 24 uur voor de tour contact met u op met details over het afgesproken punt.",
+    "nextStep2Body": "Je gids neemt 24 uur voor de tour contact met je op met details over het afgesproken punt.",
     "nextStep3Title": "Geniet ervan!",
     "nextStep3Body": "Kom gewoon opdagen en wij regelen de rest.",
     "closeBooking": "Sluiten"
@@ -1622,67 +1708,137 @@
   },
   "hopOnService": {
     "backToHome": "Terug naar home",
-    "heroTitle": "Hop On Sintra Dagpas",
-    "heroSubtitle": "Onbeperkt hop-on/hop-off toegang tot alle topattractions van Sintra met gegarandeerde zitplaats",
+    "heroTitle": "City Card",
+    "heroSubtitle": "Ontdek Sintra met onbeperkte hop-on/hop-offritten op je gekozen bezoekdag. City Cards voor het volle tarief bieden ook geselecteerde voordelen bij onze partners.",
     "badgeUnlimitedRides": "Onbeperkt rijden",
-    "badge9am7pm": "9u - 19u dagelijks",
-    "descriptionTitle": "Uw toegang tot Sintra",
-    "descriptionP1": "De Hop On Sintra dagpas is uw sleutel tot de ontdekking van een van Portugal's betoverende bestemmingen. Met onbeperkte ritten gedurende de dag heeft u de vrijheid om Sintra's prachtige paleizen, historische kastelen en adembenemende uitzichten in uw eigen tempo te verkennen.",
-    "descriptionP2": "Geen vaste roosters, geen haast tussen attracties. Laat gewoon uw pas zien bij een van onze haltes en stap aan boord van een van onze comfortabele tuk-tuks of UMM jeeps. Onze professionele chauffeurs kennen de kronkelende wegen van Sintra op hun duimpje en zorgen voor veilig en efficiënt vervoer terwijl u achterover leunt en geniet van het landschap.",
+    "badge9am7pm": "Tijden voor je bezoekdatum",
+    "descriptionTitle": "City Card",
+    "descriptionP1": "Ontdek Sintra met onbeperkte hop-on/hop-offritten op je gekozen bezoekdag. City Cards voor het volle tarief bieden ook geselecteerde voordelen bij onze partners.",
+    "descriptionP2": "Ontdek Sintra met onbeperkte hop-on/hop-offritten op je gekozen bezoekdag. City Cards voor het volle tarief bieden ook geselecteerde voordelen bij onze partners.",
     "galleryBadge": "Galerij",
     "featuresTitle": "Wat is inbegrepen",
     "feature1Title": "Onbeperkt rijden",
-    "feature1Desc": "Stap de hele dag zo vaak als u wilt in en uit",
-    "feature2Title": "9u tot 19u service",
-    "feature2Desc": "Volledige dagtoegang van ochtend tot avond",
-    "feature3Title": "Gegarandeerde zitplaats",
-    "feature3Desc": "Gereserveerde plaatsen in tuk-tuks en UMM jeeps",
+    "feature1Desc": "Ontdek Sintra met onbeperkte hop-on/hop-offritten op je gekozen bezoekdag. City Cards voor het volle tarief bieden ook geselecteerde voordelen bij onze partners.",
+    "feature2Title": "Tijden voor je bezoekdatum",
+    "feature2Desc": "De vervoerstijden hangen af van de bezoekdatum en staan vóór betaling en op de kaart vermeld. De tijdzone Europe/Lisbon geldt. Een City Card is geen pas voor 24 opeenvolgende uren.",
+    "feature3Title": "Afhankelijk van beschikbare voertuigen",
+    "feature3Desc": "Vraag tijdens de openingstijden een rit aan voor de geselecteerde kaarthouders. De ophaaltijd hangt af van beschikbare voertuigen en toewijzing; direct ophalen is niet gegarandeerd.",
     "feature4Title": "Alle grote attracties",
-    "feature4Desc": "Toegang tot Palácio da Pena, Quinta da Regaleira en meer",
-    "feature5Title": "Professionele chauffeurs",
-    "feature5Desc": "Veilig en comfortabel vervoer",
+    "feature4Desc": "Kinderen jonger dan 7 mogen niet in tuk-tuks rijden. Een groep met een kind jonger dan 7 heeft een ander voertuig nodig.",
+    "feature5Title": "Eén kaart op naam per persoon",
+    "feature5Desc": "Vraag tijdens de openingstijden een rit aan voor de geselecteerde kaarthouders. De ophaaltijd hangt af van beschikbare voertuigen en toewijzing; direct ophalen is niet gegarandeerd.",
     "feature6Title": "Geen wachtrijen",
-    "feature6Desc": "Geen gedoe met parkeren of busroosters",
+    "feature6Desc": "Log in met een geverifieerd e-mailadres, kies de datum en geef elke kaarthouder een naam. De kaarten verschijnen in Mijn kaarten na betalingsverificatie. Gebruik hetzelfde e-mailadres op de website en in de app.",
     "faqTitle": "Veelgestelde vragen",
     "faq1Q": "Hoe werkt de dagpas?",
-    "faq1A": "Uw dagpas geeft u onbeperkte toegang tot onze hop-on/hop-off service van 9u tot 19u. Laat gewoon uw pas zien bij een van onze haltes en stap in. U kunt zo vaak in- en uitstappen als u wilt.",
-    "faq2Q": "Welke voertuigen gebruikt u?",
-    "faq2A": "Wij rijden met tuk-tuks en UMM jeeps, allemaal voorzien van comfortabele zitplaatsen. Onze voertuigen zijn perfect voor de smalle, kronkelende wegen van Sintra.",
+    "faq1A": "Ontdek Sintra met onbeperkte hop-on/hop-offritten op je gekozen bezoekdag. City Cards voor het volle tarief bieden ook geselecteerde voordelen bij onze partners. De vervoerstijden hangen af van de bezoekdatum en staan vóór betaling en op de kaart vermeld. De tijdzone Europe/Lisbon geldt. Een City Card is geen pas voor 24 opeenvolgende uren.",
+    "faq2Q": "Welke voertuigen gebruikt je?",
+    "faq2A": "Actuele prijzen en beschikbaarheid worden vóór betaling getoond. De aanbieder bepaalt het volle tarief; 7–11-jarigen betalen de helft en kinderen jonger dan 7 reizen gratis. Kies de leeftijd van elke persoon op de bezoekdatum: jonger dan 7 gratis, 7–11 half tarief, vanaf 12 vol tarief. Iedereen, ook een kind met een gratis kaart, heeft een kaart op naam nodig en neemt één plaats in.",
     "faq3Q": "Waar kan ik instappen?",
-    "faq3A": "We hebben meerdere opstapplaatsen in Sintra, waaronder het treinstation, het stadscentrum en bij grote attracties. Bekijk onze routekaart voor alle haltelocaties.",
+    "faq3A": "Ontdek Sintra met onbeperkte hop-on/hop-offritten op je gekozen bezoekdag. City Cards voor het volle tarief bieden ook geselecteerde voordelen bij onze partners. De vervoerstijden hangen af van de bezoekdatum en staan vóór betaling en op de kaart vermeld. De tijdzone Europe/Lisbon geldt. Een City Card is geen pas voor 24 opeenvolgende uren.",
     "faq4Q": "Is de pas geldig voor meerdere dagen?",
-    "faq4A": "Elke pas is geldig voor één volledige dag. Als u meerdere dagen vervoer nodig heeft, kunt u extra dagpassen kopen bij het boeken of apart.",
+    "faq4A": "Vraag tijdens de openingstijden een rit aan voor de geselecteerde kaarthouders. De ophaaltijd hangt af van beschikbare voertuigen en toewijzing; direct ophalen is niet gegarandeerd.",
     "faq5Q": "Kan ik bagage meenemen?",
-    "faq5A": "Kleine tassen en rugzakken zijn prima, maar grote koffers passen mogelijk niet comfortabel in onze voertuigen. Neem bij grote bagage vooraf contact met ons op.",
-    "faq6Q": "Biedt u groepskortingen?",
-    "faq6A": "Ja! Bij het boeken van meerdere passen voor groepen profiteert u van onze groepstarieven. Kinderen van 7-12 jaar krijgen ook een lagere prijs.",
+    "faq5A": "Toon bij het instappen de QR-kaart van elke reiziger. Kaarten zijn persoonlijk en niet overdraagbaar. Geannuleerde kaarten kunnen niet worden gebruikt.",
+    "faq6Q": "Biedt je groepskortingen?",
+    "faq6A": "De vervoerstijden hangen af van de bezoekdatum en staan vóór betaling en op de kaart vermeld. De tijdzone Europe/Lisbon geldt. Een City Card is geen pas voor 24 opeenvolgende uren.",
     "faq7Q": "Wat als ik een rit mis?",
-    "faq7A": "Geen probleem! Onze service rijdt de hele dag met regelmatige tussenpozen. Wacht gewoon bij een halte en het volgende voertuig haalt u op. Uw pas is de hele dag geldig.",
+    "faq7A": "Kies de leeftijd van elke persoon op de bezoekdatum: jonger dan 7 gratis, 7–11 half tarief, vanaf 12 vol tarief. Iedereen, ook een kind met een gratis kaart, heeft een kaart op naam nodig en neemt één plaats in. Kinderkaarten vereisen een begeleider met een geldige kaart tegen vol tarief op hetzelfde account en dezelfde datum. Controleer vóór annulering van de laatste begeleider welke afhankelijke kinderkaarten ook moeten worden geannuleerd. Kinderen jonger dan 7 mogen niet in tuk-tuks rijden. Een groep met een kind jonger dan 7 heeft een ander voertuig nodig.",
     "faq8Q": "Zijn attractietickets inbegrepen?",
-    "faq8A": "De dagpas dekt alleen vervoer. U kunt echter attractietickets toevoegen bij het afrekenen voor een combinatiedeal.",
-    "exploreSectionTitle": "Plan uw perfecte trip",
+    "faq8A": "Kies de leeftijd van elke persoon op de bezoekdatum: jonger dan 7 gratis, 7–11 half tarief, vanaf 12 vol tarief. Iedereen, ook een kind met een gratis kaart, heeft een kaart op naam nodig en neemt één plaats in. Kinderkaarten vereisen een begeleider met een geldige kaart tegen vol tarief op hetzelfde account en dezelfde datum. Controleer vóór annulering van de laatste begeleider welke afhankelijke kinderkaarten ook moeten worden geannuleerd. Kinderen jonger dan 7 mogen niet in tuk-tuks rijden. Een groep met een kind jonger dan 7 heeft een ander voertuig nodig.",
+    "exploreSectionTitle": "Plan je perfecte trip",
     "travelGuideTitle": "Reisgids",
     "travelGuideDesc": "Ontdek lokale tips, de beste tijden om elk paleis te bezoeken en verborgen parels van Sintra",
     "privateToursTitle": "Privétours",
-    "privateToursDesc": "Wilt u een persoonlijke ervaring? Verken op maat gemaakte tours met lokale experts",
+    "privateToursDesc": "Wilt je een persoonlijke ervaring? Verken op maat gemaakte tours met lokale experts",
     "mobileCtaTitle": "Klaar om Sintra te ontdekken?",
-    "mobileCtaDesc": "Koop nu uw dagpas en begin uw ontdekking van Sintra's magische attracties in uw eigen tempo.",
-    "mobileCtaButton": "Boek uw dagpas",
-    "bookingCardTitle": "Boek uw pas",
-    "bookingCardSubtitle": "Onbeperkte toegang tot alle attracties",
-    "bookingDetail1": "Geldig voor één volledige dag",
-    "bookingDetail2": "Service: 9u - 19u dagelijks",
-    "bookingDetail3": "Groepskortingen beschikbaar",
+    "mobileCtaDesc": "Ontdek Sintra met onbeperkte hop-on/hop-offritten op je gekozen bezoekdag. City Cards voor het volle tarief bieden ook geselecteerde voordelen bij onze partners.",
+    "mobileCtaButton": "City Cards kopen",
+    "bookingCardTitle": "City Card",
+    "bookingCardSubtitle": "Ontdek Sintra met onbeperkte hop-on/hop-offritten op je gekozen bezoekdag. City Cards voor het volle tarief bieden ook geselecteerde voordelen bij onze partners. Toegang tot attracties, privétours en zonsondergangstochten zijn aparte producten en niet inbegrepen bij de City Card.",
+    "bookingDetail1": "De vervoerstijden hangen af van de bezoekdatum en staan vóór betaling en op de kaart vermeld. De tijdzone Europe/Lisbon geldt. Een City Card is geen pas voor 24 opeenvolgende uren.",
+    "bookingDetail2": "Tijden voor je bezoekdatum",
+    "bookingDetail3": "Actuele prijzen en beschikbaarheid worden vóór betaling getoond. De aanbieder bepaalt het volle tarief; 7–11-jarigen betalen de helft en kinderen jonger dan 7 reizen gratis.",
     "bookingDetail4": "Meerdere opstapplaatsen",
     "priceFrom": "Vanaf",
     "pricePerPerson": "per persoon",
-    "bookNow": "Nu boeken",
-    "bookingFootnote": "Directe bevestiging • Flexibel boeken",
+    "bookNow": "City Cards kopen",
+    "bookingFootnote": "Gratis annuleren via Mijn kaarten tot 23:59 uur Lissabon-tijd op de dag vóór het bezoek. De annuleringstermijn voor klanten eindigt zodra de bezoekdag begint.",
     "whyUsTitle": "Waarom reizigers voor ons kiezen",
-    "whyUs1": "Geen wachten op bussen of taxi's",
+    "whyUs1": "Afhankelijk van beschikbare voertuigen",
     "whyUs2": "Geen parkeergedoe",
     "whyUs3": "Meer zien in minder tijd",
     "whyUs4": "Authentieke Portugese voertuigen",
-    "getYourPass": "Koop uw pas"
+    "getYourPass": "City Cards kopen"
+  },
+  "editorial": {
+    "tours": {
+      "tour_1778577424183": {
+        "title": "Een kennismaking met Sintra",
+        "description": "Een ontspannen kennismaking met de monumenten en uitzichtpunten van Sintra. In anderhalf tot twee uur verbindt je lokale gids het landschap, de architectuur en de verhalen die deze plek bijzonder maken.",
+        "longDescription": "Niet iedereen wil een hele dag aan een rondleiding besteden. Deze kortere ervaring is bedoeld voor wie Sintra eerst wil leren kennen en daarna zelfstandig verder wil ontdekken.\n\nJe gids volgt de belangrijkste panoramaroute van Sintra en stopt bij bijzondere gebouwen en uitzichtpunten. Onderweg ontdek je hoe de paleizen, het kasteel, de landgoederen en het bos met elkaar samenhangen, van de Moorse aanwezigheid in de heuvels tot de romantische architectuur.\n\nEr is tijd om foto’s te maken, vragen te stellen en van de omgeving te genieten. Het doel is een toegankelijke kennismaking, geen formele geschiedenisles of een hele dag monumenten bezoeken.\n\nDeze tour past bij een eerste bezoek, weinig beschikbare tijd of een voorkeur voor een rustig tempo. Na afloop begrijp je beter wat je ziet en hoe Sintra zo’n bijzondere plek is geworden.",
+        "duration": "1½–2 uur"
+      },
+      "tour_1778579744484": {
+        "title": "Het beste van Sintra",
+        "description": "Ontdek Sintra in ongeveer vier uur, met panoramaroutes, lokale geschiedenis en tijd om één monument te bezoeken. Een goede middenweg als je meer wilt dan een eerste indruk, maar geen hele dag op tour wilt.",
+        "longDescription": "Deze ervaring bouwt voort op de kennismakingstour en geeft je meer tijd voor de landschappen, historische wegen en het koninklijke verleden van Sintra. Tijdens de tocht door de heuvels vertelt je gids over paleizen, het kasteel, bossen en uitzichtpunten.\n\nEr is tijd om één monument naar keuze van binnen te bezoeken. Je koopt het toegangsticket apart, zodat de planning aansluit bij de plek die je het meest interesseert.\n\nDe route gaat ook door het historische centrum en langs de omgeving van Quinta da Regaleira. Waar voertuigen niet mogen komen, ga je te voet verder en neem je rustig de straten, gebouwen en tuinen in je op.\n\nDit is een goede keuze als je zowel de heuvels als de oude stad wilt zien, een monument van binnen wilt bezoeken en meer wilt weten over de lokale geschiedenis, met nog tijd over om zelf op pad te gaan.",
+        "duration": "4 uur"
+      },
+      "tour_1778626810320": {
+        "title": "Sintra van paleizen tot kust",
+        "description": "Een hele dag langs de monumenten, bossen en Atlantische kust van Sintra. Combineer lokale geschiedenis, panoramaroutes en tijd voor twee monumenten met de kustlandschappen van Azenhas do Mar en Cabo da Roca.",
+        "longDescription": "Veel dagtochten richten zich op de paleizen óf op de kust. Deze ervaring van acht uur brengt beide samen: van de heuvels naar de Atlantische Oceaan, met tijd om van de stops te genieten.\n\nDe dag begint in de heuvels, met koninklijke paleizen, uitzicht op het Moorse kasteel, landgoederen in het bos en rustigere plekken. Je gids vertelt hoe de middeleeuwse geschiedenis en romantische architectuur het landschap hebben gevormd.\n\nEr is tijd om twee monumenten van binnen te bezoeken. Toegangstickets zijn niet inbegrepen, zodat je kunt kiezen wat je het meest interesseert. Delen van het historische centrum en de omgeving van Quinta da Regaleira verken je te voet, waar voertuigen niet mogen komen.\n\nLater gaat de route naar het westen. Boswegen maken plaats voor oceaanuitzichten bij Azenhas do Mar en Cabo da Roca, het westelijkste punt van het Europese vasteland. Onverharde stukken laten minder bezochte kustlandschappen zien. Er is ruimte om te stoppen en te genieten, zonder van de ene bezienswaardigheid naar de andere te haasten.",
+        "duration": "8 uur"
+      },
+      "tour_1778628786076": {
+        "title": "Verborgen plekken van Sintra: een privétour van een hele dag",
+        "description": "Ontdek een rustiger Sintra in een 4x4: boswegen, uitzichten vanaf kliffen, een klooster uit de zestiende eeuw, lokale wijn en Atlantische landschappen buiten de gebruikelijke routes.",
+        "longDescription": "Deze privétour van acht uur gaat door de heuvels van Sintra naar de kust. In plaats van de drukste paleizenroute volg je rustigere plekken, die je met lokale kennis en voldoende tijd beter leert kennen.\n\nDe ochtend begint op boswegen, met verhalen over de paleizen, het kasteel en de koninklijke landgoederen van Sintra. Je bezoekt Convento dos Capuchos, een franciscanenklooster met kleine ruimtes en kurkbekleding, en gaat daarna naar Santuário da Peninha voor uitzicht op de Atlantische kust.\n\nIn de middag reis je door de wijnstreek Colares voor een kelderbezoek en wijnproeverij, gevolgd door lunch in een dorpsrestaurant. Daarna ga je via Azenhas do Mar naar een uitzichtpunt bij Cabo da Roca. De 4x4 brengt je dichtbij, maar het laatste stuk leg je te voet af.\n\n**Inbegrepen:** een 4x4, een Engelstalige gids en wijnproeverij.\n\n**Niet inbegrepen:** lunch, toegang tot monumenten en fooien.\n\n**Duur:** ongeveer acht uur. De tour is alleen voor jouw groep.",
+        "duration": "8 uur"
+      }
+    },
+    "articles": {
+      "how-to-get-to-sintra": {
+        "title": "Van Lissabon naar Sintra",
+        "excerpt": "Plan je reis vanuit Lissabon, bekijk hoe je ter plaatse verder reist en houd genoeg tijd over voor de heuvels en monumenten van Sintra.",
+        "content": "## Met de trein\n\nSintra ligt ongeveer 30 km ten noordwesten van Lissabon. De trein is voor veel bezoekers handig: je hoeft geen parkeerplaats bij het historische centrum te zoeken. Rossio is een logisch vertrekpunt als je in het centrum van Lissabon verblijft. Controleer bij vertrek vanuit een andere wijk vooraf de route en eventuele overstappen bij CP.\n\nNeem tijd om je vervoerbewijs te kopen of op te laden en het perron te vinden. Bekijk de actuele tarieven, vertrektijden en terugreis op de [officiële website van CP](https://www.cp.pt). Vertrouw niet op een oude dienstregeling in een blog. Vroeg vertrekken geeft je meer ruimte in de dag, zeker met een toegangsticket voor een vast tijdstip.\n\n## Met de auto en parkeren\n\nJe kunt vanuit Lissabon met de auto komen, maar verkeer en parkeren kunnen een korte rit flink verlengen. Controleer de toegangsbeperkingen voordat je naar het historische centrum of de paleiswegen rijdt. Reken er niet op dat je tot de ingang van Pena kunt rijden. Overweeg buiten de drukste gebieden te parkeren en verder te reizen met geschikt lokaal vervoer.\n\n## Verder reizen na aankomst\n\nVanaf station Sintra ben je nog niet bij de monumenten op de heuvels. Vergelijk lokale bussen, wandelroutes en de mogelijkheden van Hop On Sintra met je reisplan. Controleer voor elke dienst de actuele route, tijden en voorwaarden. De City Card en toegangstickets voor monumenten zijn aparte producten; bekijk wat jouw gekozen kaart omvat.\n\nWandelen kan prachtig zijn, maar de hellingen zijn steil en afstanden op een kaart kunnen misleiden. Kies een route die past bij je mobiliteit, schoenen en het weer. Houd ruimte tussen bezoeken en controleer tijdig de trein terug. Een haalbaar plan is meestal fijner dan haasten om elk paleis te zien.",
+        "seo": {
+          "title": "Van Lissabon naar Sintra",
+          "description": "Plan je reis vanuit Lissabon, bekijk hoe je ter plaatse verder reist en houd genoeg tijd over voor de heuvels en monumenten van Sintra.",
+          "keywords": "Van Lissabon naar Sintra"
+        }
+      },
+      "pena-palace-complete-guide": {
+        "title": "Het Palácio da Pena bezoeken: praktische tips",
+        "excerpt": "Kies het juiste ticket, plan de tocht omhoog en neem tijd voor zowel het paleis als het park.",
+        "content": "## Een paleis boven het bos\n\nPena is een van de herkenbaarste plekken van Sintra. De kleurrijke torens steken boven het bos uit en combineren verschillende bouwstijlen in een romantisch decor. Het negentiende-eeuwse paleis, gebouwd in opdracht van Ferdinand II, ontstond rond een ouder klooster. Neem de tijd voor de details, naast die bekende foto.\n\n## Kies het juiste ticket\n\nBekijk de actuele opties, prijzen en openingstijden op de [officiële ticketpagina van Pena](https://www.parquesdesintra.pt/en/plan-your-visit/tickets-palace-of-pena/). Controleer welke delen je ticket precies omvat. Houd je voor het paleis aan het geboekte tijdstip en reken op de wandeling omhoog door het park. Bij de parkpoort aankomen is niet hetzelfde als bij de ingang van het paleis staan.\n\n## Plan je reis en bezoek\n\nHoud ruim tijd tussen je aankomst in Sintra en je toegangstijd voor het paleis. Lokaal vervoer, verkeer, wachtrijen en de klim door het park tellen allemaal mee. Controleer de toegangsbeperkingen voordat je de auto overweegt. Vanuit het centrum lopen is een klim, geen kort ommetje. Vervoer met Hop On Sintra hangt af van de tijden, beschikbaarheid en voorwaarden van de gekozen dienst. Toegangstickets voor monumenten zijn apart.\n\nNeem binnen tijd voor de koninklijke vertrekken en de architectonische details. Buiten biedt het park een ander tempo, met bospaden, meren en uitzichtpunten. Wat je kunt zien hangt af van je ticket, je wandeltempo en welke delen die dag open zijn. Trek enkele uren uit voor paleis en park, in plaats van elk vrij uur met een ander monument te vullen.\n\n## Comfort en toegankelijkheid\n\nNeem comfortabele schoenen, water en een extra laag kleding mee: op de heuvel kan het koeler, winderiger of mistiger zijn dan in Lissabon. Volg de borden en aanwijzingen van medewerkers over foto’s en toegang. Heb je specifieke mobiliteitsbehoeften, bekijk dan vooraf de [officiële toegankelijkheidsinformatie](https://www.parquesdesintra.pt/en/plan-your-visit/accessibility/park-and-palace-of-pena/) en vraag naar ondersteuning. De omstandigheden verschillen per deel van het terrein; alles als toegankelijk of ontoegankelijk bestempelen helpt niet.\n\nHet nabijgelegen Castelo dos Mouros kan een tweede bezoek zijn; Quinta da Regaleira ligt dichter bij het centrum. Kies wat je het meest aanspreekt en houd tijd voor vervoer, eten en een pauze. Sintra is fijner als je om je heen kunt kijken in plaats van voortdurend op je horloge.",
+        "seo": {
+          "title": "Het Palácio da Pena bezoeken: praktische tips",
+          "description": "Kies het juiste ticket, plan de tocht omhoog en neem tijd voor zowel het paleis als het park.",
+          "keywords": "Het Palácio da Pena bezoeken: praktische tips"
+        }
+      },
+      "article-1778533613801": {
+        "title": "Is Sintra een bezoek waard? Een lokale blik",
+        "excerpt": "Sintra is meer dan een lijst paleizen. Een persoonlijke kijk op verwachtingen, reistijd en ruimte om van de plek te genieten.",
+        "content": "## Het Sintra dat we ons voorstellen\n\nVeel mensen hebben voor aankomst al een beeld van Sintra: paleizen boven de bomen, oude stenen in de mist en paden die in het bos verdwijnen. Ik begrijp die aantrekkingskracht. Wat een foto minder goed laat zien, is hoeveel tijd je nodig hebt om de plek te ervaren. Sintra wordt vaak in een snel uitstapje vanuit Lissabon gepropt, en dat kan de hele dag bepalen.\n\nVoor mij is het antwoord ja: Sintra is een bezoek waard. De combinatie van bos, bergen, paleizen en de nabijgelegen kust is bijzonder. Maar niet iedereen hoeft de plek op dezelfde manier te bezoeken, en een lange checklist garandeert geen fijne ervaring. Wat je hoopt te vinden telt net zo zwaar als hoeveel plekken je bereikt.\n\n## Afstand is meer dan kilometers\n\nOp de kaart lijken de monumenten dicht bij elkaar. Ter plaatse zijn er hellingen, kronkelwegen, wachtrijen en verplaatsingen. Een ambitieus plan kan veranderen in een dag vol ‘geen tijd’, ‘volgende keer’ en ‘we moeten door’. Ik heb gezien hoe de poging om alles te zien weinig ruimte overlaat om ergens van te genieten.\n\nSommige momenten die ik het meest waardeer zijn rustig: stoppen bij een uitzichtpunt, licht tussen de bomen opmerken of een middag laten verlopen zonder steeds de volgende reservering te controleren. Zulke momenten plan je moeilijk in. Ze hebben wat ruimte nodig rond de dingen die al vaststaan.\n\n## Kies de ervaring, niet de langste lijst\n\nTickets en vervoer tellen op. Dat betekent niet dat Sintra zijn geld niet waard is, maar het is een reden om bewust te kiezen. Kom je voor de paleizen, geef ze dan tijd. Trekt de natuur je, dan kunnen het landschap, wandelroutes en de kust een andere dag vormgeven. Controleer toegang en omstandigheden op je route; ga er niet van uit dat alles gratis of altijd open is.\n\nMijn advies is genoeg te vertragen om de plek de dag te laten bepalen. Een klassieke monumentenroute en een rustiger bezoek rond het landschap kunnen allebei waardevol zijn. De beste keuze past bij jouw interesses en tempo. Zo zie ik ook de tours hieronder: verschillende manieren om Sintra te beleven, geen wedstrijd om de meeste stops.",
+        "seo": {
+          "title": "Is Sintra een bezoek waard? Een lokale blik",
+          "description": "Sintra is meer dan een lijst paleizen. Een persoonlijke kijk op verwachtingen, reistijd en ruimte om van de plek te genieten.",
+          "keywords": "Is Sintra een bezoek waard? Een lokale blik"
+        }
+      },
+      "article-1778534118361": {
+        "title": "De rustige kant van Sintra die veel bezoekers missen",
+        "excerpt": "Van het Convento dos Capuchos naar Peninha: een persoonlijke tocht door bos, stille plekken en open kustuitzichten.",
+        "content": "## Buiten de bekende route\n\nVoor veel bezoekers begint Sintra met een lijst: Pena, Regaleira, het kasteel, dan de volgende bus en de volgende rij. Begrijpelijk. Het zijn bijzondere plekken en vaak de reden om te komen. Maar de dag kan vermoeiend worden voordat er tijd is om het landschap te zien. Er is ook een rustiger Sintra, waar je minder bezig bent van ingang naar ingang te gaan.\n\nIk koos ervoor de gebruikelijke route te verlaten, richting het Convento dos Capuchos. De weg door het bos veranderde het tempo al: smalle wegen, gefilterd licht en minder haast om de volgende stop te bereiken. Plan de toegang vooraf; ga er niet van uit dat deze plek vanzelf in de gewone paleizenroute past.\n\n## Capuchos: een andere vorm van rijkdom\n\nHet zestiende-eeuwse franciscanenklooster voelt heel anders dan de paleizen van Sintra. Kleine kamers, lage plafonds, met kurk beklede oppervlakken en stenen doorgangen vertellen over soberheid in plaats van pracht. De gebouwen lijken ruimte te maken voor het bos in plaats van het te verdringen. Ik merkte dat ik texturen en mos bekeek en naar de wind luisterde, in plaats van de indrukwekkendste zaal te zoeken.\n\nTijdens mijn bezoek waren er weinig mensen. Dat is een herinnering aan die dag, geen belofte dat het altijd leeg is. Wat me bijbleef was het contrast: een plek waar eenvoud centraal stond en aandacht belangrijker voelde dan nog een foto.\n\n## Peninha en het weidse landschap\n\nRichting Peninha opent het bos zich langzaam en voelt de Atlantische Oceaan dichterbij. De rit wordt onderdeel van de ervaring, in plaats van een onderbreking tussen bezienswaardigheden. Bij helder weer geven de kust richting Cascais en de verre omgeving van Lissabon vanaf het uitzichtpunt een gevoel van de schaal voorbij de heuvels. Wind en wolken kunnen het beeld volledig veranderen.\n\nHet heiligdom oogt bescheiden naast het landschap. Wat ik vooral onthoud is de samenhang tussen bos, bergen en zee. Sintra begint als één doorlopend gebied te voelen, niet als losse monumenten. De ruimte tussen de beroemde plekken verdient op zichzelf aandacht.\n\n## Je eigen tempo vinden\n\nDe hoofdroute is geen verkeerde keuze, zeker bij een eerste bezoek met weinig tijd. Zoek je iets anders, dan raad ik aan ruimte te laten voor deze rustige kant. Een rondleiding in een kleine groep kan minder voor de hand liggende plekken verbinden zonder de dag in een nieuwe checklist te veranderen. Voor mij was de ontdekking geen geheim monument, maar een rustigere manier om Sintra te zien.",
+        "seo": {
+          "title": "De rustige kant van Sintra die veel bezoekers missen",
+          "description": "Van het Convento dos Capuchos naar Peninha: een persoonlijke tocht door bos, stille plekken en open kustuitzichten.",
+          "keywords": "De rustige kant van Sintra die veel bezoekers missen"
+        }
+      }
+    }
   }
 }

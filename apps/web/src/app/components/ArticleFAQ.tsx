@@ -1,3 +1,4 @@
+import {useWebsiteText} from '../lib/translations/websiteText';
 import { useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 import { Card } from "./ui/card";
@@ -19,6 +20,7 @@ interface ArticleFAQProps {
 }
 
 export function ArticleFAQ({ faqs, articleUrl }: ArticleFAQProps) {
+  const wt = useWebsiteText();
   useEffect(() => {
     // Add FAQ schema
     const faqSchema = {
@@ -57,7 +59,7 @@ export function ArticleFAQ({ faqs, articleUrl }: ArticleFAQProps) {
 
   return (
     <Card className="p-6">
-      <h2 className="mb-6 text-foreground">Frequently Asked Questions</h2>
+      <h2 className="mb-6 text-foreground">{wt("Frequently Asked Questions")}</h2>
       <Accordion type="single" collapsible className="w-full">
         {faqs.map((faq, index) => (
           <AccordionItem key={index} value={`item-${index}`}>

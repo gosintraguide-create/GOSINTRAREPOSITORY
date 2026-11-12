@@ -1,3 +1,5 @@
+import {reviewedArticle, reviewFixture} from './translations/publishedContent';
+import {websiteText} from './translations/websiteText';
 // Blog/Articles Management System for Hop On Sintra
 
 export interface FAQItem {
@@ -73,6 +75,11 @@ export function getArticleTranslation(
   );
 }
 
+// Public presentation only. The editor continues to read and save the actual CMS edition.
+export function getPublicArticleTranslation(article: BlogArticle, language: string): ArticleTranslation {
+  return reviewedArticle(article, language) || getArticleTranslation(article, language);
+}
+
 // Helper to get article title in a specific language
 export function getArticleTitle(
   article: BlogArticle,
@@ -102,10 +109,10 @@ export function getCategoryTranslation(
   category: BlogCategory,
   language: string,
 ): CategoryTranslation {
-  return (
-    category.translations[language] ||
-    category.translations["en"]
-  );
+  const translated = category.translations[language];
+  if (translated) return translated;
+  const source = category.translations.en;
+  return {name: websiteText(language, source.name), description: websiteText(language, source.description)};
 }
 
 // Default categories with English translations (add more languages as needed)
@@ -868,6 +875,8 @@ export async function loadArticlesFromServer(
   projectId: string,
   publicAnonKey: string,
 ): Promise<BlogArticle[]> {
+  const fixture = await reviewFixture('articles');
+  if (fixture) return fixture.map(migrateArticleToMultiLanguage);
   // Check cache first with a 5-minute TTL
   const cacheKey = "blog-articles-cache";
   const cacheTimestampKey = "blog-articles-cache-timestamp";

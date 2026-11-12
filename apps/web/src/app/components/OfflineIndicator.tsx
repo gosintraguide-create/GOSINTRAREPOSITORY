@@ -1,7 +1,9 @@
+import {useWebsiteText} from '../lib/translations/websiteText';
 import { useState, useEffect } from "react";
 import { WifiOff, Wifi } from "lucide-react";
 
 export function OfflineIndicator() {
+  const wt = useWebsiteText();
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [showNotification, setShowNotification] = useState(false);
 
@@ -50,12 +52,12 @@ export function OfflineIndicator() {
           {isOnline ? (
             <>
               <Wifi className="h-4 w-4" />
-              <span className="text-sm font-medium">Back online</span>
+              <span className="text-sm font-medium">{wt("Back online")}</span>
             </>
           ) : (
             <>
               <WifiOff className="h-4 w-4" />
-              <span className="text-sm font-medium">You're offline</span>
+              <span className="text-sm font-medium">{wt("You're offline")}</span>
             </>
           )}
         </div>

@@ -1,3 +1,4 @@
+import {useWebsiteText} from '../lib/translations/websiteText';
 /**
  * LoadingIndicator - Animated loading component with Hop On Sintra branding
  * 
@@ -20,6 +21,7 @@ interface LoadingIndicatorProps {
 }
 
 export function LoadingIndicator({ type = "both", fullScreen = true }: LoadingIndicatorProps) {
+  const wt = useWebsiteText();
   if (type === "bar" || type === "both") {
     return (
       <>
@@ -42,7 +44,7 @@ export function LoadingIndicator({ type = "both", fullScreen = true }: LoadingIn
 
               {/* Loading Text */}
               <div className="flex gap-1 animate-[fadeIn_0.3s_ease-in]">
-                <span className="text-primary">Loading</span>
+                <span className="text-primary">{wt("Loading")}</span>
                 <span className="animate-[blink_1.5s_infinite]">.</span>
                 <span className="animate-[blink_1.5s_infinite_0.2s]" style={{ animationDelay: "0.2s" }}>.</span>
                 <span className="animate-[blink_1.5s_infinite_0.4s]" style={{ animationDelay: "0.4s" }}>.</span>
@@ -77,7 +79,7 @@ export function LoadingIndicator({ type = "both", fullScreen = true }: LoadingIn
 
           {/* Loading Text */}
           <div className="flex gap-1 animate-[fadeIn_0.3s_ease-in]">
-            <span className="text-primary">Loading</span>
+            <span className="text-primary">{wt("Loading")}</span>
             <span className="animate-[blink_1.5s_infinite]">.</span>
             <span className="animate-[blink_1.5s_infinite]" style={{ animationDelay: "0.2s" }}>.</span>
             <span className="animate-[blink_1.5s_infinite]" style={{ animationDelay: "0.4s" }}>.</span>

@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import {WebsiteLanguageContext, useWebsiteText} from '../lib/translations/websiteText';
+import { useState, useEffect, useRef, useContext } from "react";
 import { loadStripe, Stripe, StripeElements } from "@stripe/stripe-js";
 import {
   PaymentElement,
@@ -22,6 +23,7 @@ interface StripePaymentFormProps {
 }
 
 function CheckoutForm({ amount, onSuccess, onError, customerEmail }: Omit<StripePaymentFormProps, 'clientSecret'>) {
+  const wt = useWebsiteText();
   const stripe = useStripe();
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -50,8 +52,8 @@ function CheckoutForm({ amount, onSuccess, onError, customerEmail }: Omit<Stripe
       const { error: submitError } = await elements.submit();
       if (submitError) {
         console.error("Form validation error:", submitError);
-        setErrorMessage(submitError.message || "Please complete all required fields");
-        onError(submitError.message || "Please complete all required fields");
+        setErrorMessage(submitError.message || wt("Please complete all required fields"));
+        onError(submitError.message || wt("Please complete all required fields"));
         hasSubmittedRef.current = false;
         setIsProcessing(false);
         return;
@@ -84,13 +86,13 @@ function CheckoutForm({ amount, onSuccess, onError, customerEmail }: Omit<Stripe
         }
         
         // Provide user-friendly error messages
-        let userMessage = error.message || "Payment failed";
+        let userMessage = error.message || wt("Payment could not be confirmed. Check your booking before trying again.");
         if (error.code === 'incomplete_cvc') {
-          userMessage = "Please enter your card's security code (CVC)";
+          userMessage = wt("Please enter your card's security code (CVC)");
         } else if (error.code === 'incomplete_number') {
-          userMessage = "Please enter a complete card number";
+          userMessage = wt("Please enter a complete card number");
         } else if (error.code === 'incomplete_expiry') {
-          userMessage = "Please enter your card's expiration date";
+          userMessage = wt("Please enter your card's expiration date");
         }
         
         setErrorMessage(userMessage);
@@ -101,13 +103,13 @@ function CheckoutForm({ amount, onSuccess, onError, customerEmail }: Omit<Stripe
         onSuccess(paymentIntent.id);
       } else {
         console.warn("⚠️ Payment not completed, status:", paymentIntent?.status);
-        setErrorMessage("Payment was not completed. Please try again.");
-        onError("Payment was not completed");
+        setErrorMessage(wt("Payment was not completed. Please try again."));
+        onError(wt("Payment was not completed. Please try again."));
         hasSubmittedRef.current = false; // Allow retry
       }
     } catch (err) {
       console.error("Unexpected payment error:", err);
-      const message = err instanceof Error ? err.message : "An unexpected error occurred";
+      const message = wt("Payment could not be confirmed. Check your booking before trying again.");
       setErrorMessage(message);
       onError(message);
       hasSubmittedRef.current = false; // Allow retry on error
@@ -139,7 +141,7 @@ function CheckoutForm({ amount, onSuccess, onError, customerEmail }: Omit<Stripe
 
       {errorMessage && (
         <Alert variant="destructive">
-          <AlertDescription>{errorMessage}</AlertDescription>
+          <AlertDescription>{errorMessage && wt(errorMessage)}</AlertDescription>
         </Alert>
       )}
 
@@ -147,15 +149,15 @@ function CheckoutForm({ amount, onSuccess, onError, customerEmail }: Omit<Stripe
       <div className="rounded-lg bg-primary/5 border border-primary/10 p-4 space-y-2">
         <div className="flex items-center gap-2">
           <Shield className="h-5 w-5 text-primary flex-shrink-0" />
-          <p className="text-sm text-foreground">Secure payment powered by Stripe</p>
+          <p className="text-sm text-foreground">{wt("Secure payment powered by Stripe")}</p>
         </div>
         <div className="flex items-center gap-2">
           <Lock className="h-5 w-5 text-primary flex-shrink-0" />
-          <p className="text-sm text-foreground">Your payment information is encrypted and secure</p>
+          <p className="text-sm text-foreground">{wt("Your payment information is encrypted and secure")}</p>
         </div>
         <div className="flex items-center gap-2">
           <CreditCard className="h-5 w-5 text-primary flex-shrink-0" />
-          <p className="text-sm text-foreground">Accepts all cards, Apple Pay, and Google Pay</p>
+          <p className="text-sm text-foreground">{wt("Accepts all cards, Apple Pay, and Google Pay")}</p>
         </div>
       </div>
 
@@ -168,31 +170,26 @@ function CheckoutForm({ amount, onSuccess, onError, customerEmail }: Omit<Stripe
       >
         {isProcessing ? (
           <>
-            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-            Processing Payment...
-          </>
+            <Loader2 className="mr-2 h-5 w-5 animate-spin" />{wt("Processing Payment...")}</>
         ) : (
           <>
-            <CreditCard className="mr-2 h-5 w-5" />
-            Pay €{amount.toFixed(2)}
+            <CreditCard className="mr-2 h-5 w-5" />{wt("Pay €")}{amount.toFixed(2)}
           </>
         )}
       </Button>
 
       {/* Confirmation Message */}
       <div className="text-center space-y-1">
-        <p className="text-sm text-muted-foreground">
-          You'll receive your QR codes immediately after payment
-        </p>
-        <p className="text-xs text-muted-foreground">
-          Confirmation will be sent to your email
-        </p>
+        <p className="text-sm text-muted-foreground">{wt("You'll receive your QR codes immediately after payment")}</p>
+        <p className="text-xs text-muted-foreground">{wt("Confirmation will be sent to your email")}</p>
       </div>
     </form>
   );
 }
 
 export function StripePaymentForm({ amount, clientSecret, onSuccess, onError, customerEmail }: StripePaymentFormProps) {
+  const language = useContext(WebsiteLanguageContext);
+  const wt = useWebsiteText();
   // Use ref to store stripePromise so it never changes
   const stripePromiseRef = useRef<Promise<Stripe | null> | null>(null);
   const [isLoadingStripe, setIsLoadingStripe] = useState(true);
@@ -245,8 +242,8 @@ export function StripePaymentForm({ amount, clientSecret, onSuccess, onError, cu
         }
       } catch (error) {
         console.error("Error loading Stripe:", error);
-        setLoadError("Payment system not configured. Please contact support.");
-        onError("Payment system not configured. Please contact support.");
+        setLoadError(wt("Payment system not configured. Please contact support."));
+        onError(wt("Payment system not configured. Please contact support."));
       } finally {
         setIsLoadingStripe(false);
       }
@@ -259,7 +256,7 @@ export function StripePaymentForm({ amount, clientSecret, onSuccess, onError, cu
     return (
       <Card className="p-8">
         <Alert variant="destructive">
-          <AlertDescription>{loadError}</AlertDescription>
+          <AlertDescription>{wt(loadError)}</AlertDescription>
         </Alert>
       </Card>
     );
@@ -270,7 +267,7 @@ export function StripePaymentForm({ amount, clientSecret, onSuccess, onError, cu
       <Card className="p-8">
         <div className="flex flex-col items-center justify-center space-y-3">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-sm text-muted-foreground">Loading payment system...</p>
+          <p className="text-sm text-muted-foreground">{wt("Loading payment system...")}</p>
         </div>
       </Card>
     );
@@ -278,6 +275,7 @@ export function StripePaymentForm({ amount, clientSecret, onSuccess, onError, cu
 
   const options = {
     clientSecret,
+    locale: language as 'en' | 'pt' | 'es' | 'fr' | 'de' | 'nl' | 'it',
     appearance: {
       theme: 'stripe' as const,
       variables: {
