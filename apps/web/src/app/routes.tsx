@@ -5,6 +5,8 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { RouterErrorFallback } from "@/components/RouterErrorFallback";
 
 // Lazy load pages - using @/ alias for consistent module resolution
+const CustomerProfilePage = lazy(() => import('@/components/CustomerProfilePage').then(m => ({default:m.CustomerProfilePage})));
+const CityCardTermsPage = lazy(() => import('@/components/CityCardTermsPage').then(m => ({default:m.CityCardTermsPage})));
 const HomePage = lazy(() => import("@/components/HomePage").then(m => ({ default: m.HomePage })));
 const AttractionsPage = lazy(() => import("@/components/AttractionsPage").then(m => ({ default: m.AttractionsPage })));
 const AttractionDetailPage = lazy(() => import("@/components/AttractionDetailPage").then(m => ({ default: m.AttractionDetailPage })));
@@ -228,6 +230,17 @@ export const router = createBrowserRouter([
             index: false,
           },
         },
+      },
+      {
+        path: 'profile/:section?',
+        element: <ErrorBoundary><CustomerProfilePage /></ErrorBoundary>,
+        handle: {meta: {title: 'Your Profile - Hop On Sintra', index: false}},
+      },
+      {
+        path: 'my-cards', element: <Navigate to='/profile' replace />, handle: {meta: {index:false}},
+      },
+      {
+        path: 'city-card-terms', element: <CityCardTermsPage />, handle: {meta: {title:'City Card Conditions - Hop On Sintra',index:true}},
       },
       {
         path: "manage-booking",

@@ -353,6 +353,19 @@ function CategorySection({
   bgColor?: string;
 }) {
   const needsComingSoon = tours.length < 2;
+  const railRef = useRef<HTMLDivElement>(null);
+  const [hasMoreCards, setHasMoreCards] = useState(false);
+  useEffect(() => {
+    const rail = railRef.current;
+    if (!rail) return;
+    const update = () => setHasMoreCards(rail.scrollWidth - rail.clientWidth - rail.scrollLeft > 2);
+    const observer = new ResizeObserver(update);
+    observer.observe(rail);
+    for (const child of rail.children) observer.observe(child);
+    rail.addEventListener("scroll", update, { passive: true });
+    update();
+    return () => { observer.disconnect(); rail.removeEventListener("scroll", update); };
+  }, [tours.length]);
 
   return (
     <div>
@@ -435,6 +448,8 @@ function CategorySection({
       {/* Mobile horizontal scroll — wrapped for right-edge fade affordance */}
       <div className="md:hidden" style={{ position: "relative", overflow: "hidden" }}>
         <div
+          ref={railRef}
+          data-tour-rail
           className="flex"
           style={{
             overflowX: "auto",
@@ -456,7 +471,10 @@ function CategorySection({
         {/* Right-edge fade: indicates more cards exist off-screen */}
         <div
           aria-hidden="true"
+          data-tour-fade
+          data-visible={hasMoreCards}
           style={{
+            opacity: hasMoreCards ? 1 : 0,
             position: "absolute",
             top: 0,
             right: 0,
@@ -490,23 +508,30 @@ function CategoryStickyNav({
 }) {
   const wt = useWebsiteText();
   const pillRefs = useRef<Record<string, HTMLButtonElement | null>>({});
-  const isFirstMount = useRef(true);
+  const navRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    // Skip on initial mount — scrollIntoView on mount causes unexpected vertical
-    // scroll on mobile, making the sticky nav appear mid-screen.
-    if (isFirstMount.current) {
-      isFirstMount.current = false;
-      return;
-    }
     const el = pillRefs.current[activeCategory];
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-    }
+    const nav = navRef.current;
+    if (!el || !nav) return;
+    const reveal = () => {
+      const item = el.getBoundingClientRect();
+      const bounds = nav.getBoundingClientRect();
+      if (item.left < bounds.left || item.right > bounds.right) {
+        nav.scrollTo({ left: nav.scrollLeft + item.left - bounds.left - (bounds.width - item.width) / 2,
+          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+      }
+    };
+    const observer = new ResizeObserver(reveal);
+    observer.observe(nav);
+    observer.observe(el);
+    reveal();
+    return () => observer.disconnect();
   }, [activeCategory]);
 
   return (
     <nav
+      ref={navRef}
       id="private-tours-sticky-nav"
       className="px-[18px] md:px-[48px] backdrop-blur-md"
       style={{
@@ -516,17 +541,21 @@ function CategoryStickyNav({
         background: "var(--site-header-background)",
         borderBottom: "1px solid var(--border)",
         display: "flex",
-        justifyContent: "center",
         overflowX: "auto",
         scrollbarWidth: "none",
         WebkitOverflowScrolling: "touch",
         msOverflowStyle: "none",
       } as React.CSSProperties}
     >
+      <div style={{ display: "flex", flexShrink: 0, marginInline: "auto" }}>
       {STICKY_NAV_PILLS.map((pill) => {
         const isActive = activeCategory === pill.id;
         return (
           <button
+            type="button"
+            aria-current={isActive ? "location" : undefined}
+            aria-controls={pill.sectionId}
+            className="focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--accent)]"
             key={pill.id}
             ref={(el) => { pillRefs.current[pill.id] = el; }}
             onClick={() => onPillClick(pill.id)}
@@ -555,6 +584,7 @@ function CategoryStickyNav({
           </button>
         );
       })}
+      </div>
     </nav>
   );
 }
@@ -602,46 +632,53 @@ export function PrivateToursPage() {
   useEffect(() => {
     const el = document.querySelector("[data-site-header]") ?? document.querySelector("header");
     if (!el) return;
-    const ro = new ResizeObserver(() => {
+    const stickyNav = document.getElementById("private-tours-sticky-nav");
+    const update = () => {
       setNavbarHeight((el as HTMLElement).offsetHeight);
-      const stickyNav = document.getElementById("private-tours-sticky-nav");
       if (stickyNav) setStickyNavHeight((stickyNav as HTMLElement).offsetHeight);
-    });
+    };
+    const ro = new ResizeObserver(update);
     ro.observe(el);
+    if (stickyNav) ro.observe(stickyNav);
+    update();
     return () => ro.disconnect();
   }, []);
 
-  // Track which category section is in view using IntersectionObserver
+  // Track sections after asynchronous content arrives, in document order.
   useEffect(() => {
+    if (loading) return;
     const offset = navbarHeight + stickyNavHeight;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const pill = STICKY_NAV_PILLS.find((p) => p.sectionId === entry.target.id);
-            if (pill) setActiveCategory(pill.id);
-          }
-        });
-      },
-      {
-        rootMargin: `-${offset}px 0px -60% 0px`,
-        threshold: 0,
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      let active: string = STICKY_NAV_PILLS[0].id;
+      for (const pill of STICKY_NAV_PILLS) {
+        const el = document.getElementById(pill.sectionId);
+        if (el && el.getBoundingClientRect().top <= offset + 2) active = pill.id;
       }
-    );
-
+      setActiveCategory(active);
+    };
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
+    document.addEventListener("scroll", schedule, { passive: true, capture: true });
+    window.addEventListener("resize", schedule);
+    const observer = new ResizeObserver(schedule);
     for (const pill of STICKY_NAV_PILLS) {
       const el = document.getElementById(pill.sectionId);
       if (el) observer.observe(el);
     }
-
-    return () => observer.disconnect();
-  }, [navbarHeight, stickyNavHeight]);
+    update();
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      document.removeEventListener("scroll", schedule, true);
+      window.removeEventListener("resize", schedule);
+    };
+  }, [navbarHeight, stickyNavHeight, loading, language]);
 
   const handlePillClick = (catId: string) => {
     const pill = STICKY_NAV_PILLS.find((p) => p.id === catId);
     const el = pill ? document.getElementById(pill.sectionId) : null;
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (el) el.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth", block: "start" });
   };
 
   // Check if Private Tours feature is enabled

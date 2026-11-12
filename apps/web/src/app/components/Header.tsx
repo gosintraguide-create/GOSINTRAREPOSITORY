@@ -5,8 +5,9 @@ import { Link, useLocation } from "react-router";
 import { Button } from "./ui/button";
 import { LanguageSelector } from "./LanguageSelector";
 import { Logo } from "./Logo";
-import { UserProfile } from "./UserProfile";
 import { getUITranslation, getTranslation } from "../lib/translations";
+import {getProfileCopy} from '../lib/translations/profileCopy';
+import {customerClient, cardSandboxUrl} from '../lib/customerCards';
 
 interface HeaderProps {
   currentPage: string;
@@ -24,6 +25,18 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const t = getUITranslation(language);
   const content = getTranslation(language);
+  const profileCopy=getProfileCopy(language);
+  const [signedIn, setSignedIn] = useState(!!cardSandboxUrl);
+  useEffect(() => {
+    if (cardSandboxUrl) return;
+    let active = true, changed = false;
+    const {data: {subscription}} = customerClient.auth.onAuthStateChange((_event, session) => {
+      changed = true;
+      if (active) setSignedIn(!!session);
+    });
+    void customerClient.auth.getSession().then(({data}) => {if (active && !changed) setSignedIn(!!data.session);}).catch(() => {});
+    return () => {active = false; subscription.unsubscribe();};
+  }, []);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -89,7 +102,7 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
       {/* Desktop Header */}
       <header className="border-b border-border bg-[var(--site-header-background)] backdrop-blur-md shadow-sm" role="banner">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
-          <div className="flex h-16 sm:h-20 items-center justify-between lg:justify-between relative">
+          <div className="grid grid-cols-[44px_minmax(0,1fr)_max-content] gap-3 lg:flex h-16 sm:h-20 items-center justify-between relative">
             {/* Mobile: Menu Button (top left) */}
             <Button
               variant="ghost"
@@ -104,15 +117,15 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </Button>
 
-            {/* Logo - centered on mobile, left-aligned on desktop */}
+            {/* Logo stays between the mobile controls, including longer translations. */}
             <Link
               to="/"
               onClick={closeMenu}
-              className="group absolute left-1/2 -translate-x-1/2 lg:relative lg:left-auto lg:translate-x-0 flex items-center transition-all hover:opacity-90 flex-shrink-0"
+              className="group w-full max-w-[200px] justify-self-center lg:w-auto lg:max-w-none flex items-center transition-opacity hover:opacity-90 flex-shrink-0"
               aria-label={wt("Hop On Sintra - Home")}
             >
-              <div className="h-[30px] w-auto sm:h-10">
-                <Logo />
+              <div className="h-[30px] w-full lg:w-auto sm:h-10">
+                <Logo className="block h-full w-full lg:w-auto" />
               </div>
             </Link>
 
@@ -139,7 +152,7 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
                 />
               </div>
               <div className="flex-shrink-0">
-                <UserProfile onNavigate={onNavigate} language={language} />
+                <Link to="/profile" className="text-sm font-semibold text-primary underline underline-offset-4">{signedIn ? profileCopy.profile : profileCopy.signIn}</Link>
               </div>
               <Button
                 asChild
@@ -152,7 +165,7 @@ export function Header({ currentPage, onNavigate, language, onLanguageChange }: 
 
             {/* Mobile: User Profile (top right) */}
             <div className="lg:hidden relative z-10 flex-shrink-0">
-              <UserProfile onNavigate={onNavigate} language={language} />
+              <Link to="/profile" onClick={closeMenu} className="text-sm font-semibold text-primary underline underline-offset-4">{signedIn ? profileCopy.profile : profileCopy.signIn}</Link>
             </div>
           </div>
         </div>

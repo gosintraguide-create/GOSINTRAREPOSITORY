@@ -97,8 +97,8 @@ function MobileStickyBar({ price, duration, onBook, language = "en" }: { price: 
       className="lg:hidden sticky z-40 bg-white border-b border-stone-200 shadow-sm"
       style={{ top: headerHeight }}
     >
-      <div className="flex items-center justify-between gap-4 px-4 py-3">
-        <div>
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3 sm:flex-nowrap">
+        <div className="min-w-0">
           {price != null ? (
             <>
               <p className="text-[11px] font-medium uppercase tracking-wide text-stone-400 leading-none mb-0.5">{tBar.fromPrice}</p>
@@ -112,12 +112,12 @@ function MobileStickyBar({ price, duration, onBook, language = "en" }: { price: 
           )}
         </div>
         {duration && (
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+          <div className="flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
             <Clock className="h-3.5 w-3.5 shrink-0" />
             <span>{duration}</span>
           </div>
         )}
-        <Button onClick={onBook} className="h-10 shrink-0 px-5 text-sm font-semibold">
+        <Button onClick={onBook} className="min-h-11 h-auto w-full whitespace-normal px-5 py-2 text-sm font-semibold sm:w-auto sm:shrink-0">
           <Ticket className="mr-1.5 h-4 w-4" />
           {tBar.bookThisTour}
         </Button>

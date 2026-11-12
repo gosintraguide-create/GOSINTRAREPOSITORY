@@ -1,3 +1,4 @@
+import {getProfileCopy} from '../lib/translations/profileCopy';
 import {WebsiteLanguageContext, websiteText} from '../lib/translations/websiteText';
 import {selectWebsiteLanguage, normalizeWebsiteLanguage} from '../lib/translations/language';
 import { useEffect, useState, Suspense, lazy, useRef } from "react";
@@ -338,7 +339,7 @@ export function RootLayout() {
     const translated = getTranslation(language);
     const seoKey = ({'/':'home','/attractions':'attractions','/about':'about','/travel-guide':'blog','/buy-ticket':'buyTicket','/hop-on-hop-off-sintra':'howItWorks'} as Record<string,string>)[location.pathname];
     const localized = seoKey ? (translated.seo as Record<string,{title:string;description:string}>)[seoKey] : undefined;
-    const otherTitles: Record<string,string> = {'/private-tours': translated.privateTours.hero.title, '/route-map': translated.routeMap.title, '/manage-booking': translated.manageBooking.pageTitle, '/request-pickup': translated.ui.requestPickup, '/privacy-policy': translated.footer.privacyPolicy, '/terms-of-service': translated.footer.terms, '/live-chat': translated.ui.contact};
+    const otherTitles: Record<string,string> = {'/profile':getProfileCopy(language).title, '/profile/rides':getProfileCopy(language).rides, '/profile/history':getProfileCopy(language).history, '/private-tours': translated.privateTours.hero.title, '/route-map': translated.routeMap.title, '/manage-booking': translated.manageBooking.pageTitle, '/request-pickup': translated.ui.requestPickup, '/privacy-policy': translated.footer.privacyPolicy, '/terms-of-service': translated.footer.terms, '/live-chat': translated.ui.contact};
     const pageTitle = localized?.title || otherTitles[location.pathname] || websiteText(language, dynamicMeta?.title || (meta as any).title || 'Hop On Sintra');
     const pageDesc = localized?.description || websiteText(language, dynamicMeta?.description || (meta as any).description || 'Explore Sintra with Hop On Sintra.');
     const pageKeywords = dynamicMeta?.keywords || (meta as any).keywords;
