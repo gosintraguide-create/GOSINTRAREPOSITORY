@@ -1,3 +1,4 @@
+import {useWebsiteText} from '../lib/translations/websiteText';
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useOutletContext, useNavigate } from "react-router";
 import { Button } from "./ui/button";
@@ -48,12 +49,13 @@ import "../../styles/slick-custom.css";
 
 // Custom arrow components for slider
 const PrevArrow = (props: any) => {
+  const wt = useWebsiteText();
   const { currentSlide, slideCount, ...restProps } = props;
   return (
     <button
       {...restProps}
       className="slick-prev"
-      aria-label="Previous slide"
+      aria-label={wt("Previous slide")}
     >
       <ChevronLeft className="h-6 w-6" />
     </button>
@@ -61,12 +63,13 @@ const PrevArrow = (props: any) => {
 };
 
 const NextArrow = (props: any) => {
+  const wt = useWebsiteText();
   const { currentSlide, slideCount, ...restProps } = props;
   return (
     <button
       {...restProps}
       className="slick-next"
-      aria-label="Next slide"
+      aria-label={wt("Next slide")}
     >
       <ChevronRight className="h-6 w-6" />
     </button>
@@ -125,6 +128,7 @@ function MobileStickyBar({ basePrice, onBook, labelFrom, labelPerPerson, labelGe
 }
 
 export function HopOnServiceDetailPage() {
+  const wt = useWebsiteText();
   const { language = "en", onNavigate } =
     useOutletContext<OutletContext>();
   const navigate = useNavigate();
@@ -213,7 +217,7 @@ export function HopOnServiceDetailPage() {
       "@type": "Product",
       name: "Hop On Sintra Day Pass",
       description:
-        "Unlimited hop-on/hop-off day pass for exploring Sintra's palaces and attractions. Guaranteed seating in tuk-tuks and UMM jeeps with service from 9am to 7pm daily.",
+        t.heroSubtitle,
       brand: {
         "@type": "Brand",
         name: "Hop On Sintra",
@@ -259,7 +263,7 @@ export function HopOnServiceDetailPage() {
       url: "https://www.hoponsintra.com",
       logo: "https://www.hoponsintra.com/logo.png",
       description:
-        "Hop-on/hop-off day pass service in Sintra, Portugal offering unlimited rides on tuk-tuks and UMM jeeps with guaranteed seating.",
+        t.heroSubtitle,
       address: {
         "@type": "PostalAddress",
         addressLocality: "Sintra",
@@ -314,7 +318,7 @@ export function HopOnServiceDetailPage() {
       touristAttraction: touristAttractionSchema,
       breadcrumb: breadcrumbSchema,
     };
-  }, [faqItems]);
+  }, [faqItems, t.heroSubtitle]);
 
   // Page-specific meta tags via direct DOM manipulation (replaces react-helmet-async)
   useEffect(() => {
@@ -328,22 +332,23 @@ export function HopOnServiceDetailPage() {
       el.setAttribute("content", content);
     };
 
-    const locale = language === "en" ? "en_US" : `${language}_${language.toUpperCase()}`;
+    const locale = ({en:'en_US',pt:'pt_PT',es:'es_ES',fr:'fr_FR',de:'de_DE',nl:'nl_NL',it:'it_IT'} as Record<string,string>)[language] || 'en_US';
+    const seo = getTranslation(language).seo.howItWorks;
 
     // Title and description — owned by this page, not inherited from route handle
-    document.title = "Hop-On Hop-Off Sintra | Tuk Tuk & Jeep Day Pass from €15";
-    updateMeta("name", "description", "Explore Sintra at your own pace with a hop-on hop-off day pass. Unlimited rides by tuk tuk or vintage jeep, from €15 per person. Stop anywhere, not just fixed bus stops.");
+    document.title = seo.title;
+    updateMeta("name", "description", seo.description);
 
     // Open Graph
     updateMeta("property", "og:type", "product");
-    updateMeta("property", "og:title", "Hop-On Hop-Off Sintra | Tuk Tuk & Jeep Day Pass from €15");
-    updateMeta("property", "og:description", "Explore Sintra at your own pace with a hop-on hop-off day pass. Unlimited rides by tuk tuk or vintage jeep, from €15 per person. Stop anywhere, not just fixed bus stops.");
+    updateMeta("property", "og:title", seo.title);
+    updateMeta("property", "og:description", seo.description);
     updateMeta("property", "og:url", "https://www.hoponsintra.com/hop-on-hop-off-sintra");
     updateMeta("property", "og:image", comprehensiveContent.content?.seo?.hopOnService?.ogImage || comprehensiveContent.content?.seo?.defaultOgImage || "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1200&h=630&fit=crop&q=80");
     updateMeta("property", "og:image:secure_url", comprehensiveContent.content?.seo?.hopOnService?.ogImage || comprehensiveContent.content?.seo?.defaultOgImage || "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1200&h=630&fit=crop&q=80");
     updateMeta("property", "og:image:width", "1200");
     updateMeta("property", "og:image:height", "630");
-    updateMeta("property", "og:image:alt", "Hop On Sintra - Tuk-tuk transportation in Sintra, Portugal");
+    updateMeta("property", "og:image:alt", wt('Hop On Sintra Service'));
     updateMeta("property", "og:site_name", "Hop On Sintra");
     updateMeta("property", "og:locale", locale);
     updateMeta("property", "product:price:amount", "25.00");
@@ -351,10 +356,10 @@ export function HopOnServiceDetailPage() {
 
     // Twitter Card
     updateMeta("name", "twitter:card", "summary_large_image");
-    updateMeta("name", "twitter:title", "Hop-On Hop-Off Sintra | Tuk Tuk & Jeep Day Pass from €15");
-    updateMeta("name", "twitter:description", "Explore Sintra at your own pace with a hop-on hop-off day pass. Unlimited rides by tuk tuk or vintage jeep, from €15 per person. Stop anywhere, not just fixed bus stops.");
+    updateMeta("name", "twitter:title", seo.title);
+    updateMeta("name", "twitter:description", seo.description);
     updateMeta("name", "twitter:image", comprehensiveContent.content?.seo?.hopOnService?.ogImage || comprehensiveContent.content?.seo?.defaultOgImage || "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1200&h=630&fit=crop&q=80");
-    updateMeta("name", "twitter:image:alt", "Hop On Sintra - Tuk-tuk transportation in Sintra, Portugal");
+    updateMeta("name", "twitter:image:alt", wt('Hop On Sintra Service'));
 
     // Additional meta
     updateMeta("name", "author", "Hop On Sintra");
@@ -366,6 +371,7 @@ export function HopOnServiceDetailPage() {
     canonical.href = "https://www.hoponsintra.com/hop-on-hop-off-sintra";
     document.head.appendChild(canonical);
   }, [language, comprehensiveContent]);
+
 
   return (
     <div className="flex-1">
@@ -391,7 +397,7 @@ export function HopOnServiceDetailPage() {
       <section className="lg:hidden relative h-[50vh] min-h-[380px] sm:h-[55vh] overflow-hidden">
         <ImageWithFallback
           src="https://dwiznaefeqnduglmcivr.supabase.co/storage/v1/object/sign/make-3bd0ade8-images/1772130531176_DSC00736.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmFjMWMyYy1lNjZlLTQwYWEtYjcwNS1kNTcwYzA5NGZmYzMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtYWtlLTNiZDBhZGU4LWltYWdlcy8xNzcyMTMwNTMxMTc2X0RTQzAwNzM2LmpwZyIsImlhdCI6MTc3MjEzMDUzMSwiZXhwIjoyMDg3NDkwNTMxfQ.NPoVTbN_JDAY3WeJMMOwDBZycryqw2oFM2MYfCaxi-8"
-          alt="Hop On Sintra Service"
+          alt={wt("Hop On Sintra Service")}
           className="h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
@@ -608,22 +614,16 @@ export function HopOnServiceDetailPage() {
                       <button
                         onClick={() => setContactOpen(true)}
                         className="text-xs text-muted-foreground hover:text-primary transition-colors underline underline-offset-2"
-                      >
-                        Have questions? Contact us
-                      </button>
+                      >{wt("Have questions? Contact us")}</button>
                     </div>
 
                     {/* Contact modal */}
                     <Dialog open={contactOpen} onOpenChange={setContactOpen}>
                       <DialogContent className="max-w-xs rounded-2xl p-6 text-center">
                         <DialogHeader>
-                          <DialogTitle className="text-base font-semibold text-foreground">
-                            We're here to help
-                          </DialogTitle>
+                          <DialogTitle className="text-base font-semibold text-foreground">{wt("We're here to help")}</DialogTitle>
                         </DialogHeader>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                          Choose how you'd like to reach us
-                        </p>
+                        <p className="mt-1 text-sm text-muted-foreground">{wt("Choose how you'd like to reach us")}</p>
                         <div className="mt-5 flex flex-col gap-3">
                           <a
                             href="https://wa.me/351932967279"

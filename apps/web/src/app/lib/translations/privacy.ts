@@ -1,3 +1,4 @@
+import additionalTranslations from './privacy-nl-it.json';
 export interface PrivacyContent {
   title: string;
   lastUpdated: string;
@@ -18,6 +19,7 @@ export interface PrivacyContent {
 }
 
 export const privacyTranslations: { [key: string]: PrivacyContent } = {
+  ...additionalTranslations,
   en: {
     title: "Privacy Policy",
     lastUpdated: "Last Updated",

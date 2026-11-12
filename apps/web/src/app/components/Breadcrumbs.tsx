@@ -1,3 +1,4 @@
+import {useWebsiteText} from '../lib/translations/websiteText';
 import { ChevronRight, Home } from "lucide-react";
 import { useEffect } from "react";
 import { Link } from "react-router";
@@ -12,6 +13,7 @@ interface BreadcrumbsProps {
 }
 
 export function Breadcrumbs({ items }: BreadcrumbsProps) {
+  const wt = useWebsiteText();
   // Generate JSON-LD BreadcrumbList for Google via direct DOM manipulation
   useEffect(() => {
     const breadcrumbSchema = {
@@ -20,7 +22,7 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
       itemListElement: items.map((item, index) => ({
         "@type": "ListItem",
         position: index + 1,
-        name: item.label,
+        name: wt(item.label),
         item: item.href
           ? `https://www.hoponsintra.com${item.href}`
           : undefined,
@@ -39,10 +41,10 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
     return () => {
       script?.remove();
     };
-  }, [items]);
+  }, [items, wt]);
 
   return (
-    <nav aria-label="Breadcrumb" className="mb-4 sm:mb-6 overflow-x-auto">
+    <nav aria-label={wt("Breadcrumb")} className="mb-4 sm:mb-6 overflow-x-auto">
       <ol className="flex items-center gap-1.5 sm:gap-2 text-sm text-muted-foreground whitespace-nowrap">
         {items.map((item, index) => (
           <li key={index} className="flex items-center gap-1.5 sm:gap-2">
@@ -53,13 +55,13 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
                 className="transition-colors hover:text-primary py-1 flex items-center gap-1"
               >
                 {index === 0 && <Home className="h-3.5 w-3.5" />}
-                <span className="hidden sm:inline">{item.label}</span>
-                {index === 0 && <span className="sm:hidden">Home</span>}
+                <span className="hidden sm:inline">{wt(item.label)}</span>
+                {index === 0 && <span className="sm:hidden">{wt("Home")}</span>}
               </Link>
             ) : (
               <span className="text-foreground font-medium truncate max-w-[200px] sm:max-w-none flex items-center gap-1">
                 {index === 0 && <Home className="h-3.5 w-3.5" />}
-                {item.label}
+                {wt(item.label)}
               </span>
             )}
           </li>

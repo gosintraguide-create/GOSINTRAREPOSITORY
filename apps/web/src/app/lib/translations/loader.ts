@@ -1,4 +1,5 @@
 import type { TranslationFile } from './types';
+import {normalizeWebsiteLanguage} from './language';
 
 // ── English is bundled synchronously — it's the universal fallback ─────────────
 import en from './locales/en.json';
@@ -12,6 +13,8 @@ const registry: Record<string, TranslationFile> = {
 // ── Pub/sub for locale-load events ────────────────────────────────────────────
 // RootLayout subscribes so it can re-render once a new locale is ready.
 const listeners: Array<() => void> = [];
+let localeVersion = 0;
+export const getLocaleVersion = () => localeVersion;
 
 export function onLocaleLoad(cb: () => void): () => void {
   listeners.push(cb);
@@ -22,7 +25,7 @@ export function onLocaleLoad(cb: () => void): () => void {
 }
 
 // ── In-flight load promises (de-dup parallel calls) ───────────────────────────
-const pending: Record<string, Promise<void>> = {};
+const pending: Partial<Record<string, Promise<void>>> = {};
 
 const dynamicLocales: Record<string, () => Promise<{ default: unknown }>> = {
   pt: () => import('./locales/pt.json'),
@@ -38,6 +41,7 @@ const dynamicLocales: Record<string, () => Promise<{ default: unknown }>> = {
  * Call this when the user picks a language so it's ready for the next render.
  */
 export async function preloadTranslation(lang: string): Promise<void> {
+  lang = normalizeWebsiteLanguage(lang);
   if (lang === 'en' || registry[lang]) return; // already loaded
   if (pending[lang]) return pending[lang];      // already loading
 
@@ -47,12 +51,13 @@ export async function preloadTranslation(lang: string): Promise<void> {
   pending[lang] = loader()
     .then((mod) => {
       registry[lang] = (mod as { default: TranslationFile }).default;
+      localeVersion++;
       // Notify subscribers (RootLayout) so it can force a re-render
       listeners.forEach((cb) => cb());
     })
     .catch(() => {
       // Silently fall back to English — no broken UI
-    });
+    }).finally(() => { delete pending[lang]; });
 
   return pending[lang];
 }
@@ -64,6 +69,7 @@ export async function preloadTranslation(lang: string): Promise<void> {
 //   That's it. TypeScript will error at the cast if any key is missing.
 
 export function getTranslation(lang: string): TranslationFile {
+  lang = normalizeWebsiteLanguage(lang);
   return registry[lang] ?? registry.en;
 }
 
@@ -73,7 +79,7 @@ export const getUITranslation = (lang: string) => getTranslation(lang).ui;
 export const getCookieContent  = (lang: string) => getTranslation(lang).cookie;
 
 // ── Dev-only completeness checker ─────────────────────────────────────────
-if (import.meta.env.DEV) {
+if (import.meta.env?.DEV) {
   function checkKeys(obj: unknown, ref: unknown, path = ''): void {
     if (typeof ref !== 'object' || ref === null || Array.isArray(ref)) return;
     for (const key of Object.keys(ref as object)) {
@@ -95,6 +101,8 @@ if (import.meta.env.DEV) {
       loader().then((mod) => {
         const data = (mod as { default: TranslationFile }).default;
         registry[lang] = data;
+        localeVersion++;
+        listeners.forEach(cb => cb());
         checkKeys(data, registry.en, lang);
       })
     )

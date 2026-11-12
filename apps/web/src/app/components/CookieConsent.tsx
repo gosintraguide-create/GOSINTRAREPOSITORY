@@ -1,3 +1,4 @@
+import {useWebsiteText} from '../lib/translations/websiteText';
 import { useState, useEffect } from "react";
 import { Cookie, X } from "lucide-react";
 import { Button } from "./ui/button";
@@ -11,6 +12,7 @@ interface CookieConsentProps {
 }
 
 export function CookieConsent({ language = "en", onNavigate }: CookieConsentProps) {
+  const wt = useWebsiteText(language);
   const [showBanner, setShowBanner] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [preferences, setPreferences] = useState({
@@ -125,6 +127,7 @@ export function CookieConsent({ language = "en", onNavigate }: CookieConsentProp
               </div>
               <button
                 onClick={handleRejectAll}
+                aria-label={wt("Reject optional cookies")}
                 className="flex-shrink-0 text-muted-foreground hover:text-foreground transition-colors"
               >
                 <X className="h-5 w-5" />
@@ -141,6 +144,7 @@ export function CookieConsent({ language = "en", onNavigate }: CookieConsentProp
                   <h3 className="text-foreground">{content.settingsTitle}</h3>
                 </div>
                 <button
+                  aria-label={wt("Back to cookie choices")}
                   onClick={() => setShowSettings(false)}
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
@@ -157,6 +161,7 @@ export function CookieConsent({ language = "en", onNavigate }: CookieConsentProp
               <div className="rounded-lg border border-border bg-secondary/30 p-4">
                 <div className="flex items-start gap-3">
                   <Checkbox
+                    aria-label={content.categories.necessary.title}
                     checked={true}
                     disabled={true}
                     className="mt-1"
@@ -176,6 +181,7 @@ export function CookieConsent({ language = "en", onNavigate }: CookieConsentProp
               <div className="rounded-lg border border-border bg-white p-4">
                 <div className="flex items-start gap-3">
                   <Checkbox
+                    aria-label={content.categories.functional.title}
                     checked={preferences.functional}
                     onCheckedChange={(checked) =>
                       setPreferences({ ...preferences, functional: !!checked })
@@ -197,6 +203,7 @@ export function CookieConsent({ language = "en", onNavigate }: CookieConsentProp
               <div className="rounded-lg border border-border bg-white p-4">
                 <div className="flex items-start gap-3">
                   <Checkbox
+                    aria-label={content.categories.analytics.title}
                     checked={preferences.analytics}
                     onCheckedChange={(checked) =>
                       setPreferences({ ...preferences, analytics: !!checked })
@@ -218,6 +225,7 @@ export function CookieConsent({ language = "en", onNavigate }: CookieConsentProp
               <div className="rounded-lg border border-border bg-white p-4">
                 <div className="flex items-start gap-3">
                   <Checkbox
+                    aria-label={content.categories.marketing.title}
                     checked={preferences.marketing}
                     onCheckedChange={(checked) =>
                       setPreferences({ ...preferences, marketing: !!checked })

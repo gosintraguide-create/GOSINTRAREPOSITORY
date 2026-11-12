@@ -3,6 +3,8 @@
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DayPicker } from "react-day-picker";
+import {enGB, pt, es, fr, de, nl, it} from 'date-fns/locale';
+import {WebsiteLanguageContext, useWebsiteText} from '../../lib/translations/websiteText';
 
 import { cn } from "./utils";
 import { buttonVariants } from "./button";
@@ -13,8 +15,13 @@ function Calendar({
   showOutsideDays = true,
   ...props
 }: React.ComponentProps<typeof DayPicker>) {
+  const language = React.useContext(WebsiteLanguageContext);
+  const wt = useWebsiteText();
+  const locale = ({en:enGB,pt,es,fr,de,nl,it} as const)[language as 'en'] || enGB;
   return (
     <DayPicker
+      locale={locale}
+      labels={{labelPrevious: () => wt('Previous month'), labelNext: () => wt('Next month')}}
       showOutsideDays={showOutsideDays}
       className={cn("p-3", className)}
       classNames={{

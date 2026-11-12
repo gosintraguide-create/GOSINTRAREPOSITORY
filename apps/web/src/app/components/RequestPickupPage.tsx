@@ -1,3 +1,4 @@
+import {useWebsiteText} from '../lib/translations/websiteText';
 import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router";
 import { MapPin, Users, Clock, Car, CheckCircle, AlertCircle } from "lucide-react";
@@ -22,6 +23,7 @@ interface RequestPickupPageProps {
 }
 
 export function RequestPickupPage() {
+  const wt = useWebsiteText();
   const { language = "en", onNavigate } = useOutletContext<OutletContext>();
   const t = getTranslation(language).components;
   const [step, setStep] = useState<"verify" | "request" | "searching" | "confirmed">("verify");
@@ -262,11 +264,11 @@ export function RequestPickupPage() {
             <Card className="overflow-hidden border-border p-6 shadow-lg sm:p-8">
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="booking-code">Booking Code</Label>
+                  <Label htmlFor="booking-code">{wt("Booking Code")}</Label>
                   <Input
                     id="booking-code"
                     type="text"
-                    placeholder="e.g., GST-ABC123"
+                    placeholder={wt("e.g., GST-ABC123")}
                     value={bookingCode}
                     onChange={(e) => {
                       setBookingCode(e.target.value.toUpperCase());
@@ -279,9 +281,7 @@ export function RequestPickupPage() {
                       }
                     }}
                   />
-                  <p className="text-sm text-muted-foreground">
-                    You received this code in your booking confirmation email
-                  </p>
+                  <p className="text-sm text-muted-foreground">{wt("You received this code in your booking confirmation email")}</p>
                 </div>
 
                 {verificationError && (
@@ -299,25 +299,19 @@ export function RequestPickupPage() {
                   onClick={handleVerifyBooking}
                   disabled={!bookingCode.trim()}
                 >
-                  <CheckCircle className="mr-2 h-5 w-5" />
-                  Verify Booking
-                </Button>
+                  <CheckCircle className="mr-2 h-5 w-5" />{wt("Verify Booking")}</Button>
 
                 <div className="rounded-lg border border-border bg-white p-4">
                   <div className="mb-2 flex items-center gap-2 text-primary">
                     <AlertCircle className="h-5 w-5" />
-                    <span className="font-medium">Don't have a booking?</span>
+                    <span className="font-medium">{wt("Don't have a booking?")}</span>
                   </div>
-                  <p className="mb-3 text-sm text-muted-foreground">
-                    Pickup requests are only available to customers with purchased day passes.
-                  </p>
+                  <p className="mb-3 text-sm text-muted-foreground">{wt("Pickup requests are only available to customers with purchased day passes.")}</p>
                   <Button
                     variant="outline"
                     className="w-full"
                     onClick={() => onNavigate("buy-ticket")}
-                  >
-                    Purchase Day Pass
-                  </Button>
+                  >{wt("Purchase Day Pass")}</Button>
                 </div>
               </div>
             </Card>
@@ -339,20 +333,18 @@ export function RequestPickupPage() {
               </div>
             </div>
           </div>
-          <h2 className="mb-2 text-foreground">Sending Your Request...</h2>
+          <h2 className="mb-2 text-foreground">{wt("Sending Your Request...")}</h2>
           <p className="mb-4 text-muted-foreground">
             Notifying nearby drivers about your group of <strong>{groupSize} {parseInt(groupSize) === 1 ? 'passenger' : 'passengers'}</strong>
           </p>
           {showSlowMessage && (
             <div className="mt-4 space-y-3">
-              <p className="text-sm text-muted-foreground">Taking longer than expected...</p>
+              <p className="text-sm text-muted-foreground">{wt("Taking longer than expected...")}</p>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setStep("request")}
-              >
-                Go Back
-              </Button>
+              >{wt("Go Back")}</Button>
             </div>
           )}
         </Card>
@@ -398,7 +390,7 @@ export function RequestPickupPage() {
             <div className="rounded-lg border border-border bg-white p-4">
               <div className="mb-3 flex items-center gap-2 text-foreground">
                 <MapPin className="h-5 w-5 text-accent" />
-                <span>Pickup Location</span>
+                <span>{wt("Pickup Location")}</span>
               </div>
               <p className="text-muted-foreground">
                 {locations.find(l => l.id === location)?.name}
@@ -409,7 +401,7 @@ export function RequestPickupPage() {
               <div className="rounded-lg border border-border bg-white p-4">
                 <div className="mb-3 flex items-center gap-2 text-foreground">
                   <MapPin className="h-5 w-5 text-primary" />
-                  <span>Destination</span>
+                  <span>{wt("Destination")}</span>
                 </div>
                 <p className="text-muted-foreground">
                   {locations.find(l => l.id === destination)?.name}
@@ -424,7 +416,7 @@ export function RequestPickupPage() {
                   {parseInt(groupSize) <= 6 ? (
                     <p>A driver has been notified of your group of <strong className="text-foreground">{groupSize}</strong> and will send an appropriate vehicle.</p>
                   ) : (
-                    <p>Drivers have been notified. <strong className="text-foreground">{Math.ceil(parseInt(groupSize) / 6)} vehicles</strong> will be coordinated for your group of {groupSize}.</p>
+                    <p>Drivers have been notified. <strong className="text-foreground">{Math.ceil(parseInt(groupSize) / 6)}{wt("vehicles")}</strong> will be coordinated for your group of {groupSize}.</p>
                   )}
                 </div>
               </div>
@@ -442,9 +434,7 @@ export function RequestPickupPage() {
             <Button
               className="flex-1 bg-accent hover:bg-accent/90"
               onClick={() => onNavigate("home")}
-            >
-              Done
-            </Button>
+            >{wt("Done")}</Button>
           </div>
         </Card>
       </div>
@@ -464,9 +454,7 @@ export function RequestPickupPage() {
               <Car className="h-10 w-10 text-white" />
             </div>
           </div>
-          <h1 className="mb-4 bg-gradient-to-r from-primary via-primary/90 to-accent bg-clip-text text-transparent">
-            Request a Pickup
-          </h1>
+          <h1 className="mb-4 bg-gradient-to-r from-primary via-primary/90 to-accent bg-clip-text text-transparent">{wt("Request a Pickup")}</h1>
           <p className="mx-auto max-w-2xl text-muted-foreground">
             Tell us your group size and location, and we'll send the perfect vehicle for you. 
             Our drivers are notified of your passenger count to ensure comfort and availability.
@@ -494,7 +482,7 @@ export function RequestPickupPage() {
 
               {/* Customer Phone */}
               <div className="space-y-2">
-                <Label htmlFor="customer-phone">Phone Number</Label>
+                <Label htmlFor="customer-phone">{wt("Phone Number")}</Label>
                 <Input
                   id="customer-phone"
                   type="tel"
@@ -519,9 +507,7 @@ export function RequestPickupPage() {
               {/* Group Size */}
               <div className="space-y-2">
                 <Label htmlFor="group-size" className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-accent" />
-                  Number of Passengers
-                </Label>
+                  <Users className="h-4 w-4 text-accent" />{wt("Number of Passengers")}</Label>
                 <div className="flex items-center gap-3">
                   <Button
                     type="button"
@@ -573,9 +559,7 @@ export function RequestPickupPage() {
                   <div className="rounded-lg border border-accent/20 bg-accent/5 p-3">
                     <div className="flex items-start gap-2 text-muted-foreground">
                       <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0 text-accent" />
-                      <p>
-                        Large group! You'll need <strong className="text-foreground">{Math.ceil(parseInt(groupSize) / 6)} vehicles</strong> coordinated to arrive together.
-                      </p>
+                      <p>{wt("Large group! You'll need")}<strong className="text-foreground">{Math.ceil(parseInt(groupSize) / 6)}{wt("vehicles")}</strong>{wt("coordinated to arrive together.")}</p>
                     </div>
                   </div>
                 ) : null}
@@ -584,12 +568,10 @@ export function RequestPickupPage() {
               {/* Current Location */}
               <div className="space-y-2">
                 <Label htmlFor="location" className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-accent" />
-                  Your Current Location
-                </Label>
+                  <MapPin className="h-4 w-4 text-accent" />{wt("Your Current Location")}</Label>
                 <Select value={location} onValueChange={setLocation}>
                   <SelectTrigger id="location">
-                    <SelectValue placeholder="Select your location" />
+                    <SelectValue placeholder={wt("Select your location")} />
                   </SelectTrigger>
                   <SelectContent>
                     {locations.map((loc) => (
@@ -609,7 +591,7 @@ export function RequestPickupPage() {
                 </Label>
                 <Select value={destination} onValueChange={setDestination}>
                   <SelectTrigger id="destination">
-                    <SelectValue placeholder="Where would you like to go?" />
+                    <SelectValue placeholder={wt("Where would you like to go?")} />
                   </SelectTrigger>
                   <SelectContent>
                     {locations
@@ -630,7 +612,7 @@ export function RequestPickupPage() {
               <div className="rounded-lg border border-border bg-white p-6">
                 <div className="mb-3 flex items-center gap-3 text-primary">
                   <Clock className="h-5 w-5" />
-                  <span>Service Hours</span>
+                  <span>{wt("Service Hours")}</span>
                 </div>
                 <p className="text-muted-foreground">
                   Our vehicles are available from 9:00 AM to 7:00 PM daily.
@@ -643,9 +625,7 @@ export function RequestPickupPage() {
                 onClick={handleRequestPickup}
                 disabled={!location || !groupSize || !customerName || !phoneNumber}
               >
-                <Car className="mr-2 h-5 w-5" />
-                Request Pickup
-              </Button>
+                <Car className="mr-2 h-5 w-5" />{wt("Request Pickup")}</Button>
             </div>
           </Card>
         </div>
@@ -654,7 +634,7 @@ export function RequestPickupPage() {
       {/* How It Works */}
       <section className="border-t border-border bg-white py-12 sm:py-16">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <h2 className="mb-8 text-center text-foreground">How Vehicle Coordination Works</h2>
+          <h2 className="mb-8 text-center text-foreground">{wt("How Vehicle Coordination Works")}</h2>
           <div className="grid gap-6 sm:grid-cols-3">
             <div className="group text-center">
               <div className="mb-4 flex justify-center">
@@ -662,10 +642,8 @@ export function RequestPickupPage() {
                   <Users className="h-7 w-7 text-white" />
                 </div>
               </div>
-              <h3 className="mb-2 text-foreground">1. Tell Us Your Group Size</h3>
-              <p className="text-muted-foreground">
-                Select how many passengers need a ride (1-50 people)
-              </p>
+              <h3 className="mb-2 text-foreground">{wt("1. Tell Us Your Group Size")}</h3>
+              <p className="text-muted-foreground">{wt("Select how many passengers need a ride (1-50 people)")}</p>
             </div>
             <div className="group text-center">
               <div className="mb-4 flex justify-center">
@@ -673,10 +651,8 @@ export function RequestPickupPage() {
                   <Car className="h-7 w-7 text-white" />
                 </div>
               </div>
-              <h3 className="mb-2 text-foreground">2. We Coordinate Vehicles</h3>
-              <p className="text-muted-foreground">
-                Drivers receive your request and coordinate appropriate vehicles for your group
-              </p>
+              <h3 className="mb-2 text-foreground">{wt("2. We Coordinate Vehicles")}</h3>
+              <p className="text-muted-foreground">{wt("Drivers receive your request and coordinate appropriate vehicles for your group")}</p>
             </div>
             <div className="group text-center">
               <div className="mb-4 flex justify-center">
@@ -684,10 +660,8 @@ export function RequestPickupPage() {
                   <CheckCircle className="h-7 w-7 text-white" />
                 </div>
               </div>
-              <h3 className="mb-2 text-foreground">3. Vehicles Arrive</h3>
-              <p className="text-muted-foreground">
-                Your vehicle(s) arrive shortly, coordinated for groups over 6
-              </p>
+              <h3 className="mb-2 text-foreground">{wt("3. Vehicles Arrive")}</h3>
+              <p className="text-muted-foreground">{wt("Your vehicle(s) arrive shortly, coordinated for groups over 6")}</p>
             </div>
           </div>
         </div>
